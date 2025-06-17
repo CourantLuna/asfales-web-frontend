@@ -200,7 +200,7 @@ const scrollToTop = (duration = 1000) => {
   <NavigationMenu className="relative pointer-events-auto">
 
 
-      <NavigationMenuList className="flex gap-5 xl:gap-12">
+      <NavigationMenuList className="flex gap-5 xl:gap-12 ">
         {[
           { label: "Transporte", icon: Plane },
           { label: "Alojamientos", icon: Hotel },
@@ -212,7 +212,7 @@ const scrollToTop = (duration = 1000) => {
               className="flex items-center gap-1 px-2 py-1 border border-transparent bg-transparent hover:border-[#FFA500] focus:bg-white focus:text-foreground focus:border-white data-[state=open]:bg-white data-[state=open]:text-foreground data-[state=open:border-white transition-all"
             >
               <Icon className="h-4 w-4 transition-colors hover:text-[#FFA500] data-[state=open]:text-foreground" />
-              <span className="transition-colors hover:text-[#FFA500] data-[state=open]:text-foreground">
+              <span className="shadow-md transition-colors hover:text-[#FFA500] data-[state=open]:text-foreground">
                 {label}
               </span>
             </NavigationMenuTrigger>

@@ -27,7 +27,7 @@ export default function Page() {
         
 
       {/* Sección adicional */}
-<section className="relative min-h-svh overflow-hidden flex justify-center">
+<section className="relative  h-[100vh] md:h-[100vh] overflow-hidden flex justify-center py-4">
 
   {/* Fondo SVG con forma personalizada */}
   <div className="absolute z-[0] top-0 right-0 left-0 h-[90px] md:h-[110px]">
