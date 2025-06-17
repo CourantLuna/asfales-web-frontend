@@ -57,11 +57,11 @@ const scrollToTop = (duration = 1000) => {
 
  
   return (
- <header className="relative w-full z-50">
+ <header className="relative w-full z-30">
   {/* Grupo A: Fijo arriba con sticky */}
-  <div className="fixed left-0 right-0 z-20 px-4 md:px-8">
+  <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8">
     {/* Fondo SVG con forma personalizada */}
-  <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[110px]
+  <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[120px]
 ">
     <svg
       width="1366"
@@ -73,16 +73,17 @@ const scrollToTop = (duration = 1000) => {
       preserveAspectRatio="none"
     >
       <path
-        d="M1366 106H951.252C943.568 103.897 936.915 98.7827 932.941 91.627L903.542 38.6797C898.252 29.1525 888.211 23.2432 877.313 23.2432H77.9092C76.004 23.2432 74.141 23.4224 72.335 23.7617H1.94727C1.28082 23.7617 0.629964 23.6947 0 23.5703V0.19043C0.629906 0.0660951 1.28088 2.10486e-08 1.94727 0H1366V106Z"
-        fill="#0057A3"
-      />
+  d="M1366 98.1416H944.737C937.226 96.1686 930.661 91.3237 926.584 84.4805L897.799 36.165C892.388 27.0835 882.598 21.5195 872.026 21.5195H856V21.5H0V0.200195C0.64623 0.0690155 1.31506 1.39473e-08 2 0H1366V98.1416Z"
+  fill="#0057A3"
+/>
+
     </svg>
   </div>
 
 
 
 
-  <div className="flex items-center justify-between pt-8 pl-8 md:pl-12 md:mt-5">
+  <div className="flex items-center justify-between pt-8 pl-4 md:pl-12 md:mt-5">
    
     {/* IZQUIERDA: Logo + NavigationMenu */}
     <div className="flex items-center gap-6 pr-5 md:ml-5">
@@ -93,7 +94,9 @@ const scrollToTop = (duration = 1000) => {
   className="p-0 rounded-full"
   onClick={() => scrollToTop(300)} // 300ms
 >
-  <Image src="/logo.svg" alt="Logo Asfales" width={40} height={40} />
+  <Image src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/20-vRibJMLzjhkcZHiTmRHZbI477Lks4r.png" 
+  alt="Logo Asfales" 
+  width={40} height={40} />
 </Button>
 
 
@@ -206,10 +209,10 @@ const scrollToTop = (duration = 1000) => {
         ].map(({ label, icon: Icon }) => (
           <NavigationMenuItem key={label}>
             <NavigationMenuTrigger
-              className="flex items-center gap-1 px-2 py-1 border border-transparent bg-transparent hover:border-orange-500 focus:bg-white focus:text-foreground focus:border-white data-[state=open]:bg-white data-[state=open]:text-foreground data-[state=open:border-white transition-all"
+              className="flex items-center gap-1 px-2 py-1 border border-transparent bg-transparent hover:border-[#FFA500] focus:bg-white focus:text-foreground focus:border-white data-[state=open]:bg-white data-[state=open]:text-foreground data-[state=open:border-white transition-all"
             >
-              <Icon className="h-4 w-4 transition-colors hover:text-orange-500 data-[state=open]:text-foreground" />
-              <span className="transition-colors hover:text-orange-500 data-[state=open]:text-foreground">
+              <Icon className="h-4 w-4 transition-colors hover:text-[#FFA500] data-[state=open]:text-foreground" />
+              <span className="transition-colors hover:text-[#FFA500] data-[state=open]:text-foreground">
                 {label}
               </span>
             </NavigationMenuTrigger>

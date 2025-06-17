@@ -7,8 +7,8 @@ export default function SearchBoxOverlay() {
 
 
   return (
-    <div className="relative min-h-[calc(100vh+40vh)] md:min-h-[calc(100vh+25vh)] w-full z-30 pointer-events-auto">
-      
+    <div className="relative min-h-[calc(100vh+40vh)] md:min-h-[calc(100vh+25vh)] w-full z-20 pointer-events-auto">
+   
       {/* BLOQUE STICKY: solo los campos */}
       <div className="sticky 
         top-[calc(65vh+((100vh-900px)*0.4))]  
@@ -37,7 +37,7 @@ export default function SearchBoxOverlay() {
               <div className="absolute pt-7 -translate-y-1/2 left-[-20px]">
                 <Button
                   size="icon"
-                  className="rounded-full bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 shadow-lg"
+                  className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10 shadow-lg"
                 >
                   <ArrowLeftRight className="h-4 w-4" />
                 </Button>
@@ -48,7 +48,7 @@ export default function SearchBoxOverlay() {
             <div className="lg:hidden my-0 flex justify-center">
               <Button
                 size="icon"
-                className="rounded-full bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 shadow-lg"
+                className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10 shadow-lg"
               >
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
@@ -86,7 +86,7 @@ export default function SearchBoxOverlay() {
   <div className="hidden lg:block w-[592px] h-[76px] bg-transparent" />
 
   {/* Botón */}
-  <Button className="rounded-lg bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 w-[280px] h-[48px]">
+  <Button className="rounded-lg bg-[#FFA500] hover:bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px]">
     <Search className="mr-2 h-4 w-4" />
     Ver Opciones de Viaje
   </Button>

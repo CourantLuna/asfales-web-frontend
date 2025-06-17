@@ -8,7 +8,7 @@ export default function Hero() {
 <div className="relative min-h-screen overflow-hidden">
       
       {/* SVG de fondo decorativo con marco */}
-      <div className="absolute inset-0 z-[0] pointer-events-none">
+      <div className="absolute inset-0 z-[1] pointer-events-none">
         <svg
           width="100%"
           height="100%"
@@ -23,15 +23,16 @@ export default function Hero() {
           />
         </svg>
       </div>
-
+    
       {/* Contenido del Hero */}
-      <section className="relative z-20 h-[calc(100vh-100px)] flex items-center px-12 md:px-12 lg:px-16">
+      <section className="relative z-[29] h-[calc(100vh-100px)] flex items-center px-12 md:px-12 lg:px-16">
         <div className="max-w-[1400px] mx-auto text-left space-y-6">
-          <h1 className="text-4xl md:text-8xl font-extrabold leading-tight text-foreground w-fit">
-            Somos <span className="text-blue-400">TODO</span>
-            <br />
-            lo que necesitas para <span className="text-orange-400">VIAJAR</span>
-          </h1>
+         <h1 className="text-4xl md:text-8xl font-extrabold leading-tight text-foreground w-fit">
+  Somos <span className="text-[#0057A3]">TODO</span>
+  <br />
+  lo que necesitas para <span className="text-[#FFA500]">VIAJAR</span>
+</h1>
+
           <p className="text-xl 2xl:text-2xl text-foreground max-w-8xl">
             Nos encargamos de{" "}
             <a className="underline hover:text-blue-300" href="#">
@@ -53,8 +54,12 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* SVG decorativo inferior */}
-        <div className="absolute -bottom-[90px] left-[-11%] w-[120%] md:w-full h-[320px] lg:h-[130px] lg:w-full md:left-[0px] z-10 pointer-events-none block md:block">
+       
+
+      </section>
+
+       {/* SVG decorativo inferior */}
+        <div className="absolute -bottom-[40px] left-[-11%] w-[120%] md:w-full h-[370px] lg:h-[170px] lg:w-full md:left-[0px] z-10 pointer-events-none block md:block">
           <svg
             width="100%"
             height="100%"
@@ -69,8 +74,6 @@ export default function Hero() {
             />
           </svg>
         </div>
-
-      </section>
     </div>
 
 
