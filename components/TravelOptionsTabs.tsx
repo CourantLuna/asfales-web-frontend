@@ -17,13 +17,19 @@ import { Input } from "@/components/ui/input"
 import { Combobox } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
-
+import { DateRange } from "react-day-picker"
+import { DateRangePicker } from "@/components/ui/date-range-picker"
 
 export default function TravelOptionsTabs() {
   const [tab, setTab] = useState("transporte")
 const[selectedTransportTypes, setSelectedTransportTypes] = useState<string[]>(["air"])
-const [selectedStatus, setSelectedStatus] = useState<string[]>(["todo"])
+const [selectedLodgingTypes, setSelectedLodgingTypes] = useState<string[]>(["hotel"])
 const [selectedExperiences, setSelectedExperiences] = useState<string[]>(["playa"])
+const [range, setRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: new Date()
+  })
+
 const experiencesOptions: FilterOption[] = [
   { label: "Aventura", value: "aventura", icon: MountainIcon },
   { label: "Camping", value: "camping", icon: TentTreeIcon },
@@ -35,7 +41,12 @@ const experiencesOptions: FilterOption[] = [
   { label: "Eventos de Comedia", value: "comedia", icon: LaughIcon },
 ]
 
-
+const lodgingOptions: FilterOption[] = [
+  { label: "Hoteles", value: "hotel", icon: Hotel },
+  { label: "Casas", value: "house", icon: Home },
+  { label: "Apartamentos", value: "apartment", icon: Building2 },
+  { label: "Casa de huéspedes", value: "guest", icon: () => <>🛏</> },
+]
 
   const tabOptions = [
     { label: "Transporte", value: "transporte" },
@@ -48,7 +59,7 @@ const experiencesOptions: FilterOption[] = [
   <div className="w-full max-w-8xl bg-white rounded-lg shadow-md p-6">
   <Tabs value={tab} onValueChange={setTab} className="w-full items-center flex flex-col">
       {/* Combobox solo en móviles */}
-      <div className="block w-[240px]  md:hidden mb-4 ">
+      <div className="block w-[240px] md:hidden">
         <Combobox
           options={tabOptions}
           value={tab}
@@ -102,8 +113,8 @@ const experiencesOptions: FilterOption[] = [
             <div className="flex flex-col items-start gap-2">
               <label className="text-sm font-medium">Fechas</label>
               <div className="relative w-[280px]">
-                <Input type="date" className="pl-10 " />
-               {/* <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />*/}
+                <DateRangePicker date={range} setDate={setRange} />
+                {/* <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />*/}
               </div>
             </div>
             <div className="flex flex-col items-start gap-2">
@@ -146,7 +157,7 @@ const experiencesOptions: FilterOption[] = [
       <div className="flex flex-col items-start gap-2">
         <label className="text-sm font-medium">Fechas</label>
         <div className="relative w-[280px]">
-          <Input type="date" className="pl-10" />
+                <DateRangePicker date={range} setDate={setRange} />
         </div>
       </div>
       <div className="flex flex-col items-start gap-2">
@@ -172,8 +183,9 @@ const experiencesOptions: FilterOption[] = [
       <div className="flex flex-col items-start gap-2">
         <label className="text-sm font-medium">Fechas</label>
         <div className="relative w-[280px]">
-          <Input type="date" className="pl-10" />
+      <DateRangePicker date={range} setDate={setRange} />
         </div>
+        
       </div>
       <div className="flex flex-col items-start gap-2">
         <label className="text-sm font-medium">Personas</label>
@@ -186,24 +198,12 @@ const experiencesOptions: FilterOption[] = [
 
 <div className="flex flex-col md:flex-row gap-4 w-full items-center">
       <div className="flex flex-wrap justify-center gap-2 border border-dashed px-4 py-2 rounded-md">
-      
-
-
-
-
-
-
-
-<QuickFilter
-  label="Estado"
-  options={[
-    { label: "Todo", value: "todo", icon: Clock },
-    { label: "Completado", value: "done", icon: CheckCircle },
-  ]}
-  selected={selectedStatus}
-  setSelected={setSelectedStatus}
-/>
-
+ <QuickFilter
+    label="Tipo de Alojamiento"
+    options={lodgingOptions}
+    selected={selectedLodgingTypes}
+    setSelected={setSelectedLodgingTypes}
+  />
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 border border-dashed px-4 py-2 rounded-md">
@@ -244,7 +244,7 @@ const experiencesOptions: FilterOption[] = [
       <div className="flex flex-col items-start gap-2">
         <label className="text-sm font-medium">Fechas</label>
         <div className="relative w-[280px]">
-          <Input type="date" className="pl-10" />
+          <DateRangePicker date={range} setDate={setRange} />
         </div>
       </div>
     </div>

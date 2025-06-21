@@ -56,17 +56,17 @@ export default function SearchBoxOverlay() {
             </div>
 
             {/* Destino */}
-<div className="flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px]">
-  <MapPin className="items-center justify-center h-4 w-4 text-muted-foreground" />
-  <div className="flex flex-col items-start">
-    <label className="text-start text-gray-800 text-xs mb-0">Destino</label>
-    <input
-      type="text"
-      placeholder="País, ciudad o aeropuerto"
-      className="w-full outline-none text-gray-800"
-    />
-  </div>
-</div>
+          <div className="flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px]">
+            <MapPin className="items-center justify-center h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-col items-start">
+              <label className="text-start text-gray-800 text-xs mb-0">Destino</label>
+              <input
+                type="text"
+                placeholder="País, ciudad o aeropuerto"
+                className="w-full outline-none text-gray-800"
+              />
+            </div>
+          </div>
 
           </div>
 
