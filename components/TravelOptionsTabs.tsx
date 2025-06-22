@@ -56,7 +56,7 @@ const lodgingOptions: FilterOption[] = [
   ]
 
   return (
-  <div className="w-full max-w-8xl bg-white rounded-lg shadow-md p-6">
+  <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6">
   <Tabs value={tab} onValueChange={setTab} className="w-full items-center flex flex-col">
       {/* Combobox solo en móviles */}
       <div className="block w-[240px] md:hidden">
