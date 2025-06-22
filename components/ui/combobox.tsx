@@ -4,7 +4,17 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 
-export function Combobox({ options = [], value, onChange, placeholder }) {
+type Option = { label: string; value: string }
+
+interface ComboboxProps {
+  options: Option[]
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+}
+
+
+export function Combobox({ options = [], value, onChange, placeholder }: ComboboxProps) {
   const [open, setOpen] = useState(false)
   const current = options.find((opt) => opt.value === value)
 

@@ -27,7 +27,7 @@ export default function Hero() {
       {/* Contenido del Hero */}
       <section className="relative z-[29] h-[calc(100vh-100px)] flex items-center px-12 md:px-12 lg:px-16">
         <div className="max-w-[1400px] mx-auto text-left space-y-6">
-         <h1 className="text-4xl md:text-8xl font-extrabold leading-tight text-foreground w-fit">
+         <h1 className="text-4xl lg:text-8xl font-extrabold leading-tight text-foreground w-fit">
   Somos <span className="text-[#0057A3]">TODO</span>
   <br />
   lo que necesitas para <span className="text-[#FFA500]">VIAJAR</span>
