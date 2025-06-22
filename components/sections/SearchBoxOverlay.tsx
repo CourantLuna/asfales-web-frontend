@@ -7,11 +7,11 @@ export default function SearchBoxOverlay() {
 
 
   return (
-    <div className="relative min-h-[calc(100vh+40vh)] lg:min-h-[calc(100vh+30vh)] w-full z-20 pointer-events-auto ">
+    <div className="relative min-h-[calc(100vh+40vh)] lg:min-h-[calc(100vh+20vh)] w-full z-20 pointer-events-auto ">
    
       {/* BLOQUE STICKY: solo los campos */}
-      <div className="sticky 
-        top-[calc(68vh+((100vh-900px)*0.316))]  
+      <div className="sticky
+      top-[calc(68vh+((100vh-900px)*0.4))]  
       lg:top-[calc(90vh+((100vh-1000px)*0.1))]
       w-full flex flex-col items-center justify-end">
 

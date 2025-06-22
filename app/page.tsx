@@ -21,6 +21,8 @@ export default function Page() {
         <Hero />
         <TravelOptionsSection />
         <WhyAsfales />
+        <WhyAsfales />
+        <WhyAsfales />
 
       </div>
     </div>

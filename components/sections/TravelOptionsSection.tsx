@@ -4,7 +4,7 @@ export default function TravelOptionsSection() {
   return (
 <section className="relative w-full flex justify-center py-4">
       {/* Fondo SVG decorativo */}
-      <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[110px]">
+      <div className="absolute z-[0] top-0 right-0 left-0 h-[90px] md:h-[80px]">
         <svg
           width="1366"
           height="106"
@@ -22,7 +22,14 @@ export default function TravelOptionsSection() {
       </div>
 
       {/* Tabs interactivos */}
-      <div className="w-full px-4 mt-[330px] md:px-8 md:mt-[240px] flex flex-col items-center text-center">
+      <div className="w-full px-4 md:px-8 flex flex-col items-center text-center"
+      style={{
+    marginTop:
+      typeof window !== "undefined" && window.innerWidth >= 1024
+        ? "calc(200px + ((100vh - 1200px) * 0.1))"
+        : "300px",
+  }}
+      >
   <TravelOptionsTabs />
 </div>
 
