@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Plane, Hotel, Mountain, Route } from "lucide-react";
 
 import { ComparisonTable, ComparisonRow } from "@/components/ComparisonTable"
+import { Combobox } from "../ui/combobox";
 
 const transporteHeaders = ["Iberia", "Air Europa", "Expreso Bávaro"]
 const transporteOptions: ComparisonRow[] = [
@@ -383,6 +384,15 @@ const itinerariosData: ComparisonRow[] = [
 
 
 export default function ComparisonDemo() {
+
+const [tab, setTab] = useState("transporte")
+ const tabOptions = [
+    { label: "Transporte", value: "transporte", icon: Plane },
+    { label: "Alojamientos", value: "alojamientos", icon: Hotel },
+    { label: "Itinerarios", value: "itinerarios", icon: Mountain },
+    { label: "Experiencias", value: "experiencias", icon: Route },
+  ]
+
   
 const classNameTabs =`flex-1 justify-center border-b-2 border-transparent" 
              data-[state=active]:border-primary 
@@ -399,14 +409,24 @@ const classNameTabs =`flex-1 justify-center border-b-2 border-transparent"
         </p>
       </div>
 
-      <Tabs defaultValue="transporte" className="w-full max-w-7xl">
-        <TabsList className="w-full flex justify-center mb-6 py-4">
+      <Tabs defaultValue="transporte"value={tab} onValueChange={setTab} className="w-full max-w-7xl flex flex-col items-center">
+        {/* Combobox solo en móviles */}
+              <div className="block w-[240px] md:hidden">
+                <Combobox
+                  options={tabOptions}
+                  value={tab}
+                  onChange={setTab}
+                  placeholder="Selecciona una categoría"
+                />
+              </div>
+
+        <TabsList className="hidden md:flex w-full justify-center mb-6 py-4">
           <TabsTrigger value="transporte" className={classNameTabs}>
             <Plane className="mr-2 w-4 h-4" /> Transporte
           </TabsTrigger>
-          <TabsTrigger value="alojamiento" className={classNameTabs}>
+          <TabsTrigger value="alojamientos" className={classNameTabs}>
             <Hotel className="mr-2 w-4 h-4" 
-            /> Alojamiento
+            /> Alojamientos
           </TabsTrigger>
           <TabsTrigger value="experiencias" className={classNameTabs}>
             <Mountain className="mr-2 w-4 h-4" /> Experiencias
@@ -424,7 +444,7 @@ const classNameTabs =`flex-1 justify-center border-b-2 border-transparent"
         </TabsContent>
 
         {/* Alojamiento */}
-        <TabsContent value="alojamiento">
+        <TabsContent value="alojamientos">
           <div className="rounded-xl py-4 overflow-x-auto">
             <ComparisonTable headers={alojamientoHeaders} rows={alojamientoData} />
           </div>

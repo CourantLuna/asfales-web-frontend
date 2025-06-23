@@ -73,12 +73,12 @@ const lodgingOptions: FilterOption[] = [
       </div>
 
       {/* TabsTrigger solo en desktop */}
-     <TabsList className="hidden md:w-full flex justify-center gap-2 mb-6 py-4">
+<TabsList className="hidden md:flex w-full justify-center gap-2 mb-6 py-4">
   {tabOptions.map(({ label, value }) => (
    <TabsTrigger
   key={value}
   value={value}
-  className="flex-1 justify-center border-b-2 border-transparent 
+  className=" flex-1 justify-center border-b-2 border-transparent 
              data-[state=active]:border-primary 
              data-[state=active]:text-foreground 
              text-muted-foreground font-medium px-4 py-2 transition-colors"

@@ -4,26 +4,24 @@ import "../../styles/heroStyles.css";
 
 export default function Hero() {
 
-
 const [startAnimation, setStartAnimation] = useState(false);
+const [hidePlane, setHidePlane] = useState(false);
 
  useEffect(() => {
-    window.scrollTo(0, 0);
-
-   // Bloquea scroll al inicio
-  document.body.style.overflow = "hidden"; 
+  window.scrollTo(0, 0);
+  document.body.style.overflow = "hidden";
 
   const timer = requestAnimationFrame(() => {
     setStartAnimation(true);
 
-    // Cuando termine la animación (1.4s), desbloquea el scroll
     setTimeout(() => {
-      document.body.style.overflow = ""; // Restablece scroll
-    }, 1400);
+      setHidePlane(true); // 👈 oculta el avión visualmente
+      document.body.style.overflow = "";
+    }, 1500);
   });
-  
+
   return () => cancelAnimationFrame(timer);
-  }, []);
+}, []);
 
 
 
@@ -110,17 +108,21 @@ const [startAnimation, setStartAnimation] = useState(false);
 
 
     {/* Avión inicial */}
-      <div
-        className={`fixed top-1/2 left-0 z-[40] pointer-events-none transform -translate-y-1/2 transition-transform ease-linear ${startAnimation ? "translate-x-[210vw] md:translate-x-[180vw]" : "-translate-x-[210vw] md:-translate-x-[120vw]"
-        }`} style={{ transitionDuration: "1.4s" }}
+     <div
+  className={`fixed top-1/2 left-0 z-[40] pointer-events-none transform -translate-y-1/2 transition-transform ease-linear ${
+    startAnimation
+      ? "translate-x-[220vw] md:translate-x-[180vw]"
+      : "-translate-x-[220vw] md:-translate-x-[120vw]"
+  } ${hidePlane ? "hidden" : ""}`}
+  style={{ transitionDuration: "1.4s" }}
+>
+  <img
+    src="/asfales_avion.svg"
+    alt="Avión"
+    className="scale-[3.2] lg:scale-[4]"
+  />
+</div>
 
-      >
-        <img
-          src="/asfales_avion.svg"
-          alt="Avión"
-          className="scale-[3.2] lg:scale-[4]"
-        />
-      </div>
 
 
 
