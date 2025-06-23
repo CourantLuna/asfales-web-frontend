@@ -1,0 +1,73 @@
+
+.reveal-text {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(90deg, #000 0%, #000 100%);
+  background-size: 0% 100%; /* Empieza sin mostrar */
+  background-repeat: no-repeat;
+
+  /* El revelado funciona para texto base */
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: transparent;
+
+  /* Animación de revelado de texto base */
+  animation: reveal-color 1.2s cubic-bezier(0.65, 0, 0.35, 1) 980ms forwards;
+}
+
+.highlight {
+  position: relative;
+
+  /* NO establecer color sólido al inicio */
+  color: inherit;
+
+  /* IMPORTANT: Ahora reciben el background para revelar junto al texto base */
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.highlight-todo {
+  animation:
+    highlight-recolor-todo 0.5s ease 1s forwards,
+    highlight-rebound 0.5s cubic-bezier(0.25, 1.5, 0.5, 1) 3.1s;
+}
+
+.highlight-viajar {
+  animation:
+    highlight-recolor-viajar 0.5s ease 1s forwards,
+    highlight-rebound 0.5s cubic-bezier(0.25, 1.5, 0.5, 1) 3.1s;
+}
+
+@keyframes reveal-color {
+  from {
+    background-size: 0% 100%; /* Barrido inicial */
+  }
+  to {
+    background-size: 100% 100%; /* Barrido finalizado */
+  }
+}
+
+@keyframes highlight-recolor-todo {
+  from {
+    color: #000;
+  }
+  to {
+    color: #0057A3;
+  }
+}
+
+@keyframes highlight-recolor-viajar {
+  from {
+    color: #000;
+  }
+  to {
+    color: #FFA500;
+  }
+}
+
+@keyframes highlight-rebound {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}

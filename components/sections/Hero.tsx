@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import "../../styles/heroStyles.css";
 
 export default function Hero() {
 
@@ -138,7 +139,7 @@ const [startAnimation, setStartAnimation] = useState(false);
         >
           <path
             d="M1366 768H0V0H1366V768ZM74 15C60.7452 15 50 25.7452 50 39V729C50 742.255 60.7452 753 74 753H1292C1305.25 753 1316 742.255 1316 729V39C1316 25.7452 1305.25 15 1292 15H74Z"
-            fill="#0057A3"
+fill="hsl(var(--primary))"
           />
         </svg>
       </div>
