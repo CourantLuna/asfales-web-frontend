@@ -94,7 +94,7 @@ const lodgingOptions: FilterOption[] = [
 
 
       <TabsContent value="transporte">
-        <div className="mt-8 flex flex-col items-center justify-center gap-6">
+        <div className="mt-4 flex flex-col items-center justify-center gap-6">
           {/* ToggleGroup solo en desktop */}
           <ToggleGroup
             type="multiple"
