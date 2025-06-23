@@ -12,13 +12,17 @@ Mountain as MountainIcon,
   Sun as SunIcon,
   UtensilsCrossed as UtensilsIcon,
   Music2 as MusicIcon,
-  Laugh as LaughIcon, } from "lucide-react"
+  Laugh as LaughIcon,
+  Mountain,
+  RouteIcon,
+  Route, } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Combobox } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { DateRange } from "react-day-picker"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
+import React from "react"
 
 export default function TravelOptionsTabs() {
   const [tab, setTab] = useState("transporte")
@@ -49,10 +53,10 @@ const lodgingOptions: FilterOption[] = [
 ]
 
   const tabOptions = [
-    { label: "Transporte", value: "transporte" },
-    { label: "Alojamientos", value: "alojamientos" },
-    { label: "Itinerarios", value: "itinerarios" },
-    { label: "Experiencias", value: "experiencias" },
+    { label: "Transporte", value: "transporte", icon: Plane },
+    { label: "Alojamientos", value: "alojamientos", icon: Hotel },
+    { label: "Itinerarios", value: "itinerarios", icon: Mountain },
+    { label: "Experiencias", value: "experiencias", icon: Route },
   ]
 
   return (
@@ -69,16 +73,19 @@ const lodgingOptions: FilterOption[] = [
       </div>
 
       {/* TabsTrigger solo en desktop */}
-     <TabsList className="hidden md:flex w-full border-b border-border">
+     <TabsList className="hidden md:w-full flex justify-center gap-2 mb-6 py-4">
   {tabOptions.map(({ label, value }) => (
    <TabsTrigger
   key={value}
   value={value}
   className="flex-1 justify-center border-b-2 border-transparent 
-             data-[state=active]:border-[#0057A3] 
+             data-[state=active]:border-primary 
              data-[state=active]:text-foreground 
              text-muted-foreground font-medium px-4 py-2 transition-colors"
 >
+  {React.createElement(tabOptions.find((option) => option.value === value)!.icon, {
+    className: "mr-2 w-4 h-4",
+  })}
   {label}
 </TabsTrigger>
 
@@ -91,7 +98,7 @@ const lodgingOptions: FilterOption[] = [
           {/* ToggleGroup solo en desktop */}
           <ToggleGroup
             type="multiple"
-            defaultValue="air"
+            defaultValue={["air"]} // ✅ ahora es un arreglo
             className="gap-2 flex"
           >
             <ToggleGroupItem value="air" aria-label="Aéreo" className="px-4 py-2 flex-1">
@@ -126,7 +133,7 @@ const lodgingOptions: FilterOption[] = [
             </div>
           </div>
 
-          <Button className="mt-2 bg-[#0057A3] w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
+          <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
             <Filter className="mr-2 h-4 w-4" />
             Aplicar Filtros 
           </Button>
@@ -169,7 +176,7 @@ const lodgingOptions: FilterOption[] = [
       </div>
     </div>
 
-    <Button className="mt-2 bg-[#0057A3] w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
+    <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
       <Filter className="mr-2 h-4 w-4" />
       Aplicar Filtros
     </Button>
@@ -230,7 +237,7 @@ const lodgingOptions: FilterOption[] = [
       </div>
     </div>
 
-    <Button className="mt-2 bg-[#0057A3] w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
+    <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
       <Filter className="mr-2 h-4 w-4" />
       Aplicar Filtros
     </Button>
@@ -259,7 +266,7 @@ const lodgingOptions: FilterOption[] = [
 
     </div>
 
-    <Button className="mt-2 bg-[#0057A3] w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
+    <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
       <Filter className="mr-2 h-4 w-4" />
       Aplicar Filtros
     </Button>

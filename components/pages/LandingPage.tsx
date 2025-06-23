@@ -1,10 +1,14 @@
+"use client"
+
 // components/pages/LandingPage.tsx
 import { AppNavbar } from "@/components/layout/AppNavbar"
 import Hero from "@/components/sections/Hero"
 import WhyAsfales from "@/components/sections/WhyAsfales"
 import TravelOptionsSection from "@/components/sections/TravelOptionsSection"
 import SearchBoxOverlay from "@/components/sections/SearchBoxOverlay"
+import ComparisonDemo from "@/components/sections/ComparisonDemo"
 
+import { ImageCarousel } from "../ui/image-carousel"
 
 export default function LandingPage() {
 
@@ -24,7 +28,14 @@ export default function LandingPage() {
             <Hero />
             <TravelOptionsSection />
             <WhyAsfales />
-            <WhyAsfales />
+
+            {/* NUEVAS SECCIONES */}
+            <ComparisonDemo />
+<ImageCarousel
+  images={["/img1.jpg", "/img2.jpg", "/img3.jpg"]}
+  aspectRatio="1:1"
+  className="md:basis-1/2 lg:basis-1/3"
+/>
     
           </div>
         </div>

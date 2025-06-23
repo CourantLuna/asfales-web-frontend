@@ -1,0 +1,489 @@
+"use client";
+import { useEffect, useState } from "react";
+
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Plane, Hotel, Mountain, Route } from "lucide-react";
+
+import { ComparisonTable, ComparisonRow } from "@/components/ComparisonTable"
+
+const transporteHeaders = ["Iberia", "Air Europa", "Expreso Bávaro"]
+const transporteOptions: ComparisonRow[] = [
+    {
+      
+      rowType: "imagenes",
+      values: [
+        ["/flights/iberia-1.jpg", "/flights/iberia-2.jpg"],
+        ["/flights/aireuropa-1.jpg", "/flights/aireuropa-2.jpg"],
+        ["/flights/bavaro-1.jpg", "/flights/bavaro-2.jpg"],
+      ],
+    aspectRatio: "4:3",
+    },
+    {
+      label: "Ruta",
+      rowType: "text",
+      values: ["Vuelo directo SDQ → MAD", "1 escala vía MIA", "Bus SDQ → Punta Cana"],
+    },
+    {
+      label: "Calificación",
+      rowType: "calificacion",
+      values: [
+        { score: 9.2, label: "Excelente", reviews: "1,001 opiniones" },
+        { score: 8.4, label: "Muy Bueno", reviews: "879 opiniones" },
+        { score: 7.8, label: "Bueno", reviews: "412 opiniones" },
+      ],
+    },
+    {
+      label: "Precio",
+      rowType: "default",
+      values: ["$580 USD", "$430 USD", "$15 USD"],
+        className: "bg-muted/50 text-primary font-bold",
+
+    },
+    {
+      label: "Duración",
+      rowType: "default",
+      values: ["8h 30min", "12h 50min", "2h 30min"],
+    },
+    {
+      label: "Beneficios",
+      rowType: "beneficios",
+      values: [
+        {
+          "Equipaje incluido": true,
+          Reembolsable: true,
+          "WiFi a bordo": false,
+          "Asiento reclinable": true,
+          "Comida incluida": true,
+        },
+        {
+          "Equipaje incluido": true,
+          Reembolsable: true,
+          "WiFi a bordo": true,
+          "Asiento reclinable": false,
+          "Comida incluida": true,
+        },
+        {
+          "Equipaje incluido": false,
+          Reembolsable: false,
+          "WiFi a bordo": true,
+          "Asiento reclinable": true,
+          "Comida incluida": false,
+        },
+      ],
+    },
+    {
+      label: "",
+      rowType: "acciones",
+      values: [
+        [{ label: "Ver detalles", onClick: () => console.log("Ver detalles"), variant: "secondary" }],
+        [{ label: "Ver detalles", onClick: () => console.log("Ver detalles"), variant: "secondary" }],
+        [{ label: "Ver detalles", onClick: () => console.log("Ver detalles"), variant: "secondary" }],
+      ],
+    },
+  ]
+const alojamientoHeaders = [
+  "Hotel Riu Plaza",
+  "ME Reina Victoria",
+  "Madrid Centro Apt.",
+]
+  const alojamientoData: ComparisonRow[] = [
+  {
+    rowType: "imagenes",
+    aspectRatio: "4:3",
+    values: [
+      ["/hotels/riu-1.jpg", "/hotels/riu-2.jpg", "/hotels/riu-3.jpg"],
+      ["/hotels/me-1.jpg", "/hotels/me-2.jpg", "/hotels/me-3.jpg"],
+      ["/hotels/apart-1.jpg", "/hotels/apart-2.jpg"],
+    ],
+  },
+  {
+    label: "Nombre",
+    rowType: "text",
+    values: ["Hotel Riu Plaza España", "ME Madrid Reina Victoria", "Apartamentos Madrid Centro"],
+  },
+  {
+    label: "Ubicación",
+    rowType: "text",
+    values: ["Plaza de España", "Plaza Santa Ana", "Calle Gran Vía"],
+  },
+   {
+    label: "Calificación",
+    rowType: "calificacion",
+    values: [
+      { score: 9.0, label: "Excelente", reviews: "2,311 opiniones" },
+      { score: 8.7, label: "Muy bueno", reviews: "1,842 opiniones" },
+      { score: 8.4, label: "Bueno", reviews: "1,105 opiniones" },
+    ],
+  },
+  {
+    label: "Precio por noche",
+    rowType: "default",
+    values: ["$145 USD", "$189 USD", "$99 USD"],
+  },
+  {
+    label: "Tamaño / Tipo",
+    rowType: "default",
+    values: ["Habitación 24m²", "Suite 40m²", "Apartamento 55m²"],
+  },
+  {
+    label: "Capacidad",
+    rowType: "default",
+    values: ["2 personas", "3 personas", "4 personas"],
+  },
+  {
+    label: "Check-in / Check-out",
+    rowType: "text",
+    values: [
+      "15:00 / 11:00",
+      "14:00 / 12:00",
+      "16:00 / 10:30",
+    ],
+  },
+  {
+    label: "Servicios",
+    rowType: "beneficios",
+    values: [
+      {
+        "WiFi gratis": true,
+        "Desayuno incluido": true,
+        "Aire acondicionado": true,
+        "Piscina": true,
+        "Mascotas permitidas": false,
+        "Cocina privada": false,
+      },
+      {
+        "WiFi gratis": true,
+        "Desayuno incluido": false,
+        "Aire acondicionado": true,
+        "Piscina": false,
+        "Mascotas permitidas": true,
+        "Cocina privada": false,
+      },
+      {
+        "WiFi gratis": true,
+        "Desayuno incluido": false,
+        "Aire acondicionado": true,
+        "Piscina": false,
+        "Mascotas permitidas": false,
+        "Cocina privada": true,
+      },
+    ],
+  },
+  {
+    label: "",
+    rowType: "acciones",
+    values: [
+      [{ label: "Ver detalles", variant: "secondary" }, { label: "Reservar" }],
+      [{ label: "Ver detalles", variant: "secondary" }, { label: "Reservar" }],
+      [{ label: "Ver detalles", variant: "secondary" }],
+    ],
+  },
+]
+const experienciasHeaders = [
+  "Palacio Real Tour",
+  "Flamenco Show",
+  "Museo Prado + Paseo",
+]
+const experienciasData: ComparisonRow[] = [
+  {
+    label: "Fotos",
+    rowType: "imagenes",
+    aspectRatio: "16:9",
+    values: [
+      ["/experiences/palacio-1.jpg", "/experiences/palacio-2.jpg"],
+      ["/experiences/flamenco-1.jpg", "/experiences/flamenco-2.jpg"],
+      ["/experiences/prado-1.jpg", "/experiences/prado-2.jpg"],
+    ],
+  },
+  {
+    label: "Nombre",
+    rowType: "text",
+    values: [
+      "Tour guiado al Palacio Real",
+      "Espectáculo flamenco con cena",
+      "Museo del Prado + paseo guiado",
+    ],
+  },
+  {
+    label: "Punto de encuentro",
+    rowType: "text",
+    values: [
+      "Puerta del Sol",
+      "Teatro Tablao - Calle Morería",
+      "Calle Felipe IV (entrada principal)",
+    ],
+  },
+   {
+    label: "Calificación",
+    rowType: "calificacion",
+    values: [
+      { score: 9.1, label: "Excelente", reviews: "1,012 opiniones" },
+      { score: 8.8, label: "Muy bueno", reviews: "837 opiniones" },
+      { score: 9.0, label: "Excelente", reviews: "645 opiniones" },
+    ],
+  },
+  {
+    label: "Duración",
+    rowType: "default",
+    values: ["2 horas", "1h 15min", "3 horas"],
+  },
+  {
+    label: "Disponibilidad",
+    rowType: "text",
+    values: [
+      "Lunes a Sábado",
+      "Todos los días",
+      "Martes a Domingo",
+    ],
+  },
+  {
+    label: "Precio",
+    rowType: "default",
+    values: ["$35 USD", "$49 USD", "$42 USD"],
+  },
+  {
+    label: "Tamaño del grupo",
+    rowType: "text",
+    values: ["Máx. 20 personas", "Aforo limitado", "Tour semi-privado"],
+  },
+  {
+    label: "Edad mínima",
+    rowType: "text",
+    values: ["Todas las edades", "+12 años", "+6 años"],
+  },
+  {
+    label: "Idiomas disponibles",
+    rowType: "text",
+    values: ["Español, Inglés", "Solo Español", "Español, Inglés, Francés"],
+  },
+  {
+    label: "Incluye",
+    rowType: "beneficios",
+    values: [
+      {
+        "Entrada incluida": true,
+        "Guía profesional": true,
+        "Transporte": false,
+        "Accesible": true,
+        "Bebida gratuita": false,
+      },
+      {
+        "Entrada incluida": true,
+        "Guía profesional": false,
+        "Transporte": false,
+        "Accesible": false,
+        "Bebida gratuita": true,
+      },
+      {
+        "Entrada incluida": true,
+        "Guía profesional": true,
+        "Transporte": false,
+        "Accesible": true,
+        "Bebida gratuita": false,
+      },
+    ],
+  },
+ 
+  {
+    label: "",
+    rowType: "acciones",
+    values: [
+      [{ label: "Ver detalles", variant: "secondary" }, { label: "Reservar" }],
+      [{ label: "Ver detalles", variant: "secondary" }, { label: "Reservar" }],
+      [{ label: "Ver detalles", variant: "secondary" }],
+    ],
+  },
+]
+const itinerariosHeaders = [
+  "Madrid Esencial (3 días)",
+  "Madrid + Toledo (4 días)",
+  "Madrid Cultural Exprés (2 días)",
+]
+const itinerariosData: ComparisonRow[] = [
+  {
+    rowType: "imagenes",
+    aspectRatio: "4:3",
+    values: [
+      ["/itinerarios/madrid1-1.jpg", "/itinerarios/madrid1-2.jpg"],
+      ["/itinerarios/madrid2-1.jpg", "/itinerarios/madrid2-2.jpg"],
+      ["/itinerarios/madrid3-1.jpg", "/itinerarios/madrid3-2.jpg"],
+    ],
+  },
+  {
+    label: "Transporte incluido",
+    rowType: "text",
+    values: [
+      "Vuelo SDQ → MAD + traslados",
+      "Vuelo + traslado + excursión a Toledo",
+      "Vuelo sin traslados",
+    ],
+  },
+  {
+    label: "Alojamiento",
+    rowType: "text",
+    values: [
+      "Hotel 3★ en Sol",
+      "Hotel 4★ en Gran Vía",
+      "Hostal boutique en Lavapiés",
+    ],
+  },
+  {
+    label: "Experiencias destacadas",
+    rowType: "text",
+    values: [
+      "Palacio Real, tour tapas, Reina Sofía",
+      "Museo del Prado, Toledo express",
+      "Flamenco, paseo histórico nocturno",
+    ],
+  },
+  {
+    label: "Duración",
+    rowType: "default",
+    values: ["3 días / 2 noches", "4 días / 3 noches", "2 días / 1 noche"],
+  },
+  {
+    label: "Precio total",
+    rowType: "default",
+    values: ["$780 USD", "$950 USD", "$490 USD"],
+  },
+//   {
+//     label: "¿Colaborativo?",
+//     rowType: "default",
+//     values: ["Sí (editable)", "No (visual)", "Sí (editable)"],
+//   },
+  {
+    label: "Calificación paquete",
+    rowType: "calificacion",
+    values: [
+      { score: 9.4, label: "Excelente", reviews: "127 reseñas" },
+      { score: 8.6, label: "Muy bueno", reviews: "98 reseñas" },
+      { score: 8.9, label: "Bueno", reviews: "75 reseñas" },
+    ],
+  },
+  {
+    label: "",
+    rowType: "acciones",
+    values: [
+      [{ label: "Ver detalles", variant: "secondary" }, { label: "Unirse" }],
+      [{ label: "Ver detalles", variant: "secondary" }],
+      [{ label: "Ver detalles", variant: "secondary" }, { label: "Unirse" }],
+    ],
+  },
+]
+
+
+
+export default function ComparisonDemo() {
+  
+const classNameTabs =`flex-1 justify-center border-b-2 border-transparent" 
+             data-[state=active]:border-primary 
+             data-[state=active]:text-foreground 
+             text-muted-foreground font-medium px-4 py-2 transition-colors`
+  return (
+    <section className="py-8 px-4 md:px-8 bg-white w-full max-w-screen-xl mx-auto">
+      <div className="text-center mb-10">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-800">
+          Comparando opciones de SDQ → Madrid
+        </h2>
+        <p className="text-muted-foreground text-sm mt-2">
+          Compara precios, duración, beneficios y toma decisiones inteligentes
+        </p>
+      </div>
+
+      <Tabs defaultValue="transporte" className="w-full max-w-7xl">
+        <TabsList className="w-full flex justify-center mb-6 py-4">
+          <TabsTrigger value="transporte" className={classNameTabs}>
+            <Plane className="mr-2 w-4 h-4" /> Transporte
+          </TabsTrigger>
+          <TabsTrigger value="alojamiento" className={classNameTabs}>
+            <Hotel className="mr-2 w-4 h-4" 
+            /> Alojamiento
+          </TabsTrigger>
+          <TabsTrigger value="experiencias" className={classNameTabs}>
+            <Mountain className="mr-2 w-4 h-4" /> Experiencias
+          </TabsTrigger>
+           <TabsTrigger value="itinerarios" className={classNameTabs}>
+            <Route className="mr-2 w-4 h-4" /> Itinearios
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Transporte */}
+        <TabsContent value="transporte">
+          <div className="rounded-xl py-4 overflow-x-auto">
+            <ComparisonTable headers={transporteHeaders} rows={transporteOptions} />
+          </div>
+        </TabsContent>
+
+        {/* Alojamiento */}
+        <TabsContent value="alojamiento">
+          <div className="rounded-xl py-4 overflow-x-auto">
+            <ComparisonTable headers={alojamientoHeaders} rows={alojamientoData} />
+          </div>
+        </TabsContent>
+
+        {/* Experiencias */}
+        <TabsContent value="experiencias">
+          <div className="rounded-xl py-4 overflow-x-auto">
+            <ComparisonTable headers={experienciasHeaders} rows={experienciasData} />
+          </div>
+        </TabsContent>
+
+        {/* Itinerarios */}
+        <TabsContent value="itinerarios">
+          <div className="rounded-xl py-4 overflow-x-auto">
+            <ComparisonTable headers={itinerariosHeaders} rows={itinerariosData} />
+          </div>
+        </TabsContent>
+      </Tabs>
+    </section>
+  );
+}
+
+// Card Reusable
+function OptionCard({
+  title,
+  price,
+  provider,
+  duration,
+  extras,
+}: {
+  title: string;
+  price: string;
+  provider: string;
+  duration: string;
+  extras: string[];
+}) {
+  return (
+    <Card className="hover:shadow-md transition-shadow duration-300">
+      <CardHeader>
+        <CardTitle className="text-lg">{title}</CardTitle>
+        <p className="text-sm text-muted-foreground">por {provider}</p>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2">
+        <span className="text-xl font-semibold text-primary">{price}</span>
+        <span className="text-xs text-gray-600">Duración: {duration}</span>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {extras.map((tag, i) => (
+            <Badge variant="outline" key={i}>
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button variant="outline" size="sm" className="w-full">
+          Ver detalles
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
