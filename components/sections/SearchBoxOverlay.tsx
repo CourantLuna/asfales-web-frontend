@@ -10,7 +10,7 @@ export default function SearchBoxOverlay() {
     <div className="relative
     min-h-[calc(100vh+330px)] 
     md:min-h-[calc(100vh+330px)] 
-    lg:min-h-[calc(100vh+250px)] w-full z-20 pointer-events-auto ">
+    lg:min-h-[calc(100vh+250px)] w-full z-20 pointer-events-none ">
    
       {/* BLOQUE STICKY: solo los campos */}
       <div className="sticky 
@@ -23,7 +23,7 @@ export default function SearchBoxOverlay() {
           <div className="flex flex-col lg:flex-row items-center justify-center gap-y-4 lg:gap-y-0 lg:gap-x-6 w-full max-w-7xl
           mb-0">
             
-              <div className="flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0   lg:gap-x-4 overflow-y-auto max-h-[250px] px-2 ">
+              <div className="pointer-events-auto flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0   lg:gap-x-4 overflow-y-auto max-h-[250px] px-2 ">
                 
                   {/* Origen */}
                   <div className="flex flex-row items-center justify-center gap-x-4  bg-white rounded-lg px-2 py-2 w-[280px]">
@@ -89,20 +89,22 @@ export default function SearchBoxOverlay() {
       </div>
 
     {/* BOTÓN NORMAL (flujo del documento, sin fixed/sticky) */}
-   <div className="relative w-full h-[76px] mt-0 lg:h-[80px] 
+   <div className="relative z-[19] h-[76px] mt-0 
   top-[calc(63vh+((100vh-876px)*0.38))] 
   lg:top-[calc(68vh+((100vh-900px)*0.283))] 
   flex items-end justify-center lg:gap-x-6">
 
 
-  {/* Espaciador falso: solo visible en lg+ */}
-  <div className="hidden lg:block w-[592px] h-[76px] bg-transparent" />
+  
 
   {/* Botón */}
-  <Button className="rounded-lg bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px]">
-    <Search className="mr-2 h-4 w-4" />
-    Ver Opciones de Viaje
-  </Button>
+  <Button
+  className="z-[19] pointer-events-auto rounded-lg bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px] lg:ml-[624px] mt-[30px]"
+>
+  <Search className="mr-2 h-4 w-4" />
+  Ver Opciones de Viaje
+</Button>
+
 </div>
 
 

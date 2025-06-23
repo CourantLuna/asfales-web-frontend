@@ -1,14 +1,134 @@
-"use client"
-import { Button } from "@/components/ui/button"
-import { Search, ArrowLeftRight, ArrowUpDown } from "lucide-react"
+"use client";
+import { useEffect, useState } from "react";
 
 export default function Hero() {
-  return (
 
-<div className="relative min-h-screen overflow-hidden">
-      
+  useEffect(() => {
+  // Cuando la página carga, lleva el scroll al inicio
+  window.scrollTo(0, 0);
+}, []);
+
+
+const [startAnimation, setStartAnimation] = useState(false);
+
+ useEffect(() => {
+   // Bloquea scroll al inicio
+  document.body.style.overflow = "hidden"; 
+
+  const timer = requestAnimationFrame(() => {
+    setStartAnimation(true);
+
+    // Cuando termine la animación (1.4s), desbloquea el scroll
+    setTimeout(() => {
+      document.body.style.overflow = ""; // Restablece scroll
+    }, 1400);
+  });
+  
+  return () => cancelAnimationFrame(timer);
+  }, []);
+
+  useEffect(() => {
+  let prevScrollY = window.scrollY;
+
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > prevScrollY) {
+      console.log(`Bajando... posición actual: ${currentScrollY}`);
+    } else {
+      console.log(`Subiendo... posición actual: ${currentScrollY}`);
+    }
+
+    prevScrollY = currentScrollY;
+  };
+  
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, []);
+
+
+ useEffect(() => {
+  const START_SCROLL = 300;
+  const REVERSE_SCROLL = 600;
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 1.2;
+  let DURATION = 1500;
+
+  const svgDiv = document.getElementById("decor-svg");
+  if (!svgDiv) return;
+
+  let animationStarted = false;
+  let reverseAnimationStarted = false;
+  let prevScrollY = window.scrollY;
+
+  const animateScale = (fromScale: number, toScale: number) => {
+    const startTime = performance.now();
+
+    const step = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / DURATION, 1);
+      const currentScale = fromScale + progress * (toScale - fromScale);
+      svgDiv.style.transform = `scale(${currentScale})`;
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+    requestAnimationFrame(step);
+  };
+
+  const handleScroll = () => {
+    const scrollY = window.scrollY;
+
+    if (scrollY > prevScrollY && scrollY >= START_SCROLL && !animationStarted) {
+      animationStarted = true;
+      reverseAnimationStarted = false;
+      DURATION = 1500;
+      animateScale(MIN_SCALE, MAX_SCALE);
+    } else if (scrollY < prevScrollY && scrollY <= REVERSE_SCROLL && !reverseAnimationStarted) {
+      reverseAnimationStarted = true;
+      animationStarted = false;
+      DURATION = 500;
+      animateScale(MAX_SCALE, MIN_SCALE);
+    }
+
+    prevScrollY = scrollY;
+  };
+  
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+
+
+
+
+  return (
+    <div className="relative min-h-screen overflow-hidden">
+
+
+    {/* Avión inicial */}
+      <div
+        className={`fixed top-1/2 left-0 z-[40] pointer-events-none transform -translate-y-1/2 transition-transform ease-linear ${startAnimation ? "translate-x-[210vw] md:translate-x-[180vw]" : "-translate-x-[210vw] md:-translate-x-[120vw]"
+        }`} style={{ transitionDuration: "1.4s" }}
+
+      >
+        <img
+          src="/asfales_avion.svg"
+          alt="Avión"
+          className="scale-[3.2] lg:scale-[4]"
+        />
+      </div>
+
+
+
       {/* SVG de fondo decorativo con marco */}
-      <div className="absolute inset-0 z-[1] pointer-events-none">
+      <div
+        id="decor-svg"
+        className="absolute inset-0 z-[1] pointer-events-none origin-center"
+      >
         <svg
           width="100%"
           height="100%"
@@ -23,17 +143,19 @@ export default function Hero() {
           />
         </svg>
       </div>
-    
+
       {/* Contenido del Hero */}
-      <section className="relative z-[29] h-[calc(100vh-100px)] flex items-center px-12 md:px-12 lg:px-16">
+      <section className="relative z-[19] h-[calc(100vh-100px)] flex items-center px-12 md:px-12 lg:px-16">
         <div className="max-w-[1400px] mx-auto text-left space-y-6">
-         <h1 className="text-4xl lg:text-8xl font-extrabold leading-tight text-foreground w-fit">
-  Somos <span className="text-[#0057A3]">TODO</span>
-  <br />
-  lo que necesitas para <span className="text-[#FFA500]">VIAJAR</span>
+<h1 className="text-4xl lg:text-8xl font-extrabold leading-tight">
+  <span className="reveal-text">
+    Somos
+    <span className="highlight highlight-todo"> TODO</span> lo que necesitas para
+    <span className="highlight highlight-viajar"> VIAJAR</span>
+  </span>
 </h1>
 
-          <p className="text-xl 2xl:text-2xl text-foreground max-w-8xl">
+          <p className="text-xl 2xl:text-2xl text-foreground max-w-8xl reveal-text">
             Nos encargamos de{" "}
             <a className="underline hover:text-blue-300" href="#">
               llevarte
@@ -53,33 +175,24 @@ export default function Hero() {
             únicas
           </p>
         </div>
-
-       
-
       </section>
 
-       {/* SVG decorativo inferior */}
-        <div className="absolute -bottom-[40px] left-[-11%] w-[120%] md:w-full h-[370px] lg:h-[170px] lg:w-full md:left-[0px] z-10 pointer-events-none block md:block">
-          <svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 1214 133"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M951.055 0C958.66 0 965.982 2.88891 971.539 8.08203L1016.39 50L1062.81 92.1982C1068.33 97.2184 1075.53 100 1082.99 100H1186.89C1198.38 100 1208.35 93.5464 1213.39 84.0693V109C1213.39 122.255 1202.65 133 1189.39 133H0.391602V89.0586C5.89662 95.7425 14.2344 100 23.5586 100H146.636C153.893 99.9999 160.903 97.3692 166.369 92.5957L263.914 7.4043C269.38 2.63076 276.391 7.39778e-05 283.647 0H951.055Z"
-              fill="#0057A3"
-            />
-          </svg>
-        </div>
+      {/* SVG decorativo inferior */}
+      <div className="absolute -bottom-[40px] left-[-11%] w-[120%] md:w-full h-[370px] lg:h-[170px] lg:w-full md:left-[0px] z-1 pointer-events-none block md:block">
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 1214 133"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M951.055 0C958.66 0 965.982 2.88891 971.539 8.08203L1016.39 50L1062.81 92.1982C1068.33 97.2184 1075.53 100 1082.99 100H1186.89C1198.38 100 1208.35 93.5464 1213.39 84.0693V109C1213.39 122.255 1202.65 133 1189.39 133H0.391602V89.0586C5.89662 95.7425 14.2344 100 23.5586 100H146.636C153.893 99.9999 160.903 97.3692 166.369 92.5957L263.914 7.4043C269.38 2.63076 276.391 7.39778e-05 283.647 0H951.055Z"
+            fill="#0057A3"
+          />
+        </svg>
+      </div>
     </div>
-
-
-    
-
-
-
-  )
+  );
 }

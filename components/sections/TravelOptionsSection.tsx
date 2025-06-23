@@ -6,8 +6,8 @@ export default function TravelOptionsSection() {
       {/* Fondo SVG decorativo */}
       <div className="absolute z-[0] top-0 right-0 left-0 h-[90px] md:h-[110px]">
         <svg
-          width="1366"
-          height="106"
+           width="150%"
+          height="150%"
           viewBox="0 0 1366 106"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +22,7 @@ export default function TravelOptionsSection() {
       </div>
 
       {/* Tabs interactivos */}
-      <div className="w-full px-4 mt-[330px] md:px-8 flex flex-col items-center text-center">
+      <div className="w-full px-4 mt-[300px] lg:mt-[220px] md:px-8 flex flex-col items-center text-center">
   <TravelOptionsTabs />
 </div>
 

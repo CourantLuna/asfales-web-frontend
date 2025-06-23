@@ -92,3 +92,46 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Oculta texto por defecto y revela al pasar el avión */
+.mask-text {
+  display: inline-block;
+  position: relative;
+  color: #000;
+  -webkit-mask-image: linear-gradient(90deg, transparent 100%, black 100%);
+  mask-image: linear-gradient(90deg, transparent 100%, black 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  animation: reveal-text 3s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes reveal-text {
+  0% {
+    -webkit-mask-image: linear-gradient(90deg, transparent 100%, black 100%);
+    mask-image: linear-gradient(90deg, transparent 100%, black 100%);
+  }
+  100% {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, black 100%);
+  }
+}
+
+.animate-plane {
+  position: absolute;
+  top: 50%;
+  left: -100px;
+  transform: translateY(-50%);
+  animation: move-plane 3s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes move-plane {
+  0% {
+    left: -100px;
+  }
+  100% {
+    left: 100%;
+  }
+}
