@@ -65,7 +65,7 @@ export function ComparisonTable({ headers, rows }: ComparisonTableProps) {
                 <tr key={rowIndex} className="border-b">
                   <td className="hidden md:table-cell py-3 text-muted-foreground ">{row?.label}</td>
                   {row.values.map((val, i) => (
-                    <td key={i} className={clsx("text-center", row.className)} >
+                    <td key={i} className={clsx("text-center min-w-[240px]", row.className)} >
                       {val}
                     </td>
                   ))}
@@ -147,7 +147,7 @@ export function ComparisonTable({ headers, rows }: ComparisonTableProps) {
       </td>
       {row.values.map((actions, i) => (
         <td key={i} className="pt-4">
-          <div className="flex flex-col md:flex-row justify-center items-center gap-2">
+          <div className="flex flex-col md:flex-row justify-center h-full items-center gap-2">
             {actions.map((action, j) => (
               <Button
                 key={j}

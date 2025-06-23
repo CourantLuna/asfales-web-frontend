@@ -438,14 +438,14 @@ const classNameTabs =`flex-1 justify-center border-b-2 border-transparent"
 
         {/* Transporte */}
         <TabsContent value="transporte">
-          <div className="rounded-xl py-4 left-0 right-0 overflow-x-auto">
+          <div className="rounded-xl py-4 px-4 overflow-x-auto">
             <ComparisonTable headers={transporteHeaders} rows={transporteOptions} />
           </div>
         </TabsContent>
 
         {/* Alojamiento */}
         <TabsContent value="alojamientos">
-  <div className="rounded-xl py-4 px-4 sm:px-8 overflow-x-auto">
+  <div className="rounded-xl py-4 px-4 overflow-x-auto">
             <ComparisonTable headers={alojamientoHeaders} rows={alojamientoData} />
           </div>
         </TabsContent>
