@@ -3,15 +3,12 @@ import { useEffect, useState } from "react";
 
 export default function Hero() {
 
-  useEffect(() => {
-  // Cuando la página carga, lleva el scroll al inicio
-  window.scrollTo(0, 0);
-}, []);
-
 
 const [startAnimation, setStartAnimation] = useState(false);
 
  useEffect(() => {
+    window.scrollTo(0, 0);
+
    // Bloquea scroll al inicio
   document.body.style.overflow = "hidden"; 
 
@@ -26,6 +23,8 @@ const [startAnimation, setStartAnimation] = useState(false);
   
   return () => cancelAnimationFrame(timer);
   }, []);
+
+
 
   useEffect(() => {
   let prevScrollY = window.scrollY;

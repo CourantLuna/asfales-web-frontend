@@ -153,10 +153,8 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #0057A3;
+  background-color: #ffa500;
   border-radius: 4px;
-    box-shadow: 0px 0px 8px rgba(0, 87, 163, 0.3); /* Sombra alrededor de la barra */
-
 }
 
 ::-webkit-scrollbar-track {
