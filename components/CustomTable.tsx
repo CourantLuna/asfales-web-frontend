@@ -9,9 +9,16 @@ import Image from "next/image";
 import { Check, X } from "lucide-react";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 
+export interface FieldGroup {
+  field: string;
+  type: "text" | "badge" | "number" | "time";
+  className?: string;
+}
+
 export interface Column {
   field?: string;
-  fields?: string[];
+  fields?: FieldGroup[];
+  structure?: string;
   header: string;
   type: "text" | "images" | "rating" | "time";
   className?: string;
@@ -32,7 +39,7 @@ export interface CustomTableProps {
   columns: Column[];
   data: RowData[];
   actions?: Action[];
-  rowHeader?: number; // índice del campo que será usado como header y excluido del cuerpo
+  rowHeader?: number;
 }
 
 export default function CustomTable({
@@ -76,7 +83,6 @@ export default function CustomTable({
               </tr>
             ))}
 
-          {/* Beneficios */}
           {data[0]?.benefits && (
             <tr className="border-b">
               {data.map((item, idx) => (
@@ -106,29 +112,25 @@ export default function CustomTable({
             </tr>
           )}
 
-{/* Acciones */}
-{actions && (
-  <tr>
-    {data.map((_, i) => (
-      <td key={i} className="min-w-[240px] p-2 text-center">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-2">
-          {actions.map((action, j) => (
-            <Button
-              key={j}
-              variant={action.variant || "default"}
-              className="w-[100px]"
-            >
-              {action.label}
-            </Button>
-          ))}
-        </div>
-      </td>
-    ))}
-  </tr>
-)}
-
-
-
+          {actions && (
+            <tr>
+              {data.map((_, i) => (
+                <td key={i} className="min-w-[240px] p-2 text-center">
+                  <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1">
+                    {actions.map((action, j) => (
+                      <Button
+                        key={j}
+                        variant={action.variant || "default"}
+                        className="w-[100px]"
+                      >
+                        {action.label}
+                      </Button>
+                    ))}
+                  </div>
+                </td>
+              ))}
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
@@ -136,6 +138,10 @@ export default function CustomTable({
 }
 
 function renderCellContent(column: Column, row: RowData) {
+  if (column.fields && column.structure) {
+    return renderStructuredFields(column.fields, column.structure, row);
+  }
+
   switch (column.type) {
     case "text":
       return String(row[column.field || ""] ?? "");
@@ -149,21 +155,57 @@ function renderCellContent(column: Column, row: RowData) {
         </div>
       );
     case "rating":
-      const [score, label, reviews] = column.fields!.map((f) => row[f]);
-      return (
-        <div className="text-center">
-          <Badge className="bg-green-600 text-white text-sm px-2 py-1 font-bold">
-            {score}
-          </Badge>
-          <div>{label}</div>
-          <div className="text-xs text-muted-foreground">
-            {reviews} opiniones
-          </div>
-        </div>
-      );
+      return "[deprecated] use fields + structure instead";
     case "time":
       return formatTime(row[column.field || ""]);
   }
+}
+
+function renderStructuredFields(fields: FieldGroup[], structure: string, row: RowData) {
+  const lines = structure.split("/").map(line =>
+line.split("-").map((key, groupIndex, group) => {
+      const textLiteral = key.match(/^{{(.+?)}}$/);
+if (textLiteral) {
+  const prevKey = groupIndex > 0 ? group[groupIndex - 1] : null;
+  const prevFieldMatch = prevKey?.match(/^(\w+)/);
+  const prevFieldName = prevFieldMatch?.[1];
+  const prevField = fields.find(f => f.field === prevFieldName);
+  return (
+    <span key={key} className={prevField?.className}>
+      {textLiteral[1]}
+    </span>
+  );
+}
+
+      const fieldWithText = key.match(/^(\w+)-{(.+?)}$/);
+      if (fieldWithText) {
+        const config = fields.find(f => f.field === fieldWithText[1]);
+        if (!config) return null;
+        return (
+          <span key={key} className={config.className}>
+            {row[config.field]}{fieldWithText[2]}
+          </span>
+        );
+      }
+
+      const config = fields.find(f => f.field === key);
+      if (!config) return null;
+      if (config.type === "badge") {
+        return <Badge key={key} className={config.className}>{row[key]}</Badge>;
+      }
+      return <span key={key} className={config.className}>{row[key]}</span>;
+    })
+  );
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      {lines.map((group, i) => (
+        <div key={i} className="flex flex-row items-center gap-1">
+          {group}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function formatTime(value: any): string {

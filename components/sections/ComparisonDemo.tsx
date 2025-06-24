@@ -12,22 +12,22 @@ import { Combobox } from "../ui/combobox";
 import CustomTable, { Action, Column } from "@/components/CustomTable";
 
 const columns: Column[] = [
-  { field: "provider", header: "Proveedor", type: "text" },
-  { field: "images", header: "", type: "images", aspectRatio: "1:1" },
-  { field: "route", header: "Ruta", type: "text" },
+  { field: 'provider', header: 'Proveedor', type: 'text' },
+  { field: 'images', header: '', type: 'images' },
+  { field: 'route', header: 'Ruta', type: 'text' },
   {
-    fields: ["ratingScore", "ratingLabel", "numeroOpiniones"],
     header: "Calificación",
-    type: "rating",
-  },
-  {
-    field: "price",
-    header: "Precio",
     type: "text",
-    className: "bg-muted/50 text-primary font-bold",
+structure: "ratingScore-ratingLabel/reviews-{{opiniones}}",
+    fields: [
+      { field: "ratingScore", type: "badge", className: "bg-green-600 text-white text-xs font-semibold" },
+      { field: "ratingLabel", type: "text", className: "text-sm font-medium text-gray-800" },
+      { field: "reviews", type: "number", className: "text-xs text-muted-foreground" },
+    ],
   },
-  { field: "departAt", header: "Hora Salida", type: "time" },
-  { field: "arriveAt", header: "Hora Llegada", type: "time" },
+  { field: 'price', header: 'Precio', type: 'text', className: 'bg-muted/50 text-primary font-bold' },
+  { field: 'departAt', header: 'Hora Salida', type: 'time' },
+  { field: 'arriveAt', header: 'Hora Llegada', type: 'time' },
 ];
 
 const actions: Action[] = [
@@ -44,7 +44,7 @@ const data = [
     arriveAt: "2025-07-11T05:30:00+01:00",
     ratingLabel: "Excelente",
     ratingScore: 9.2,
-    numeroOpiniones: 1001,
+    reviews: 1001,
     benefits: [
       { label: "Equipaje incluido", included: true },
       { label: "Reembolsable", included: true },
@@ -62,7 +62,7 @@ const data = [
     arriveAt: "2025-07-11T09:50:00+01:00",
     ratingLabel: "Muy Bueno",
     ratingScore: 8.4,
-    numeroOpiniones: 879,
+    reviews: 879,
     benefits: [
       { label: "Equipaje incluido", included: true },
       { label: "Reembolsable", included: true },
@@ -80,7 +80,7 @@ const data = [
     arriveAt: "2025-07-10T10:30:00-04:00",
     ratingLabel: "Bueno",
     ratingScore: 7.8,
-    numeroOpiniones: 412,
+    reviews: 412,
     benefits: [
       { label: "Equipaje incluido", included: false },
       { label: "Reembolsable", included: false },
