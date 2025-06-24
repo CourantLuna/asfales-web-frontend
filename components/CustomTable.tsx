@@ -11,7 +11,7 @@ import { ImageCarousel } from "@/components/ui/image-carousel";
 
 export interface FieldGroup {
   field: string;
-  type: "text" | "badge" | "number" | "time";
+  type: "text" | "badge" | "number" | "time"| "benefits";
   className?: string;
 }
 
@@ -20,7 +20,7 @@ export interface Column {
   fields?: FieldGroup[];
   structure?: string;
   header: string;
-  type: "text" | "images" | "rating" | "time";
+  type: "text" | "images" | "rating" | "time" | "benefits";
   className?: string;
   aspectRatio?: "1:1" | "2:1" | "1:2" | "16:9" | "4:3";
 }
@@ -40,6 +40,8 @@ export interface CustomTableProps {
   data: RowData[];
   actions?: Action[];
   rowHeader?: number;
+  tableOrientation?: "vertical" | "horizontal";
+
 }
 
 export default function CustomTable({
@@ -47,91 +49,108 @@ export default function CustomTable({
   data,
   actions,
   rowHeader = 0,
+  tableOrientation = "vertical",
 }: CustomTableProps) {
   const headerField = columns[rowHeader]?.field;
 
   return (
-    <div className="overflow-x-auto border rounded-xl">
-      <table className="min-w-full text-sm">
-        <thead>
-          <tr className="border-b">
-            {data.map((item, i) => (
-              <th
-                key={i}
-                className="p-2 font-semibold text-muted-foreground text-center"
+    <div className="overflow-x-auto border rounded-xl ">
+      <table className="min-w-full text-sm mx-auto">
+{tableOrientation === "horizontal" ? (
+  <>
+    <thead>
+      <tr className="border-b">
+        {columns.map((col, idx) => (
+          <th key={idx} className="p-2 font-semibold text-muted-foreground text-center">
+            {col.header}
+          </th>
+        ))}
+        {actions && <th className="p-2 font-semibold text-muted-foreground text-center">Acciones</th>}
+      </tr>
+    </thead>
+    <tbody>
+      {data.map((item, i) => (
+        <tr key={i} className="border-b">
+          {columns.map((col, colIdx) => (
+            <td
+              key={colIdx}
+              className={`min-w-[180px] p-2 text-center align-top ${col.className || ""}`}
+            >
+              {renderCellContent(col, item)}
+            </td>
+          ))}
+          {actions && (
+            <td className="min-w-[240px] p-2 text-center">
+              <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1">
+                {actions.map((action, j) => (
+                  <Button
+                    key={j}
+                    variant={action.variant || "default"}
+                    onClick={action.onClick}
+                    className="w-[100px]"
+                  >
+                    {action.label}
+                  </Button>
+                ))}
+              </div>
+            </td>
+          )}
+        </tr>
+      ))}
+    </tbody>
+  </>
+) : (
+  // vertical (default)
+  <>
+    <thead>
+      <tr className="border-b">
+        {data.map((item, i) => (
+          <th key={i} className="p-2 font-semibold text-muted-foreground text-center">
+            {item[columns[rowHeader]?.field || ""]}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {columns
+        .filter((_, idx) => idx !== rowHeader)
+        .map((col, rowIdx) => (
+          <tr key={rowIdx} className="border-b">
+            {data.map((item, colIdx) => (
+              <td
+                key={colIdx}
+                className={`min-w-[240px] p-1 text-center align-top ${col.className || ""}`}
               >
-                {item[headerField || ""] as string}
-              </th>
+                {renderCellContent(col, item)}
+              </td>
             ))}
           </tr>
-        </thead>
-        <tbody>
-          {columns
-            .filter((_, idx) => idx !== rowHeader)
-            .map((col, rowIndex) => (
-              <tr key={rowIndex} className="border-b">
-                {data.map((item, colIndex) => (
-                  <td
-                    key={colIndex}
-                    className={`min-w-[240px] p-1 text-center align-top ${
-                      col.className || ""
-                    }`.trim()}
+        ))}
+      {actions && (
+        <tr>
+          {data.map((_, i) => (
+            <td key={i} className="min-w-[240px] p-2 text-center">
+              <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1">
+                {actions.map((action, j) => (
+                  <Button
+                    key={j}
+                    variant={action.variant || "default"}
+                    onClick={action.onClick}
+                    className="w-[100px]"
                   >
-                    {renderCellContent(col, item)}
-                  </td>
+                    {action.label}
+                  </Button>
                 ))}
-              </tr>
-            ))}
+              </div>
+            </td>
+          ))}
+        </tr>
+      )}
+    </tbody>
+  </>
+)}
 
-          {data[0]?.benefits && (
-            <tr className="border-b">
-              {data.map((item, idx) => (
-                <td key={idx} className="min-w-[240px] p-4 text-sm">
-                  <div className="flex flex-col justify-center items-center gap-1">
-                    {item.benefits.map(
-                      (b: { label: string; included: boolean }) => (
-                        <div key={b.label} className="flex items-center gap-1">
-                          {b.included ? (
-                            <Check className="text-green-600 w-4 h-4" />
-                          ) : (
-                            <X className="text-red-500 w-4 h-4" />
-                          )}
-                          <span
-                            className={
-                              b.included ? "text-green-700" : "text-red-700"
-                            }
-                          >
-                            {b.label}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </td>
-              ))}
-            </tr>
-          )}
 
-          {actions && (
-            <tr>
-              {data.map((_, i) => (
-                <td key={i} className="min-w-[240px] p-2 text-center">
-                  <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1">
-                    {actions.map((action, j) => (
-                      <Button
-                        key={j}
-                        variant={action.variant || "default"}
-                        className="w-[100px]"
-                      >
-                        {action.label}
-                      </Button>
-                    ))}
-                  </div>
-                </td>
-              ))}
-            </tr>
-          )}
-        </tbody>
       </table>
     </div>
   );
@@ -154,10 +173,26 @@ function renderCellContent(column: Column, row: RowData) {
           />
         </div>
       );
-    case "rating":
-      return "[deprecated] use fields + structure instead";
     case "time":
       return formatTime(row[column.field || ""]);
+    case "benefits":
+  return (
+    <div className="flex flex-col justify-center items-center gap-1">
+      {(row[column.field || ""] as { label: string; included: boolean }[])?.map((b) => (
+        <div key={b.label} className="flex items-center gap-1">
+          {b.included ? (
+            <Check className="text-green-600 w-4 h-4" />
+          ) : (
+            <X className="text-red-500 w-4 h-4" />
+          )}
+          <span className={b.included ? "text-green-700" : "text-red-700"}>
+            {b.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+
   }
 }
 
