@@ -7,8 +7,8 @@ import WhyAsfales from "@/components/sections/WhyAsfales"
 import TravelOptionsSection from "@/components/sections/TravelOptionsSection"
 import SearchBoxOverlay from "@/components/sections/SearchBoxOverlay"
 import ComparisonDemo from "@/components/sections/ComparisonDemo"
+import ExploreItineraries from "@/components/sections/ExploreItineraries";
 
-import { ImageCarousel } from "../ui/image-carousel"
 
 export default function LandingPage() {
 
@@ -31,6 +31,8 @@ export default function LandingPage() {
 
             {/* NUEVAS SECCIONES */}
             <ComparisonDemo />
+            <ExploreItineraries />
+
     
           </div>
         </div>

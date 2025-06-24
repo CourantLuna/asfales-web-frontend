@@ -1,102 +1,199 @@
 "use client";
 import { useEffect, useState } from "react";
+import ReportGenerator from "@/components/reports/ReportGenerator";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import { Plane, Hotel, Mountain, Route } from "lucide-react";
 
-import { ComparisonTable, ComparisonRow } from "@/components/ComparisonTable"
+import { ComparisonTable, ComparisonRow } from "@/components/ComparisonTable";
 import { Combobox } from "../ui/combobox";
 
-const transporteHeaders = ["Iberia", "Air Europa", "Expreso Bávaro"]
-const transporteOptions: ComparisonRow[] = [
-    {
-      
-      rowType: "imagenes",
-      values: [
-        ["/flights/iberia-1.jpg", "/flights/iberia-2.jpg"],
-        ["/flights/aireuropa-1.jpg", "/flights/aireuropa-2.jpg"],
-        ["/flights/bavaro-1.jpg", "/flights/bavaro-2.jpg"],
-      ],
-    aspectRatio: "4:3",
-    },
-    {
-      label: "Ruta",
-      rowType: "text",
-      values: ["Vuelo directo SDQ → MAD", "1 escala vía MIA", "Bus SDQ → Punta Cana"],
-    },
-    {
-      label: "Calificación",
-      rowType: "calificacion",
-      values: [
-        { score: 9.2, label: "Excelente", reviews: "1,001 opiniones" },
-        { score: 8.4, label: "Muy Bueno", reviews: "879 opiniones" },
-        { score: 7.8, label: "Bueno", reviews: "412 opiniones" },
-      ],
-    },
-    {
-      label: "Precio",
-      rowType: "default",
-      values: ["$580 USD", "$430 USD", "$15 USD"],
-        className: "bg-muted/50 text-primary font-bold",
+import CustomTable, { Action, Column } from "@/components/CustomTable";
 
-    },
-    {
-      label: "Duración",
-      rowType: "default",
-      values: ["8h 30min", "12h 50min", "2h 30min"],
-    },
-    {
-      label: "Beneficios",
-      rowType: "beneficios",
-      values: [
+const columns: Column[] = [
+  { field: "provider", header: "Proveedor", type: "text" },
+  { field: "images", header: "", type: "images", aspectRatio: "1:1" },
+  { field: "route", header: "Ruta", type: "text" },
+  {
+    fields: ["ratingScore", "ratingLabel", "numeroOpiniones"],
+    header: "Calificación",
+    type: "rating",
+  },
+  {
+    field: "price",
+    header: "Precio",
+    type: "text",
+    className: "bg-muted/50 text-primary font-bold",
+  },
+  { field: "departAt", header: "Hora Salida", type: "time" },
+  { field: "arriveAt", header: "Hora Llegada", type: "time" },
+];
+
+const actions: Action[] = [
+  { label: "Ver detalles", variant: "secondary" },
+  { label: "Reservar" },
+];
+
+const data = [
+  {
+    provider: "Iberia",
+    route: "Vuelo directo SDQ → MAD",
+    price: "$580 USD",
+    departAt: "2025-07-10T15:00:00-04:00",
+    arriveAt: "2025-07-11T05:30:00+01:00",
+    ratingLabel: "Excelente",
+    ratingScore: 9.2,
+    numeroOpiniones: 1001,
+    benefits: [
+      { label: "Equipaje incluido", included: true },
+      { label: "Reembolsable", included: true },
+      { label: "WiFi a bordo", included: false },
+      { label: "Asiento reclinable", included: true },
+      { label: "Comida incluida", included: true },
+    ],
+    images: [["/flights/iberia-1.jpg", "/flights/iberia-2.jpg", "/flights/iberia-3.jpg"]],
+  },
+  {
+    provider: "Air Europa",
+    route: "1 escala vía MIA",
+    price: "$430 USD",
+    departAt: "2025-07-10T17:00:00-04:00",
+    arriveAt: "2025-07-11T09:50:00+01:00",
+    ratingLabel: "Muy Bueno",
+    ratingScore: 8.4,
+    numeroOpiniones: 879,
+    benefits: [
+      { label: "Equipaje incluido", included: true },
+      { label: "Reembolsable", included: true },
+      { label: "WiFi a bordo", included: true },
+      { label: "Asiento reclinable", included: true },
+      { label: "Comida incluida", included: true },
+    ],
+    images: [["/flights/aireuropa-1.jpg"]],
+  },
+  {
+    provider: "Expreso Bávaro",
+    route: "Bus SDQ → Punta Cana",
+    price: "$15 USD",
+    departAt: "2025-07-10T08:00:00-04:00",
+    arriveAt: "2025-07-10T10:30:00-04:00",
+    ratingLabel: "Bueno",
+    ratingScore: 7.8,
+    numeroOpiniones: 412,
+    benefits: [
+      { label: "Equipaje incluido", included: false },
+      { label: "Reembolsable", included: false },
+      { label: "WiFi a bordo", included: true },
+      { label: "Asiento reclinable", included: true },
+      { label: "Comida incluida", included: false },
+    ],
+    images: [["/flights/bavaro-1.jpg"]],
+  },
+];
+
+
+const transporteHeaders = ["Iberia", "Air Europa", "Expreso Bávaro"];
+const transporteOptions: ComparisonRow[] = [
+  {
+    rowType: "imagenes",
+    values: [
+      ["/flights/iberia-1.jpg", "/flights/iberia-2.jpg"],
+      ["/flights/aireuropa-1.jpg", "/flights/aireuropa-2.jpg"],
+      ["/flights/bavaro-1.jpg", "/flights/bavaro-2.jpg"],
+    ],
+    aspectRatio: "4:3",
+  },
+  {
+    label: "Ruta",
+    rowType: "text",
+    values: [
+      "Vuelo directo SDQ → MAD",
+      "1 escala vía MIA",
+      "Bus SDQ → Punta Cana",
+    ],
+  },
+  {
+    label: "Calificación",
+    rowType: "calificacion",
+    values: [
+      { score: 9.2, label: "Excelente", reviews: "1,001 opiniones" },
+      { score: 8.4, label: "Muy Bueno", reviews: "879 opiniones" },
+      { score: 7.8, label: "Bueno", reviews: "412 opiniones" },
+    ],
+  },
+  {
+    label: "Precio",
+    rowType: "default",
+    values: ["$580 USD", "$430 USD", "$15 USD"],
+    className: "bg-muted/50 text-primary font-bold",
+  },
+  {
+    label: "Duración",
+    rowType: "default",
+    values: ["8h 30min", "12h 50min", "2h 30min"],
+  },
+  {
+    label: "Beneficios",
+    rowType: "beneficios",
+    values: [
+      {
+        "Equipaje incluido": true,
+        Reembolsable: true,
+        "WiFi a bordo": false,
+        "Asiento reclinable": true,
+        "Comida incluida": true,
+      },
+      {
+        "Equipaje incluido": true,
+        Reembolsable: true,
+        "WiFi a bordo": true,
+        "Asiento reclinable": false,
+        "Comida incluida": true,
+      },
+      {
+        "Equipaje incluido": false,
+        Reembolsable: false,
+        "WiFi a bordo": true,
+        "Asiento reclinable": true,
+        "Comida incluida": false,
+      },
+    ],
+  },
+  {
+    label: "",
+    rowType: "acciones",
+    values: [
+      [
         {
-          "Equipaje incluido": true,
-          Reembolsable: true,
-          "WiFi a bordo": false,
-          "Asiento reclinable": true,
-          "Comida incluida": true,
-        },
-        {
-          "Equipaje incluido": true,
-          Reembolsable: true,
-          "WiFi a bordo": true,
-          "Asiento reclinable": false,
-          "Comida incluida": true,
-        },
-        {
-          "Equipaje incluido": false,
-          Reembolsable: false,
-          "WiFi a bordo": true,
-          "Asiento reclinable": true,
-          "Comida incluida": false,
+          label: "Ver detalles",
+          onClick: () => console.log("Ver detalles"),
+          variant: "secondary",
         },
       ],
-    },
-    {
-      label: "",
-      rowType: "acciones",
-      values: [
-        [{ label: "Ver detalles", onClick: () => console.log("Ver detalles"), variant: "secondary" }],
-        [{ label: "Ver detalles", onClick: () => console.log("Ver detalles"), variant: "secondary" }],
-        [{ label: "Ver detalles", onClick: () => console.log("Ver detalles"), variant: "secondary" }],
+      [
+        {
+          label: "Ver detalles",
+          onClick: () => console.log("Ver detalles"),
+          variant: "secondary",
+        },
       ],
-    },
-  ]
+      [
+        {
+          label: "Ver detalles",
+          onClick: () => console.log("Ver detalles"),
+          variant: "secondary",
+        },
+      ],
+    ],
+  },
+];
 const alojamientoHeaders = [
   "Hotel Riu Plaza",
   "ME Reina Victoria",
   "Madrid Centro Apt.",
-]
-  const alojamientoData: ComparisonRow[] = [
+];
+const alojamientoData: ComparisonRow[] = [
   {
     rowType: "imagenes",
     aspectRatio: "4:3",
@@ -109,14 +206,18 @@ const alojamientoHeaders = [
   {
     label: "Nombre",
     rowType: "text",
-    values: ["Hotel Riu Plaza España", "ME Madrid Reina Victoria", "Apartamentos Madrid Centro"],
+    values: [
+      "Hotel Riu Plaza España",
+      "ME Madrid Reina Victoria",
+      "Apartamentos Madrid Centro",
+    ],
   },
   {
     label: "Ubicación",
     rowType: "text",
     values: ["Plaza de España", "Plaza Santa Ana", "Calle Gran Vía"],
   },
-   {
+  {
     label: "Calificación",
     rowType: "calificacion",
     values: [
@@ -143,11 +244,7 @@ const alojamientoHeaders = [
   {
     label: "Check-in / Check-out",
     rowType: "text",
-    values: [
-      "15:00 / 11:00",
-      "14:00 / 12:00",
-      "16:00 / 10:30",
-    ],
+    values: ["15:00 / 11:00", "14:00 / 12:00", "16:00 / 10:30"],
   },
   {
     label: "Servicios",
@@ -157,7 +254,7 @@ const alojamientoHeaders = [
         "WiFi gratis": true,
         "Desayuno incluido": true,
         "Aire acondicionado": true,
-        "Piscina": true,
+        Piscina: true,
         "Mascotas permitidas": false,
         "Cocina privada": false,
       },
@@ -165,7 +262,7 @@ const alojamientoHeaders = [
         "WiFi gratis": true,
         "Desayuno incluido": false,
         "Aire acondicionado": true,
-        "Piscina": false,
+        Piscina: false,
         "Mascotas permitidas": true,
         "Cocina privada": false,
       },
@@ -173,7 +270,7 @@ const alojamientoHeaders = [
         "WiFi gratis": true,
         "Desayuno incluido": false,
         "Aire acondicionado": true,
-        "Piscina": false,
+        Piscina: false,
         "Mascotas permitidas": false,
         "Cocina privada": true,
       },
@@ -188,12 +285,12 @@ const alojamientoHeaders = [
       [{ label: "Ver detalles", variant: "secondary" }],
     ],
   },
-]
+];
 const experienciasHeaders = [
   "Palacio Real Tour",
   "Flamenco Show",
   "Museo Prado + Paseo",
-]
+];
 const experienciasData: ComparisonRow[] = [
   {
     label: "Fotos",
@@ -223,7 +320,7 @@ const experienciasData: ComparisonRow[] = [
       "Calle Felipe IV (entrada principal)",
     ],
   },
-   {
+  {
     label: "Calificación",
     rowType: "calificacion",
     values: [
@@ -240,11 +337,7 @@ const experienciasData: ComparisonRow[] = [
   {
     label: "Disponibilidad",
     rowType: "text",
-    values: [
-      "Lunes a Sábado",
-      "Todos los días",
-      "Martes a Domingo",
-    ],
+    values: ["Lunes a Sábado", "Todos los días", "Martes a Domingo"],
   },
   {
     label: "Precio",
@@ -273,27 +366,27 @@ const experienciasData: ComparisonRow[] = [
       {
         "Entrada incluida": true,
         "Guía profesional": true,
-        "Transporte": false,
-        "Accesible": true,
+        Transporte: false,
+        Accesible: true,
         "Bebida gratuita": false,
       },
       {
         "Entrada incluida": true,
         "Guía profesional": false,
-        "Transporte": false,
-        "Accesible": false,
+        Transporte: false,
+        Accesible: false,
         "Bebida gratuita": true,
       },
       {
         "Entrada incluida": true,
         "Guía profesional": true,
-        "Transporte": false,
-        "Accesible": true,
+        Transporte: false,
+        Accesible: true,
         "Bebida gratuita": false,
       },
     ],
   },
- 
+
   {
     label: "",
     rowType: "acciones",
@@ -303,12 +396,12 @@ const experienciasData: ComparisonRow[] = [
       [{ label: "Ver detalles", variant: "secondary" }],
     ],
   },
-]
+];
 const itinerariosHeaders = [
   "Madrid Esencial (3 días)",
   "Madrid + Toledo (4 días)",
   "Madrid Cultural Exprés (2 días)",
-]
+];
 const itinerariosData: ComparisonRow[] = [
   {
     rowType: "imagenes",
@@ -356,11 +449,11 @@ const itinerariosData: ComparisonRow[] = [
     rowType: "default",
     values: ["$780 USD", "$950 USD", "$490 USD"],
   },
-//   {
-//     label: "¿Colaborativo?",
-//     rowType: "default",
-//     values: ["Sí (editable)", "No (visual)", "Sí (editable)"],
-//   },
+  //   {
+  //     label: "¿Colaborativo?",
+  //     rowType: "default",
+  //     values: ["Sí (editable)", "No (visual)", "Sí (editable)"],
+  //   },
   {
     label: "Calificación paquete",
     rowType: "calificacion",
@@ -379,26 +472,23 @@ const itinerariosData: ComparisonRow[] = [
       [{ label: "Ver detalles", variant: "secondary" }, { label: "Unirse" }],
     ],
   },
-]
-
-
+];
 
 export default function ComparisonDemo() {
+  const [tab, setTab] = useState("transporte");
+  const tabOptions = [
+    { label: "Cómo llegar", value: "transporte", icon: Plane },
+    { label: "Dónde dormir", value: "alojamientos", icon: Hotel },
+    { label: "Qué hacer", value: "itinerarios", icon: Mountain },
+    { label: "Planes completos", value: "experiencias", icon: Route },
+  ];
 
-const [tab, setTab] = useState("transporte")
- const tabOptions = [
-    { label: "Transporte", value: "transporte", icon: Plane },
-    { label: "Alojamientos", value: "alojamientos", icon: Hotel },
-    { label: "Itinerarios", value: "itinerarios", icon: Mountain },
-    { label: "Experiencias", value: "experiencias", icon: Route },
-  ]
-
-  
-const classNameTabs =`flex-1 justify-center border-b-2 border-transparent" 
+  const classNameTabs = `flex-1 justify-center border-b-2 border-transparent" 
              data-[state=active]:border-primary 
              data-[state=active]:text-foreground 
-             text-muted-foreground font-medium px-4 py-2 transition-colors`
+             text-muted-foreground font-medium px-4 py-2 transition-colors`;
   return (
+    <div>
     <section className="py-8 px-4 md:px-8 bg-white w-full max-w-screen-xl mx-auto">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold tracking-tight text-gray-800">
@@ -409,101 +499,127 @@ const classNameTabs =`flex-1 justify-center border-b-2 border-transparent"
         </p>
       </div>
 
-      <Tabs defaultValue="transporte"value={tab} onValueChange={setTab}   className="w-full flex flex-col items-center">
+      <Tabs
+        defaultValue="transporte"
+        value={tab}
+        onValueChange={setTab}
+        className="w-full flex flex-col items-center px-4"
+      >
         {/* Combobox solo en móviles */}
-              <div className="block w-[240px] md:hidden">
-                <Combobox
-                  options={tabOptions}
-                  value={tab}
-                  onChange={setTab}
-                  placeholder="Selecciona una categoría"
-                />
-              </div>
+        <div className="block w-[240px] md:hidden">
+          <Combobox
+            options={tabOptions}
+            value={tab}
+            onChange={setTab}
+            placeholder="Selecciona una categoría"
+          />
+        </div>
 
         <TabsList className="hidden md:flex w-full justify-center mb-6 py-4">
           <TabsTrigger value="transporte" className={classNameTabs}>
-            <Plane className="mr-2 w-4 h-4" /> Transporte
+            <Plane className="mr-2 w-4 h-4" /> Cómo llegar
           </TabsTrigger>
           <TabsTrigger value="alojamientos" className={classNameTabs}>
-            <Hotel className="mr-2 w-4 h-4" 
-            /> Alojamientos
+            <Hotel className="mr-2 w-4 h-4" /> Dónde dormir
           </TabsTrigger>
           <TabsTrigger value="experiencias" className={classNameTabs}>
-            <Mountain className="mr-2 w-4 h-4" /> Experiencias
+            <Mountain className="mr-2 w-4 h-4" /> Qué hacer
           </TabsTrigger>
-           <TabsTrigger value="itinerarios" className={classNameTabs}>
-            <Route className="mr-2 w-4 h-4" /> Itinearios
+          <TabsTrigger value="itinerarios" className={classNameTabs}>
+            <Route className="mr-2 w-4 h-4" /> Planes completos
           </TabsTrigger>
         </TabsList>
 
         {/* Transporte */}
         <TabsContent value="transporte">
-          <div className="rounded-xl py-4 px-4 overflow-x-auto">
-            <ComparisonTable headers={transporteHeaders} rows={transporteOptions} />
+          <div className="w-full">
+            <div className="flex justify-between items-center mb-1 ">
+              <ReportGenerator
+                title="Informe Comparativo - Transporte"
+                subtitle="Categoría: Transporte"
+                origin="SDQ"
+                destination="Madrid"
+                headers={[
+                  "Proveedor",
+                  "Ruta",
+                  "Precio",
+                  "Duración",
+                  "Calificación",
+                ]}
+                rows={[
+                  [
+                    "Iberia",
+                    "Vuelo directo SDQ → MAD",
+                    "$580 USD",
+                    "8h 30min",
+                    "9.2 (Excelente)",
+                  ],
+                  [
+                    "Air Europa",
+                    "1 escala vía MIA",
+                    "$430 USD",
+                    "12h 50min",
+                    "8.4 (Muy Bueno)",
+                  ],
+                  [
+                    "Expreso Bávaro",
+                    "Bus SDQ → Punta Cana",
+                    "$15 USD",
+                    "2h 30min",
+                    "7.8 (Bueno)",
+                  ],
+                ]}
+              />
+            </div>
+
+            {/* Este wrapper es lo que se exportará como PDF */}
+            <div className="rounded-xl py-4  overflow-x-auto bg-white">
+              <ComparisonTable
+                headers={transporteHeaders}
+                rows={transporteOptions}
+              />
+            </div>
           </div>
         </TabsContent>
 
         {/* Alojamiento */}
         <TabsContent value="alojamientos">
-  <div className="rounded-xl py-4 px-4 overflow-x-auto">
-            <ComparisonTable headers={alojamientoHeaders} rows={alojamientoData} />
+          <div className="rounded-xl py-4 overflow-x-auto">
+            <ComparisonTable
+              headers={alojamientoHeaders}
+              rows={alojamientoData}
+            />
           </div>
         </TabsContent>
 
         {/* Experiencias */}
         <TabsContent value="experiencias">
           <div className="rounded-xl py-4 overflow-x-auto">
-            <ComparisonTable headers={experienciasHeaders} rows={experienciasData} />
+            <ComparisonTable
+              headers={experienciasHeaders}
+              rows={experienciasData}
+            />
           </div>
         </TabsContent>
 
         {/* Itinerarios */}
         <TabsContent value="itinerarios">
           <div className="rounded-xl py-4 overflow-x-auto">
-            <ComparisonTable headers={itinerariosHeaders} rows={itinerariosData} />
+            <ComparisonTable
+              headers={itinerariosHeaders}
+              rows={itinerariosData}
+            />
           </div>
         </TabsContent>
       </Tabs>
     </section>
+    <section className="max-w-7xl mx-auto px-4 py-10">
+      <h2 className="text-2xl font-bold mb-6">Comparación de transporte</h2>
+      <CustomTable columns={columns} data={data} actions={actions} rowHeader={0} />
+    </section>
+</div>
+    
   );
 }
 
-// Card Reusable
-function OptionCard({
-  title,
-  price,
-  provider,
-  duration,
-  extras,
-}: {
-  title: string;
-  price: string;
-  provider: string;
-  duration: string;
-  extras: string[];
-}) {
-  return (
-    <Card className="hover:shadow-md transition-shadow duration-300">
-      <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
-        <p className="text-sm text-muted-foreground">por {provider}</p>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        <span className="text-xl font-semibold text-primary">{price}</span>
-        <span className="text-xs text-gray-600">Duración: {duration}</span>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {extras.map((tag, i) => (
-            <Badge variant="outline" key={i}>
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button variant="outline" size="sm" className="w-full">
-          Ver detalles
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-}
+
