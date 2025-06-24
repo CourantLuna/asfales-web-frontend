@@ -31,11 +31,6 @@ export default function LandingPage() {
 
             {/* NUEVAS SECCIONES */}
             <ComparisonDemo />
-<ImageCarousel
-  images={["/img1.jpg", "/img2.jpg", "/img3.jpg"]}
-  aspectRatio="1:1"
-  className="md:basis-1/2 lg:basis-1/3"
-/>
     
           </div>
         </div>
