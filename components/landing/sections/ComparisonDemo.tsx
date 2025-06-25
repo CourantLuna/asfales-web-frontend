@@ -1,15 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import ReportGenerator from "@/components/reports/ReportGenerator";
-
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-
 import { Plane, Hotel, Mountain, Route } from "lucide-react";
+import { Combobox } from "../../ui/combobox";
 
-import { ComparisonTable, ComparisonRow } from "@/components/ComparisonTable";
-import { Combobox } from "../ui/combobox";
-
-import CustomTable, { Action, Column, RowData } from "@/components/CustomTable";
+import CustomTable, { Action, Column, RowData } from "@/components/shared/CustomTable";
 
 const transportColumns: Column[] = [
   { field: 'provider', header: 'Proveedor', type: 'text' },
@@ -369,6 +365,10 @@ const itinerariesActions: Action[] = [
   { label: "Unirse" },
 ];
 
+function handleEntrySelect(index: number) {
+  alert(`Seleccionaste la columna/fila número ${index}`);
+}
+
 
 
 export default function ComparisonDemo() {
@@ -444,7 +444,9 @@ openInNewTab
 />
           <div className="rounded-xl py-4  overflow-x-auto bg-white">
   
-              <CustomTable columns={transportColumns} data={transportData} actions={transportActions} rowHeader={0} tableOrientation="vertical" />
+              <CustomTable columns={transportColumns} data={transportData} actions={transportActions} rowHeader={0} tableOrientation="horizontal"
+              onEntrySelect={handleEntrySelect}
+              />
         
             </div>
         </TabsContent>
@@ -452,7 +454,10 @@ openInNewTab
         {/* Alojamiento */}
         <TabsContent value="alojamientos">
           <div className="rounded-xl py-4 overflow-x-auto">
-            <CustomTable columns={lodgingColumns} data={lodgingData} actions={lodgingActions} rowHeader={0} tableOrientation="vertical" />
+            <CustomTable columns={lodgingColumns} data={lodgingData} actions={lodgingActions} rowHeader={0} tableOrientation="vertical"
+                          onEntrySelect={handleEntrySelect}
+
+            />
           </div>
         </TabsContent>
 

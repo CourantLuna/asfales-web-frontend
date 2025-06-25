@@ -1,7 +1,7 @@
 "use client";
 
-import { CustomTableProps } from "@/components/CustomTable";
-import CustomTable from "@/components/CustomTable";
+import { CustomTableProps } from "@/components/shared/CustomTable";
+import CustomTable from "@/components/shared/CustomTable";
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import { useEffect } from "react";

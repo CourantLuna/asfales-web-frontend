@@ -1,14 +1,14 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { AppNavbar } from "@/components/layout/AppNavbar"
-import Hero from "@/components/sections/Hero"
-import WhyAsfales from "@/components/sections/WhyAsfales"
-import TravelOptionsSection from "@/components/sections/TravelOptionsSection"
-import SearchBoxOverlay from "@/components/sections/SearchBoxOverlay"
-import ComparisonDemo from "@/components/sections/ComparisonDemo"
-import ExploreItineraries from "@/components/sections/ExploreItineraries"
-import SearchResultsPanel from "@/components/sections/SearchResultsPanel"
+import { AppNavbar } from "@/components/shared/AppNavbar"
+import Hero from "@/components/landing/sections/Hero"
+import WhyAsfales from "@/components/landing/sections/WhyAsfales"
+import TravelOptionsSection from "@/components/landing/sections/TravelOptionsSection"
+import SearchBoxOverlay from "@/components/landing/sections/SearchBoxOverlay"
+import ComparisonDemo from "@/components/landing/sections/ComparisonDemo"
+import ExploreItineraries from "@/components/landing/sections/ExploreItineraries"
+import SearchResultsPanel from "@/components/landing/sections/SearchResultsPanel"
 
 export default function LandingPage() {
   const [searchValues, setSearchValues] = useState<{ origin: string, destination: string } | null>(null)
@@ -37,6 +37,7 @@ function smoothScrollTo(targetY: number, duration = 800) {
   }
 
   return (
+
     <div className="min-h-screen w-full bg-[#F8FAFC]">
       {/* Imagen de fondo + overlay */}
       <div className="absolute w-full bg-[url('https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/Firefly%20la%20vista%20es%20desde%20encima%20de%20las%20nubes%2C%20vista%20desde%20un%20avion%2C%20en%20la%20toma%20hay%20nubes%20por%20arriba%20%281%29-OhzihO4aGu38K4tHjMwiVAhWXOLcPP.jpg')] bg-cover bg-center pointer-events-none">
@@ -45,7 +46,6 @@ function smoothScrollTo(targetY: number, duration = 800) {
       </div>
 
       <div className="relative min-h-svh">
-        <AppNavbar />
         <Hero />
         <div ref={resultsRef}>
 

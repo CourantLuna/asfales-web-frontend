@@ -1,11 +1,10 @@
 // CustomTable.tsx
 "use client";
 
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import Image from "next/image";
 import { Check, X } from "lucide-react";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 
@@ -41,6 +40,7 @@ export interface CustomTableProps {
   actions?: Action[];
   rowHeader?: number;
   tableOrientation?: "vertical" | "horizontal";
+  onEntrySelect?: (index: number) => void;
 
 }
 
@@ -50,8 +50,10 @@ export default function CustomTable({
   actions,
   rowHeader = 0,
   tableOrientation = "vertical",
+  onEntrySelect
 }: CustomTableProps) {
-  const headerField = columns[rowHeader]?.field;
+const [hoveredColIndex, setHoveredColIndex] = useState<number | null>(null);
+const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(null);
 
   return (
     <div className="overflow-x-auto border rounded-xl ">
@@ -69,84 +71,135 @@ export default function CustomTable({
       </tr>
     </thead>
     <tbody>
-      {data.map((item, i) => (
-        <tr key={i} className="border-b">
-          {columns.map((col, colIdx) => (
-            <td
-              key={colIdx}
-              className={`min-w-[180px] p-2 text-center align-top ${col.className || ""}`}
-            >
-              {renderCellContent(col, item)}
-            </td>
-          ))}
-          {actions && (
-            <td className="min-w-[240px] p-2 text-center">
-              <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1">
-                {actions.map((action, j) => (
-                  <Button
-                    key={j}
-                    variant={action.variant || "default"}
-                    onClick={action.onClick}
-                    className="w-[100px]"
-                  >
-                    {action.label}
-                  </Button>
-                ))}
-              </div>
-            </td>
-          )}
-        </tr>
-      ))}
-    </tbody>
+  {data.map((item, rowIdx) => {
+    const rowFirstField = columns[0]?.field
+      ? item[columns[0].field]
+      : Object.values(item)[0];
+
+    return (
+      <tr
+  key={rowIdx}
+  onClick={(e) => {
+    const interactive = (e.target as HTMLElement).closest("button, img, .no-action-click");
+    if (interactive) return;
+    onEntrySelect?.(rowIdx); // ← notifica al padre
+  }}
+  className="group hover:bg-muted/50 transition-colors duration-200 cursor-pointer border-b"
+>
+
+        {columns.map((col, colIdx) => (
+          <td
+            key={colIdx}
+            className={`min-w-[180px] p-2 text-center align-top border-r last:border-none
+              ${col.className || ""}
+            `}
+          >
+            {renderCellContent(col, item)}
+          </td>
+        ))}
+
+        {actions && (
+          <td className="min-w-[240px] p-2 text-center border-r last:border-none">
+            <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1 no-action-click">
+              {actions.map((action, j) => (
+                <Button
+                  key={j}
+                  variant={action.variant || "default"}
+                  onClick={action.onClick}
+                  className="w-[100px] "
+                >
+                  {action.label}
+                </Button>
+              ))}
+            </div>
+          </td>
+        )}
+      </tr>
+    );
+  })}
+</tbody>
+
   </>
 ) : (
   // vertical (default)
   <>
-    <thead>
-      <tr className="border-b">
-        {data.map((item, i) => (
-          <th key={i} className="p-2 font-semibold text-muted-foreground text-center">
-            {item[columns[rowHeader]?.field || ""]}
-          </th>
+<thead>
+  <tr className="border-b">
+    {data.map((item, i) => (
+      <th
+  key={i}
+  onClick={(e) => {
+    e.stopPropagation();
+    onEntrySelect?.(i); // ← notifica al padre
+  }}
+
+        className={`p-2 font-semibold text-muted-foreground text-center border-r last:border-none cursor-pointer
+          ${hoveredColIndex === i ? "bg-muted/40" : ""}
+        `}
+      >
+        {item[columns[rowHeader]?.field || ""]}
+      </th>
+    ))}
+  </tr>
+</thead>
+
+<tbody>
+  {columns
+    .filter((_, idx) => idx !== rowHeader)
+    .map((col, rowIdx) => (
+      <tr key={rowIdx} className="border-b">
+        {data.map((item, colIdx) => (
+          <td
+  key={colIdx}
+  onClick={(e) => {
+    const isActionArea = e.currentTarget.querySelector("button, img, .no-action-click");
+    if (isActionArea?.contains(e.target as Node)) return;
+    onEntrySelect?.(colIdx); // ← notifica al padre
+  }}
+
+            className={`min-w-[240px] p-1 text-center align-top border-r last:border-none cursor-pointer
+              ${hoveredColIndex === colIdx ? "bg-muted/50" : ""}
+              ${col.className || ""}
+            `}
+          >
+            {renderCellContent(col, item)}
+          </td>
         ))}
       </tr>
-    </thead>
-    <tbody>
-      {columns
-        .filter((_, idx) => idx !== rowHeader)
-        .map((col, rowIdx) => (
-          <tr key={rowIdx} className="border-b">
-            {data.map((item, colIdx) => (
-              <td
-                key={colIdx}
-                className={`min-w-[240px] p-1 text-center align-top ${col.className || ""}`}
+    ))}
+  {actions && (
+    <tr>
+      {data.map((_, colIdx) => (
+        <td
+  key={colIdx}
+  onClick={(e) => {
+    const isActionArea = e.currentTarget.querySelector("button, img, .no-action-click");
+    if (isActionArea?.contains(e.target as Node)) return;
+    onEntrySelect?.(colIdx); // ← notifica al padre
+  }}
+
+          className={`min-w-[240px] p-2 text-center border-r last:border-none
+            ${hoveredColIndex === colIdx ? "bg-muted/20" : ""}
+          `}
+        >
+          <div className="flex flex-col md:flex-row justify-center items-center gap-1 no-action-click">
+            {actions.map((action, j) => (
+              <Button
+                key={j}
+                variant={action.variant || "default"}
+                onClick={action.onClick}
+                className="w-[100px] "
               >
-                {renderCellContent(col, item)}
-              </td>
+                {action.label}
+              </Button>
             ))}
-          </tr>
-        ))}
-      {actions && (
-        <tr>
-          {data.map((_, i) => (
-            <td key={i} className="min-w-[240px] p-2 text-center">
-              <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1">
-                {actions.map((action, j) => (
-                  <Button
-                    key={j}
-                    variant={action.variant || "default"}
-                    onClick={action.onClick}
-                    className="w-[100px]"
-                  >
-                    {action.label}
-                  </Button>
-                ))}
-              </div>
-            </td>
-          ))}
-        </tr>
-      )}
-    </tbody>
+          </div>
+        </td>
+      ))}
+    </tr>
+  )}
+</tbody>
+
   </>
 )}
 
@@ -166,7 +219,7 @@ function renderCellContent(column: Column, row: RowData) {
       return String(row[column.field || ""] ?? "");
     case "images":
       return (
-        <div className="flex items-center justify-center max-w-[200px] mx-auto">
+        <div className="flex items-center justify-center max-w-[200px] mx-auto no-action-click">
           <ImageCarousel
             images={row[column.field || ""]?.[0] || []}
             aspectRatio={column.aspectRatio || "4:3"}

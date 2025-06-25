@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import "../../styles/heroStyles.css";
+import "../../../styles/heroStyles.css";
 
 export default function Hero() {
 
