@@ -429,52 +429,24 @@ export default function ComparisonDemo() {
 
         {/* Transporte */}
         <TabsContent value="transporte">
-          <div className="w-full">
-            <div className="flex justify-between items-center mb-1 ">
-              <ReportGenerator
-                title="Informe Comparativo - Transporte"
-                subtitle="Categoría: Transporte"
-                origin="SDQ"
-                destination="Madrid"
-                headers={[
-                  "Proveedor",
-                  "Ruta",
-                  "Precio",
-                  "Duración",
-                  "Calificación",
-                ]}
-                rows={[
-                  [
-                    "Iberia",
-                    "Vuelo directo SDQ → MAD",
-                    "$580 USD",
-                    "8h 30min",
-                    "9.2 (Excelente)",
-                  ],
-                  [
-                    "Air Europa",
-                    "1 escala vía MIA",
-                    "$430 USD",
-                    "12h 50min",
-                    "8.4 (Muy Bueno)",
-                  ],
-                  [
-                    "Expreso Bávaro",
-                    "Bus SDQ → Punta Cana",
-                    "$15 USD",
-                    "2h 30min",
-                    "7.8 (Bueno)",
-                  ],
-                ]}
-              />
-            </div>
-
-            {/* Este wrapper es lo que se exportará como PDF */}
-            <div className="rounded-xl py-4  overflow-x-auto bg-white">
+          <ReportGenerator
+  title="Informe Comparativo"
+  subtitle="Categoría: Transporte"
+  headerFields={[
+    { label: "Origen - Destino", value: "SDQ → Madrid" },
+    { label: "Fecha", value: "Julio 2025" },
+  ]}
+  columns={transportColumns}
+  data={transportData}
+  actions={transportActions}
+  tableOrientation="horizontal"
+openInNewTab
+/>
+          <div className="rounded-xl py-4  overflow-x-auto bg-white">
+  
               <CustomTable columns={transportColumns} data={transportData} actions={transportActions} rowHeader={0} tableOrientation="vertical" />
-
+        
             </div>
-          </div>
         </TabsContent>
 
         {/* Alojamiento */}

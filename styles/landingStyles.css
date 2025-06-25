@@ -1,0 +1,45 @@
+/* Animación en X (por defecto para pantallas grandes) */
+@keyframes swapShakeX {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+/* Animación en Y (para pantallas pequeñas) */
+@keyframes swapShakeY {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-4px); }
+  50% { transform: translateY(4px); }
+  75% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+/* Por defecto en pantallas grandes */
+.animate-swap {
+  animation: swapShakeX 0.3s ease-in-out;
+}
+
+/* En pantallas menores a lg, usar Y */
+@media (max-width: 1023px) {
+  .animate-swap {
+    animation: swapShakeY 0.3s ease-in-out;
+  }
+}
+
+
+/* Ocultar scrollbar visualmente en navegadores WebKit (Chrome, Safari) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Safari también necesita overflow hidden en eje X para evitar clip */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+}

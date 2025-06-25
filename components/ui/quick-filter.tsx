@@ -30,7 +30,7 @@ export function QuickFilter({ label, options, selected, setSelected }: QuickFilt
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2 border-dashed">
+        <Button variant="outline" className="flex items-start gap-2 border-dashed w-full md:w-[280px] h-12 inline-flex items-center">
           <Filter className="w-4 h-4" />
           {label}
           {selected.map((val) => {

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, UsersIcon, Plane, Bus, Ship, Filter, Hotel, Home, Building2, Clock, CheckCircle,
+import { Search, UsersIcon, Plane, Bus, Ship, Filter, Hotel, Home, Building2,
 Mountain as MountainIcon,
   TentTree as TentTreeIcon,
   Footprints as FootprintsIcon,
@@ -18,7 +18,6 @@ Mountain as MountainIcon,
   Route, } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Combobox } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { DateRange } from "react-day-picker"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
@@ -60,221 +59,244 @@ const lodgingOptions: FilterOption[] = [
   ]
 
   return (
-  <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6">
-  <Tabs value={tab} onValueChange={setTab} className="w-full items-center flex flex-col">
-      {/* Combobox solo en móviles */}
-      <div className="block w-[240px] md:hidden">
-        <Combobox
-          options={tabOptions}
-          value={tab}
-          onChange={setTab}
-          placeholder="Selecciona una categoría"
-        />
-      </div>
+    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6">
+      <Tabs
+        value={tab}
+        onValueChange={setTab}
+        className="w-full items-center flex flex-col"
+      >
+        {/* Combobox solo en móviles */}
+        <div className="block w-[240px] md:hidden">
+          <Combobox
+            options={tabOptions}
+            value={tab}
+            onChange={setTab}
+            placeholder="Selecciona una categoría"
+          />
+        </div>
 
-      {/* TabsTrigger solo en desktop */}
-<TabsList className="hidden md:flex w-full justify-center gap-2 mb-6 py-4">
-  {tabOptions.map(({ label, value }) => (
-   <TabsTrigger
-  key={value}
-  value={value}
-  className=" flex-1 justify-center border-b-2 border-transparent 
+        {/* TabsTrigger solo en desktop */}
+        <TabsList className="hidden md:flex w-full justify-center gap-2 mb-2">
+          {tabOptions.map(({ label, value }) => (
+            <TabsTrigger
+              key={value}
+              value={value}
+              className=" flex-1 justify-center border-b-2 border-transparent 
              data-[state=active]:border-primary 
              data-[state=active]:text-foreground 
              text-muted-foreground font-medium px-4 py-2 transition-colors"
->
-  {React.createElement(tabOptions.find((option) => option.value === value)!.icon, {
-    className: "mr-2 w-4 h-4",
-  })}
-  {label}
-</TabsTrigger>
+            >
+              {React.createElement(
+                tabOptions.find((option) => option.value === value)!.icon,
+                {
+                  className: "mr-2 w-4 h-4",
+                }
+              )}
+              {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-  ))}
-</TabsList>
+         <TabsContent value="transporte">
+  <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-4">
+    {/* Filtros */}
+    <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+      {/* ToggleGroup */}
+      <ToggleGroup
+        type="multiple"
+        defaultValue={["air"]}
+        className="gap-2 flex flex-wrap"
+      >
+        <ToggleGroupItem value="air" aria-label="Aéreo" className="px-4 py-2">
+          <Plane className="mr-2 h-4 w-4" />
+          Aéreo
+        </ToggleGroupItem>
+        <ToggleGroupItem value="land" aria-label="Terrestre" className="px-4 py-2">
+          <Bus className="mr-2 h-4 w-4" />
+          Terrestre
+        </ToggleGroupItem>
+        <ToggleGroupItem value="sea" aria-label="Marítimo" className="px-4 py-2">
+          <Ship className="mr-2 h-4 w-4" />
+          Marítimo
+        </ToggleGroupItem>
+      </ToggleGroup>
 
-
-      <TabsContent value="transporte">
-        <div className="mt-4 flex flex-col items-center justify-center gap-6">
-          {/* ToggleGroup solo en desktop */}
-          <ToggleGroup
-            type="multiple"
-            defaultValue={["air"]} // ✅ ahora es un arreglo
-            className="gap-2 flex"
-          >
-            <ToggleGroupItem value="air" aria-label="Aéreo" className="px-4 py-2 flex-1">
-              <Plane className="mr-2 h-4 w-4" />
-              Aéreo
-            </ToggleGroupItem>
-            <ToggleGroupItem value="land" aria-label="Terrestre" className="px-4 py-2 flex-1">
-              <Bus className="mr-2 h-4 w-4" />
-              Terrestre
-            </ToggleGroupItem>
-            <ToggleGroupItem value="sea" aria-label="Marítimo" className="px-4 py-2 flex-1">
-              <Ship className="mr-2 h-4 w-4" />
-              Marítimo
-            </ToggleGroupItem>
-          </ToggleGroup>
-
-          {/* Filtros */}
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="flex flex-col items-start gap-2">
-              <label className="text-sm font-medium">Fechas</label>
-              <div className="relative w-[280px]">
-                <DateRangePicker date={range} setDate={setRange} />
-                {/* <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />*/}
-              </div>
-            </div>
-            <div className="flex flex-col items-start gap-2">
-              <label className="text-sm font-medium">Pasajeros</label>
-              <div className="relative w-[280px]">
-                <Input defaultValue="1 adulto" className="pl-10" />
-                <UsersIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
+      {/* Fechas y Pasajeros */}
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        {/* Fechas */}
+        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+          <label className="text-sm font-medium">Fechas</label>
+          <div className="relative w-full">
+            <DateRangePicker date={range} setDate={setRange} />
           </div>
-
-          <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
-            <Filter className="mr-2 h-4 w-4" />
-            Aplicar Filtros 
-          </Button>
         </div>
-      </TabsContent>
 
-      <TabsContent value="alojamientos">
-  <div className="mt-8 flex flex-col items-center justify-center gap-6">
-    <ToggleGroup type="multiple" className="gap-2 flex flex-wrap justify-center">
-      <ToggleGroupItem value="hotel" className="px-4 py-2">
-        <Hotel className="mr-2 h-4 w-4" />
-        Hoteles
-      </ToggleGroupItem>
-      <ToggleGroupItem value="house" className="px-4 py-2">
-        <Home className="mr-2 h-4 w-4" />
-        Casas
-      </ToggleGroupItem>
-      <ToggleGroupItem value="apartment" className="px-4 py-2">
-      <Building2 className="mr-2 h-4 w-4" />
-       Apartamentos
-      </ToggleGroupItem>
-      <ToggleGroupItem value="guest" className="px-4 py-2">
-        🛏 Casa de huéspedes
-      </ToggleGroupItem>
-    </ToggleGroup>
-
-    <div className="flex flex-col md:flex-row gap-4 items-center">
-      <div className="flex flex-col items-start gap-2">
-        <label className="text-sm font-medium">Fechas</label>
-        <div className="relative w-[280px]">
-                <DateRangePicker date={range} setDate={setRange} />
-        </div>
-      </div>
-      <div className="flex flex-col items-start gap-2">
-        <label className="text-sm font-medium">Huéspedes</label>
-        <div className="relative w-[280px]">
-          <Input defaultValue="2 adultos, 1 habitación" className="pl-10" />
-          <UsersIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+        {/* Pasajeros */}
+        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+          <label className="text-sm font-medium">Pasajeros</label>
+          <div className="relative w-full">
+            <Input
+              defaultValue="1 adulto"
+              className="pl-10 w-full"
+            />
+            <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          </div>
         </div>
       </div>
     </div>
 
-    <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
-      <Filter className="mr-2 h-4 w-4" />
-      Aplicar Filtros
-    </Button>
+    {/* Botón */}
+    <div className="w-full md:w-[20%] flex justify-end">
+      <Button className="bg-primary w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+        <Search className="mr-2 h-4 w-4" />
+        Buscar
+      </Button>
+    </div>
   </div>
 </TabsContent>
 
+<TabsContent value="alojamientos">
+  <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-4">
+    <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+      {/* ToggleGroup */}
+      <ToggleGroup type="multiple" className="gap-2 flex flex-wrap">
+        <ToggleGroupItem value="hotel" className="px-4 py-2">
+          <Hotel className="mr-2 h-4 w-4" />
+          Hoteles
+        </ToggleGroupItem>
+        <ToggleGroupItem value="house" className="px-4 py-2">
+          <Home className="mr-2 h-4 w-4" />
+          Casas
+        </ToggleGroupItem>
+        <ToggleGroupItem value="apartment" className="px-4 py-2">
+          <Building2 className="mr-2 h-4 w-4" />
+          Apartamentos
+        </ToggleGroupItem>
+        <ToggleGroupItem value="guest" className="px-4 py-2">
+          🛏 Casa de huéspedes
+        </ToggleGroupItem>
+      </ToggleGroup>
 
-      <TabsContent value="itinerarios">
-  <div className="mt-8 flex flex-col items-center justify-center gap-6">
-    <div className="flex flex-col md:flex-row gap-4 items-center">
-      <div className="flex flex-col items-start gap-2">
-        <label className="text-sm font-medium">Fechas</label>
-        <div className="relative w-[280px]">
-      <DateRangePicker date={range} setDate={setRange} />
+      {/* Fechas y Huéspedes */}
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+          <label className="text-sm font-medium">Fechas</label>
+          <div className="relative w-full">
+            <DateRangePicker date={range} setDate={setRange} />
+          </div>
         </div>
-        
-      </div>
-      <div className="flex flex-col items-start gap-2">
-        <label className="text-sm font-medium">Personas</label>
-        <div className="relative w-[280px]">
-          <Input defaultValue="3 adultos, 1 habitación" className="pl-10" />
-          <UsersIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+          <label className="text-sm font-medium">Huéspedes</label>
+          <div className="relative w-full">
+            <Input
+              defaultValue="2 adultos, 1 habitación"
+              className="pl-10 w-full"
+            />
+            <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          </div>
         </div>
       </div>
     </div>
 
-<div className="flex flex-col md:flex-row gap-4 w-full items-center">
-      <div className="flex flex-wrap justify-center gap-2 border border-dashed px-4 py-2 rounded-md">
- <QuickFilter
-    label="Tipo de Alojamiento"
-    options={lodgingOptions}
-    selected={selectedLodgingTypes}
-    setSelected={setSelectedLodgingTypes}
-  />
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-2 border border-dashed px-4 py-2 rounded-md">
-       <QuickFilter
-  label="Tipo de Transporte"
-  options={[
-    { label: "Aéreo", value: "air", icon: Plane },
-    { label: "Marítimo", value: "sea", icon: Ship },
-    { label: "Terrestre", value: "land", icon: Bus },
-  ]}
-  selected={selectedTransportTypes}
-  setSelected={setSelectedTransportTypes}
-/>
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-2 border border-dashed px-4 py-2 rounded-md">
-       <QuickFilter
-  label="Tipo de Experiencia"
-  selected={selectedExperiences}
-  setSelected={setSelectedExperiences}
-  options={experiencesOptions}
-/>
-
-      </div>
+    <div className="w-full md:w-[20%] flex justify-end">
+      <Button className="bg-primary w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+        <Search className="mr-2 h-4 w-4" />
+        Buscar
+      </Button>
     </div>
-
-    <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
-      <Filter className="mr-2 h-4 w-4" />
-      Aplicar Filtros
-    </Button>
   </div>
 </TabsContent>
 
+<TabsContent value="itinerarios">
+  <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-4">
+    <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+      {/* Fechas y Personas */}
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+          <label className="text-sm font-medium">Fechas</label>
+          <div className="relative w-full">
+            <DateRangePicker date={range} setDate={setRange} />
+          </div>
+        </div>
+        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+          <label className="text-sm font-medium">Personas</label>
+          <div className="relative w-full">
+            <Input
+              defaultValue="3 adultos, 1 habitación"
+              className="pl-10 w-full"
+            />
+            <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          </div>
+        </div>
+      </div>
 
-      <TabsContent value="experiencias">
-  <div className="mt-8 flex flex-col items-center justify-center gap-6">
-    <div className="flex flex-col md:flex-row gap-4 items-center">
-      <div className="flex flex-col items-start gap-2">
+      {/* Filtros rápidos */}
+      <div className="flex flex-wrap gap-4 w-full">
+        <QuickFilter
+          label="Tipo de Alojamiento"
+          options={lodgingOptions}
+          selected={selectedLodgingTypes}
+          setSelected={setSelectedLodgingTypes}
+        />
+        <QuickFilter
+          label="Tipo de Transporte"
+          options={[
+            { label: "Aéreo", value: "air", icon: Plane },
+            { label: "Marítimo", value: "sea", icon: Ship },
+            { label: "Terrestre", value: "land", icon: Bus },
+          ]}
+          selected={selectedTransportTypes}
+          setSelected={setSelectedTransportTypes}
+        />
+        <QuickFilter
+          label="Tipo de Experiencia"
+          options={experiencesOptions}
+          selected={selectedExperiences}
+          setSelected={setSelectedExperiences}
+        />
+      </div>
+    </div>
+
+    <div className="w-full md:w-[20%] flex justify-end">
+      <Button className="bg-primary w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+        <Search className="mr-2 h-4 w-4" />
+        Buscar
+      </Button>
+    </div>
+  </div>
+</TabsContent>
+
+<TabsContent value="experiencias">
+  <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-4">
+    <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+      {/* Fechas */}
+      <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
         <label className="text-sm font-medium">Fechas</label>
-        <div className="relative w-[280px]">
+        <div className="relative w-full">
           <DateRangePicker date={range} setDate={setRange} />
         </div>
       </div>
-    </div>
 
-    <div className="flex flex-wrap justify-center gap-2 border border-dashed px-4 py-2 rounded-md">
+      {/* Filtro de experiencia */}
       <QuickFilter
-  label="Tipo de Experiencia"
-  selected={selectedExperiences}
-  setSelected={setSelectedExperiences}
-  options={experiencesOptions}
-/>
-
+        label="Tipo de Experiencia"
+        selected={selectedExperiences}
+        setSelected={setSelectedExperiences}
+        options={experiencesOptions}
+      />
     </div>
 
-    <Button className="mt-2 bg-primary w-[300px] h-[48px] px-6 py-3 text-white hover:bg-primary/90">
-      <Filter className="mr-2 h-4 w-4" />
-      Aplicar Filtros
-    </Button>
+    <div className="w-full md:w-[20%] flex justify-end">
+      <Button className="bg-primary w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+        <Search className="mr-2 h-4 w-4" />
+        Buscar
+      </Button>
+    </div>
   </div>
 </TabsContent>
 
-    </Tabs>
-      </div>
 
-  )
+      </Tabs>
+    </div>
+  );
 }

@@ -7,7 +7,7 @@ import { ThemeProvider } from "next-themes"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Next.js Community Starter",
+  title: "Asfales",
   description: "A modern Next.js starter with theme support",
     generator: 'v0.dev'
 }

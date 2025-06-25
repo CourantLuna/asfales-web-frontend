@@ -16,13 +16,13 @@ export function DateRangePicker({
   setDate: (range: DateRange | undefined) => void
 }) {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2 ">
       <Popover>
         <PopoverTrigger asChild>
           <Button
             id="date"
             variant="outline"
-            className="w-[280px] justify-start text-left font-normal"
+            className="w-full h-12 justify-start text-left font-normal"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
