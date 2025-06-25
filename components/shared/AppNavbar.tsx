@@ -188,15 +188,15 @@ const scrollToTop = (duration = 1000) => {
                 )}
                 {user && (
                   <div
-                    className="flex items-center gap-2  rounded-full p-1  shadow-sm bg-secondary transition-colors hover:bg-muted cursor-pointer"
+                    className="flex items-center gap-2  rounded-lg p-1  shadow-sm bg-secondary transition-colors hover:bg-muted cursor-pointer"
                     role="button"
                     tabIndex={0}
                   >
-                    <Avatar  className="h-10 w-10">
+                    <Avatar  className="h-8 w-8">
                       <AvatarImage src={user.avatar || ""} />
                       <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
-      <span className="text-sm font-medium hidden md:inline text-white mr-2">
+                <span className="text-sm font-medium hidden md:inline text-white mr-1">
                       {getFirstName(user.name)}
                     </span>
                   </div>
