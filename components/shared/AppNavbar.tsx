@@ -112,8 +112,8 @@ const scrollToTop = (duration = 1000) => {
               <Image
                 src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/20-vRibJMLzjhkcZHiTmRHZbI477Lks4r.png"
                 alt="Logo Asfales"
-                width={48}
-                height={48}
+                width={40}
+                height={40}
               />
             </Button>
 
@@ -157,20 +157,20 @@ const scrollToTop = (duration = 1000) => {
             <Button
               size="icon"
               variant="outline"
-              className="rounded-full hidden xl:inline-flex"
+              className="rounded-full hidden xl:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
             >
               <Globe className="h-5 w-5" />
             </Button>
             <Button
               size="icon"
               variant="outline"
-              className="rounded-full hidden lg:inline-flex"
+              className="rounded-full hidden lg:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
             >
               <Bell className="h-5 w-5 " />
             </Button>
             <Button
               variant="outline"
-              className=" rounded-lg text-sm font-medium hidden xl:inline-flex"
+              className=" rounded-lg text-sm font-medium hidden xl:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
             >
               Soporte
             </Button>
@@ -179,11 +179,11 @@ const scrollToTop = (duration = 1000) => {
               <DropdownMenuTrigger className="flex items-center gap-2">
                 {!user && (
                   <div
-                    className="xl:hidden rounded-full p-[10px] bg-white border border-secondary shadow-sm transition-colors hover:border-bg-secondary cursor-pointer"
+                    className="xl:hidden rounded-full p-[10px] bg-white shadow-sm border-0 transition-colors hover:bg-secondary cursor-pointer"
                     role="button"
                     tabIndex={0}
                   >
-                    <User className="w-5 h-5 text-secondary" />
+                    <User className="w-5 h-5" />
                   </div>
                 )}
                 {user && (
