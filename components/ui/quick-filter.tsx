@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
@@ -27,13 +27,28 @@ export function QuickFilter({ label, options, selected, setSelected }: QuickFilt
     )
   }
 
+  // Detect viewport width for responsive logic
+  const [isMdUp, setIsMdUp] = useState(true)
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)")
+    const updateMatch = () => setIsMdUp(media.matches)
+    updateMatch()
+    media.addEventListener("change", updateMatch)
+    return () => media.removeEventListener("change", updateMatch)
+  }, [])
+
+  const badgeLimit = isMdUp ? 2 : 1
+  const visibleBadges = selected.slice(0, badgeLimit)
+  const extraCount = selected.length - visibleBadges.length
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="flex items-start gap-2 border-dashed w-full md:w-[280px] h-12 inline-flex items-center">
+        <Button variant="outline" className="flex justify-start items-center gap-2 border-dashed w-full md:w-auto h-12">
           <Filter className="w-4 h-4" />
           {label}
-          {selected.map((val) => {
+          {visibleBadges.map((val) => {
             const opt = options.find((o) => o.value === val)
             return (
               <span
@@ -44,6 +59,11 @@ export function QuickFilter({ label, options, selected, setSelected }: QuickFilt
               </span>
             )
           })}
+          {extraCount > 0 && (
+            <span className="bg-blue-600 text-white font-medium ml-1 text-xs rounded px-2 py-0.5">
+              +{extraCount}
+            </span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 space-y-2">
