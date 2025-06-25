@@ -54,19 +54,21 @@ export function AppNavbar() {
   const { user, logout } = useAuth();
   const router = useRouter()
 
-  const scrollToTop = (duration = 1000) => {
-    const start = window.scrollY;
-    const startTime = performance.now();
+const scrollToTop = (duration = 1000) => {
+  if (typeof window === "undefined") return;
 
-    const animate = (time: number) => {
-      const elapsed = time - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      window.scrollTo(0, start * (1 - progress));
-      if (progress < 1) requestAnimationFrame(animate);
-    };
+  const start = window.scrollY;
+  const startTime = performance.now();
 
-    requestAnimationFrame(animate);
+  const animate = (time: number) => {
+    const elapsed = time - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, start * (1 - progress));
+    if (progress < 1) requestAnimationFrame(animate);
   };
+
+  requestAnimationFrame(animate);
+};
 
   // Validación del token al montar (por seguridad futura)
   useEffect(() => {
@@ -98,20 +100,20 @@ export function AppNavbar() {
         </div>
 
         {/* Contenido principal del navbar */}
-        <div className="flex items-center justify-between pt-8 pl-4 md:pl-12 md:mt-5">
+        <div className="flex items-center justify-between pt-6 pl-4 md:pl-12 md:mt-5">
           {/* Logo + menú móvil */}
           <div className="flex items-center gap-6 pr-5 md:ml-5">
             <Button
               variant="ghost"
               size="icon"
-              className="p-0 rounded-full"
-              onClick={() => scrollToTop(300)}
+              className="p-0 rounded-full w-full"
+              onClick={() => scrollToTop(400)}
             >
               <Image
                 src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/20-vRibJMLzjhkcZHiTmRHZbI477Lks4r.png"
                 alt="Logo Asfales"
-                width={40}
-                height={40}
+                width={48}
+                height={48}
               />
             </Button>
 
@@ -155,7 +157,7 @@ export function AppNavbar() {
             <Button
               size="icon"
               variant="outline"
-              className="rounded-full hidden lg:inline-flex"
+              className="rounded-full hidden xl:inline-flex"
             >
               <Globe className="h-5 w-5" />
             </Button>
@@ -166,29 +168,35 @@ export function AppNavbar() {
             >
               <Bell className="h-5 w-5 " />
             </Button>
-             <Button
+            <Button
               variant="outline"
               className=" rounded-lg text-sm font-medium hidden xl:inline-flex"
             >
               Soporte
             </Button>
-            
 
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2">
                 {!user && (
-                  <div className="xl:hidden rounded-full bg-white p-[10px]" >
-                      <User className="w-5 h-5" />
+                  <div
+                    className="xl:hidden rounded-full p-[10px] bg-white border border-secondary shadow-sm transition-colors hover:border-bg-secondary cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <User className="w-5 h-5 text-secondary" />
                   </div>
-
                 )}
                 {user && (
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-10 w-10">
+                  <div
+                    className="flex items-center gap-2  rounded-full p-1  shadow-sm bg-secondary transition-colors hover:bg-muted cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <Avatar  className="h-10 w-10">
                       <AvatarImage src={user.avatar || ""} />
                       <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium hidden md:inline text-white">
+      <span className="text-sm font-medium hidden md:inline text-white mr-2">
                       {getFirstName(user.name)}
                     </span>
                   </div>
@@ -197,7 +205,7 @@ export function AppNavbar() {
 
               <DropdownMenuContent
                 align="end"
-                className="w-[375px] mt-4 md:mt-8 mr-4 p-4"
+                className="w-[375px] mt-4 md:mt-4 p-4 md:mr-2"
               >
                 {user && (
                   <div>
@@ -269,36 +277,31 @@ export function AppNavbar() {
                 )}
 
                 <DropdownMenuItem className="flex lg:hidden">
-                      <Bell className="mr-2 h-4 w-4" />
-                      Notificaciones
-                    </DropdownMenuItem>
+                  <Bell className="mr-2 h-4 w-4" />
+                  Notificaciones
+                </DropdownMenuItem>
 
-                  <Separator className="my-2 px-4" />
-
+                <Separator className="flex lg:hidden my-2 px-4" />
 
                 <DropdownMenuItem className="flex xl:hidden">
                   <HelpCircle className="mr-2 h-4 w-4" />
                   Soporte
                 </DropdownMenuItem>
 
-
-
-                <DropdownMenuItem className="flex lg:hidden">
+                <DropdownMenuItem className="flex xl:hidden">
                   <Globe className="mr-2 h-4 w-4" />
                   Region
                 </DropdownMenuItem>
 
-                
-
                 {user && (
                   <div>
-                    <Separator className="my-2 px-4" />
+                    <Separator className=" flex xl:hidden my-2 px-4" />
 
                     <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
                       Perfil
                     </DropdownMenuItem>
-                    
+
                     <DropdownMenuItem>
                       <div className="w-full flex  justify-between items-center">
                         <div className="w-full inline-flex items-center gap-2">
@@ -317,7 +320,6 @@ export function AppNavbar() {
                     </DropdownMenuItem>
                   </div>
                 )}
-                
               </DropdownMenuContent>
               {!user && (
                 <div className="hidden lg:block">
@@ -329,17 +331,14 @@ export function AppNavbar() {
                     Iniciar sesión
                   </Button>
                 </div>
-            )}
+              )}
             </DropdownMenu>
-
-            
           </div>
-
         </div>
       </div>
 
       {/* Navigation inferior en desktop */}
-      <div className="absolute top-14 left-[140px] z-50 hidden lg:flex justify-start px-4 w-[90%] md:px-8 pointer-events-none">
+      <div className="absolute top-12 left-[140px] z-50 hidden lg:flex justify-start px-4 w-[90%] md:px-8 pointer-events-none">
         <NavigationMenu className="relative pointer-events-auto">
           <NavigationMenuList className="flex gap-5 xl:gap-12 ">
             {[

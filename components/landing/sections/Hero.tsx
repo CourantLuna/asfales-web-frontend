@@ -8,7 +8,14 @@ const [startAnimation, setStartAnimation] = useState(false);
 const [hidePlane, setHidePlane] = useState(false);
 
  useEffect(() => {
-  window.scrollTo(0, 0);
+  const resetScroll = () => {
+      document.body.style.overflow = "hidden";
+
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  };
+  setTimeout(() => {
+    requestAnimationFrame(resetScroll);
+  }, 0);
   document.body.style.overflow = "hidden";
 
   const timer = requestAnimationFrame(() => {
