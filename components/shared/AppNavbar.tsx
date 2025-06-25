@@ -43,6 +43,7 @@ import {
   List,
   Heart,
   ChevronRight,
+  Gift,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -77,7 +78,7 @@ export function AppNavbar() {
   return (
     <header className="relative w-full z-30">
       {/* Sticky nav */}
-      <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8">
+      <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8 pr-[18px]">
         {/* SVG background */}
         <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[120px]">
           <svg
@@ -150,32 +151,36 @@ export function AppNavbar() {
           </div>
 
           {/* Perfil, idioma, notificaciones */}
-          <div className="flex items-center gap-5 pr-3 md:pr-[50px] z-10">
+          <div className="flex items-center gap-4 pr-3 md:pr-[50px] z-10">
             <Button
               size="icon"
-              variant="secondary"
+              variant="outline"
               className="rounded-full hidden lg:inline-flex"
             >
               <Globe className="h-5 w-5" />
             </Button>
             <Button
               size="icon"
-              variant="secondary"
+              variant="outline"
               className="rounded-full hidden lg:inline-flex"
             >
               <Bell className="h-5 w-5 " />
             </Button>
+             <Button
+              variant="outline"
+              className=" rounded-lg text-sm font-medium hidden xl:inline-flex"
+            >
+              Soporte
+            </Button>
+            
 
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2">
                 {!user && (
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="rounded-full"
-                  >
-                    <User className="w-5 h-5" />
-                  </Button>
+                  <div className="xl:hidden rounded-full bg-white p-[10px]" >
+                      <User className="w-5 h-5" />
+                  </div>
+
                 )}
                 {user && (
                   <div className="flex items-center gap-2">
@@ -227,15 +232,63 @@ export function AppNavbar() {
                   </div>
                 )}
 
-                <DropdownMenuItem>
+                {!user && (
+                  <>
+                    <div className="flex items-center gap-4 rounded-xl border border-muted bg-muted/50 p-4">
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Gift className="w-10 h-10 text-primary" />
+                      </div>
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Viajar cuesta{" "}
+                        <span className="font-bold text-primary">
+                          10 % menos
+                        </span>{" "}
+                        con <span className="font-semibold">GoFar</span>. Inicia
+                        sesión y activa tus beneficios.
+                      </div>
+                    </div>
+                    <div className=" w-full px-4 mb-2">
+                      <Button
+                        className="rounded-lg w-full"
+                        onClick={() => router.push("/login")}
+                      >
+                        Iniciar sesión
+                      </Button>
+                    </div>
+                    <div className=" w-full px-4 mb-2">
+                      <Button
+                        className="rounded-lg w-full"
+                        variant={"link"}
+                        onClick={() => console.log("Informate aqui")}
+                      >
+                        Más infromación sobre Asfales Rewards
+                        <ChevronRight className="mr-2 h-4 w-4 inline-flex items-center" />
+                      </Button>
+                    </div>
+                  </>
+                )}
+
+                <DropdownMenuItem className="flex lg:hidden">
+                      <Bell className="mr-2 h-4 w-4" />
+                      Notificaciones
+                    </DropdownMenuItem>
+
+                  <Separator className="my-2 px-4" />
+
+
+                <DropdownMenuItem className="flex xl:hidden">
                   <HelpCircle className="mr-2 h-4 w-4" />
-                  Ayuda
+                  Soporte
                 </DropdownMenuItem>
+
+
 
                 <DropdownMenuItem className="flex lg:hidden">
                   <Globe className="mr-2 h-4 w-4" />
                   Region
                 </DropdownMenuItem>
+
+                
 
                 {user && (
                   <div>
@@ -245,10 +298,7 @@ export function AppNavbar() {
                       <User className="mr-2 h-4 w-4" />
                       Perfil
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="flex lg:hidden">
-                      <Bell className="mr-2 h-4 w-4" />
-                      Notificaciones
-                    </DropdownMenuItem>
+                    
                     <DropdownMenuItem>
                       <div className="w-full flex  justify-between items-center">
                         <div className="w-full inline-flex items-center gap-2">
@@ -267,10 +317,9 @@ export function AppNavbar() {
                     </DropdownMenuItem>
                   </div>
                 )}
+                
               </DropdownMenuContent>
-            </DropdownMenu>
-            {!user && (
-              <div>
+              {!user && (
                 <div className="hidden lg:block">
                   <Button
                     variant="secondary"
@@ -280,48 +329,12 @@ export function AppNavbar() {
                     Iniciar sesión
                   </Button>
                 </div>
-
-                <div className="lg:hidden">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="rounded-full"
-                      >
-                        <User className="w-5 h-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-[75vw] mt-4 md:mt-8 mr-2"
-                    >
-                      <div className="px-3 py-2 text-lg font-bold text-center">
-                        Accede y desbloquea los Beneficios de ser MIEMBRO
-                      </div>
-                      <div className=" w-full px-4 mb-2">
-                        <Button
-                          className="rounded-lg w-full"
-                          onClick={() => router.push("/login")}
-                        >
-                          Iniciar sesión
-                        </Button>
-                      </div>
-                      <div className=" w-full px-4 mb-2">
-                        <Button
-                          className="rounded-lg w-full"
-                          variant={"outline"}
-                          onClick={() => console.log("Informate aqui")}
-                        >
-                          Informate aquí
-                        </Button>
-                      </div>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
             )}
+            </DropdownMenu>
+
+            
           </div>
+
         </div>
       </div>
 

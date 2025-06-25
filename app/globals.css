@@ -59,14 +59,7 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+
 
 /* Esto evita que desaparezca el scrollbar y genere salto de layout. */
 html {
@@ -90,3 +83,8 @@ html {
 
   
 }
+
+body[data-scroll-locked] {
+  margin-right: 0 !important;
+}
+
