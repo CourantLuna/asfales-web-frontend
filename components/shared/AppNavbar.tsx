@@ -22,6 +22,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge"
+
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -34,10 +36,18 @@ import {
   CalendarCheck,
   MapPinned,
   Menu,
+  Circle,
+  MessageCircleQuestion,
+  HelpCircle,
+  Info,
+  List,
+  Heart,
+  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useEffect } from "react";
+import { Separator } from "../ui/separator";
 
 export function AppNavbar() {
   const { user, logout } = useAuth();
@@ -114,7 +124,9 @@ export function AppNavbar() {
                 </SheetTrigger>
                 <SheetContent side="left">
                   <SheetHeader>
-                    <SheetTitle className="text-left text-lg">Explorar</SheetTitle>
+                    <SheetTitle className="text-left text-lg">
+                      Explorar
+                    </SheetTitle>
                   </SheetHeader>
                   <nav className="mt-6 space-y-4">
                     {[
@@ -154,72 +166,161 @@ export function AppNavbar() {
               <Bell className="h-5 w-5 " />
             </Button>
 
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.avatar || ""} />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium hidden md:inline text-white">
-                    {getFirstName(user.name)}
-                  </span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem className="flex lg:hidden">
-                    <Globe className="mr-2 h-4 w-4" />
-                    Idioma
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex lg:hidden">
-                    <Bell className="mr-2 h-4 w-4" />
-                    Notificaciones
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    Perfil
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={logout}>Cerrar sesión</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-  <div>
-    <div className="hidden lg:block">
-    <Button
-    variant="secondary"
-    className="rounded-lg text-sm font-medium"
-    onClick={() => window.location.href = "/login"}
-  >
-    Iniciar sesión
-  </Button>
-  </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2">
+                {!user && (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="rounded-full"
+                  >
+                    <User className="w-5 h-5" />
+                  </Button>
+                )}
+                {user && (
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user.avatar || ""} />
+                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium hidden md:inline text-white">
+                      {getFirstName(user.name)}
+                    </span>
+                  </div>
+                )}
+              </DropdownMenuTrigger>
 
-  <div className="lg:hidden">
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="outline" className="rounded-full">
-          <User className="w-5 h-5" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[75vw] mt-4 md:mt-8 mr-2">
-        <div className="px-3 py-2 text-lg font-bold text-center">
-          Accede y desbloquea los Beneficios de ser MIEMBRO
-        </div>
-        <div className=" w-full px-4 mb-2">
-          <Button className="rounded-lg w-full"  onClick={() => router.push("/login")}>
-                Iniciar sesión
-        </Button>
-        </div>
-        <div className=" w-full px-4 mb-2">
-          <Button className="rounded-lg w-full" variant={"outline"}  onClick={() => console.log("Informate aqui")}>
-                Informate aquí
-        </Button>
-        </div>
-        
-      </DropdownMenuContent>
-    </DropdownMenu>
-  </div>
-  </div>
-)}
+              <DropdownMenuContent
+                align="end"
+                className="w-[375px] mt-4 md:mt-8 mr-4 p-4"
+              >
+                {user && (
+                  <div>
+                    {/* Header usuario */}
+                    <div className="pt-3 pb-4 space-y-2 inline-flex w-full justify-between px-2">
+                      <div className="flex flex-col items-start space-y-1">
+                        <div className="text-sm font-semibold">
+                          ¡Hola, {getFirstName(user.name)}!
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {user.email}
+                        </div>
+                      </div>
+                      <Badge variant="secondary">Miembro Blue</Badge>
+                    </div>
+                    {/* Rewards & promo */}
+                    <DropdownMenuItem className="flex flex-col items-start gap-1 w-full mb-2">
+                      <div className="text-sm font-semibold">$0.00</div>
+                      <div className="text-xs font-medium w-full text-muted-foreground inline-flex justify-between">
+                        <p>Valor de los puntos acumulados</p>
+                        <Info className="mr-2 h-4 w-4" />
+                      </div>
+
+                      <div className="w-full flex justify-between items-center mt-4">
+                        <span className="text-xs text-primary hover:underline">
+                          Ver actividad de recompensas
+                        </span>
+                        <ChevronRight className="mr-2 h- w-4 inline-flex items-center" />
+                      </div>
+                    </DropdownMenuItem>
+                    <Separator className="my-2 px-4" />
+                  </div>
+                )}
+
+                <DropdownMenuItem>
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  Ayuda
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="flex lg:hidden">
+                  <Globe className="mr-2 h-4 w-4" />
+                  Region
+                </DropdownMenuItem>
+
+                {user && (
+                  <div>
+                    <Separator className="my-2 px-4" />
+
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      Perfil
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex lg:hidden">
+                      <Bell className="mr-2 h-4 w-4" />
+                      Notificaciones
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <div className="w-full flex  justify-between items-center">
+                        <div className="w-full inline-flex items-center gap-2">
+                          <Heart className="mr-2 h-4 w-4" />
+                          Mi lista de deseos
+                        </div>
+
+                        <ChevronRight className="mr-2 h- w-4 inline-flex items-center" />
+                      </div>
+                    </DropdownMenuItem>
+
+                    <Separator className="my-2 px-4" />
+
+                    <DropdownMenuItem onClick={logout}>
+                      Cerrar sesión
+                    </DropdownMenuItem>
+                  </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {!user && (
+              <div>
+                <div className="hidden lg:block">
+                  <Button
+                    variant="secondary"
+                    className="rounded-lg text-sm font-medium"
+                    onClick={() => (window.location.href = "/login")}
+                  >
+                    Iniciar sesión
+                  </Button>
+                </div>
+
+                <div className="lg:hidden">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="rounded-full"
+                      >
+                        <User className="w-5 h-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-[75vw] mt-4 md:mt-8 mr-2"
+                    >
+                      <div className="px-3 py-2 text-lg font-bold text-center">
+                        Accede y desbloquea los Beneficios de ser MIEMBRO
+                      </div>
+                      <div className=" w-full px-4 mb-2">
+                        <Button
+                          className="rounded-lg w-full"
+                          onClick={() => router.push("/login")}
+                        >
+                          Iniciar sesión
+                        </Button>
+                      </div>
+                      <div className=" w-full px-4 mb-2">
+                        <Button
+                          className="rounded-lg w-full"
+                          variant={"outline"}
+                          onClick={() => console.log("Informate aqui")}
+                        >
+                          Informate aquí
+                        </Button>
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
