@@ -9,6 +9,7 @@ import SearchBoxOverlay from "@/components/landing/sections/SearchBoxOverlay"
 import ComparisonDemo from "@/components/landing/sections/ComparisonDemo"
 import ExploreItineraries from "@/components/landing/sections/ExploreItineraries"
 import SearchResultsPanel from "@/components/landing/sections/SearchResultsPanel"
+import { NavigationMenuDemo } from "../shared/NavigationMenu"
 
 export default function LandingPage() {
   const [searchValues, setSearchValues] = useState<{ origin: string, destination: string } | null>(null)

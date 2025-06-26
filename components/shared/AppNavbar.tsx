@@ -1,14 +1,15 @@
 "use client"
 import { useRouter } from "next/navigation"
-
+import { NavigationMenuDemo } from "./NavigationMenu";
 
 import {
   NavigationMenu,
-  NavigationMenuItem,
   NavigationMenuList,
+  NavigationMenuItem,
   NavigationMenuTrigger,
   NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,15 +45,24 @@ import {
   Heart,
   ChevronRight,
   Gift,
+  Ship,
+  Bus,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useEffect } from "react";
 import { Separator } from "../ui/separator";
+import Link from "next/link";
 
 export function AppNavbar() {
   const { user, logout } = useAuth();
   const router = useRouter()
+   const menuItems  = [
+    { label: "Transporte", icon: Plane },
+    { label: "Alojamientos", icon: Hotel },
+    { label: "Itinerarios", icon: CalendarCheck },
+    { label: "Experiencias", icon: MapPinned },
+  ];
 
 const scrollToTop = (duration = 1000) => {
   if (typeof window === "undefined") return;
@@ -84,7 +94,7 @@ const scrollToTop = (duration = 1000) => {
         {/* SVG background */}
         <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[120px]">
           <svg
-            width="1366"
+            width="w-full"
             height="106"
             viewBox="0 0 1366 106"
             fill="none"
@@ -153,7 +163,7 @@ const scrollToTop = (duration = 1000) => {
           </div>
 
           {/* Perfil, idioma, notificaciones */}
-          <div className="flex items-center gap-4 pr-3 md:pr-[50px] z-10">
+          <div className="flex items-center gap-4 pr-4 md:pr-[50px] z-10">
             <Button
               size="icon"
               variant="outline"
@@ -176,8 +186,23 @@ const scrollToTop = (duration = 1000) => {
             </Button>
 
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2">
-                {!user && (
+              <DropdownMenuTrigger asChild>
+                {user ? (
+                  <div
+                    className="flex items-center gap-2 rounded-lg p-1 shadow-sm bg-secondary transition-colors hover:bg-muted cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.avatar || ""} />
+                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium hidden md:inline text-white mr-1">
+                      {getFirstName(user.name)}
+                    </span>
+                  </div>
+                ) : (
+                  // Este botón solo aparece cuando se abre el dropdown, y no ocupa espacio cuando está cerrado.
                   <div
                     className="xl:hidden rounded-full p-[10px] bg-white shadow-sm border-0 transition-colors hover:bg-secondary cursor-pointer"
                     role="button"
@@ -186,28 +211,13 @@ const scrollToTop = (duration = 1000) => {
                     <User className="w-5 h-5" />
                   </div>
                 )}
-                {user && (
-                  <div
-                    className="flex items-center gap-2  rounded-lg p-1  shadow-sm bg-secondary transition-colors hover:bg-muted cursor-pointer"
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <Avatar  className="h-8 w-8">
-                      <AvatarImage src={user.avatar || ""} />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                <span className="text-sm font-medium hidden md:inline text-white mr-1">
-                      {getFirstName(user.name)}
-                    </span>
-                  </div>
-                )}
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
-                align="end"
-                className="w-[375px] mt-4 md:mt-4 p-4 md:mr-2"
+                align="center"
+                className="w-[375px] mt-8 md:mt-8 lg:mt-12 mr-6 md:mr-8 lg:mr-12 xl:hidden"
               >
-                {user && (
+                               {user && (
                   <div>
                     {/* Header usuario */}
                     <div className="pt-3 pb-4 space-y-2 inline-flex w-full justify-between px-2">
@@ -229,6 +239,7 @@ const scrollToTop = (duration = 1000) => {
                         <Info className="mr-2 h-4 w-4" />
                       </div>
 
+
                       <div className="w-full flex justify-between items-center mt-4">
                         <span className="text-xs text-primary hover:underline">
                           Ver actividad de recompensas
@@ -239,6 +250,7 @@ const scrollToTop = (duration = 1000) => {
                     <Separator className="my-2 px-4" />
                   </div>
                 )}
+
 
                 {!user && (
                   <>
@@ -259,6 +271,7 @@ const scrollToTop = (duration = 1000) => {
                       <Button
                         className="rounded-lg w-full"
                         onClick={() => router.push("/login")}
+                       
                       >
                         Iniciar sesión
                       </Button>
@@ -276,31 +289,38 @@ const scrollToTop = (duration = 1000) => {
                   </>
                 )}
 
+
                 <DropdownMenuItem className="flex lg:hidden">
                   <Bell className="mr-2 h-4 w-4" />
                   Notificaciones
                 </DropdownMenuItem>
 
+
                 <Separator className="flex lg:hidden my-2 px-4" />
+
 
                 <DropdownMenuItem className="flex xl:hidden">
                   <HelpCircle className="mr-2 h-4 w-4" />
                   Soporte
                 </DropdownMenuItem>
 
+
                 <DropdownMenuItem className="flex xl:hidden">
                   <Globe className="mr-2 h-4 w-4" />
                   Region
                 </DropdownMenuItem>
 
+
                 {user && (
                   <div>
                     <Separator className=" flex xl:hidden my-2 px-4" />
+
 
                     <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
                       Perfil
                     </DropdownMenuItem>
+
 
                     <DropdownMenuItem>
                       <div className="w-full flex  justify-between items-center">
@@ -309,11 +329,14 @@ const scrollToTop = (duration = 1000) => {
                           Mi lista de deseos
                         </div>
 
+
                         <ChevronRight className="mr-2 h- w-4 inline-flex items-center" />
                       </div>
                     </DropdownMenuItem>
 
+
                     <Separator className="my-2 px-4" />
+
 
                     <DropdownMenuItem onClick={logout}>
                       Cerrar sesión
@@ -321,6 +344,8 @@ const scrollToTop = (duration = 1000) => {
                   </div>
                 )}
               </DropdownMenuContent>
+
+              {/* Este botón aparece en lg+ cuando el usuario no ha iniciado sesión */}
               {!user && (
                 <div className="hidden lg:block">
                   <Button
@@ -338,28 +363,31 @@ const scrollToTop = (duration = 1000) => {
       </div>
 
       {/* Navigation inferior en desktop */}
-      <div className="absolute top-12 left-[140px] z-50 hidden lg:flex justify-start px-4 w-[90%] md:px-8 pointer-events-none">
-        <NavigationMenu className="relative pointer-events-auto">
-          <NavigationMenuList className="flex gap-5 xl:gap-12 ">
-            {[
-              { label: "Transporte", icon: Plane },
-              { label: "Alojamientos", icon: Hotel },
-              { label: "Itinerarios", icon: CalendarCheck },
-              { label: "Experiencias", icon: MapPinned },
-            ].map(({ label, icon: Icon }) => (
-              <NavigationMenuItem key={label}>
-                <NavigationMenuTrigger className="flex items-center gap-1 px-2 py-1 border border-transparent bg-transparent hover:border-[#FFA500] focus:bg-white focus:text-foreground focus:border-white data-[state=open]:bg-white data-[state=open]:text-foreground data-[state=open:border-white transition-all">
-                  <Icon className="h-4 w-4" />
-                  <span className="text-sm">{label}</span>
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-none shadow-none border-none">
-                  <div className="p-4 text-sm">Submenú de {label}</div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+
+      <div className="absolute top-12 left-[140px] z-50 hidden lg:flex w-[90%] justify-start px-4 md:px-8 pointer-events-none">
+        <NavigationMenuDemo></NavigationMenuDemo>
       </div>
+
+      {/* <div className="absolute top-12 left-[140px] z-50 hidden lg:flex w-[90%] justify-start px-4 md:px-8 pointer-events-none">
+      <NavigationMenu className="relative pointer-events-auto">
+        <NavigationMenuList className="flex gap-5 xl:gap-12">
+          {menuItems.map(({ label, icon: Icon }) => (
+            <NavigationMenuItem key={label}>
+              <NavigationMenuTrigger className="group flex items-center gap-1 rounded-md px-3 py-2 border border-transparent bg-transparent transition-colors hover:border-[#FFA500] hover:bg-muted/20 focus:bg-white focus:text-foreground focus:border-white data-[state=open]:bg-white data-[state=open]:text-foreground data-[state=open]:border-white">
+                <Icon className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:-rotate-45" />
+                <span className="text-sm">{label}</span>
+              </NavigationMenuTrigger>
+
+              <NavigationMenuContent className="bg-white border shadow-md rounded-md p-4 mt-2">
+                <div className="text-sm text-muted-foreground">
+                  Aquí iría el submenú de <strong>{label}</strong>.
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div> */}
     </header>
   );
 }
