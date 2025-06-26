@@ -22,7 +22,12 @@ const slides = [
     description: "Tu próxima aventura comienza aquí. Compara, planea y viaja.",
   },
   {
-    image: "/slides/slide2.jpg",
+    image: "https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/kenny-krosky-2xjk8WWLFC4-unsplash-byOEQMlZx8asiMNaN1oLGIqZt9siUQ.jpg",
+    title: "Descubre experiencias únicas",
+    description: "Reserva actividades y alojamientos en un solo lugar.",
+  },
+  {
+    image: "https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/ethan-hoover-mHmOArWg2wY-unsplash%20%281%29-AAPgPPt8eiuNglT19U9Rzm7JlhmZFn.jpg",
     title: "Descubre experiencias únicas",
     description: "Reserva actividades y alojamientos en un solo lugar.",
   },
@@ -57,7 +62,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className=" h-screen flex flex-col lg:flex-row p-1">
+    <div className=" h-screen flex flex-col lg:flex-row">
       {/* Imagen de fondo con overlay y búsqueda */}
       <div
         className="absolute inset-0 -z-10 bg-cover bg-center pointer-events-none"
@@ -65,11 +70,11 @@ export default function LoginPage() {
           backgroundImage: `url('https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/Firefly%20la%20vista%20es%20desde%20encima%20de%20las%20nubes%2C%20vista%20desde%20un%20avion%2C%20en%20la%20toma%20hay%20nubes%20por%20arriba%20%281%29-OhzihO4aGu38K4tHjMwiVAhWXOLcPP.jpg')`,
         }}
       >
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-sm" />
       </div>
 
       {/* Slideshow izquierdo solo en desktop */}
-      <div className="hidden lg:flex w-1/2">
+      <div className="hidden lg:flex w-1/2 p-2">
         <div className="w-full h-full">
           <SlidesShow slides={slides} aspectRatio="filled" />
         </div>
