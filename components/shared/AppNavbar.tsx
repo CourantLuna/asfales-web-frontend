@@ -350,7 +350,7 @@ const scrollToTop = (duration = 1000) => {
                 <div className="hidden lg:block">
                   <Button
                     variant="secondary"
-                    className="rounded-lg text-sm font-medium"
+                    className="rounded-lg text-sm font-medium hover:underline hover:bg-muted/50"
                     onClick={() => (window.location.href = "/login")}
                   >
                     Iniciar sesión
