@@ -163,7 +163,7 @@ const scrollToTop = (duration = 1000) => {
           </div>
 
           {/* Perfil, idioma, notificaciones */}
-          <div className="flex items-center gap-4 pr-4 md:pr-[50px] z-10">
+          <div className="flex items-center gap-4 pr-4 md:pr-5 lg:pr-16 2xl:pr-24 z-10">
             <Button
               size="icon"
               variant="outline"
@@ -214,8 +214,8 @@ const scrollToTop = (duration = 1000) => {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
-                align="center"
-                className="w-[375px] mt-8 md:mt-8 lg:mt-12 mr-6 md:mr-8 lg:mr-12 xl:hidden"
+                align="end"
+                className="w-[375px] mt-8 md:mt-8 lg:mt-12  "
               >
                                {user && (
                   <div>
