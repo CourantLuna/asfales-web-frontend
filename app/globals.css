@@ -67,6 +67,12 @@ html {
   
 }
 
+/* También en globals.css o un archivo importado globalmente */
+html.disable-scrollbar-gutter {
+  scrollbar-gutter: auto !important;
+}
+
+
 /* Estilos opcionales para la scrollbar en Chrome, Edge y Safari */
 ::-webkit-scrollbar {
   width: 8px;
