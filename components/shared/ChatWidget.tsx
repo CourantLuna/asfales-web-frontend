@@ -24,10 +24,11 @@ export default function ChatWidget() {
       {/* FAB Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        size="icon"
+        
         className="fixed bottom-6 right-6 z-40 rounded-full bg-primary text-white shadow-lg hover:bg-primary/90"
       >
-        <MessageSquare className="w-5 h-5" />
+        <MessageSquare className="w-8 h-8" />
+        Ayuda
       </Button>
 
       {/* Backdrop */}
