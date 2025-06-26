@@ -4,6 +4,8 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import { ScrollbarControl } from "./client-scroll-handler" // 👈
+import SupportChat from "@/components/shared/SupporChat"
+import ChatWidget from "@/components/shared/ChatWidget"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,6 +31,8 @@ export default function RootLayout({
         >
           <ScrollbarControl /> {/* 👈 Aquí se activa/desactiva según la ruta */}
           {children}
+                {/* <SupportChat /> */}
+<ChatWidget />
         </ThemeProvider>
       </body>
     </html>

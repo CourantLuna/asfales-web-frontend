@@ -8,8 +8,7 @@ import { Combobox } from "../../ui/combobox";
 import CustomTable, { Action, Column, RowData } from "@/components/shared/CustomTable";
 
 const transportColumns: Column[] = [
-  { field: 'provider', header: 'Proveedor', type: 'text' },
-  { field: 'images', header: '', type: 'images' },
+  { field: 'images', header: '', type: 'images', aspectRatio: '16:9' },
   { field: 'route', header: 'Ruta', type: 'text' },
   {
     header: "Calificación",
@@ -48,7 +47,7 @@ const transportData = [
       { label: "Asiento reclinable", included: true },
       { label: "Comida incluida", included: true },
     ],
-    images: [["/flights/iberia-1.jpg", "/flights/iberia-2.jpg", "/flights/iberia-3.jpg"]],
+    images: [["https://grupo.iberia.com/contents/archives/475/109/images/thumb255x185_auto/af-iberia-vp-rgb-pos-5b503_thumb.jpg"]],
   },
   {
     provider: "Air Europa",
@@ -66,7 +65,7 @@ const transportData = [
       { label: "Asiento reclinable", included: true },
       { label: "Comida incluida", included: true },
     ],
-    images: [["/flights/aireuropa-1.jpg"]],
+    images: [["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzABxXr9C4Ab02ty36hyfTrdxu8JSl4tgt0A&s"]],
   },
   {
     provider: "Expreso Bávaro",
@@ -139,7 +138,10 @@ const lodgingData: RowData[] = [
       { label: "Mascotas permitidas", included: false },
       { label: "Cocina privada", included: false },
     ],
-    images: [["/hotels/riu-1.jpg", "/hotels/riu-2.jpg", "/hotels/riu-3.jpg"]],
+    images: [["https://static.hosteltur.com/app/public/uploads/img/articles/2024/11/27/L_121748_riu-plaza-espana-una-experiencia-inolvidable-en-el-corazon-de-madrid.jpg",
+       "https://www.nexotur.com/fotos/1/ZESclientes_tcm49-239665_thumb_690.jpg", 
+       "https://cf.bstatic.com/xdata/images/hotel/max1024x768/217552037.jpg?k=396e6abf6fc4d566a0fcad9bdeec17fcd61c17f021514f9b66b0d93672bf9424&o=",
+      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/217566660.jpg?k=10c46ec9e8725bffcf1279c635dad2f991a7d13733b987d370927410cd5ea699&o="]],
   },
   {
     provider: "ME Reina Victoria",
@@ -159,7 +161,9 @@ const lodgingData: RowData[] = [
       { label: "Mascotas permitidas", included: true },
       { label: "Cocina privada", included: false },
     ],
-    images: [["/hotels/me-1.jpg", "/hotels/me-2.jpg", "/hotels/me-3.jpg"]],
+    images: [["https://lh3.googleusercontent.com/p/AF1QipNbzueTgIn06dNNTpNQxXjNy_-qYp5JcvQLi0YG=s680-w680-h510-rw", 
+      "https://lh3.googleusercontent.com/p/AF1QipPEkobfRHPVRmliKTTHK_3Us9CARuCvKJ3w_yn3=s680-w680-h510-rw", 
+      "https://lh3.googleusercontent.com/gps-cs-s/AC9h4npICfOtNhYp60mgR2DXrl3J0YY2sn7KbHmCRRfNZgwwaqrJFRamhaQjEv6O7Ubuq7W1OqAnGwoQJzs4UvHrNUFdNhfRrrNyQpx196p1OWYkvCca_aWs7kL2QFOpj0oNmXLsEyOYeg=s680-w680-h510-rw"]],
   },
   {
     provider: "Madrid Centro Apt.",
@@ -179,7 +183,8 @@ const lodgingData: RowData[] = [
       { label: "Mascotas permitidas", included: false },
       { label: "Cocina privada", included: true },
     ],
-    images: [["/hotels/apart-1.jpg", "/hotels/apart-2.jpg"]],
+    images: [["https://lh3.googleusercontent.com/proxy/qV87l1j9u-PP8L8qXlRBXHvcDbVt_j4SpzTwLHD287vPtzXmFCSQVCtqr75MGEBMjoG7RuoxL4qLYd_zp-hvZCCMQmSAU97fGCbla_ZgOkzGnNG1W5KWZQ_y4lOux4oO-kBSUARdOB7-2D-fi6wbYxKm86gnc3c=s680-w680-h510-rw",
+       "https://lh3.googleusercontent.com/proxy/7HuDrOCaUjuTJXgf356Cps_SL5LSkHjNKhyfvbQfzt8X34rMUOhSTZeRCsrUACcjdDXjO0UphdYODqWBsNLP-yQucmeDGPkgnUg-57KWxBAb1WGUWHHLQ3y6k42v45nFiGR0dxIsx4cMmfOG6lpVKGbtyrK-ffY=s680-w680-h510-rw"]],
   },
 ];
 const lodgingActions: Action[] = [
