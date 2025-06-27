@@ -21,7 +21,7 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
   `;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 border-b">
+    <div className="w-full h-full max-w-7xl mx-auto px-4 py-8 border-b">
       <Tabs value={activeTab} className="mt-[130px] flex justify-center border-b-2">
         <TabsList className="bg-transparent grid  grid-cols-3">
           <TabsTrigger value="notifications" asChild className={classNameTab}>
