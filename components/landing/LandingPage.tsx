@@ -1,5 +1,7 @@
 "use client"
 
+import { useAuth } from "@/lib/hooks/useAuth"
+
 import { useRef, useState } from "react"
 import { AppNavbar } from "@/components/shared/AppNavbar"
 import Hero from "@/components/landing/sections/Hero"
@@ -9,11 +11,15 @@ import SearchBoxOverlay from "@/components/landing/sections/SearchBoxOverlay"
 import ComparisonDemo from "@/components/landing/sections/ComparisonDemo"
 import ExploreItineraries from "@/components/landing/sections/ExploreItineraries"
 import SearchResultsPanel from "@/components/landing/sections/SearchResultsPanel"
-import { NavigationMenuDemo } from "../shared/NavigationMenu"
-
+import FAQSection from "./sections/Faqsection"
+import LandingBanner from "./sections/LandingBanner"
+import ItineraryPlanSection from "./sections/ItineraryPlanSection"
 export default function LandingPage() {
   const [searchValues, setSearchValues] = useState<{ origin: string, destination: string } | null>(null)
 const resultsRef = useRef<HTMLDivElement>(null);
+
+  const { user } = useAuth();
+
 
 function smoothScrollTo(targetY: number, duration = 800) {
   const startY = window.scrollY
@@ -58,7 +64,11 @@ function smoothScrollTo(targetY: number, duration = 800) {
           <>
             <WhyAsfales />
             <ComparisonDemo />
+            <LandingBanner />
+            <ItineraryPlanSection />
             <ExploreItineraries />
+            <FAQSection />
+
           </>
         )}
         </div>

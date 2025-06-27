@@ -1,14 +1,8 @@
 "use client"
-import { useRouter } from "next/navigation"
-import { NavigationMenuDemo } from "./NavigationMenu";
+import { usePathname, useRouter } from "next/navigation"
+import { useAuth } from "@/lib/hooks/useAuth";
 
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-} from "@/components/ui/navigation-menu";
+import { NavigationMenuDemo } from "./NavigationMenu";
 
 import {
   DropdownMenu,
@@ -49,20 +43,28 @@ import {
   Bus,
 } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/lib/hooks/useAuth";
 import { useEffect } from "react";
 import { Separator } from "../ui/separator";
-import Link from "next/link";
 
 export function AppNavbar() {
   const { user, logout } = useAuth();
   const router = useRouter()
-   const menuItems  = [
-    { label: "Transporte", icon: Plane },
-    { label: "Alojamientos", icon: Hotel },
-    { label: "Itinerarios", icon: CalendarCheck },
-    { label: "Experiencias", icon: MapPinned },
-  ];
+    const pathname = usePathname();
+
+
+const handleLogout = () => {
+    logout(); // limpia localStorage y setUser(null)
+
+    // Reconstruye la URL manteniendo la ruta actual y añadiendo ?logout=1
+    const url = `?logout=1`;
+
+    // Cambia la URL sin recargar la app entera
+    router.push(url);
+
+    // // (Opcional) Refresca datos de Server Components si los usas
+    // router.refresh();
+  };
+  
 
 const scrollToTop = (duration = 1000) => {
   if (typeof window === "undefined") return;
@@ -338,7 +340,7 @@ const scrollToTop = (duration = 1000) => {
                     <Separator className="my-2 px-4" />
 
 
-                    <DropdownMenuItem onClick={logout}>
+                    <DropdownMenuItem onClick={handleLogout}>
                       Cerrar sesión
                     </DropdownMenuItem>
                   </div>
@@ -350,7 +352,7 @@ const scrollToTop = (duration = 1000) => {
                 <div className="hidden lg:block">
                   <Button
                     variant="secondary"
-                    className="rounded-lg text-sm font-medium hover:underline hover:bg-muted/50"
+                    className="rounded-lg text-sm font-medium hover:underline hover:bg-muted/50 text-foreground"
                     onClick={() => (window.location.href = "/login")}
                   >
                     Iniciar sesión

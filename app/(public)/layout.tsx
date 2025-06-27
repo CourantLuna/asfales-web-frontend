@@ -1,9 +1,11 @@
+
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "../globals.css"
 import { ThemeProvider } from "next-themes"
 import { AppNavbar } from "@/components/shared/AppNavbar"
+import Footer from "@/components/shared/Footer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,6 +27,7 @@ export default function RootLayout({
           <AppNavbar />
           {children}
         </ThemeProvider>
+        <Footer />
       </body>
     </html>
   )

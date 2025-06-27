@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Combobox } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { DateRange } from "react-day-picker"
-import { DateRangePicker } from "@/components/ui/date-range-picker"
+import  DateRangePicker  from "@/components/ui/date-range-picker"
 import React from "react"
 
 export default function TravelOptionsTabs() {
@@ -124,10 +124,10 @@ const lodgingOptions: FilterOption[] = [
       {/* Fechas y Pasajeros */}
       <div className="flex flex-col md:flex-row gap-4 items-center w-full">
         {/* Fechas */}
-        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+       <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
           <label className="text-sm font-medium">Fechas</label>
           <div className="relative w-full">
-            <DateRangePicker date={range} setDate={setRange} />
+            <DateRangePicker />
           </div>
         </div>
 
@@ -182,7 +182,7 @@ const lodgingOptions: FilterOption[] = [
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
           <label className="text-sm font-medium">Fechas</label>
           <div className="relative w-full">
-            <DateRangePicker date={range} setDate={setRange} />
+            <DateRangePicker />
           </div>
         </div>
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
@@ -215,7 +215,7 @@ const lodgingOptions: FilterOption[] = [
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
           <label className="text-sm font-medium">Fechas</label>
           <div className="relative w-full">
-            <DateRangePicker date={range} setDate={setRange} />
+            <DateRangePicker  />
           </div>
         </div>
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
@@ -273,7 +273,7 @@ const lodgingOptions: FilterOption[] = [
       <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
         <label className="text-sm font-medium">Fechas</label>
         <div className="relative w-full">
-          <DateRangePicker date={range} setDate={setRange} />
+          <DateRangePicker />
         </div>
       </div>
 

@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 import { Plus } from "lucide-react";
 
 const itineraries = [
@@ -45,21 +49,20 @@ const itineraries = [
 
 export default function ExploreItineraries() {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-12">
-      <div className="text-center mb-10">
+    <section className="w-full bg-muted">
+     <div className="max-w-7xl mx-auto px-4 py-12">
+       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold">Ideas de Itinerarios Populares</h2>
-        <p className="text-muted-foreground text-sm mt-2">
-          Inspírate con planes colaborativos y experiencias compartidas por otros viajeros
+        <p className="text-muted-foreground mt-2">
+          Inspírate con planes colaborativos y experiencias compartidas por
+          otros viajeros
         </p>
       </div>
 
       <Carousel className="w-full">
         <CarouselContent className="-ml-2">
           {itineraries.map((item, i) => (
-            <CarouselItem
-              key={i}
-              className="pl-2 md:basis-1/2 lg:basis-1/3"
-            >
+            <CarouselItem key={i} className="pl-2 md:basis-1/2 lg:basis-1/3">
               <Card className="overflow-hidden h-full flex flex-col">
                 <img
                   src={item.image}
@@ -93,7 +96,9 @@ export default function ExploreItineraries() {
                       </Avatar>
                     ))}
                     {item.participants.length > 2 && (
-                      <Badge variant="outline">+{item.participants.length - 2}</Badge>
+                      <Badge variant="outline">
+                        +{item.participants.length - 2}
+                      </Badge>
                     )}
                   </div>
                   <Button size="sm" variant="outline" className="mt-2">
@@ -107,12 +112,12 @@ export default function ExploreItineraries() {
       </Carousel>
 
       <div className="mt-10 flex justify-center">
-      
-<Button variant="default" size="lg">
-  <Plus className="w-5 h-5 mr-2" />
-  Crear nuevo itinerario
-</Button>
+        <Button variant="default" size="lg">
+          <Plus className="w-5 h-5 mr-2" />
+          Crear nuevo itinerario
+        </Button>
       </div>
+     </div>
     </section>
   );
 }

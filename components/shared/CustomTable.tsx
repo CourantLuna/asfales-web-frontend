@@ -22,6 +22,7 @@ export interface Column {
   type: "text" | "images" | "rating" | "time" | "benefits";
   className?: string;
   aspectRatio?: "1:1" | "2:1" | "1:2" | "16:9" | "4:3";
+  fit?: "cover" | "contain" | "fill" | "none" | "scale-down";
 }
 
 export interface Action {
@@ -90,9 +91,9 @@ const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(null
         {columns.map((col, colIdx) => (
           <td
             key={colIdx}
-            className={`min-w-[180px] p-2 text-center align-top border-r last:border-none
-              ${col.className || ""}
-            `}
+            className={`min-w-[180px] p-2 text-center align-top border-r last:border-none ${
+    col.className || ""
+  }`}
           >
             {renderCellContent(col, item)}
           </td>
@@ -223,6 +224,8 @@ function renderCellContent(column: Column, row: RowData) {
           <ImageCarousel
             images={row[column.field || ""]?.[0] || []}
             aspectRatio={column.aspectRatio || "4:3"}
+            fit={column.fit || "cover"}
+            className={column.className || ""}
           />
         </div>
       );

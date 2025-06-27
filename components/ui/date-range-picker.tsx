@@ -1,51 +1,56 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { DateRange } from "react-day-picker"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Button } from "@/components/ui/button"
+import { CalendarIcon, ChevronDownIcon } from "lucide-react"
+import { type DateRange } from "react-day-picker"
 
-export function DateRangePicker({
-  date,
-  setDate
-}: {
-  date: DateRange | undefined
-  setDate: (range: DateRange | undefined) => void
-}) {
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Label } from "@/components/ui/label"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+export default function DateRangePicker() {
+  const [range, setRange] = React.useState<DateRange | undefined>(undefined)
+
   return (
-    <div className="grid gap-2 ">
+    <div className="relative w-full">
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant="outline"
-            className="w-full h-12 justify-start text-left font-normal"
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "dd MMM yyyy")} - {format(date.to, "dd MMM yyyy")}
-                </>
-              ) : (
-                format(date.from, "dd MMM yyyy")
-              )
-            ) : (
-              <span>Seleccionar rango de fechas</span>
-            )}
-          </Button>
+        <Button
+  variant="outline"
+  id="dates"
+  className="flex w-full h-12 md:w-72 items-center justify-between font-normal px-3"
+>
+  {/* Icono + texto a la izquierda */}
+  <span className="flex items-center gap-3 overflow-hidden">
+    <CalendarIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+    <span className="truncate">
+      {range?.from && range?.to
+        ? `${range.from.toLocaleDateString()} – ${range.to.toLocaleDateString()}`
+        : "Seleccione fechas"}
+    </span>
+  </span>
+
+  {/* Chevron a la derecha */}
+  <ChevronDownIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+</Button>
+
+
+
+
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
           <Calendar
-            initialFocus
             mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
+            selected={range}
+            captionLayout="dropdown"
+            onSelect={(range) => {
+              setRange(range)
+            }}
           />
         </PopoverContent>
       </Popover>

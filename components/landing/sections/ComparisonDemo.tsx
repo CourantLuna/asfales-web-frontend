@@ -8,7 +8,7 @@ import { Combobox } from "../../ui/combobox";
 import CustomTable, { Action, Column, RowData } from "@/components/shared/CustomTable";
 
 const transportColumns: Column[] = [
-  { field: 'images', header: '', type: 'images', aspectRatio: '16:9' },
+  { field: 'images', header: '', type: 'images', fit: "fill", className: '!p-0' },
   { field: 'route', header: 'Ruta', type: 'text' },
   {
     header: "Calificación",
@@ -194,7 +194,7 @@ const lodgingActions: Action[] = [
 
 const experiencesColumns: Column[] = [
   { field: "provider", header: "Experiencia", type: "text" },
-  { field: "images", header: "", type: "images", aspectRatio: "16:9" },
+  { field: "images", header: "", type: "images" },
   { field: "meetingPoint", header: "Punto de encuentro", type: "text" },
   {
     header: "Calificación",
@@ -391,12 +391,12 @@ export default function ComparisonDemo() {
              text-muted-foreground font-medium px-4 py-2 transition-colors`;
   return (
     <div>
-    <section className="py-8 px-4 md:px-8 bg-white w-full max-w-screen-xl mx-auto">
+    <section className="py-8 px-4 md:px-8 bg-white w-full  mx-auto">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold tracking-tight text-gray-800">
           Comparando opciones de SDQ → Madrid
         </h2>
-        <p className="text-muted-foreground text-sm mt-2">
+        <p className="text-muted-foreground mt-2">
           Compara precios, duración, beneficios y toma decisiones inteligentes
         </p>
       </div>
@@ -405,7 +405,7 @@ export default function ComparisonDemo() {
         defaultValue="transporte"
         value={tab}
         onValueChange={setTab}
-        className="w-full flex flex-col items-center px-4"
+        className="w-full flex flex-col items-center px-4 max-w-screen-xl  mx-auto"
       >
         {/* Combobox solo en móviles */}
         <div className="block w-[240px] md:hidden">

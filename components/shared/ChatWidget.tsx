@@ -24,11 +24,15 @@ export default function ChatWidget() {
       {/* FAB Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        
-        className="fixed bottom-6 right-6 z-40 rounded-full bg-primary text-white shadow-lg hover:bg-primary/90"
+        className="fixed bottom-6 right-6 z-40 rounded-full shadow-lg text-primary hover:text-white hover:bg-primary"
+        variant="outline"
       >
         <MessageSquare className="w-8 h-8" />
-        Ayuda
+        {isOpen ? (
+          <span>Te estoy ayudando</span>
+        ) : (
+          <span>Te ayudo</span>
+        )}
       </Button>
 
       {/* Backdrop */}
@@ -55,7 +59,7 @@ export default function ChatWidget() {
           <div className="flex justify-center items-center pb-2">
             <div className="flex flex-col items-center ">
               <Laptop className="w-10 h-10" />
-              <h3 className="text-sm font-semibold">Virtual Agent</h3>
+              <h3 className="text-sm font-semibold">Asistente virtual</h3>
             </div>
           </div>
           <Button variant="ghost" size="icon">

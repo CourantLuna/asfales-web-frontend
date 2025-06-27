@@ -21,7 +21,7 @@ export function Combobox({ options = [], value, onChange, placeholder }: Combobo
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className="w-full justify-between">
+        <Button variant="outline" role="combobox" className="w-full justify-between h-12">
           {current?.label || placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
