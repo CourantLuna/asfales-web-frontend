@@ -11,33 +11,23 @@ import LandingSkeleton from "@/components/landing/LandingSkeleton"
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav"
 
 const inter = Inter({ subsets: ["latin"] })
-
 export const metadata: Metadata = {
   title: "Asfales",
   description: "A modern Next.js starter with theme support",
     generator: 'v0.dev'
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function JustAppbarLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
 <body className={inter.className + " flex flex-col min-h-screen w-full"}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AppNavbar />
-          <LandingSkeleton>
-     
-        <BreadcrumbNav />
-           {children}
-     
-    </LandingSkeleton>      
+                {children}
         </ThemeProvider>
         <Footer />
         <ChatWidget />
       </body>
     </html>
-  )
+  ); // sin navbar ni global layout
 }

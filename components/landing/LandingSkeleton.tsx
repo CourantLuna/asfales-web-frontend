@@ -17,7 +17,7 @@ interface LandingPageProps {
   children?: React.ReactNode;
 }
 
-export default function LandingPage({ children }: LandingPageProps) {
+export default function LandingSkeleton({ children }: LandingPageProps) {
   const [searchValues, setSearchValues] = useState<{ origin: string; destination: string } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
@@ -58,19 +58,7 @@ export default function LandingPage({ children }: LandingPageProps) {
         <div ref={resultsRef}>
           <TravelOptionsSection />
 
-          {searchValues ? (
-            children
-          ) : (
-            <>
-              <WhyAsfales />
-              <ComparisonDemo />
-              <LandingBanner />
-              <ItineraryPlanSection />
-              <ExploreItineraries />
-              <PredictionsSection />
-              <FAQSection />
-            </>
-          )}
+          {children}
         </div>
       </div>
     </div>

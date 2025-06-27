@@ -1,31 +1,46 @@
 "use client"
+import { FormMessage } from "@/components/ui/form";
 import "../../../styles/landingStyles.css";
 import { Button } from "@/components/ui/button"
 import { Search, ArrowLeftRight, ArrowUpDown, MapPin  } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 export default function SearchBoxOverlay({ onSearch }: { onSearch?: (origin: string, destination: string) => void }) {
 
-  // Dentro del componente
- const [origin, setOrigin] = useState("")
-  const [destination, setDestination] = useState("")
+ 
 
 const [swapAnimating, setSwapAnimating] = useState(false);
 
 function handleSwap() {
   setSwapAnimating(true);
   const temp = origin;
-  setOrigin(destination);
-  setDestination(temp);
-
-  // Elimina la animación luego de 300ms
+  setValue("origin", destination);
+  setValue("destination", temp);
   setTimeout(() => setSwapAnimating(false), 200);
 }
 
 
+const {
+  register,
+  setValue,
+  watch,
+    handleSubmit, // <--- AGREGAR AQUÍ
+  formState: { errors, isValid, touchedFields, dirtyFields }
+} = useForm<{ origin: string; destination: string }>({
+  mode: "onChange",
+  defaultValues: { origin: "", destination: "" },
+});
+
+const origin = watch("origin");
+const destination = watch("destination");
 
   return (
+    <form onSubmit={handleSubmit((data) => onSearch?.(data.origin, data.destination))}>
+
     <div
       className="relative
     min-h-[calc(100vh+330px)] 
@@ -52,16 +67,31 @@ function handleSwap() {
                   <label htmlFor="origen" className="text-start text-gray-800 text-xs mb-0">
   Origen
 </label>
+<TooltipProvider>
+<Tooltip open={!!errors.destination && touchedFields.destination && !dirtyFields.destination}>
+    <TooltipTrigger asChild>
+      <input
+        id="origen"
+        type="text"
+        placeholder="República Dominicana (DO)"
+        className="w-full outline-none text-gray-800"
+        value={origin}
+        {...register("origin", { required: true })}
+        onChange={(e) => setValue("origin", e.target.value)}
+      />
+    </TooltipTrigger>
+    <TooltipContent 
+      className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
+      align="start"
+    side="top"
+    alignOffset={-4}
+    sideOffset={20}
+    >
+      El origen es obligatorio
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
 
-                  <input
-                    id="origen"
-                    name="origen"
-                    type="text"
-                    placeholder="República Dominicana (DO)"
-                    className="w-full outline-none text-gray-800"
-                    value={origin}
-                    onChange={(e) => setOrigin(e.target.value)}
-                  />
                 </div>
               </div>
 
@@ -71,6 +101,7 @@ function handleSwap() {
                   <Button
                     onClick={handleSwap}
                     size="icon"
+                     type="button"
                     className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10 shadow-lg"
                   >
                     <ArrowLeftRight className="h-4 w-4" />
@@ -83,6 +114,7 @@ function handleSwap() {
                 <Button
                   onClick={handleSwap}
                   size="icon"
+                   type="button"
                   className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10 shadow-lg"
                 >
                   <ArrowUpDown className="h-4 w-4" />
@@ -97,15 +129,32 @@ function handleSwap() {
   Destino
 </label>
 
-                  <input
-                    id="destino"
-                    name="destino"
-                    type="text"
-                    placeholder="País, ciudad o aeropuerto"
-                    className="w-full outline-none text-gray-800"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                  />
+                  <TooltipProvider>
+<Tooltip open={!!errors.destination && touchedFields.destination && !dirtyFields.destination}>
+    <TooltipTrigger asChild>
+      <input
+        id="destino"
+        type="text"
+        placeholder="País, ciudad o aeropuerto"
+        className="w-full outline-none text-gray-800"
+        value={destination}
+        {...register("destination", { required: true })}
+        onChange={(e) => setValue("destination", e.target.value)}
+      />
+    </TooltipTrigger>
+    <TooltipContent
+    side="top"
+  className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
+  align="start"
+  alignOffset={-4}
+  sideOffset={20}
+>
+
+      El destino es obligatorio
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
                 </div>
               </div>
             </div>
@@ -127,14 +176,17 @@ function handleSwap() {
       >
         {/* Botón de busqueda */}
         <Button
-  onClick={() => onSearch?.(origin, destination)}
+  type="submit"
+  disabled={!isValid}   
   className="z-[19] rounded-full pointer-events-auto rounded-lg bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px] lg:ml-[624px] mt-[30px]"
 >
   <Search className="mr-2 h-4 w-4" />
   Buscar Opciones de Viaje
 </Button>
 
+
       </div>
     </div>
+    </form>
   );
 }
