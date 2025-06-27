@@ -9,7 +9,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 
 const itineraries = [
   {
@@ -112,9 +112,9 @@ export default function ExploreItineraries() {
       </Carousel>
 
       <div className="mt-10 flex justify-center">
-        <Button variant="default" size="lg">
-          <Plus className="w-5 h-5 mr-2" />
-          Crear nuevo itinerario
+      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+          <Eye className="w-4 h-4 mr-2" />
+          Ver itinerarios compartidos
         </Button>
       </div>
      </div>

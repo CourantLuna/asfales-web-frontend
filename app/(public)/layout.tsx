@@ -6,6 +6,7 @@ import "../globals.css"
 import { ThemeProvider } from "next-themes"
 import { AppNavbar } from "@/components/shared/AppNavbar"
 import Footer from "@/components/shared/Footer"
+import ChatWidget from "@/components/shared/ChatWidget"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,12 +23,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+<body className={inter.className + " flex flex-col min-h-screen w-full"}>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AppNavbar />
-          {children}
+          <main className="flex-grow">
+           {children}
+         </main>       
         </ThemeProvider>
         <Footer />
+        <ChatWidget />
       </body>
     </html>
   )

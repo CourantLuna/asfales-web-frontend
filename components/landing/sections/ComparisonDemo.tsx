@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ReportGenerator from "@/components/reports/ReportGenerator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Plane, Hotel, Mountain, Route } from "lucide-react";
-import { Combobox } from "../../ui/combobox";
+import { Combobox, Option } from "../../ui/combobox";
 
 import CustomTable, { Action, Column, RowData } from "@/components/shared/CustomTable";
 
@@ -89,7 +89,7 @@ const transportData = [
 
 const lodgingColumns: Column[] = [
   { field: "provider", header: "Alojamiento", type: "text" },
-  { field: "images", header: "", type: "images", aspectRatio: "4:3" },
+  { field: "images", header: "", type: "images", height: "200px",aspectRatio: "filled" },
   { field: "location", header: "Ubicación", type: "text" },
   {
     header: "Calificación",
@@ -378,16 +378,16 @@ function handleEntrySelect(index: number) {
 
 export default function ComparisonDemo() {
   const [tab, setTab] = useState("transporte");
-  const tabOptions = [
-    { label: "Cómo llegar", value: "transporte", icon: Plane },
-    { label: "Dónde dormir", value: "alojamientos", icon: Hotel },
-    { label: "Qué hacer", value: "itinerarios", icon: Mountain },
-    { label: "Planes completos", value: "experiencias", icon: Route },
+  const tabOptions: Option[] = [
+    { label: "Cómo llegar", value: "transporte", icon: <Plane className="w-4 h-4" /> },
+    { label: "Dónde dormir", value: "alojamientos", icon: <Hotel className="w-4 h-4" /> },
+    { label: "Qué hacer", value: "experiencias", icon: <Mountain className="w-4 h-4" /> },
+    { label: "Planes completos", value: "itinerarios", icon: <Route className="w-4 h-4" /> },
   ];
 
-  const classNameTabs = `flex-1 justify-center border-b-2 border-transparent" 
+  const classNameTabs = `flex-1 justify-center border-b-2 border-transparent  bg-transparent
              data-[state=active]:border-primary 
-             data-[state=active]:text-foreground 
+             data-[state=active]:text-primary 
              text-muted-foreground font-medium px-4 py-2 transition-colors`;
   return (
     <div>
@@ -405,7 +405,7 @@ export default function ComparisonDemo() {
         defaultValue="transporte"
         value={tab}
         onValueChange={setTab}
-        className="w-full flex flex-col items-center px-4 max-w-screen-xl  mx-auto"
+        className="w-full flex flex-col items-center px-4 max-w-screen-xl  mx-auto bg-transparent"
       >
         {/* Combobox solo en móviles */}
         <div className="block w-[240px] md:hidden">
@@ -417,7 +417,7 @@ export default function ComparisonDemo() {
           />
         </div>
 
-        <TabsList className="hidden md:flex w-full justify-center mb-6 py-4">
+        <TabsList className="hidden md:flex w-full justify-center mb-6 py-4 bg-transparent border-b-2">
           <TabsTrigger value="transporte" className={classNameTabs}>
             <Plane className="mr-2 w-4 h-4" /> Cómo llegar
           </TabsTrigger>

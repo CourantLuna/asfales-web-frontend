@@ -17,7 +17,7 @@ Mountain as MountainIcon,
   RouteIcon,
   Route, } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Combobox } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
+import { Combobox, Option } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { DateRange } from "react-day-picker"
 import  DateRangePicker  from "@/components/ui/date-range-picker"
@@ -51,19 +51,24 @@ const lodgingOptions: FilterOption[] = [
   { label: "Casa de huéspedes", value: "guest", icon: () => <>🛏</> },
 ]
 
-  const tabOptions = [
-    { label: "Transporte", value: "transporte", icon: Plane },
-    { label: "Alojamientos", value: "alojamientos", icon: Hotel },
-    { label: "Itinerarios", value: "itinerarios", icon: Mountain },
-    { label: "Experiencias", value: "experiencias", icon: Route },
-  ]
+   const tabOptions = [
+      { label: "Transporte", value: "transporte", icon: <Plane className="w-4 h-4" /> },
+      { label: "Alojamientos", value: "alojamientos", icon: <Hotel className="w-4 h-4" /> },
+      { label: "Actividades", value: "experiencias", icon: <Mountain className="w-4 h-4" /> },
+      { label: "Itinerarios", value: "itinerarios", icon: <Route className="w-4 h-4" /> },
+    ];
+
+      const classNameTabs = `flex-1 justify-center border-b-2 border-transparent  bg-transparent
+             data-[state=active]:border-primary 
+             data-[state=active]:text-primary 
+             text-muted-foreground font-medium px-4 py-2 transition-colors`;
 
   return (
     <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6">
       <Tabs
         value={tab}
         onValueChange={setTab}
-        className="w-full items-center flex flex-col"
+        className="w-full items-center flex flex-col bg-transparent"
       >
         {/* Combobox solo en móviles */}
         <div className="block w-[240px] md:hidden">
@@ -76,25 +81,19 @@ const lodgingOptions: FilterOption[] = [
         </div>
 
         {/* TabsTrigger solo en desktop */}
-        <TabsList className="hidden md:flex w-full justify-center gap-2 mb-2">
-          {tabOptions.map(({ label, value }) => (
-            <TabsTrigger
-              key={value}
-              value={value}
-              className=" flex-1 justify-center border-b-2 border-transparent 
-             data-[state=active]:border-primary 
-             data-[state=active]:text-foreground 
-             text-muted-foreground font-medium px-4 py-2 transition-colors"
-            >
-              {React.createElement(
-                tabOptions.find((option) => option.value === value)!.icon,
-                {
-                  className: "mr-2 w-4 h-4",
-                }
-              )}
-              {label}
-            </TabsTrigger>
-          ))}
+       <TabsList className="hidden md:flex w-full justify-center mb-6 py-4 bg-transparent border-b-2">
+          <TabsTrigger value="transporte" className={classNameTabs}>
+            <Plane className="mr-2 w-4 h-4" /> Transporte
+          </TabsTrigger>
+          <TabsTrigger value="alojamientos" className={classNameTabs}>
+            <Hotel className="mr-2 w-4 h-4" /> Alojamientos
+          </TabsTrigger>
+          <TabsTrigger value="experiencias" className={classNameTabs}>
+            <Mountain className="mr-2 w-4 h-4" /> Experiencias
+          </TabsTrigger>
+          <TabsTrigger value="itinerarios" className={classNameTabs}>
+            <Route className="mr-2 w-4 h-4" /> Itinerarios
+          </TabsTrigger>
         </TabsList>
 
          <TabsContent value="transporte">

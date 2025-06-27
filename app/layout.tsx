@@ -4,7 +4,8 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import { ScrollbarControl } from "./client-scroll-handler"
-import ChatWidget from "@/components/shared/ChatWidget"
+import { Toaster } from "@/components/ui/sonner"; // exportado por shadcn
+
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -28,10 +29,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+                  <Toaster position="bottom-center"   richColors />
+
           <ScrollbarControl /> {/* 👈 Aquí se activa/desactiva según la ruta */}
           {children}
-                {/* <SupportChat /> */}
-<ChatWidget />
+               
         </ThemeProvider>
       </body>
     </html>

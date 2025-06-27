@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Check, X } from "lucide-react";
-import { ImageCarousel } from "@/components/ui/image-carousel";
+import { AspectRatio, Fit, ImageCarousel } from "@/components/ui/image-carousel";
 
 export interface FieldGroup {
   field: string;
@@ -21,8 +21,9 @@ export interface Column {
   header: string;
   type: "text" | "images" | "rating" | "time" | "benefits";
   className?: string;
-  aspectRatio?: "1:1" | "2:1" | "1:2" | "16:9" | "4:3";
-  fit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  aspectRatio?: AspectRatio;
+  fit?: Fit;
+  height?: string;
 }
 
 export interface Action {
@@ -220,12 +221,13 @@ function renderCellContent(column: Column, row: RowData) {
       return String(row[column.field || ""] ?? "");
     case "images":
       return (
-        <div className="flex items-center justify-center max-w-[200px] mx-auto no-action-click">
+        <div className="flex items-center justify-center  no-action-click">
           <ImageCarousel
             images={row[column.field || ""]?.[0] || []}
             aspectRatio={column.aspectRatio || "4:3"}
             fit={column.fit || "cover"}
             className={column.className || ""}
+            height={column.height}
           />
         </div>
       );

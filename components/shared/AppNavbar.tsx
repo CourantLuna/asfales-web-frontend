@@ -45,6 +45,8 @@ import {
 import Image from "next/image";
 import { useEffect } from "react";
 import { Separator } from "../ui/separator";
+import { ro } from "date-fns/locale";
+import { SettingsDialog } from "./SettingsDialog";
 
 export function AppNavbar() {
   const { user, logout } = useAuth();
@@ -66,21 +68,28 @@ const handleLogout = () => {
   };
   
 
-const scrollToTop = (duration = 1000) => {
-  if (typeof window === "undefined") return;
+ const scrollToTop = (duration = 1000) => {
+ if (typeof window === "undefined") return;
 
-  const start = window.scrollY;
-  const startTime = performance.now();
+ const currentY = window.scrollY;
+ // Si ya estás muy arriba, redirige a /
+ if (currentY < 200) {
+   router.push("/");
+   return;
+ }
 
-  const animate = (time: number) => {
-    const elapsed = time - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    window.scrollTo(0, start * (1 - progress));
-    if (progress < 1) requestAnimationFrame(animate);
-  };
+ const start = currentY;
+ const startTime = performance.now();
 
-  requestAnimationFrame(animate);
-};
+ const animate = (time: number) => {
+   const elapsed = time - startTime;
+   const progress = Math.min(elapsed / duration, 1);
+   window.scrollTo(0, start * (1 - progress));
+   if (progress < 1) requestAnimationFrame(animate);
+ };
+
+ requestAnimationFrame(animate);
+ };
 
   // Validación del token al montar (por seguridad futura)
   useEffect(() => {
@@ -92,7 +101,7 @@ const scrollToTop = (duration = 1000) => {
   return (
     <header className="relative w-full z-30">
       {/* Sticky nav */}
-      <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8 pr-[18px]">
+      <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8 pr-[18px] pointer-events-none">
         {/* SVG background */}
         <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[120px]">
           <svg
@@ -118,7 +127,7 @@ const scrollToTop = (duration = 1000) => {
             <Button
               variant="ghost"
               size="icon"
-              className="p-0 rounded-full w-full"
+              className="p-0 rounded-full w-full pointer-events-auto"
               onClick={() => scrollToTop(400)}
             >
               <Image
@@ -130,7 +139,7 @@ const scrollToTop = (duration = 1000) => {
             </Button>
 
             {/* Mobile menu */}
-            <div className="lg:hidden">
+            <div className="lg:hidden pointer-events-auto">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button size="icon" variant="ghost">
@@ -165,18 +174,20 @@ const scrollToTop = (duration = 1000) => {
           </div>
 
           {/* Perfil, idioma, notificaciones */}
-          <div className="flex items-center gap-4 pr-4 md:pr-5 lg:pr-16 2xl:pr-24 z-10">
-            <Button
+          <div className="flex items-center gap-4 pr-4 md:pr-5 lg:pr-16 2xl:pr-24 z-10 pointer-events-auto">
+            {/* <Button
               size="icon"
               variant="outline"
               className="rounded-full hidden xl:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
             >
               <Globe className="h-5 w-5" />
-            </Button>
+            </Button> */}
+            <SettingsDialog />
             <Button
               size="icon"
               variant="outline"
               className="rounded-full hidden lg:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
+              onClick={() => router.push("inbox/notifications")}
             >
               <Bell className="h-5 w-5 " />
             </Button>
@@ -292,9 +303,11 @@ const scrollToTop = (duration = 1000) => {
                 )}
 
 
-                <DropdownMenuItem className="flex lg:hidden">
+                <DropdownMenuItem className="flex lg:hidden"
+                onClick={() => router.push("inbox/notifications")}>
                   <Bell className="mr-2 h-4 w-4" />
                   Notificaciones
+                  
                 </DropdownMenuItem>
 
 
