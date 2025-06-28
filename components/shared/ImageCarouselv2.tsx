@@ -91,7 +91,6 @@ function OverlayDisplay({
                   d="M12 21s-5.05-4.438-7.07-6.594C2.269 12.053 2 10.78 2 9.5 2 6.42 4.42 4 7.5 4c1.74 0 3.41.81 4.5 2.09C13.09 4.81 14.76 4 16.5 4 19.58 4 22 6.42 22 9.5c0 1.28-.269 2.553-2.93 4.906C17.05 16.562 12 21 12 21z"
                   stroke="currentColor"
                   strokeWidth={2}
-                  fill={value?.isFavorite ? "currentColor" : "none"}
                 />
               </svg>
             </button>

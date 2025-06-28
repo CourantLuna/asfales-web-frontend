@@ -37,7 +37,14 @@ export default function CustomCard({
   overlayValues,
 }: CustomCardProps) {
   return (
-    <Card className={` ${cardWidth}  ${orientationCard === "horizontal" ? `${carouselHeight} flex-row` : `${cardHeight} flex-col`}  flex rounded-2xl shadow-xl overflow-hidden border bg-background ${className}`}>
+    <Card className={` 
+    ${cardWidth}  
+    ${orientationCard === "horizontal" ? `${carouselHeight} flex-row` : `${cardHeight} flex-col`}  
+    flex rounded-2xl shadow-xl overflow-hidden bg-background 
+    ${className}
+    hover:shadow-2xl hover:shadow-primary/30 transition-shadow duration-300
+
+    `}>
       {images && images.length > 0 && (
         <div className={` ${orientationCard === "horizontal" ? `${carouselWidth}` : "w-full"}`}>
           <ImageCarouselv2
