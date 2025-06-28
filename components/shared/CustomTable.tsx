@@ -69,11 +69,11 @@ export default function CustomTable({
             <thead>
               <tr className="border-b">
                 {columns.map((col, idx) => (
-                  <th key={idx} className="p-2 font-semibold text-muted-foreground text-center">
+                  <th key={idx} className="px-3 py-1 font-semibold text-muted-foreground text-start">
                     {col.header}
                   </th>
                 ))}
-                {actions && <th className="p-2 font-semibold text-muted-foreground text-center">Acciones</th>}
+                {actions && <th className="px-3 py-1 font-semibold text-muted-foreground text-start">Acciones</th>}
               </tr>
             </thead>
             <tbody>
@@ -90,7 +90,8 @@ export default function CustomTable({
                   {columns.map((col, colIdx) => (
                     <td
                       key={colIdx}
-                      className={`min-w-[180px] text-center align-top py-2 border-r last:border-none 
+                      className={`min-w-[180px] text-start align-top  border-r last:border-none 
+                           ${col.type !== "images" ? "px-3 py-1" : ""} 
                         ${col.className || ""}`
                       }
                     >
@@ -98,7 +99,7 @@ export default function CustomTable({
                     </td>
                   ))}
                   {actions && (
-                    <td className="min-w-[240px] p-2 text-center border-r last:border-none">
+                    <td className="min-w-[240px] px-3 py-1 text-start border-r last:border-none">
                       <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1 no-action-click">
                         {actions.map((action, j) => (
                           <Button
@@ -129,7 +130,7 @@ export default function CustomTable({
                       e.stopPropagation();
                       onEntrySelect?.(i);
                     }}
-                    className={`p-2 font-semibold text-muted-foreground text-center border-r last:border-none cursor-pointer
+                    className={`px-3 py-1 font-semibold text-muted-foreground text-start border-r last:border-none cursor-pointer
                       ${hoveredColIndex === i ? "bg-muted/40" : ""}
                     `}
                   >
@@ -151,8 +152,8 @@ export default function CustomTable({
                           if (isActionArea?.contains(e.target as Node)) return;
                           onEntrySelect?.(colIdx);
                         }}
-                        className={`min-w-[240px]  text-center align-top border-r last:border-none cursor-pointer
-                           ${col.type !== "images" ? "p-2" : ""} 
+                        className={`min-w-[240px]  text-start align-top border-r last:border-none cursor-pointer
+                           ${col.type !== "images" ? "px-3 py-1" : ""} 
                           ${hoveredColIndex === colIdx ? "bg-muted/50" : ""}
                           ${col.className || ""}
                         `}
@@ -172,7 +173,7 @@ export default function CustomTable({
                         if (isActionArea?.contains(e.target as Node)) return;
                         onEntrySelect?.(colIdx);
                       }}
-                      className={`min-w-[240px] p-2 text-center border-r last:border-none
+                      className={`min-w-[240px] px-3 py-1 text-center border-r last:border-none
                         ${hoveredColIndex === colIdx ? "bg-muted/20" : ""}
                       `}
                     >
@@ -210,7 +211,7 @@ function renderCellContent(column: Column, row: RowData) {
       return String(row[column.field || ""] ?? "");
     case "images":
       return (
-        <div className="flex items-center justify-center no-action-click">
+        <div className="flex items-start justify-center no-action-click">
           <ImageCarouselv2
             images={row[column.field || ""]?.[0] || []}
             heightClass={column.height || "h-[220px]"}
@@ -224,7 +225,7 @@ function renderCellContent(column: Column, row: RowData) {
       return formatTime(row[column.field || ""]);
     case "benefits":
       return (
-        <div className="flex flex-col justify-center items-center gap-1">
+        <div className="flex flex-col justify-center items-start gap-1">
           {(row[column.field || ""] as { label: string; included: boolean }[])?.map((b) => (
             <div key={b.label} className="flex items-center gap-1">
               {b.included ? (
@@ -281,7 +282,7 @@ function renderStructuredFields(fields: FieldGroup[], structure: string, row: Ro
   );
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-start gap-1">
       {lines.map((group, i) => (
         <div key={i} className="flex flex-row items-center gap-1">
           {group}
