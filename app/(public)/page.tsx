@@ -18,11 +18,10 @@ const imagesSrc = [
 
 ];
 
-// Demo overlays (opcional)
 const overlays: OverlayCarrusel[] = [
   {
     type: "badge",
-    bgcolor: "bg-green-600",
+    bgcolor: "bg-blue-600",
     field: "price",
     align: "top-left",
   },
@@ -30,15 +29,14 @@ const overlays: OverlayCarrusel[] = [
     type: "favorite",
     bgcolor: "bg-white",
     align: "top-right",
-    actionFavorite: (idx) => alert("Favorito en imagen " + idx),
+    actionFavorite: (idx) => alert("Favorito en " + idx),
   },
 ];
 
-// Overlay values para cada imagen
 const overlayValues: OverlayValue[] = [
-  { price: "$120", isFavorite: true },
+  { price: "$100", isFavorite: true },
+  { price: "$80", isFavorite: false },
   { price: "$150", isFavorite: false },
-  { price: "$99", isFavorite: false },
 ];
 
 export default function Page({ children }: HomePageProps) {
@@ -49,10 +47,13 @@ export default function Page({ children }: HomePageProps) {
 
 
 <CustomCard
+  cardWidth="w-1/3"
   orientationCard="vertical"
   images={imagesSrc}
   title="Viaja con Asfales"
   description="Comparador inteligente de viajes y experiencias."
+  overlayCarrusel={overlays}
+  overlayValues={overlayValues}
   content={
     <ul className="list-disc ml-4 text-sm space-y-1">
       <li>Busca vuelos, trenes, buses y ferris</li>

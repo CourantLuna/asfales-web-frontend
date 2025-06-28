@@ -1,7 +1,8 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { ImageCarouselv2 } from "./ImageCarouselv2";
+import { ImageCarouselv2, type OverlayCarrusel, type OverlayValue } from "./ImageCarouselv2";
+
 type CustomCardProps = {
   title: string;
   description?: string;
@@ -14,6 +15,9 @@ type CustomCardProps = {
   cardWidth?: string;
   cardHeight?: string;
   orientationCard?: "horizontal" | "vertical";
+  // 🎉 Los nuevos props para overlays:
+  overlayCarrusel?: OverlayCarrusel | OverlayCarrusel[];
+  overlayValues?: OverlayValue[];
 };
 
 export default function CustomCard({
@@ -23,30 +27,35 @@ export default function CustomCard({
   footer,
   images,
   cardWidth,
-  cardHeight="h-full",
+  cardHeight = "h-full",
   carouselHeight = "h-[220px]",
   carouselWidth = "w-1/3",
   className = "",
-  orientationCard = "vertical", 
+  orientationCard = "vertical",
+  // 👇 Nuevo:
+  overlayCarrusel,
+  overlayValues,
 }: CustomCardProps) {
   return (
-    <Card className={` ${cardWidth}  ${orientationCard === "horizontal"? `${carouselHeight} flex-row`: `${cardHeight} flex-col`}  flex rounded-2xl shadow-xl overflow-hidden border bg-background ${className}`}>
+    <Card className={` ${cardWidth}  ${orientationCard === "horizontal" ? `${carouselHeight} flex-row` : `${cardHeight} flex-col`}  flex rounded-2xl shadow-xl overflow-hidden border bg-background ${className}`}>
       {images && images.length > 0 && (
-        <div className={` ${orientationCard === "horizontal"? `${carouselWidth}`: "w-full"}`}>
+        <div className={` ${orientationCard === "horizontal" ? `${carouselWidth}` : "w-full"}`}>
           <ImageCarouselv2
             heightClass={carouselHeight}
             images={images}
-            
+            // 🎉 Pasamos los overlays aquí:
+            overlayCarrusel={overlayCarrusel}
+            overlayValues={overlayValues}
           />
         </div>
       )}
       <div>
         <CardHeader>
-        <CardTitle className="text-xl font-bold">{title}</CardTitle>
-        {description && <CardDescription className="text-sm">{description}</CardDescription>}
-      </CardHeader>
-      {content && <CardContent>{content}</CardContent>}
-      {footer && <CardFooter>{footer}</CardFooter>}
+          <CardTitle className="text-xl font-bold">{title}</CardTitle>
+          {description && <CardDescription className="text-sm">{description}</CardDescription>}
+        </CardHeader>
+        {content && <CardContent>{content}</CardContent>}
+        {footer && <CardFooter>{footer}</CardFooter>}
       </div>
     </Card>
   );
