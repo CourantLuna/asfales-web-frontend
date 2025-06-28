@@ -3,15 +3,9 @@
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useRef, useState } from "react";
 import Hero from "@/components/landing/sections/Hero";
-import WhyAsfales from "@/components/landing/sections/WhyAsfales";
 import TravelOptionsSection from "@/components/landing/sections/TravelOptionsSection";
 import SearchBoxOverlay from "@/components/landing/sections/SearchBoxOverlay";
-import ComparisonDemo from "@/components/landing/sections/ComparisonDemo";
-import ExploreItineraries from "@/components/landing/sections/ExploreItineraries";
-import FAQSection from "./sections/Faqsection";
-import LandingBanner from "./sections/LandingBanner";
-import ItineraryPlanSection from "./sections/ItineraryPlanSection";
-import PredictionsSection from "./sections/PredictionsSection";
+
 
 interface LandingPageProps {
   children?: React.ReactNode;
@@ -21,6 +15,8 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
   const [searchValues, setSearchValues] = useState<{ origin: string; destination: string } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState("transport"); // <--- aquí defines el estado
+
 
   function smoothScrollTo(targetY: number, duration = 800) {
     const startY = window.scrollY;
@@ -56,7 +52,9 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
         <Hero />
 
         <div ref={resultsRef}>
-          <TravelOptionsSection />
+          <TravelOptionsSection
+          activeTab={activeTab} setActiveTab={setActiveTab}
+          />
 
           {children}
         </div>

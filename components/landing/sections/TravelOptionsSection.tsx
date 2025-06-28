@@ -2,10 +2,17 @@ import TravelOptionsTabs from "@/components/landing/TravelOptionsTabs";
 import { Progress } from "@/components/ui/progress";
 import * as React from "react"
 import EventDrivenProgress,{ EventDrivenProgressRef } from "@/components/shared/EventDrivenProgress";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
-export default function TravelOptionsSection() {
+export default function TravelOptionsSection({
+  activeTab,
+  setActiveTab,
+}: {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+}) {
+
 
  const progressRef = useRef<EventDrivenProgressRef>(null);
 
@@ -60,7 +67,8 @@ export default function TravelOptionsSection() {
 
       {/* Tabs interactivos */}
       <div className="w-full px-4 mt-[300px] lg:mt-[220px] md:px-8 flex flex-col items-center text-center">
-  <TravelOptionsTabs />
+       <TravelOptionsTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
   <div className="max-w-7xl w-full p-2">
           <EventDrivenProgress ref={progressRef} />
   </div>

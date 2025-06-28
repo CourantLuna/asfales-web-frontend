@@ -177,7 +177,6 @@ const destination = watch("destination");
         {/* Botón de busqueda */}
         <Button
   type="submit"
-  disabled={!isValid}   
   className="z-[19] rounded-full pointer-events-auto rounded-lg bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px] lg:ml-[624px] mt-[30px]"
 >
   <Search className="mr-2 h-4 w-4" />

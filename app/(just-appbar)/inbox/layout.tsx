@@ -1,10 +1,21 @@
 "use client";
 import { Bell, MessageCircle, BellRing } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function InboxLayout({ children }: { children: React.ReactNode }) {
+    const router = useRouter();
+
+    useEffect(() => {
+    router.prefetch("/inbox/notifications");
+    router.prefetch("/inbox/chats");
+    router.prefetch("/inbox/alerts");
+  }, [router]);
+
   const pathname = usePathname() ?? "";
   const activeTab = pathname.endsWith("/chats")
     ? "chats"

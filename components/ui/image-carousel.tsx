@@ -46,20 +46,21 @@ export function ImageCarousel({
   const showControls = images.length > 1;
 
   return (
-    <Carousel className={cn("w-full", className)}>
+    <Carousel className={cn("w-full h-full", className)}>
       <CarouselContent>
         {images.map((src, index) => (
           <CarouselItem key={index}>
             <div
               className={cn(
                 "relative w-full overflow-hidden rounded-lg",
-                // si no es filled, utilizamos una clase de aspecto
-                aspectRatio !== "filled" && aspectClasses[aspectRatio]
+                aspectRatio !== "filled" && aspectClasses[aspectRatio],
+                aspectRatio === "filled" && "h-full min-h-0 min-w-0"
               )}
-              // si es filled, aplicamos inline-style de height
               style={
-                aspectRatio === "filled" && height
-                  ? { height }
+                aspectRatio === "filled"
+                  ? height
+                    ? { height, width: "100%" }
+                    : { height: "", width: "100%" }
                   : undefined
               }
             >
@@ -68,12 +69,12 @@ export function ImageCarousel({
                 alt={`Imagen ${index + 1}`}
                 fill
                 className={cn("w-full h-full", `object-${fit}`)}
+                sizes="100vw"
               />
             </div>
           </CarouselItem>
         ))}
       </CarouselContent>
-
       {showControls && <CarouselPrevious className="left-1" />}
       {showControls && <CarouselNext className="right-1" />}
     </Carousel>

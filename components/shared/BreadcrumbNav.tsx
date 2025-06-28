@@ -28,7 +28,7 @@ export default function BreadcrumbNav() {
           </BreadcrumbLink>
         </BreadcrumbItem>
         {breadcrumbItems.map((item, idx) => (
-          <div key={item.href} className="flex items-center">
+          <div key={item.href} className="flex items-center gap-2">
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>

@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useRouter, usePathname } from "next/navigation";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
@@ -22,9 +24,37 @@ import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { DateRange } from "react-day-picker"
 import  DateRangePicker  from "@/components/ui/date-range-picker"
 import React from "react"
+import { se } from "date-fns/locale";
 
-export default function TravelOptionsTabs() {
-  const [tab, setTab] = useState("transporte")
+export default function TravelOptionsTabs({
+  activeTab,
+  setActiveTab,
+}: {
+  activeTab: string,
+  setActiveTab: (tab: string) => void,
+}) {
+  const router = useRouter();
+const pathname = usePathname();
+
+function handleTabChange(tab: string) {
+  setActiveTab(tab);
+  if (pathname.startsWith("/global-") && pathname.endsWith("-search")) {
+    router.replace(`/global-${tab}-search`);
+  }
+}
+
+function handleBuscar() {
+  router.push(`/global-${activeTab}-search`);
+}
+
+useEffect(() => {
+  const match = pathname.match(`/^\\/global-(.*)-search$/`);
+  if (match) {
+    setActiveTab(match[1]);
+  }
+}, [pathname]);
+
+
 const[selectedTransportTypes, setSelectedTransportTypes] = useState<string[]>(["air"])
 const [selectedLodgingTypes, setSelectedLodgingTypes] = useState<string[]>(["hotel"])
 const [selectedExperiences, setSelectedExperiences] = useState<string[]>(["playa"])
@@ -66,37 +96,40 @@ const lodgingOptions: FilterOption[] = [
   return (
     <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6">
       <Tabs
-        value={tab}
-        onValueChange={setTab}
+        value={activeTab}
+        onValueChange={handleTabChange}
         className="w-full items-center flex flex-col bg-transparent"
       >
         {/* Combobox solo en móviles */}
         <div className="block w-[240px] md:hidden">
           <Combobox
             options={tabOptions}
-            value={tab}
-            onChange={setTab}
+            value={activeTab}
+            onChange={handleTabChange}
             placeholder="Selecciona una categoría"
           />
         </div>
 
         {/* TabsTrigger solo en desktop */}
        <TabsList className="hidden md:flex w-full justify-center mb-6 py-4 bg-transparent border-b-2">
-          <TabsTrigger value="transporte" className={classNameTabs}>
+          <TabsTrigger value="transport" className={classNameTabs}>
             <Plane className="mr-2 w-4 h-4" /> Transporte
           </TabsTrigger>
-          <TabsTrigger value="alojamientos" className={classNameTabs}>
+          <TabsTrigger value="lodging" className={classNameTabs}>
             <Hotel className="mr-2 w-4 h-4" /> Alojamientos
           </TabsTrigger>
-          <TabsTrigger value="experiencias" className={classNameTabs}>
+          <TabsTrigger value="experiences" className={classNameTabs}>
             <Mountain className="mr-2 w-4 h-4" /> Experiencias
           </TabsTrigger>
-          <TabsTrigger value="itinerarios" className={classNameTabs}>
+          <TabsTrigger value="itineraries" className={classNameTabs}>
             <Route className="mr-2 w-4 h-4" /> Itinerarios
           </TabsTrigger>
         </TabsList>
 
-         <TabsContent value="transporte">
+         {/* Panels siempre montados, solo el activo es visible */}
+  <div className="relative w-full">
+    {/* Panel Transporte */}
+    <div style={{ display: activeTab === "transport" ? "block" : "none" }}>
   <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
     {/* Filtros */}
     <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
@@ -146,16 +179,20 @@ const lodgingOptions: FilterOption[] = [
 
     {/* Botón */}
     <div className="w-full md:w-[20%] flex justify-end">
-      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}
+        onClick={handleBuscar}
+
+      >
         <Search className="mr-2 h-4 w-4" />
         Buscar
       </Button>
     </div>
   </div>
-</TabsContent>
+      </div>
 
-<TabsContent value="alojamientos">
-  <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
+    {/* Panel Alojamientos */}
+    <div style={{ display: activeTab === "lodging" ? "block" : "none" }}>
+      <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
     <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
       {/* ToggleGroup */}
       <ToggleGroup type="multiple" className="gap-2 flex flex-wrap">
@@ -198,16 +235,51 @@ const lodgingOptions: FilterOption[] = [
     </div>
 
     <div className="w-full md:w-[20%] flex justify-end">
-      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}
+        onClick={handleBuscar}
+        >
         <Search className="mr-2 h-4 w-4" />
         Buscar
       </Button>
     </div>
   </div>
-</TabsContent>
+    </div>
 
-<TabsContent value="itinerarios">
-  <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
+    {/* Panel Experiencias */}
+    <div style={{ display: activeTab === "experiences" ? "block" : "none" }}>
+      <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
+    <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+      {/* Fechas */}
+      <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+        <label className="text-sm font-medium">Fechas</label>
+        <div className="relative w-full">
+          <DateRangePicker />
+        </div>
+      </div>
+
+      {/* Filtro de experiencia */}
+      <QuickFilter
+        label="Tipo de Experiencia"
+        selected={selectedExperiences}
+        setSelected={setSelectedExperiences}
+        options={experiencesOptions}
+      />
+    </div>
+
+    <div className="w-full md:w-[20%] flex justify-end">
+      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3 " variant={"default"}
+        onClick={handleBuscar}
+>
+        <Search className="mr-2 h-4 w-4" />
+        Buscar
+      </Button>
+    </div>
+  </div>
+    </div>
+
+    {/* Panel Itinerarios */}
+    <div style={{ display: activeTab === "itineraries" ? "block" : "none" }}>
+<div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
     <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
       {/* Fechas y Personas */}
       <div className="flex flex-col md:flex-row gap-4 items-center w-full">
@@ -257,43 +329,16 @@ const lodgingOptions: FilterOption[] = [
     </div>
 
     <div className="w-full md:w-[20%] flex justify-end">
-      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
+      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}
+        onClick={handleBuscar}
+      >
         <Search className="mr-2 h-4 w-4" />
         Buscar
       </Button>
     </div>
   </div>
-</TabsContent>
-
-<TabsContent value="experiencias">
-  <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
-    <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
-      {/* Fechas */}
-      <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-        <label className="text-sm font-medium">Fechas</label>
-        <div className="relative w-full">
-          <DateRangePicker />
-        </div>
       </div>
-
-      {/* Filtro de experiencia */}
-      <QuickFilter
-        label="Tipo de Experiencia"
-        selected={selectedExperiences}
-        setSelected={setSelectedExperiences}
-        options={experiencesOptions}
-      />
-    </div>
-
-    <div className="w-full md:w-[20%] flex justify-end">
-      <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3 " variant={"default"}>
-        <Search className="mr-2 h-4 w-4" />
-        Buscar
-      </Button>
-    </div>
   </div>
-</TabsContent>
-
 
       </Tabs>
     </div>
