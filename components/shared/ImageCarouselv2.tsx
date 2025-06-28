@@ -78,7 +78,7 @@ function OverlayDisplay({
               onClick={() => overlay.actionFavorite(index)}
               aria-label="Guardar en favoritos"
               tabIndex={0}
-              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)} border border-gray-300`}
+              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)}  `}
             >
               <svg
                 width={22}
@@ -133,9 +133,10 @@ export function ImageCarouselv2({
     : []
 
   const overlayValue = overlayValues?.[current] || {}
+    const showControls = images.length > 1;
 
   return (
-    <div className={`w-full ${heightClass} ${className} relative`}>
+    <div className={`w-full ${heightClass} ${className} relative `}>
       <Carousel className="relative h-full w-full" setApi={setApi}>
         <CarouselContent className="h-full">
           {images.map((imgUrl, idx) => (
@@ -156,8 +157,8 @@ export function ImageCarouselv2({
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-20" />
-        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-20" />
+         {showControls && <CarouselPrevious className="left-2" />}
+      {showControls && <CarouselNext className="right-2" />}
       </Carousel>
       {overlays.length > 0 && (
         <OverlayDisplay overlays={overlays} value={overlayValue} index={current} />

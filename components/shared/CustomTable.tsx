@@ -1,4 +1,3 @@
-// CustomTable.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,11 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Check, X } from "lucide-react";
-import { AspectRatio, Fit, ImageCarousel } from "@/components/ui/image-carousel";
+// Cambia aquí la importación:
+import { ImageCarouselv2, OverlayCarrusel, OverlayValue } from "@/components/shared/ImageCarouselv2";
+
+export type AspectRatio = "16:9" | "4:3" | "1:1" | "3:4" | "9:16";
+export type Fit = "cover" | "contain";
 
 export interface FieldGroup {
   field: string;
-  type: "text" | "badge" | "number" | "time"| "benefits";
+  type: "text" | "badge" | "number" | "time" | "benefits";
   className?: string;
 }
 
@@ -24,6 +27,9 @@ export interface Column {
   aspectRatio?: AspectRatio;
   fit?: Fit;
   height?: string;
+  // Nuevos props:
+  overlayCarrusel?: OverlayCarrusel | OverlayCarrusel[];
+  overlayValuesKey?: string; // El nombre del campo en RowData donde están los overlays de esa celda
 }
 
 export interface Action {
@@ -43,7 +49,6 @@ export interface CustomTableProps {
   rowHeader?: number;
   tableOrientation?: "vertical" | "horizontal";
   onEntrySelect?: (index: number) => void;
-
 }
 
 export default function CustomTable({
@@ -54,158 +59,142 @@ export default function CustomTable({
   tableOrientation = "vertical",
   onEntrySelect
 }: CustomTableProps) {
-const [hoveredColIndex, setHoveredColIndex] = useState<number | null>(null);
-const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(null);
+  const [hoveredColIndex, setHoveredColIndex] = useState<number | null>(null);
 
   return (
     <div className="overflow-x-auto border rounded-xl ">
       <table className="min-w-full text-sm mx-auto">
-{tableOrientation === "horizontal" ? (
-  <>
-    <thead>
-      <tr className="border-b">
-        {columns.map((col, idx) => (
-          <th key={idx} className="p-2 font-semibold text-muted-foreground text-center">
-            {col.header}
-          </th>
-        ))}
-        {actions && <th className="p-2 font-semibold text-muted-foreground text-center">Acciones</th>}
-      </tr>
-    </thead>
-    <tbody>
-  {data.map((item, rowIdx) => {
-    const rowFirstField = columns[0]?.field
-      ? item[columns[0].field]
-      : Object.values(item)[0];
-
-    return (
-      <tr
-  key={rowIdx}
-  onClick={(e) => {
-    const interactive = (e.target as HTMLElement).closest("button, img, .no-action-click");
-    if (interactive) return;
-    onEntrySelect?.(rowIdx); // ← notifica al padre
-  }}
-  className="group hover:bg-muted/50 transition-colors duration-200 cursor-pointer border-b"
->
-
-        {columns.map((col, colIdx) => (
-          <td
-            key={colIdx}
-            className={`min-w-[180px] p-2 text-center align-top border-r last:border-none ${
-    col.className || ""
-  }`}
-          >
-            {renderCellContent(col, item)}
-          </td>
-        ))}
-
-        {actions && (
-          <td className="min-w-[240px] p-2 text-center border-r last:border-none">
-            <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1 no-action-click">
-              {actions.map((action, j) => (
-                <Button
-                  key={j}
-                  variant={action.variant || "default"}
-                  onClick={action.onClick}
-                  className="w-[100px] "
+        {tableOrientation === "horizontal" ? (
+          <>
+            <thead>
+              <tr className="border-b">
+                {columns.map((col, idx) => (
+                  <th key={idx} className="p-2 font-semibold text-muted-foreground text-center">
+                    {col.header}
+                  </th>
+                ))}
+                {actions && <th className="p-2 font-semibold text-muted-foreground text-center">Acciones</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, rowIdx) => (
+                <tr
+                  key={rowIdx}
+                  onClick={(e) => {
+                    const interactive = (e.target as HTMLElement).closest("button, img, .no-action-click");
+                    if (interactive) return;
+                    onEntrySelect?.(rowIdx);
+                  }}
+                  className="group hover:bg-muted/50 transition-colors duration-200 cursor-pointer border-b"
                 >
-                  {action.label}
-                </Button>
+                  {columns.map((col, colIdx) => (
+                    <td
+                      key={colIdx}
+                      className={`min-w-[180px] text-center align-top py-2 border-r last:border-none 
+                        ${col.className || ""}`
+                      }
+                    >
+                      {renderCellContent(col, item)}
+                    </td>
+                  ))}
+                  {actions && (
+                    <td className="min-w-[240px] p-2 text-center border-r last:border-none">
+                      <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-1 no-action-click">
+                        {actions.map((action, j) => (
+                          <Button
+                            key={j}
+                            variant={action.variant || "default"}
+                            onClick={action.onClick}
+                            className="w-[100px] "
+                          >
+                            {action.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </td>
+                  )}
+                </tr>
               ))}
-            </div>
-          </td>
+            </tbody>
+          </>
+        ) : (
+          // vertical (default)
+          <>
+            <thead>
+              <tr className="border-b">
+                {data.map((item, i) => (
+                  <th
+                    key={i}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEntrySelect?.(i);
+                    }}
+                    className={`p-2 font-semibold text-muted-foreground text-center border-r last:border-none cursor-pointer
+                      ${hoveredColIndex === i ? "bg-muted/40" : ""}
+                    `}
+                  >
+                    {item[columns[rowHeader]?.field || ""]}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {columns
+                .filter((_, idx) => idx !== rowHeader)
+                .map((col, rowIdx) => (
+                  <tr key={rowIdx} className="border-b">
+                    {data.map((item, colIdx) => (
+                      <td
+                        key={colIdx}
+                        onClick={(e) => {
+                          const isActionArea = e.currentTarget.querySelector("button, img, .no-action-click");
+                          if (isActionArea?.contains(e.target as Node)) return;
+                          onEntrySelect?.(colIdx);
+                        }}
+                        className={`min-w-[240px]  text-center align-top border-r last:border-none cursor-pointer
+                           ${col.type !== "images" ? "p-2" : ""} 
+                          ${hoveredColIndex === colIdx ? "bg-muted/50" : ""}
+                          ${col.className || ""}
+                        `}
+                      >
+                        {renderCellContent(col, item)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              {actions && (
+                <tr>
+                  {data.map((_, colIdx) => (
+                    <td
+                      key={colIdx}
+                      onClick={(e) => {
+                        const isActionArea = e.currentTarget.querySelector("button, img, .no-action-click");
+                        if (isActionArea?.contains(e.target as Node)) return;
+                        onEntrySelect?.(colIdx);
+                      }}
+                      className={`min-w-[240px] p-2 text-center border-r last:border-none
+                        ${hoveredColIndex === colIdx ? "bg-muted/20" : ""}
+                      `}
+                    >
+                      <div className="flex flex-col md:flex-row justify-center items-center gap-1 no-action-click">
+                        {actions.map((action, j) => (
+                          <Button
+                            key={j}
+                            variant={action.variant || "default"}
+                            onClick={action.onClick}
+                            className="w-[100px] "
+                          >
+                            {action.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+              )}
+            </tbody>
+          </>
         )}
-      </tr>
-    );
-  })}
-</tbody>
-
-  </>
-) : (
-  // vertical (default)
-  <>
-<thead>
-  <tr className="border-b">
-    {data.map((item, i) => (
-      <th
-  key={i}
-  onClick={(e) => {
-    e.stopPropagation();
-    onEntrySelect?.(i); // ← notifica al padre
-  }}
-
-        className={`p-2 font-semibold text-muted-foreground text-center border-r last:border-none cursor-pointer
-          ${hoveredColIndex === i ? "bg-muted/40" : ""}
-        `}
-      >
-        {item[columns[rowHeader]?.field || ""]}
-      </th>
-    ))}
-  </tr>
-</thead>
-
-<tbody>
-  {columns
-    .filter((_, idx) => idx !== rowHeader)
-    .map((col, rowIdx) => (
-      <tr key={rowIdx} className="border-b">
-        {data.map((item, colIdx) => (
-          <td
-  key={colIdx}
-  onClick={(e) => {
-    const isActionArea = e.currentTarget.querySelector("button, img, .no-action-click");
-    if (isActionArea?.contains(e.target as Node)) return;
-    onEntrySelect?.(colIdx); // ← notifica al padre
-  }}
-
-            className={`min-w-[240px] p-1 text-center align-top border-r last:border-none cursor-pointer
-              ${hoveredColIndex === colIdx ? "bg-muted/50" : ""}
-              ${col.className || ""}
-            `}
-          >
-            {renderCellContent(col, item)}
-          </td>
-        ))}
-      </tr>
-    ))}
-  {actions && (
-    <tr>
-      {data.map((_, colIdx) => (
-        <td
-  key={colIdx}
-  onClick={(e) => {
-    const isActionArea = e.currentTarget.querySelector("button, img, .no-action-click");
-    if (isActionArea?.contains(e.target as Node)) return;
-    onEntrySelect?.(colIdx); // ← notifica al padre
-  }}
-
-          className={`min-w-[240px] p-2 text-center border-r last:border-none
-            ${hoveredColIndex === colIdx ? "bg-muted/20" : ""}
-          `}
-        >
-          <div className="flex flex-col md:flex-row justify-center items-center gap-1 no-action-click">
-            {actions.map((action, j) => (
-              <Button
-                key={j}
-                variant={action.variant || "default"}
-                onClick={action.onClick}
-                className="w-[100px] "
-              >
-                {action.label}
-              </Button>
-            ))}
-          </div>
-        </td>
-      ))}
-    </tr>
-  )}
-</tbody>
-
-  </>
-)}
-
-
       </table>
     </div>
   );
@@ -221,54 +210,55 @@ function renderCellContent(column: Column, row: RowData) {
       return String(row[column.field || ""] ?? "");
     case "images":
       return (
-        <div className="flex items-center justify-center  no-action-click">
-          <ImageCarousel
+        <div className="flex items-center justify-center no-action-click">
+          <ImageCarouselv2
             images={row[column.field || ""]?.[0] || []}
-            aspectRatio={column.aspectRatio || "4:3"}
-            fit={column.fit || "cover"}
+            heightClass={column.height || "h-[220px]"}
             className={column.className || ""}
-            height={column.height}
+            overlayCarrusel={column.overlayCarrusel}
+            overlayValues={column.overlayValuesKey ? row[column.overlayValuesKey] : undefined}
           />
         </div>
       );
     case "time":
       return formatTime(row[column.field || ""]);
     case "benefits":
-  return (
-    <div className="flex flex-col justify-center items-center gap-1">
-      {(row[column.field || ""] as { label: string; included: boolean }[])?.map((b) => (
-        <div key={b.label} className="flex items-center gap-1">
-          {b.included ? (
-            <Check className="text-green-600 w-4 h-4" />
-          ) : (
-            <X className="text-red-500 w-4 h-4" />
-          )}
-          <span className={b.included ? "text-green-700" : "text-red-700"}>
-            {b.label}
-          </span>
+      return (
+        <div className="flex flex-col justify-center items-center gap-1">
+          {(row[column.field || ""] as { label: string; included: boolean }[])?.map((b) => (
+            <div key={b.label} className="flex items-center gap-1">
+              {b.included ? (
+                <Check className="text-green-600 w-4 h-4" />
+              ) : (
+                <X className="text-red-500 w-4 h-4" />
+              )}
+              <span className={b.included ? "text-green-700" : "text-red-700"}>
+                {b.label}
+              </span>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  );
-
+      );
+    default:
+      return null;
   }
 }
 
 function renderStructuredFields(fields: FieldGroup[], structure: string, row: RowData) {
   const lines = structure.split("/").map(line =>
-line.split("-").map((key, groupIndex, group) => {
+    line.split("-").map((key, groupIndex, group) => {
       const textLiteral = key.match(/^{{(.+?)}}$/);
-if (textLiteral) {
-  const prevKey = groupIndex > 0 ? group[groupIndex - 1] : null;
-  const prevFieldMatch = prevKey?.match(/^(\w+)/);
-  const prevFieldName = prevFieldMatch?.[1];
-  const prevField = fields.find(f => f.field === prevFieldName);
-  return (
-    <span key={key} className={prevField?.className}>
-      {textLiteral[1]}
-    </span>
-  );
-}
+      if (textLiteral) {
+        const prevKey = groupIndex > 0 ? group[groupIndex - 1] : null;
+        const prevFieldMatch = prevKey?.match(/^(\w+)/);
+        const prevFieldName = prevFieldMatch?.[1];
+        const prevField = fields.find(f => f.field === prevFieldName);
+        return (
+          <span key={key} className={prevField?.className}>
+            {textLiteral[1]}
+          </span>
+        );
+      }
 
       const fieldWithText = key.match(/^(\w+)-{(.+?)}$/);
       if (fieldWithText) {

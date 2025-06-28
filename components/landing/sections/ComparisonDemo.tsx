@@ -8,7 +8,7 @@ import { Combobox, Option } from "../../ui/combobox";
 import CustomTable, { Action, Column, RowData } from "@/components/shared/CustomTable";
 
 const transportColumns: Column[] = [
-  { field: 'images', header: '', type: 'images', fit: "fill", className: '!p-0' },
+  { field: 'images', header: '', type: 'images', height: 'h-[120px]' },
   { field: 'route', header: 'Ruta', type: 'text' },
   {
     header: "Calificación",
@@ -89,7 +89,7 @@ const transportData = [
 
 const lodgingColumns: Column[] = [
   { field: "provider", header: "Alojamiento", type: "text" },
-  { field: "images", header: "", type: "images", height: "200px",aspectRatio: "filled" },
+  { field: "images", header: "", type: "images" },
   { field: "location", header: "Ubicación", type: "text" },
   {
     header: "Calificación",
