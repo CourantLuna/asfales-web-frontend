@@ -29,7 +29,7 @@ export default function CustomCard({
   cardWidth,
   cardHeight = "h-full",
   carouselHeight = "h-[220px]",
-  carouselWidth = "w-1/3",
+  carouselWidth = "w-1/2",
   className = "",
   orientationCard = "vertical",
   // 👇 Nuevo:
@@ -38,21 +38,21 @@ export default function CustomCard({
 }: CustomCardProps) {
   return (
     <Card className={` 
-    ${cardWidth}  
-    ${orientationCard === "horizontal" ? `${carouselHeight} flex-row` : `${cardHeight} flex-col`}  
-    flex rounded-2xl shadow-xl overflow-hidden bg-background 
-    ${className}
-    hover:shadow-2xl hover:shadow-primary/30 transition-shadow duration-300
+  ${cardWidth || ""}
+  ${orientationCard === "horizontal" ? cardHeight || "" : cardHeight || ""}
+  flex rounded-2xl shadow-xl overflow-hidden bg-background
+  ${orientationCard === "horizontal" ? "flex-row" : "flex-col"}
+  ${className}
+  hover:shadow-2xl hover:shadow-primary/30 transition-shadow duration-300
+`}>
 
-    `}>
       {images && images.length > 0 && (
         <div className={` ${orientationCard === "horizontal" ? `${carouselWidth}` : "w-full"}`}>
           <ImageCarouselv2
-            heightClass={carouselHeight}
             images={images}
-            // 🎉 Pasamos los overlays aquí:
             overlayCarrusel={overlayCarrusel}
             overlayValues={overlayValues}
+            heightClass={`${orientationCard === "vertical" ? `${carouselHeight}` : `h-full`}`}
           />
         </div>
       )}

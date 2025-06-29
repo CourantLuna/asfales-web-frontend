@@ -107,7 +107,7 @@ export function ImageCarouselv2({
   images,
   overlayCarrusel,
   overlayValues,
-  heightClass = "h-[400px]",
+  heightClass = "h-full",
   className = "",
 }: ImageCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi | null>(null)

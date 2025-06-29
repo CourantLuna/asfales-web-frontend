@@ -85,7 +85,7 @@ export default function CustomTable({
                     if (interactive) return;
                     onEntrySelect?.(rowIdx);
                   }}
-                  className="group hover:bg-muted/50 transition-colors duration-200 cursor-pointer border-b"
+                  className="group hover:bg-muted/100 transition-colors duration-200 cursor-pointer border-b"
                 >
                   {columns.map((col, colIdx) => (
                     <td
@@ -131,7 +131,7 @@ export default function CustomTable({
                       onEntrySelect?.(i);
                     }}
                     className={`px-3 py-1 font-semibold text-muted-foreground text-start border-r last:border-none cursor-pointer
-                      ${hoveredColIndex === i ? "bg-muted/40" : ""}
+                      ${hoveredColIndex === i ? "bg-muted/100" : ""}
                     `}
                   >
                     {item[columns[rowHeader]?.field || ""]}
@@ -154,7 +154,7 @@ export default function CustomTable({
                         }}
                         className={`min-w-[240px]  text-start align-top border-r last:border-none cursor-pointer
                            ${col.type !== "images" ? "px-3 py-1" : ""} 
-                          ${hoveredColIndex === colIdx ? "bg-muted/50" : ""}
+                          ${hoveredColIndex === colIdx ? "bg-muted/100" : ""}
                           ${col.className || ""}
                         `}
                       >
@@ -174,7 +174,7 @@ export default function CustomTable({
                         onEntrySelect?.(colIdx);
                       }}
                       className={`min-w-[240px] px-3 py-1 text-center border-r last:border-none
-                        ${hoveredColIndex === colIdx ? "bg-muted/20" : ""}
+                        ${hoveredColIndex === colIdx ? "bg-muted/100" : ""}
                       `}
                     >
                       <div className="flex flex-col md:flex-row justify-center items-center gap-1 no-action-click">

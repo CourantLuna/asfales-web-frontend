@@ -56,13 +56,24 @@ const CardDescription = React.forwardRef<
 ))
 CardDescription.displayName = "CardDescription"
 
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-))
-CardContent.displayName = "CardContent"
+interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  noPadding?: boolean; // <- nueva prop
+}
+
+const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
+  ({ className, noPadding, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        noPadding ? "p-0" : "p-6 pt-0", // <- si noPadding, usa p-0, si no p-6 pt-0
+        className
+      )}
+      {...props}
+    />
+  )
+);
+
+CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<
   HTMLDivElement,

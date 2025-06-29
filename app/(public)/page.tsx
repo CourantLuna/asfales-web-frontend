@@ -1,74 +1,89 @@
 "use client"
 
 import LandingSections from "@/components/landing/LandingSections";
-import CustomCard from "@/components/shared/CustomCard";
-import {  ImageCarouselv2, OverlayCarrusel, OverlayValue } from "@/components/shared/ImageCarouselv2";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import DemoCustomTable from "./DemoCustomTable";
+import { RenderFields, RowData, ColField, MultiColumnFields } from "@/components/shared/RenderFields";
+import LodgingCard from "@/components/lodging-search/LodgingCard";
 
 interface HomePageProps {
   children?: React.ReactNode;
 }
 
 
-const imagesSrc = [
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=600&q=80",
 
-];
 
-const overlays: OverlayCarrusel[] = [
+const rowData = {
+  ratingScore: 4.7,
+  ratingLabel: "Excelente",
+  reviews: 378,
+  price: { currency: "USD", value: 598.52 },
+  benefits: [
+    { label: "Wifi Gratis", included: true },
+    { label: "Piscina", included: true },
+    { label: "Mascotas", included: false },
+  ],
+  otherScore: 2.1,
+  otherLabel: "Regular",
+  otherValue: 99,
+  otherPrice: { currency: "EUR", value: 102.00 },
+};
+
+
+const column1: ColField[] = [
+  { 
+    field: "ratingScore", 
+    type: "text", 
+    className: "bg-[#15b32a] text-white text-sm font-semibold rounded-lg py-1 flex items-center px-4",
+    key: "ratingScore",
+    fields: [
+      { field: "ratingLabel", type: "text", className: "text-sm font-medium text-gray-800", key: "ratingLabel" },
+      { field: "reviews", type: "number", className: "text-xs text-muted-foreground", key: "reviews" }
+    ]
+  },
   {
-    type: "badge",
-    bgcolor: "bg-green-100",
+    key: "price",
     field: "price",
-    align: "top-left",
-    textColor: "text-black",
+    type: "price",
+    className: "text-xl font-bold text-blue-700",
   },
   {
-    type: "favorite",
-    bgcolor: "bg-white",
-    align: "top-right",
-    actionFavorite: (idx) => alert("Favorito en " + idx),
-  },
-  {
-    type: "badge",
-    bgcolor: "bg-secondary",
-    align: "bottom-right",
-    field: "oferta",
+    key: "benefits",
+    field: "benefits",
+    type: "benefits",
+    className: "",
   },
 ];
 
-const overlayValues: OverlayValue = 
-  { price: "$100", isFavorite: true, oferta: "Oferta" };
+const column2: ColField[] = [
+  { 
+    field: "otherScore", 
+    type: "text", 
+    className: "bg-[#15b3ea] text-white text-sm font-semibold rounded-lg py-1 flex items-center px-4",
+    key: "otherScore",
+    fields: [
+      { field: "otherLabel", type: "text", className: "text-sm font-medium text-gray-800", key: "otherLabel" },
+      { field: "otherValue", type: "number", className: "text-xs text-muted-foreground", key: "otherValue" }
+    ]
+  },
+  {
+    key: "otherPrice",
+    field: "otherPrice",
+    type: "price",
+    className: "text-xl font-bold text-red-700",
+  },
+];
+
+
+
 
 export default function Page({ children }: HomePageProps) {
   return (
 
-  <div className="">
+  <div className="space-y-12">
 
-<DemoCustomTable />
 
-<CustomCard
-  cardWidth="w-1/3"
-  orientationCard="vertical"
-  images={imagesSrc}
-  title="Viaja con Asfales"
-  description="Comparador inteligente de viajes y experiencias."
-  overlayCarrusel={overlays}
-  overlayValues={overlayValues}
-  content={
-    <ul className="list-disc ml-4 text-sm space-y-1">
-      <li>Busca vuelos, trenes, buses y ferris</li>
-      <li>Itinerarios inteligentes con IA</li>
-      <li>Alertas de precios y Plan B ante cancelaciones</li>
-    </ul>
-  }
-  footer={<span className="text-xs text-muted-foreground">Equipo #3 - IDS352-1 INTEC</span>}
-/>
-
+   
+ <LodgingCard />
+  <MultiColumnFields columns={[column1, column2]} rowData={rowData}   aligns={["start", "end"]} width="w-[400px]"/>
 
 
   <LandingSections></LandingSections>
