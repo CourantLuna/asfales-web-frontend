@@ -5,7 +5,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BellRing, Edit2 } from "lucide-react";
+import {  Edit2 } from "lucide-react";
 import Link from "next/link";
 import { ShowIfUnauth } from "@/components/ShowIfUnauth";
 import { ShowIfAuth } from "@/components/ShowIfAuth";
