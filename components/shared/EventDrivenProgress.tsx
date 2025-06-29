@@ -12,7 +12,7 @@ export interface EventDrivenProgressRef {
 }
 
 const EventDrivenProgress = React.forwardRef<EventDrivenProgressRef, EventDrivenProgressProps>(
-  ({ className, duration = 10000 }, ref) => {
+  ({ className, duration = 300 }, ref) => {
     const [progress, setProgress] = React.useState(0);
     const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -32,7 +32,7 @@ const EventDrivenProgress = React.forwardRef<EventDrivenProgressRef, EventDriven
         const elapsed = Date.now() - startTime;
         const percent = Math.min((elapsed / duration) * 100, 95);
         setProgress(percent);
-      }, 100);
+      }, 10);
     };
 
     const finish = () => {

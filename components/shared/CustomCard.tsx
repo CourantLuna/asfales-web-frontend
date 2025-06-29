@@ -82,7 +82,7 @@ export default function CustomCard({
 
 {showCompareCheckbox && (
           <div
-            className="absolute z-30 top-3 right-4 flex items-center gap-1 bg-white/80 rounded-md px-2 py-1"
+            className="absolute z-30 top-[42%] right-2 md:top-3 md:right-4 flex items-center gap-1 bg-white/80 rounded-md px-2 py-1"
             onClick={e => e.stopPropagation()}
           >
             <Checkbox

@@ -8,8 +8,9 @@ import { Combobox, Option } from "../../ui/combobox";
 import CustomTable, { Action, Column, RowData } from "@/components/shared/CustomTable";
 
 const transportColumns: Column[] = [
+    { field: 'route', header: 'Ruta', type: 'text' },
+
   { field: 'images', header: '', type: 'images', height: 'h-[120px]' },
-  { field: 'route', header: 'Ruta', type: 'text' },
   {
     header: "Calificación",
     type: "text",
@@ -21,8 +22,8 @@ structure: "ratingScore-ratingLabel/reviews-{{opiniones}}",
     ],
   },
   { field: 'price', header: 'Precio', type: 'text', className: 'bg-muted/50 text-primary font-bold' },
-  { field: 'departAt', header: 'Hora Salida', type: 'time' },
-  { field: 'arriveAt', header: 'Hora Llegada', type: 'time' },
+  // { field: 'departAt', header: 'Hora Salida', type: 'time' },
+  // { field: 'arriveAt', header: 'Hora Llegada', type: 'time' },
   { field: 'benefits', header: 'Beneficios', type: 'benefits' },
 
 ];
@@ -444,12 +445,12 @@ export default function ComparisonDemo() {
   columns={transportColumns}
   data={transportData}
   actions={transportActions}
-  tableOrientation="horizontal"
+  tableOrientation="vertical"
 openInNewTab
 />
           <div className="rounded-xl py-4  overflow-x-auto bg-white">
   
-              <CustomTable columns={transportColumns} data={transportData} actions={transportActions} rowHeader={0} tableOrientation="horizontal"
+              <CustomTable columns={transportColumns} data={transportData} actions={transportActions} rowHeader={0} tableOrientation="vertical"
               onEntrySelect={handleEntrySelect}
               />
         
@@ -476,7 +477,7 @@ openInNewTab
         {/* Itinerarios */}
         <TabsContent value="itinerarios">
           <div className="rounded-xl py-4 overflow-x-auto"> 
-            <CustomTable columns={itinerariesColumns} data={itinerariesData} actions={itinerariesActions} rowHeader={0} tableOrientation="vertical" />
+            <CustomTable columns={itinerariesColumns} data={itinerariesData} actions={itinerariesActions} rowHeader={0} tableOrientation="horizontal" />
           </div>
         </TabsContent>
       </Tabs>

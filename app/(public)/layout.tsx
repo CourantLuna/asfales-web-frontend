@@ -37,7 +37,7 @@ export default function RootLayout({
           <AppNavbar />
           <LandingSkeleton >
      <div className="w-full max-w-7xl mx-auto">
-      <BreadcrumbNav />
+      <div className="w-full pb-3">      <BreadcrumbNav /></div>
         {children}
       </div>
      

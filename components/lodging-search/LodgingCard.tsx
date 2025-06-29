@@ -4,6 +4,7 @@ import { OverlayCarrusel, OverlayValue } from "../shared/ImageCarouselv2";
 import { ColField, MultiColumnFields, RowData } from "../shared/RenderFields";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
+import { useIsMobile } from "../ui/use-mobile";
 
 // 1. Define un array de rows
 
@@ -11,10 +12,16 @@ import { CheckCircle, XCircle } from "lucide-react";
 const column1: ColField[] = [
 
   {
-    key: "pool",
+    key: "feature1",
     type: "icon",
-    label: "Pool",
-    className: "text-base text-gray-700 flex items-center gap-1 mt-2"
+    label: "feature1",
+    className: "text-base text-gray-700 flex items-center gap-1 mt-2",
+    fields: [
+        {key: "feature2",
+      type: "icon",
+      label: "feature2",
+      className: "text-base text-gray-700 flex items-center gap-1 mt-2"},
+    ]
   },
   { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm mt-2" },
   { field: "descSub", type: "text", key: "descSub", className: "text-sm text-gray-500" },
@@ -34,32 +41,35 @@ const column1: ColField[] = [
 ];
 
 const column2: ColField[] = [
-  { field: "alert", type: "alert", key: "alert" },
+  { field: "badge2ndColumn", type: "text", key: "badge2ndColumn", className: "text-sm bg-green-500 text-white font-semibold rounded-lg px-2 py-1" },
   {
     field: "nightlyPrice",
     type: "price",
     key: "nightlyPrice",
-    className: "text-sm text-gray-500 line-through text-right",
+    className: "text-sm text-gray-500 underline underline-offset-2 text-right",
     // puedes agregar más props para variantes si lo necesitas
   },
   {
     field: "beforePrice",
     type: "price",
     key: "beforePrice",
-    className: "text-sm text-gray-400 line-through text-right",
-  },
-  {
+    className: "underline line-through decoration-red-600 decoration-2 underline-offset-2",
+    fields: [
+      {
     field: "afterPrice",
     type: "price",
     key: "afterPrice",
     className: "text-2xl font-bold text-right text-gray-900",
   }
+    ]
+  },
+  
 ];
 
 const overlaysFormat: OverlayCarrusel[] = [
-  { type: "badge", bgcolor: "bg-green-100", field: "price", align: "top-left", textColor: "text-black" },
+  { type: "badge", bgcolor: "bg-gray-100", field: "badge1", align: "top-left", textColor: "text-black" },
   { type: "favorite", bgcolor: "bg-white", align: "top-right", actionFavorite: (idx) => alert("Favorito en " + idx) },
-  { type: "badge", bgcolor: "bg-secondary", align: "bottom-right", field: "oferta" },
+  // { type: "badge", bgcolor: "bg-secondary", align: "bottom-right", field: "badge2" },
 ];
 
 
@@ -83,19 +93,21 @@ export default function LodgingCardList({
   columns = [column1, column2],
   overlays = overlaysFormat,
   overlayFieldMap = row => ({
-    price: row.price,
+    badge1: row.badge1,
     isFavorite: row.isFavorite,
-    oferta: row.oferta
+    badge2: row.badge2
   }),
   cardWidth = "w-full",
   cardHeight,
   carouselWidth = "w-1/3",
-  orientationCard = "horizontal",
   onCardClick,
 }: LodgingCardListProps) {
 
     // Estado de checks (índice => boolean)
   const [compareChecked, setCompareChecked] = useState<{[idx: number]: boolean}>({});
+
+    const isMobile = useIsMobile();
+
 
   // Handler para cada card
 const handleCompareChecked = (idx: number, checked: boolean) => {
@@ -126,7 +138,7 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
       {rows.map((rowData, idx) => (
         <CustomCard
           key={rowData.title + idx}
-          orientationCard={orientationCard}
+          orientationCard={isMobile ? "vertical" : "horizontal"}
           cardWidth={cardWidth}
           cardHeight={cardHeight}
           carouselWidth={carouselWidth}
