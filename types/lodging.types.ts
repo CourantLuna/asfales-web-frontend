@@ -17,4 +17,6 @@ export interface Lodging {
   reserveNow?: string;
   availableBadge?: string;
   beforePrice?: string;
+  descMain?: string;
+  descSub?: string;
 }

@@ -53,7 +53,7 @@ function handleBuscar() {
 }
 
 useEffect(() => {
-  const match = pathname.match(`/^\\/global-(.*)-search$/`);
+  const match = pathname.match(/^\/global-(.*)-search$/);
   if (match) {
     setActiveTab(match[1]);
   }
@@ -87,10 +87,10 @@ const lodgingOptions: FilterOption[] = [
 ]
 
    const tabOptions = [
-      { label: "Transporte", value: "transporte", icon: <Plane className="w-4 h-4" /> },
-      { label: "Alojamientos", value: "alojamientos", icon: <Hotel className="w-4 h-4" /> },
-      { label: "Actividades", value: "experiencias", icon: <Mountain className="w-4 h-4" /> },
-      { label: "Itinerarios", value: "itinerarios", icon: <Route className="w-4 h-4" /> },
+      { label: "Transporte", value: "transport", icon: <Plane className="w-4 h-4" /> },
+      { label: "Alojamientos", value: "lodging", icon: <Hotel className="w-4 h-4" /> },
+      { label: "Actividades", value: "experiences", icon: <Mountain className="w-4 h-4" /> },
+      { label: "Itinerarios", value: "itineraries", icon: <Route className="w-4 h-4" /> },
     ];
 
       const classNameTabs = `flex-1 justify-center border-b-2 border-transparent  bg-transparent

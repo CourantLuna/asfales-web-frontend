@@ -24,7 +24,6 @@ export type FieldType =
   | "space"
   | "icon"    // <---
   | "alert"   // <---
-  | "group";
 
 
 export interface ColField {
@@ -70,17 +69,36 @@ const yAlignClass =
 
 
   return (
-  <div className={`flex flex-col w-full h-full ${alignClass} ${yAlignClass} ${className}`}>
+    <div
+      className={`flex flex-col w-full h-full ${alignClass} ${yAlignClass} ${className}`}
+    >
       {fields.map((f) => {
         const value = f.field ? rowData[f.field] : undefined;
+
+        // Si el campo requiere valor y no existe, NO lo renderices
+        // Solo deja pasar si es un tipo que no depende de value:
+        const alwaysRenderTypes = ["space", "icon", "actions",];
+        const isValueEmpty =
+          f.field &&
+          (value === undefined ||
+            value === null ||
+            value === "" ||
+            (Array.isArray(value) && value.length === 0));
+
+        if (!alwaysRenderTypes.includes(f.type) && isValueEmpty) {
+          return null;
+        }
 
         if (f.fields && f.fields.length > 0) {
           return (
             <div key={f.key} className="flex flex-row items-stretch gap-2">
               {renderSingleField(f, value)}
               <div className="flex flex-col justify-center">
-                {/* Los hijos también pueden recibir align si quieres pasarlo */}
-                <RenderFields fields={f.fields} rowData={rowData} align={align} />
+                <RenderFields
+                  fields={f.fields}
+                  rowData={rowData}
+                  align={align}
+                />
               </div>
             </div>
           );
@@ -156,11 +174,13 @@ function renderSingleField(f: ColField, value: any) {
         </div>
       );
     case "price":
-      return value ? (
-        <span key={f.key} className={f.className}>
-          {value.currency} {value.value?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </span>
-      ) : null;
+  return value && value.value != null ? (
+    <span key={f.key} className={f.className}>
+      {value.currency ? `${value.currency} ` : ""}
+      {value.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    </span>
+  ) : null;
+
     case "actions":
       return (
         <div key={f.key} className="flex gap-2">

@@ -1,11 +1,10 @@
 "use client";
 
 import { useAuth } from "@/lib/hooks/useAuth";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Hero from "@/components/landing/sections/Hero";
 import TravelOptionsSection from "@/components/landing/sections/TravelOptionsSection";
 import SearchBoxOverlay from "@/components/landing/sections/SearchBoxOverlay";
-import { usePathname } from "next/navigation";
 
 
 interface LandingPageProps {
@@ -15,23 +14,8 @@ interface LandingPageProps {
 export default function LandingSkeleton({ children }: LandingPageProps) {
   const [searchValues, setSearchValues] = useState<{ origin: string; destination: string } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname(); // Next.js hook
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("transport"); // <--- aquí defines el estado
-
- useEffect(() => {
-    // SOLO activar si estamos en la ruta deseada
-    if (!pathname?.includes(`/global-${activeTab}-search`)) return;
-
-    function handleScroll() {
-      const minY = resultsRef.current?.offsetTop ?? 0;
-      if (window.scrollY < minY) {
-        window.scrollTo({ top: minY, behavior: "auto" });
-      }
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeTab, pathname]);
 
 function scrollToResults() {
   smoothScrollTo(resultsRef.current?.offsetTop ?? 0, 1000);

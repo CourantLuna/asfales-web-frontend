@@ -38,5 +38,7 @@ function toCamelCaseLodging(apiLodging: any): Lodging {
     reserveNow: apiLodging["reserve-now"],
     availableBadge: apiLodging["available-badge"],
     beforePrice: (apiLodging["before-price"]) || undefined,
+    descMain: apiLodging["desc_title"],
+    descSub: apiLodging["desc_sub"],
   };
 }

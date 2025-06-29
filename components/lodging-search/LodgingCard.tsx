@@ -20,11 +20,11 @@ const column1: ColField[] = [
         {key: "feature2",
       type: "icon",
       label: "waves",
-      className: "text-base text-gray-700 flex items-center mb-2"},
+      className: "text-base text-gray-700 flex items-center mb-3"},
     ]
   },
   { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm" },
-  { field: "descSub", type: "text", key: "descSub", className: "text-sm text-gray-500" },
+  { field: "descSub", type: "text", key: "descSub", className: "text-sm text-gray-500 mb-3" },
   { field: "refundable", type: "text", key: "refundable", className: "text-green-700 font-semibold" },
   { field: "reserveNow", type: "text", key: "reserveNow", className: "text-green-600" },
   // Rating bloque (puedes hacer grupo anidado si quieres, aquí se puede dejar como badge+fields)
