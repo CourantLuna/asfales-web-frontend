@@ -15,27 +15,27 @@ const column1: ColField[] = [
     key: "feature1",
     type: "icon",
     label: "feature1",
-    className: "text-base text-gray-700 flex items-center gap-1 mt-2",
+    className: "text-base text-gray-700 flex items-center",
     fields: [
         {key: "feature2",
       type: "icon",
-      label: "feature2",
-      className: "text-base text-gray-700 flex items-center gap-1 mt-2"},
+      label: "waves",
+      className: "text-base text-gray-700 flex items-center mb-2"},
     ]
   },
-  { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm mt-2" },
+  { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm" },
   { field: "descSub", type: "text", key: "descSub", className: "text-sm text-gray-500" },
-  { field: "refundable", type: "text", key: "refundable", className: "text-green-700 font-semibold mt-3" },
+  { field: "refundable", type: "text", key: "refundable", className: "text-green-700 font-semibold" },
   { field: "reserveNow", type: "text", key: "reserveNow", className: "text-green-600" },
   // Rating bloque (puedes hacer grupo anidado si quieres, aquí se puede dejar como badge+fields)
   {
     field: "rating",
     type: "badge",
     key: "rating",
-    className: "bg-green-600 text-white text-base rounded-lg font-semibold px-2 h-7 flex items-center mt-3",
+    className: "bg-green-600 text-white text-base rounded-lg font-semibold px-2 h-8 flex items-center self-center",
     fields: [
-      { field: "ratingLabel", type: "text", key: "ratingLabel", className: "font-semibold text-lg text-gray-900 ml-2" },
-      { field: "ratingCount", type: "text", key: "ratingCount", className: "text-xs text-gray-500 ml-2" }
+      { field: "ratingLabel", type: "text", key: "ratingLabel", className: "font-semibold text-lg text-gray-900 ml-1" },
+      { field: "ratingCount", type: "text", key: "ratingCount", className: "text-xs text-gray-500 ml-1" }
     ]
   }
 ];

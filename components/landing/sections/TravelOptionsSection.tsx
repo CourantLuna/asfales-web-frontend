@@ -1,56 +1,21 @@
 import TravelOptionsTabs from "@/components/landing/TravelOptionsTabs";
-import { Progress } from "@/components/ui/progress";
-import * as React from "react"
-import EventDrivenProgress,{ EventDrivenProgressRef } from "@/components/shared/EventDrivenProgress";
-import { useEffect, useRef, useState } from "react";
-
+import * as React from "react";
 
 export default function TravelOptionsSection({
   activeTab,
   setActiveTab,
+  onScrollToResults,
 }: {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onScrollToResults: () => void;
 }) {
-
-
- const progressRef = useRef<EventDrivenProgressRef>(null);
-
-  const handleStartLoading = () => {
-    progressRef.current?.start();
-  };
-
-  const handleFinishLoading = () => {
-    progressRef.current?.finish();
-  };
-
-  useEffect(() => {
-    // Inicia el progreso después de 2 segundos
-    const startTimer = setTimeout(() => {
-      progressRef.current?.start();
-      console.log("Progreso iniciado");
-    }, 2000);
-
-    // Finaliza el progreso después de 8 segundos
-    const finishTimer = setTimeout(() => {
-      progressRef.current?.finish();
-      console.log("Progreso finalizado");
-    }, 10000);
-
-    // Limpieza de los timers cuando el componente se desmonta
-    return () => {
-      clearTimeout(startTimer);
-      clearTimeout(finishTimer);
-    };
-  }, []);
-
-
   return (
-<section className="relative w-full flex justify-center py-4">
+    <section className="relative w-full flex justify-center py-4">
       {/* Fondo SVG decorativo */}
       <div className="absolute z-[0] top-0 right-0 left-0 h-[90px] md:h-[110px]">
         <svg
-           width="150%"
+          width="150%"
           height="150%"
           viewBox="0 0 1366 106"
           fill="none"
@@ -67,13 +32,11 @@ export default function TravelOptionsSection({
 
       {/* Tabs interactivos */}
       <div className="w-full px-4 mt-[300px] lg:mt-[220px] md:px-8 flex flex-col items-center text-center">
-       <TravelOptionsTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        <TravelOptionsTabs activeTab={activeTab} setActiveTab={setActiveTab}
+              onScrollToResults={onScrollToResults} // <--- prop hacia abajo
 
-  <div className="max-w-7xl w-full p-2">
-          <EventDrivenProgress ref={progressRef} />
-  </div>
-</div>
-
+        />
+      </div>
     </section>
-  )
+  );
 }

@@ -29,9 +29,11 @@ import { se } from "date-fns/locale";
 export default function TravelOptionsTabs({
   activeTab,
   setActiveTab,
+  onScrollToResults
 }: {
   activeTab: string,
   setActiveTab: (tab: string) => void,
+  onScrollToResults: () => void
 }) {
   const router = useRouter();
 const pathname = usePathname();
@@ -44,6 +46,9 @@ function handleTabChange(tab: string) {
 }
 
 function handleBuscar() {
+  if (onScrollToResults) onScrollToResults(); // <--- mueve el scroll
+  // const y = window.scrollY || window.pageYOffset;
+  // alert(`Scroll Y actual: ${y}`);
   router.push(`/global-${activeTab}-search`);
 }
 
