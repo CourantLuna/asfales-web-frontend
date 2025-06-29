@@ -1,5 +1,7 @@
 // app/inbox/alerts/page.tsx
 "use client";
+export const dynamic = "force-dynamic";
+
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
