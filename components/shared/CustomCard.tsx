@@ -2,6 +2,8 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { ImageCarouselv2, type OverlayCarrusel, type OverlayValue } from "./ImageCarouselv2";
+import { Checkbox } from "@/components/ui/checkbox";
+import React from "react";
 
 type CustomCardProps = {
   title: string;
@@ -18,6 +20,12 @@ type CustomCardProps = {
   // 🎉 Los nuevos props para overlays:
   overlayCarrusel?: OverlayCarrusel | OverlayCarrusel[];
   overlayValues?: OverlayValue;
+    onClick?: (event: React.MouseEvent<HTMLDivElement>) => void; // <---
+      showCompareCheckbox?: boolean;                // ¿Mostrar el checkbox?
+  compareChecked?: boolean;                     // Estado de checked
+  onCompareCheckedChange?: (checked: boolean) => void; // Handler al cambiar
+  compareLabel?: string;                        // Label a mostrar ("Compare" por defecto)
+
 };
 
 export default function CustomCard({
@@ -35,16 +43,59 @@ export default function CustomCard({
   // 👇 Nuevo:
   overlayCarrusel,
   overlayValues,
+  onClick,
+  showCompareCheckbox = true,
+  compareChecked = false,
+  onCompareCheckedChange,
+  compareLabel = "Compare",
 }: CustomCardProps) {
+
+    // --- Estado interno sólo si no vienen controlados ---
+  const [internalChecked, setInternalChecked] = React.useState(false);
+
+  // Usar el valor controlado si viene, sino el interno
+  const isControlled = typeof compareChecked === "boolean" && !!onCompareCheckedChange;
+  const checkedValue = isControlled ? compareChecked : internalChecked;
+
+  // Handler para cambio
+  const handleCheckedChange = (checked: boolean) => {
+    if (isControlled) {
+      onCompareCheckedChange?.(checked);
+    } else {
+      setInternalChecked(checked);
+    }
+  };
   return (
-    <Card className={` 
+    
+    <div className="flex h-full w-full">
+      <Card 
+  onClick={onClick} // <--- AQUÍ
+  className={`  relative
   ${cardWidth || ""}
   ${orientationCard === "horizontal" ? cardHeight || "" : cardHeight || ""}
   flex rounded-2xl shadow-xl overflow-hidden bg-background
   ${orientationCard === "horizontal" ? "flex-row" : "flex-col"}
   ${className}
-  hover:shadow-2xl hover:shadow-primary/30 transition-shadow duration-300
+  hover:shadow-2xl hover:shadow-primary/30 transition-shadow duration-300  
 `}>
+
+
+{showCompareCheckbox && (
+          <div
+            className="absolute z-30 top-3 right-4 flex items-center gap-1 bg-white/80 rounded-md px-2 py-1"
+            onClick={e => e.stopPropagation()}
+          >
+            <Checkbox
+              checked={checkedValue}
+              onCheckedChange={handleCheckedChange}
+              id={`compare-checkbox`}
+            />
+            <label htmlFor="compare-checkbox" className="text-sm select-none">
+              {compareLabel || "Compare"}
+            </label>
+          </div>
+        )}
+
 
       {images && images.length > 0 && (
         <div className={` ${orientationCard === "horizontal" ? `${carouselWidth}` : "w-full"}`}>
@@ -56,7 +107,7 @@ export default function CustomCard({
           />
         </div>
       )}
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full h-full">
         <CardHeader>
           <CardTitle className="text-xl font-bold">{title}</CardTitle>
           {description && <CardDescription className="text-sm">{description}</CardDescription>}
@@ -65,5 +116,6 @@ export default function CustomCard({
         {footer && <CardFooter>{footer}</CardFooter>}
       </div>
     </Card>
+    </div>
   );
 }

@@ -29,7 +29,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-                  <Toaster position="bottom-center"   richColors />
+                  <Toaster  position="bottom-center"  richColors />
 
           <ScrollbarControl /> {/* 👈 Aquí se activa/desactiva según la ruta */}
           {children}

@@ -76,11 +76,14 @@ function OverlayDisplay({
             <button
               key={idx}
               type="button"
-              onClick={() => overlay.actionFavorite(index)}
-              aria-label="Guardar en favoritos"
-              tabIndex={0}
-              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor??"bg-white"} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)}`}
-            >
+              onClick={e => {
+        e.stopPropagation(); // Detiene el click global del card
+        overlay.actionFavorite(index);
+      }}
+      aria-label="Guardar en favoritos"
+      tabIndex={0}
+      className={`absolute z-30 pointer-events-auto ${overlay.bgcolor??"bg-white"} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)}`}
+    >
               <svg
                 width={22}
                 height={22}
