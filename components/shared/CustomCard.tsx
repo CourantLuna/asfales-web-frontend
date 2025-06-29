@@ -56,7 +56,7 @@ export default function CustomCard({
           />
         </div>
       )}
-      <div>
+      <div className="flex flex-col w-full">
         <CardHeader>
           <CardTitle className="text-xl font-bold">{title}</CardTitle>
           {description && <CardDescription className="text-sm">{description}</CardDescription>}
