@@ -17,7 +17,7 @@ type CustomCardProps = {
   orientationCard?: "horizontal" | "vertical";
   // 🎉 Los nuevos props para overlays:
   overlayCarrusel?: OverlayCarrusel | OverlayCarrusel[];
-  overlayValues?: OverlayValue[];
+  overlayValues?: OverlayValue;
 };
 
 export default function CustomCard({

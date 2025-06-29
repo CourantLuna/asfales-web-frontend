@@ -18,6 +18,7 @@ export type OverlayBadge = {
   bgcolor: string
   field: string            // El nombre del campo de overlayValues a mostrar
   align?: OverlayAlign
+  textColor?: string
 }
 export type OverlayFavorite = {
   type: "favorite"
@@ -33,7 +34,7 @@ export type OverlayValue = Record<string, any>
 export type ImageCarouselProps = {
   images: string[]
   overlayCarrusel?: OverlayCarrusel | OverlayCarrusel[]
-  overlayValues?: OverlayValue[]
+  overlayValues?: OverlayValue         // <-- SOLO UN OBJETO
   heightClass?: string
   className?: string
 }
@@ -64,7 +65,7 @@ function OverlayDisplay({
           return (
             <span
               key={idx}
-              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor} text-white text-xs font-bold px-3 py-1 rounded-full shadow ${getAlignClass(overlay.align)}`}
+              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor??"bg-blue-600"} ${overlay.textColor ?? "text-white"} text-xs font-bold px-3 py-1 rounded-full shadow ${getAlignClass(overlay.align)}`}
             >
               {value?.[overlay.field] ?? ""}
             </span>
@@ -78,7 +79,7 @@ function OverlayDisplay({
               onClick={() => overlay.actionFavorite(index)}
               aria-label="Guardar en favoritos"
               tabIndex={0}
-              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)}  `}
+              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor??"bg-white"} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)}`}
             >
               <svg
                 width={22}
@@ -124,18 +125,18 @@ export function ImageCarouselv2({
     }
   }, [api])
 
-  // Si no se pasan overlays, no se renderizan
   const overlays: OverlayCarrusel[] = overlayCarrusel
     ? Array.isArray(overlayCarrusel)
       ? overlayCarrusel
       : [overlayCarrusel]
     : []
 
-  const overlayValue = overlayValues?.[current] || {}
-    const showControls = images.length > 1;
+  // overlayValues ahora es un solo objeto (no un array)
+  const overlayValue = overlayValues || {};
+  const showControls = images.length > 1;
 
   return (
-    <div className={`w-full ${heightClass} ${className} relative `}>
+    <div className={`w-full ${heightClass} ${className} relative`}>
       <Carousel className="relative h-full w-full" setApi={setApi}>
         <CarouselContent className="h-full">
           {images.map((imgUrl, idx) => (
@@ -156,8 +157,8 @@ export function ImageCarouselv2({
             </CarouselItem>
           ))}
         </CarouselContent>
-         {showControls && <CarouselPrevious className="left-2" />}
-      {showControls && <CarouselNext className="right-2" />}
+        {showControls && <CarouselPrevious className="left-2" />}
+        {showControls && <CarouselNext className="right-2" />}
       </Carousel>
       {overlays.length > 0 && (
         <OverlayDisplay overlays={overlays} value={overlayValue} index={current} />

@@ -5,6 +5,7 @@ import CustomCard from "@/components/shared/CustomCard";
 import {  ImageCarouselv2, OverlayCarrusel, OverlayValue } from "@/components/shared/ImageCarouselv2";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import DemoCustomTable from "./DemoCustomTable";
 
 interface HomePageProps {
   children?: React.ReactNode;
@@ -21,9 +22,10 @@ const imagesSrc = [
 const overlays: OverlayCarrusel[] = [
   {
     type: "badge",
-    bgcolor: "bg-blue-600",
+    bgcolor: "bg-green-100",
     field: "price",
     align: "top-left",
+    textColor: "text-black",
   },
   {
     type: "favorite",
@@ -31,20 +33,23 @@ const overlays: OverlayCarrusel[] = [
     align: "top-right",
     actionFavorite: (idx) => alert("Favorito en " + idx),
   },
+  {
+    type: "badge",
+    bgcolor: "bg-secondary",
+    align: "bottom-right",
+    field: "oferta",
+  },
 ];
 
-const overlayValues: OverlayValue[] = [
-  { price: "$100", isFavorite: true },
-  { price: "$80", isFavorite: false },
-  { price: "$150", isFavorite: false },
-];
+const overlayValues: OverlayValue = 
+  { price: "$100", isFavorite: true, oferta: "Oferta" };
 
 export default function Page({ children }: HomePageProps) {
   return (
 
   <div className="">
 
-
+<DemoCustomTable />
 
 <CustomCard
   cardWidth="w-1/3"
