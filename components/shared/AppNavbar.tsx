@@ -1,5 +1,5 @@
 "use client"
-import { usePathname, useRouter } from "next/navigation"
+import {  useRouter } from "next/navigation"
 import { useAuth } from "@/lib/hooks/useAuth";
 
 import { NavigationMenuDemo } from "./NavigationMenu";
@@ -45,14 +45,12 @@ import {
 import Image from "next/image";
 import { useEffect } from "react";
 import { Separator } from "../ui/separator";
-import { ro } from "date-fns/locale";
 import { SettingsDialog } from "./SettingsDialog";
 
 export function AppNavbar() {
+  
   const { user, logout } = useAuth();
   const router = useRouter()
-    const pathname = usePathname();
-
 
 const handleLogout = () => {
     logout(); // limpia localStorage y setUser(null)
@@ -62,9 +60,6 @@ const handleLogout = () => {
 
     // Cambia la URL sin recargar la app entera
     router.push(url);
-
-    // // (Opcional) Refresca datos de Server Components si los usas
-    // router.refresh();
   };
   
 
@@ -105,7 +100,7 @@ const handleLogout = () => {
         {/* SVG background */}
         <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[120px]">
           <svg
-            width="w-full"
+            width="100%"
             height="106"
             viewBox="0 0 1366 106"
             fill="none"
@@ -382,27 +377,6 @@ const handleLogout = () => {
       <div className="absolute top-12 left-[140px] z-50 hidden lg:flex w-[90%] justify-start px-4 md:px-8 pointer-events-none">
         <NavigationMenuDemo></NavigationMenuDemo>
       </div>
-
-      {/* <div className="absolute top-12 left-[140px] z-50 hidden lg:flex w-[90%] justify-start px-4 md:px-8 pointer-events-none">
-      <NavigationMenu className="relative pointer-events-auto">
-        <NavigationMenuList className="flex gap-5 xl:gap-12">
-          {menuItems.map(({ label, icon: Icon }) => (
-            <NavigationMenuItem key={label}>
-              <NavigationMenuTrigger className="group flex items-center gap-1 rounded-md px-3 py-2 border border-transparent bg-transparent transition-colors hover:border-[#FFA500] hover:bg-muted/20 focus:bg-white focus:text-foreground focus:border-white data-[state=open]:bg-white data-[state=open]:text-foreground data-[state=open]:border-white">
-                <Icon className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:-rotate-45" />
-                <span className="text-sm">{label}</span>
-              </NavigationMenuTrigger>
-
-              <NavigationMenuContent className="bg-white border shadow-md rounded-md p-4 mt-2">
-                <div className="text-sm text-muted-foreground">
-                  Aquí iría el submenú de <strong>{label}</strong>.
-                </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          ))}
-        </NavigationMenuList>
-      </NavigationMenu>
-    </div> */}
     </header>
   );
 }
