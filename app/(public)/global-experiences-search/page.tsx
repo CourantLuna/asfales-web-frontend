@@ -1,11 +1,9 @@
-'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 interface IglobalExperiencesSearchProps {}
 
 export default function globalExperiencesSearch() {
-   const [state, setState] = useState();
    return (
        <div>
            <h1>globalExperiencesSearch</h1>

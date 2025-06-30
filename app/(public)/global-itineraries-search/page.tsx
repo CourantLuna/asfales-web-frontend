@@ -1,11 +1,8 @@
-'use client';
 
-import React, { useState } from 'react';
 
-interface IglobalItinerariesSearchProps {}
+import React from 'react';
 
 export default function globalItinerariesSearch() {
-   const [state, setState] = useState();
    return (
        <div>
            <h1>globalItinerariesSearch</h1>

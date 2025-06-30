@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
-import { ScrollbarControl } from "./client-scroll-handler"
+import { ScrollbarControl } from "../components/shared/ClientScrollHandler"
 import { Toaster } from "@/components/ui/sonner"; // exportado por shadcn
 
 
