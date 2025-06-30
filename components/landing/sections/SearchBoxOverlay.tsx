@@ -90,7 +90,7 @@ const destination = watch("destination");
                       <input
                         id="origen"
                         type="text"
-                        placeholder="República Dominicana (DO)"
+                        placeholder="¿A donde?"
                         className="w-full outline-none text-gray-800 py-2"
                         value={origin}
                         {...register("origin", { required: true })}
@@ -112,7 +112,7 @@ const destination = watch("destination");
                             <input
                               id="origen"
                               type="text"
-                              placeholder="República Dominicana (DO)"
+                              placeholder="¿A donde?"
                               className="w-full outline-none text-gray-800"
                               value={origin}
                               {...register("origin", { required: true })}

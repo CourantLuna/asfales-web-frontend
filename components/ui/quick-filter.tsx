@@ -45,8 +45,8 @@ export function QuickFilter({ label, options, selected, setSelected }: QuickFilt
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="flex justify-start items-center gap-2 border-dashed w-full md:w-auto  h-12">
-          <Filter className="w-4 h-4" />
+        <Button variant="outline" className="flex justify-start items-center h-12 px-4 gap-2 border-dashed w-full md:w-auto text-base md:text-sm text-start">
+          <Filter className="mr-2 w-4 h-4 text-muted-foreground" />
           {label}
           {visibleBadges.map((val) => {
             const opt = options.find((o) => o.value === val)
@@ -66,7 +66,13 @@ export function QuickFilter({ label, options, selected, setSelected }: QuickFilt
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 space-y-2">
+      <PopoverContent 
+        className="w-64 space-y-2"
+        align="start"
+        side="bottom"
+        sideOffset={-48}
+        alignOffset={0}
+      >
         {options.map((opt) => (
           <div
             key={opt.value}

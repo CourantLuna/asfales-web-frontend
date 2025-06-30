@@ -17,7 +17,7 @@ export default function DateRangePicker() {
   const [range, setRange] = React.useState<DateRange | undefined>(undefined)
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full md:w-[280px]">
       <Popover>
         <PopoverTrigger asChild>
         <Button

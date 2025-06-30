@@ -237,7 +237,7 @@ const GuestSelector = React.forwardRef<HTMLButtonElement, GuestSelectorProps>(
               variant="outline"
               className={cn(
                 // Standard button height and spacing
-                "w-full justify-start h-12 text-left font-normal",
+                "w-full justify-start h-12 text-left font-normal px-4 gap-2",
                 // Text sizes: base on mobile, sm on desktop
                 "text-base md:text-sm",
                 // Error state styling
@@ -253,12 +253,18 @@ const GuestSelector = React.forwardRef<HTMLButtonElement, GuestSelectorProps>(
                   : undefined
               }
             >
-              <UsersIcon className="mr-3 h-4 w-4 text-muted-foreground" />
+              <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
               <span className="truncate">{getDisplayText()}</span>
             </Button>
           </PopoverTrigger>
 
-          <PopoverContent className="w-full md:w-[380px] p-0 max-h-[500px] overflow-hidden" align="start">
+          <PopoverContent 
+            className="w-full md:w-[380px] p-0 max-h-[500px] overflow-hidden" 
+            align="start"
+            side="bottom"
+            sideOffset={-48}
+            alignOffset={0}
+          >
             {/* Scrollable content area */}
             <div className="space-y-4 p-4 max-h-[400px] overflow-y-auto">
               {rooms.map((room, roomIndex) => (

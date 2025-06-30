@@ -4,12 +4,17 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 export interface StandardInputProps extends React.ComponentProps<"input"> {
   /**
    * Label text for the input
    */
   label?: string;
+  /**
+   * Icon to display inside the input (optional)
+   */
+  icon?: LucideIcon;
   /**
    * Error message to display
    */
@@ -44,6 +49,7 @@ const StandardInput = React.forwardRef<HTMLInputElement, StandardInputProps>(
   (
     {
       label,
+      icon,
       error,
       helperText,
       required,
@@ -88,30 +94,39 @@ const StandardInput = React.forwardRef<HTMLInputElement, StandardInputProps>(
         )}
 
         {/* Input */}
-        <Input
-          id={inputId}
-          ref={ref}
-          className={cn(
-            // Standard input height and spacing
-            "h-12 w-full",
-            // Text sizes: base on mobile, sm on desktop
-            "text-base md:text-sm",
-            // Error state styling
-            error && "border-destructive focus-visible:ring-destructive",
-            inputClassName,
-            className
+        <div className="relative">
+          {icon && (
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              {React.createElement(icon, { className: "h-4 w-4 text-muted-foreground" })}
+            </div>
           )}
-          aria-invalid={error ? "true" : "false"}
-          aria-describedby={
-            error
-              ? `${inputId}-error`
-              : helperText
-              ? `${inputId}-helper`
-              : undefined
-          }
-          required={required}
-          {...props}
-        />
+          <Input
+            id={inputId}
+            ref={ref}
+            className={cn(
+              // Standard input height and spacing
+              "h-12 w-full text-start",
+              // Conditional padding based on icon presence
+              icon ? "pl-12 pr-4" : "px-4",
+              // Text sizes: base on mobile, sm on desktop  
+              "text-base md:text-sm",
+              // Error state styling
+              error && "border-destructive focus-visible:ring-destructive",
+              inputClassName,
+              className
+            )}
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={
+              error
+                ? `${inputId}-error`
+                : helperText
+                ? `${inputId}-helper`
+                : undefined
+            }
+            required={required}
+            {...props}
+          />
+        </div>
 
         {/* Error Message */}
         {error && (

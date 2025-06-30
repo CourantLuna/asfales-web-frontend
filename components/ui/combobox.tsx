@@ -48,7 +48,13 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-full md:w-[280px] p-0 max-h-[300px] overflow-hidden" align="start">
+      <PopoverContent 
+        className="w-full md:w-[280px] p-0 max-h-[300px] overflow-hidden" 
+        align="start"
+        side="bottom"
+        sideOffset={-48}
+        alignOffset={0}
+      >
         <Command>
           <CommandInput placeholder="Buscar opción..." />
           <CommandGroup className="max-h-[250px] overflow-y-auto">

@@ -15,7 +15,9 @@ Mountain as MountainIcon,
   Music2 as MusicIcon,
   Laugh as LaughIcon,
   Mountain,
-  Route, } from "lucide-react"
+  Route,
+  Clock,
+  MapPin, } from "lucide-react"
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { GuestSelector, Room } from "@/components/shared/GuestSelector"
 import { DateRange } from "react-day-picker"
@@ -23,6 +25,7 @@ import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom"
 import { PassengerSelector, PassengerGroup } from "@/components/shared/PassengerSelector"
 import { StandardTabs, TabItem } from "@/components/shared/StandardTabs"
 import React from "react"
+import { StandardSearchField } from "../shared/StandardSearchField";
 
 export default function TravelOptionsTabs({
   activeTab,
@@ -101,6 +104,58 @@ export default function TravelOptionsTabs({
     infantsInSeat: [],
   })
 
+  // Estados para búsqueda de destinos
+  const [searchValue, setSearchValue] = useState<string>("")
+  
+  // Fuentes de datos para el buscador con diferentes tipos
+  const searchDataSources = [
+    {
+      id: "recent",
+      label: "Búsquedas recientes", 
+      icon: <Clock className="h-4 w-4" />,
+      type: "recent" as const,
+      options: [
+        { label: "Medellín (MDE - A. Internacional José...)", value: "med1", description: "3 de julio–6 de julio", icon: <Plane className="h-4 w-4" /> },
+        { label: "Miami (MIA - Aeropuerto Internacional...)", value: "mia1", description: "1 de julio–30 de agosto • 60 noches • 2...", icon: <Plane className="h-4 w-4" /> },
+        { label: "San Juan de la Maguana", value: "sj1", description: "2 de junio–3 de junio • 1 noche • 2...", icon: <MapPin className="h-4 w-4" /> },
+      ]
+    },
+    {
+      id: "airports",
+      label: "Aeropuertos",
+      icon: <Plane className="h-4 w-4" />,
+      type: "airport" as const,
+      options: [
+        { label: "Madrid (MAD - Aeropuerto Barajas)", value: "mad", description: "Capital de España", icon: <Plane className="h-4 w-4" /> },
+        { label: "Barcelona (BCN - Aeropuerto El Prat)", value: "bcn", description: "Ciudad mediterránea", icon: <Plane className="h-4 w-4" /> },
+        { label: "París (CDG - Charles de Gaulle)", value: "par", description: "Ciudad de la luz", icon: <Plane className="h-4 w-4" /> },
+        { label: "Londres (LHR - Heathrow)", value: "lon", description: "Capital británica", icon: <Plane className="h-4 w-4" /> },
+      ]
+    },
+    {
+      id: "cities",
+      label: "Ciudades",
+      icon: <MapPin className="h-4 w-4" />,
+      type: "city" as const,
+      options: [
+        { label: "Roma, Italia", value: "rom", description: "Ciudad eterna", icon: <MapPin className="h-4 w-4" /> },
+        { label: "Nueva York, EE.UU.", value: "nyc", description: "La gran manzana", icon: <MapPin className="h-4 w-4" /> },
+        { label: "Tokyo, Japón", value: "tyo", description: "Metrópolis moderna", icon: <MapPin className="h-4 w-4" /> },
+        { label: "Buenos Aires, Argentina", value: "bue", description: "París de Sudamérica", icon: <MapPin className="h-4 w-4" /> },
+      ]
+    },
+    {
+      id: "hotels",
+      label: "Hoteles",
+      icon: <Building2 className="h-4 w-4" />,
+      type: "hotel" as const,
+      options: [
+        { label: "Hotel Ritz Madrid", value: "ritz-mad", description: "Lujo en el centro de Madrid", icon: <Building2 className="h-4 w-4" /> },
+        { label: "Hotel Majestic Barcelona", value: "maj-bcn", description: "Elegancia en Passeig de Gràcia", icon: <Building2 className="h-4 w-4" /> },
+      ]
+    }
+  ]
+
   // Handler para convertir tipos de fecha
   const handleRangeChange = (newRange: { from?: Date; to?: Date }) => {
     if (newRange.from && newRange.to) {
@@ -114,31 +169,32 @@ export default function TravelOptionsTabs({
 
   // Contenido de cada tab
   const getTransportContent = () => (
-    <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
-      {/* Filtros */}
-      <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+      <div className="w-full  flex flex-col gap-4 items-start">
+            {/* Filtros */}
+
+
         {/* ToggleGroup */}
         <ToggleGroup
           type="multiple"
           defaultValue={["air"]}
           className="gap-2 flex flex-wrap"
         >
-          <ToggleGroupItem value="air" aria-label="Aéreo" className="px-4 py-2">
-            <Plane className="mr-2 h-4 w-4" />
+          <ToggleGroupItem value="air" aria-label="Aéreo" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
+            <Plane className="mr-2 h-4 w-4 text-muted-foreground" />
             Aéreo
           </ToggleGroupItem>
-          <ToggleGroupItem value="land" aria-label="Terrestre" className="px-4 py-2">
-            <Bus className="mr-2 h-4 w-4" />
+          <ToggleGroupItem value="land" aria-label="Terrestre" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
+            <Bus className="mr-2 h-4 w-4 text-muted-foreground" />
             Terrestre
           </ToggleGroupItem>
-          <ToggleGroupItem value="sea" aria-label="Marítimo" className="px-4 py-2">
-            <Ship className="mr-2 h-4 w-4" />
+          <ToggleGroupItem value="sea" aria-label="Marítimo" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
+            <Ship className="mr-2 h-4 w-4 text-muted-foreground" />
             Marítimo
           </ToggleGroupItem>
         </ToggleGroup>
 
         {/* Fechas y Pasajeros */}
-        <div className="flex flex-col md:flex-row gap-4 items-end w-full">
+        <div className="flex flex-wrap gap-4 items-end w-full">
           {/* Fechas de ida y vuelta con dual trigger */}
           <DateRangePickerCustom
             value={{ 
@@ -164,19 +220,35 @@ export default function TravelOptionsTabs({
             initialPassengers={passengers}
             onPassengersChange={setPassengers}
           />
-        </div>
-      </div>
 
-      {/* Botón */}
-      <div className="w-full md:w-[20%] flex justify-end">
-        <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}
+          <StandardSearchField 
+            label="Destino"
+            placeholder="¿A dónde quieres ir?"
+            value={searchValue}
+            onValueChange={setSearchValue}
+            dataSources={searchDataSources}
+            onSelect={(option, sourceType) => {
+              setSearchValue(option.label);
+              console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+            }}
+            showClearButton={true}
+            minSearchLength={0}
+          />
+
+          <div className="self-end">
+        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
           onClick={handleBuscar}
         >
-          <Search className="mr-2 h-4 w-4" />
+          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
           Buscar Opciones de Viaje
         </Button>
       </div>
-    </div>
+          
+        </div>
+
+         {/* Botón */}
+      
+      </div>
   );
 
   const getLodgingContent = () => (
@@ -184,19 +256,19 @@ export default function TravelOptionsTabs({
       <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
         {/* ToggleGroup */}
         <ToggleGroup type="multiple" className="gap-2 flex flex-wrap">
-          <ToggleGroupItem value="hotel" className="px-4 py-2">
-            <Hotel className="mr-2 h-4 w-4" />
+          <ToggleGroupItem value="hotel" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
+            <Hotel className="mr-2 h-4 w-4 text-muted-foreground" />
             Hoteles
           </ToggleGroupItem>
-          <ToggleGroupItem value="house" className="px-4 py-2">
-            <Home className="mr-2 h-4 w-4" />
+          <ToggleGroupItem value="house" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
+            <Home className="mr-2 h-4 w-4 text-muted-foreground" />
             Casas
           </ToggleGroupItem>
-          <ToggleGroupItem value="apartment" className="px-4 py-2">
-            <Building2 className="mr-2 h-4 w-4" />
+          <ToggleGroupItem value="apartment" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
+            <Building2 className="mr-2 h-4 w-4 text-muted-foreground" />
             Apartamentos
           </ToggleGroupItem>
-          <ToggleGroupItem value="guest" className="px-4 py-2">
+          <ToggleGroupItem value="guest" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
             🛏 Casa de huéspedes
           </ToggleGroupItem>
         </ToggleGroup>
@@ -223,10 +295,10 @@ export default function TravelOptionsTabs({
       </div>
 
       <div className="w-full md:w-[20%] flex justify-end">
-        <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}
+        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
           onClick={handleBuscar}
         >
-          <Search className="mr-2 h-4 w-4" />
+          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
           Buscar
         </Button>
       </div>
@@ -256,10 +328,10 @@ export default function TravelOptionsTabs({
       </div>
 
       <div className="w-full md:w-[20%] flex justify-end">
-        <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3 " variant={"default"}
+        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
           onClick={handleBuscar}
         >
-          <Search className="mr-2 h-4 w-4" />
+          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
           Buscar
         </Button>
       </div>
@@ -316,10 +388,10 @@ export default function TravelOptionsTabs({
       </div>
 
       <div className="w-full md:w-[20%] flex justify-end">
-        <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}
+        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
           onClick={handleBuscar}
         >
-          <Search className="mr-2 h-4 w-4" />
+          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
           Buscar
         </Button>
       </div>

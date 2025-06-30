@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandGroup, CommandItem, CommandInput, CommandSeparator } from "@/components/ui/command";
-import { Search, X } from "lucide-react";
+import { Search, X, Clock, MapPin, Plane, Building } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type StandardSearchOption = {
@@ -16,6 +16,14 @@ export type StandardSearchOption = {
   /** Opción de icono ReactNode, p.ej. <Image src="…" /> o cualquier SVG/emoji */
   icon?: React.ReactNode;
   disabled?: boolean;
+};
+
+export type StandardSearchDataSource = {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  options: StandardSearchOption[];
+  type: 'recent' | 'airport' | 'hotel' | 'city' | 'custom';
 };
 
 export interface StandardSearchFieldProps {
@@ -60,9 +68,9 @@ export interface StandardSearchFieldProps {
    */
   searchPlaceholder?: string;
   /**
-   * Options for the search results
+   * Data sources with different types and icons
    */
-  options: StandardSearchOption[];
+  dataSources: StandardSearchDataSource[];
   /**
    * Current search value
    */
@@ -74,7 +82,7 @@ export interface StandardSearchFieldProps {
   /**
    * Selection handler when an option is chosen
    */
-  onSelect?: (option: StandardSearchOption) => void;
+  onSelect?: (option: StandardSearchOption, sourceType: string) => void;
   /**
    * Whether the search field is disabled
    */
@@ -85,8 +93,12 @@ export interface StandardSearchFieldProps {
   showClearButton?: boolean;
   /**
    * Custom filter function for options
+   * Can return either data sources (legacy) or flat options array
    */
-  filterFunction?: (options: StandardSearchOption[], searchTerm: string) => StandardSearchOption[];
+  filterFunction?: (
+    dataSources: StandardSearchDataSource[], 
+    searchTerm: string
+  ) => StandardSearchDataSource[] | (StandardSearchOption & { sourceId: string; sourceType: string; sourceIcon: React.ReactNode })[];
   /**
    * Minimum characters before showing results
    */
@@ -105,7 +117,7 @@ export interface StandardSearchFieldProps {
   id?: string;
 }
 
-const StandardSearchField = React.forwardRef<HTMLInputElement, StandardSearchFieldProps>(
+const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFieldProps>(
   (
     {
       label = "Buscar",
@@ -116,9 +128,9 @@ const StandardSearchField = React.forwardRef<HTMLInputElement, StandardSearchFie
       labelClassName,
       searchClassName,
       showRequiredAsterisk = true,
-      placeholder = "Buscar...",
+      placeholder = "¿A dónde quieres ir?",
       searchPlaceholder = "Escribir para buscar...",
-      options = [],
+      dataSources = [],
       value,
       onValueChange,
       onSelect,
@@ -133,22 +145,36 @@ const StandardSearchField = React.forwardRef<HTMLInputElement, StandardSearchFie
     ref
   ) => {
     const [open, setOpen] = React.useState(false);
-    const [internalValue, setInternalValue] = React.useState(value || "");
+    const [internalValue, setInternalValue] = React.useState("");
     
     // Generate unique ID if not provided
     const searchId = id || React.useId();
 
-    // Update internal value when prop changes
-    React.useEffect(() => {
-      setInternalValue(value || "");
-    }, [value]);
-
-    // Default filter function
-    const defaultFilterFunction = (options: StandardSearchOption[], searchTerm: string) => {
-      if (!searchTerm || searchTerm.length < minSearchLength) return [];
+    // Default filter function that returns flat options with source info
+    const defaultFilterFunction = (dataSources: StandardSearchDataSource[], searchTerm: string) => {
+      const MAX_INITIAL_OPTIONS = 6;
+      const allOptions: (StandardSearchOption & { sourceId: string; sourceType: string; sourceIcon: React.ReactNode })[] = [];
       
+      // Flatten all options from all sources with source metadata
+      dataSources.forEach(source => {
+        source.options.forEach(option => {
+          allOptions.push({
+            ...option,
+            sourceId: source.id,
+            sourceType: source.type,
+            sourceIcon: source.icon
+          });
+        });
+      });
+      
+      if (!searchTerm || searchTerm.length < minSearchLength) {
+        // Al abrir inicialmente, mostrar máximo 6 opciones
+        return allOptions.slice(0, MAX_INITIAL_OPTIONS);
+      }
+      
+      // Al buscar, filtrar todas las opciones
       const term = searchTerm.toLowerCase();
-      return options.filter(option => 
+      return allOptions.filter(option => 
         option.label.toLowerCase().includes(term) ||
         option.description?.toLowerCase().includes(term) ||
         option.value.toLowerCase().includes(term)
@@ -157,39 +183,47 @@ const StandardSearchField = React.forwardRef<HTMLInputElement, StandardSearchFie
 
     const filteredOptions = React.useMemo(() => {
       const filterFn = filterFunction || defaultFilterFunction;
-      return filterFn(options, internalValue);
-    }, [options, internalValue, filterFunction, minSearchLength]);
+      const result = filterFn(dataSources, internalValue);
+      
+      // Si filterFunction personalizada devuelve sources, convertir a opciones planas
+      if (Array.isArray(result) && result.length > 0 && 'options' in result[0]) {
+        const flatOptions: (StandardSearchOption & { sourceId: string; sourceType: string; sourceIcon: React.ReactNode })[] = [];
+        (result as StandardSearchDataSource[]).forEach(source => {
+          source.options.forEach(option => {
+            flatOptions.push({
+              ...option,
+              sourceId: source.id,
+              sourceType: source.type,
+              sourceIcon: source.icon
+            });
+          });
+        });
+        return flatOptions;
+      }
+      
+      return result as (StandardSearchOption & { sourceId: string; sourceType: string; sourceIcon: React.ReactNode })[];
+    }, [dataSources, internalValue, filterFunction, minSearchLength]);
 
     const handleInputChange = (newValue: string) => {
       setInternalValue(newValue);
-      onValueChange(newValue);
-      
-      // Open popover when user starts typing
-      if (newValue.length >= minSearchLength && !open) {
-        setOpen(true);
-      }
     };
 
-    const handleSelect = (option: StandardSearchOption) => {
+    const handleSelect = (option: StandardSearchOption & { sourceId: string; sourceType: string }) => {
       if (!option.disabled) {
-        setInternalValue(option.label);
         onValueChange(option.label);
-        onSelect?.(option);
+        onSelect?.(option, option.sourceType);
         setOpen(false);
+        setInternalValue("");
       }
     };
 
-    const handleClear = () => {
+    const handleClear = (e?: React.MouseEvent) => {
+      e?.preventDefault();
+      e?.stopPropagation();
       setInternalValue("");
-      onValueChange("");
-      setOpen(false);
     };
 
-    const handleInputFocus = () => {
-      if (internalValue.length >= minSearchLength) {
-        setOpen(true);
-      }
-    };
+    const displayValue = value || placeholder;
 
     return (
       <div
@@ -218,110 +252,126 @@ const StandardSearchField = React.forwardRef<HTMLInputElement, StandardSearchFie
           </Label>
         )}
 
-        {/* Search Field */}
+        {/* Search Button */}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <div className="relative">
-              <Input
-                id={searchId}
-                ref={ref}
-                type="text"
-                value={internalValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onFocus={handleInputFocus}
-                placeholder={placeholder}
-                disabled={disabled}
-                className={cn(
-                  // Standard input height and spacing
-                  "h-12 w-full pl-10 pr-10",
-                  // Text sizes: base on mobile, sm on desktop
-                  "text-base md:text-sm",
-                  // Error state styling
-                  error && "border-destructive focus-visible:ring-destructive",
-                  searchClassName
-                )}
-                aria-invalid={error ? "true" : "false"}
-                aria-describedby={
-                  error
-                    ? `${searchId}-error`
-                    : helperText
-                    ? `${searchId}-helper`
-                    : undefined
-                }
-                required={required}
-              />
-              
-              {/* Search Icon */}
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              
-              {/* Clear Button */}
-              {showClearButton && internalValue && !disabled && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClear}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+            <Button
+              id={searchId}
+              ref={ref}
+              variant="outline"
+              disabled={disabled}
+              className={cn(
+                // Standard button height and spacing
+                "w-full justify-start h-12 text-left font-normal px-4 gap-2",
+                // Text sizes: base on mobile, sm on desktop
+                "text-base md:text-sm",
+                // Error state styling
+                error && "border-destructive focus-visible:ring-destructive",
+                !value && "text-muted-foreground",
+                searchClassName
               )}
-            </div>
+              aria-invalid={error ? "true" : "false"}
+              aria-describedby={
+                error
+                  ? `${searchId}-error`
+                  : helperText
+                  ? `${searchId}-helper`
+                  : undefined
+              }
+            >
+              <Search className="mr-2 h-4 w-4 text-muted-foreground" />
+              <span className="truncate">{displayValue}</span>
+            </Button>
           </PopoverTrigger>
 
-          {/* Results Popover */}
-          {(internalValue.length >= minSearchLength || isLoading) && (
-            <PopoverContent className="w-full md:w-[280px] p-0 max-h-[300px] overflow-hidden" align="start">
-              <Command shouldFilter={false}>
-                {/* Search input in popover */}
-                <CommandInput
-                  placeholder={searchPlaceholder}
-                  value={internalValue}
-                  onValueChange={handleInputChange}
-                />
-                
-                <CommandSeparator />
-                
-                {/* Results */}
-                <CommandGroup className="max-h-[200px] overflow-y-auto">
-                  {isLoading ? (
-                    <div className="py-6 text-center text-sm text-muted-foreground">
-                      Buscando...
-                    </div>
-                  ) : filteredOptions.length === 0 ? (
-                    <div className="py-6 text-center text-sm text-muted-foreground">
-                      {emptyMessage}
-                    </div>
-                  ) : (
-                    filteredOptions.map((option) => (
-                      <CommandItem
-                        key={option.value}
-                        value={option.value}
-                        disabled={option.disabled}
-                        onSelect={() => handleSelect(option)}
-                        className="flex items-start gap-3 p-3 cursor-pointer"
-                      >
-                        {/* Icon */}
-                        {option.icon && (
-                          <span className="flex-shrink-0 mt-0.5">{option.icon}</span>
-                        )}
-                        
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">{option.label}</div>
-                          {option.description && (
-                            <div className="text-xs text-muted-foreground truncate mt-1">
-                              {option.description}
+          {/* Large Search Dialog-like Popover */}
+          <PopoverContent 
+            className="w-[400px] max-w-[95vw] p-0 max-h-[400px] overflow-hidden" 
+            align="start"
+            side="bottom"
+            sideOffset={-48}
+            alignOffset={0}
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
+            <div className="flex flex-col max-h-[400px]">
+              {/* Search Header */}
+              <div className="p-4 border-b flex-shrink-0">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    value={internalValue}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    placeholder={searchPlaceholder}
+                    className="h-12 w-full pl-10 pr-10 text-base"
+                    autoFocus
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  
+                  {/* Clear Button */}
+                  {showClearButton && internalValue && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClear}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Results Content with Scroll */}
+              <div className="flex-1 overflow-y-auto min-h-0">
+                {isLoading ? (
+                  <div className="py-12 text-center text-sm text-muted-foreground">
+                    Buscando...
+                  </div>
+                ) : filteredOptions.length === 0 ? (
+                  <div className="py-12 text-center text-sm text-muted-foreground">
+                    {emptyMessage}
+                  </div>
+                ) : (
+                  <div className="p-2">
+                    {/* Flat List of Options - No Section Headers */}
+                    <div className="space-y-1">
+                      {filteredOptions.map((option, index) => (
+                        <button
+                          key={`${option.sourceId}-${option.value}-${index}`}
+                          onClick={() => handleSelect(option)}
+                          disabled={option.disabled}
+                          className={cn(
+                            "w-full flex items-start gap-3 p-3 rounded-lg text-left transition-colors",
+                            "hover:bg-muted focus:bg-muted focus:outline-none",
+                            option.disabled && "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          {/* Option Icon (prefer option icon, fallback to source icon) */}
+                          {(option.icon || option.sourceIcon) && (
+                            <div className="flex-shrink-0 mt-0.5">
+                              {option.icon || option.sourceIcon}
                             </div>
                           )}
-                        </div>
-                      </CommandItem>
-                    ))
-                  )}
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
-          )}
+                          
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate text-sm">{option.label}</div>
+                            {option.description && (
+                              <div className="text-xs text-muted-foreground truncate mt-1">
+                                {option.description}
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </PopoverContent>
         </Popover>
 
         {/* Error Message */}

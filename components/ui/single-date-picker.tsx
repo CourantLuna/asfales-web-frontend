@@ -153,7 +153,13 @@ const SingleDatePicker = React.forwardRef<HTMLButtonElement, SingleDatePickerPro
             </Button>
           </PopoverTrigger>
           
-          <PopoverContent className="w-auto p-4 shadow-lg" align="start" side="bottom">
+          <PopoverContent 
+            className="w-auto p-4 shadow-lg" 
+            align="start" 
+            side="bottom"
+            sideOffset={-48}
+            alignOffset={0}
+          >
             <div className="space-y-4">
               {/* Navigation */}
               <div className="flex items-center justify-between">

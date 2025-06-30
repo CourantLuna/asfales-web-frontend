@@ -4,12 +4,12 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Calendar, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, addDays, addMonths, subMonths, startOfMonth, endOfMonth, isSameMonth, isToday, isBefore, isAfter, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
+import { StandardTabs, TabItem } from "@/components/shared/StandardTabs";
 
 export interface DateRangePickerCustomProps {
   /**
@@ -253,8 +253,181 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
       return placeholder;
     }, [selectedRange, placeholder]);
 
+    // Contenido del tab de calendario
+    const getCalendarContent = () => (
+      <div className="m-0 space-y-4 p-4">
+        {/* Selected Range Display */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={cn(
+              "text-sm font-medium px-3 py-1 rounded-md",
+              dualTrigger && activeTrigger === 'from' ? "bg-primary/20 text-primary" : ""
+            )}>
+              {selectedRange.from ? formatDisplayDate(selectedRange.from) : (dualTrigger ? dualTriggerLabels.from : "Inicio")}
+            </div>
+            {hasReturnDate && (
+              <>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                <div className={cn(
+                  "text-sm font-medium px-3 py-1 rounded-md",
+                  dualTrigger && activeTrigger === 'to' ? "bg-primary/20 text-primary" : ""
+                )}>
+                  {selectedRange.to ? formatDisplayDate(selectedRange.to) : (dualTrigger ? dualTriggerLabels.to : "Fin")}
+                </div>
+              </>
+            )}
+          </div>
+          {dualTrigger && (
+            <div className="text-xs text-muted-foreground">
+              {activeTrigger === 'from' ? 'Selecciona la fecha de ida' : 
+               activeTrigger === 'to' && hasReturnDate ? 
+                 (selectedRange.from ? 'Selecciona la fecha de vuelta (debe ser posterior a la ida)' : 'Primero selecciona la fecha de ida') :
+                 !hasReturnDate ? 'Selecciona la fecha' : 'Seleccionando fechas de viaje'
+              }
+            </div>
+          )}
+        </div>
+
+        {/* Calendar Navigation */}
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Dual Month Calendar */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+          {renderCalendar(currentMonth)}
+          <div className="hidden md:block">
+            {renderCalendar(nextMonth)}
+          </div>
+        </div>
+
+        {/* Date Range Options */}
+        <div className="space-y-3">
+          <ToggleGroup
+            type="single"
+            value={exactDates ? "exact" : "flexible"}
+            onValueChange={(value) => setExactDates(value === "exact")}
+            className="justify-start"
+          >
+            <ToggleGroupItem value="exact" className="text-sm">
+              Fechas exactas
+            </ToggleGroupItem>
+            <ToggleGroupItem value="1day" className="text-sm">
+              ± 1 día
+            </ToggleGroupItem>
+            <ToggleGroupItem value="2days" className="text-sm">
+              ± 2 días
+            </ToggleGroupItem>
+            <ToggleGroupItem value="3days" className="text-sm">
+              ± 3 días
+            </ToggleGroupItem>
+            <ToggleGroupItem value="7days" className="text-sm">
+              ± 7 días
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      </div>
+    );
+
+    // Contenido del tab de fechas flexibles
+    const getFlexibleContent = () => (
+      <div className="m-0 p-4 space-y-6">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold mb-2">¿Cuánto tiempo quieres quedarte?</h3>
+          <p className="text-sm text-muted-foreground">Selecciona la duración y los meses que prefieres</p>
+        </div>
+
+        {/* Duration Selection */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium">Duración de la estadía</h4>
+          <ToggleGroup
+            type="single"
+            value={flexibleDuration}
+            onValueChange={(value) => value && setFlexibleDuration(value)}
+            className="justify-center flex-wrap gap-2"
+          >
+            <ToggleGroupItem value="1" className="text-sm">
+              1 noche
+            </ToggleGroupItem>
+            <ToggleGroupItem value="2-3" className="text-sm">
+              2-3 noches
+            </ToggleGroupItem>
+            <ToggleGroupItem value="4-5" className="text-sm">
+              4-5 noches
+            </ToggleGroupItem>
+            <ToggleGroupItem value="6-7" className="text-sm">
+              6-7 noches
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
+        {/* Weekend Checkbox */}
+        <div className="flex items-center justify-center space-x-2 p-3 bg-muted/30 rounded-lg">
+          <input
+            type="checkbox"
+            id="weekend"
+            checked={includeWeekend}
+            onChange={(e) => setIncludeWeekend(e.target.checked)}
+            className="rounded border-gray-300"
+          />
+          <label htmlFor="weekend" className="text-sm font-medium">
+            Debe incluir fin de semana
+          </label>
+        </div>
+
+        {/* Month Selection */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium">¿Cuándo quieres viajar?</h4>
+          <p className="text-xs text-muted-foreground">Puedes seleccionar múltiples meses</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {[
+              { key: "june", label: "Junio", year: "2025" },
+              { key: "july", label: "Julio", year: "2025" },
+              { key: "august", label: "Agosto", year: "2025" },
+              { key: "september", label: "Septiembre", year: "2025" },
+              { key: "october", label: "Octubre", year: "2025" },
+              { key: "november", label: "Noviembre", year: "2025" },
+            ].map((month) => (
+              <button
+                key={month.key}
+                onClick={() => {
+                  const newMonths = flexibleMonths.includes(month.key)
+                    ? flexibleMonths.filter(m => m !== month.key)
+                    : [...flexibleMonths, month.key];
+                  setFlexibleMonths(newMonths);
+                }}
+                className={cn(
+                  "p-3 rounded-lg border text-center transition-all text-sm hover:scale-105",
+                  flexibleMonths.includes(month.key)
+                    ? "bg-primary text-primary-foreground border-primary shadow-md"
+                    : "border-muted hover:bg-muted hover:border-primary/50"
+                )}
+              >
+                <Calendar className="h-4 w-4 mx-auto mb-1" />
+                <div className="font-medium">{month.label}</div>
+                <div className="text-xs opacity-70">{month.year}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
     return (
-      <div className={cn("flex flex-col gap-2 w-full md:w-[280px]", className)}>
+      <div className={cn("flex flex-col gap-2 w-full md:w-auto", className)}>
         {label && (
           <Label className="text-sm font-medium text-foreground text-start">
             {label}
@@ -269,9 +442,9 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
         }}>
           {dualTrigger ? (
             // Dual trigger mode - two separate buttons with individual labels
-            <div className="flex gap-2">
+            <div className="flex flex-col md:flex-row gap-4">
               {/* Fecha de ida */}
-              <div className="relative flex-1">
+              <div className="relative w-full md:w-[280px]">
                 <Label className="text-sm font-medium text-foreground mb-2 block text-start">
                   {dualTriggerLabels.from}
                 </Label>
@@ -282,12 +455,12 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                     onClick={() => setActiveTrigger('from')}
                     className={cn(
                       "w-full justify-start h-12 text-left font-normal",
-                      "text-base md:text-sm",
+                      "text-base md:text-sm px-4 gap-2",
                       !selectedRange.from && "text-muted-foreground",
                       activeTrigger === 'from' && open && "ring-2 ring-primary"
                     )}
                   >
-                    <CalendarDays className="mr-2 h-4 w-4" />
+                    <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
                     {selectedRange.from ? format(selectedRange.from, "MMM d", { locale: es }) : "Seleccionar fecha"}
                   </Button>
                 </PopoverTrigger>
@@ -295,7 +468,7 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
               
               {/* Fecha de regreso - solo mostrar si hasReturnDate es true */}
               {hasReturnDate && (
-                <div className="relative flex-1">
+                <div className="relative w-full md:w-[280px]">
                   <Label className="text-sm font-medium text-foreground mb-2 block text-start">
                     {dualTriggerLabels.to}
                   </Label>
@@ -306,12 +479,12 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                       onClick={() => setActiveTrigger('to')}
                       className={cn(
                         "w-full justify-start h-12 text-left font-normal",
-                        "text-base md:text-sm",
+                        "text-base md:text-sm px-4 gap-2",
                         !selectedRange.to && "text-muted-foreground",
                         activeTrigger === 'to' && open && "ring-2 ring-primary"
                       )}
                     >
-                      <CalendarDays className="mr-2 h-4 w-4" />
+                      <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
                       {selectedRange.to ? format(selectedRange.to, "MMM d", { locale: es }) : "Seleccionar fecha"}
                     </Button>
                   </PopoverTrigger>
@@ -319,212 +492,59 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
               )}
             </div>
           ) : (
-            // Single trigger mode - one button for range
+                            <div className="relative w-full md:w-[280px]">
+
             <PopoverTrigger asChild>
               <Button
                 ref={ref}
                 variant="outline"
                 disabled={disabled}
                 className={cn(
-                  "w-full justify-start h-12 text-left font-normal",
+                  "w-full justify-start h-12 text-left font-normal px-4 gap-4",
                   "text-base md:text-sm",
                   !selectedRange.from && "text-muted-foreground"
                 )}
               >
-                <CalendarDays className="mr-2 h-4 w-4" />
+                <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
                 {displayText}
               </Button>
             </PopoverTrigger>
+          </div>
           )}
           
-          <PopoverContent className="w-auto p-0 shadow-lg" align="start" side="bottom">
+          <PopoverContent 
+            className="w-auto p-0 shadow-lg" 
+            align="start" 
+            side="bottom"
+            sideOffset={-48}
+            alignOffset={0}
+          >
             <div className="w-[600px] max-w-[95vw]">
-              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'calendar' | 'flexible')} className="w-full">
-                {/* Tab Headers - Only show if flexible dates are enabled */}
-                {showFlexibleDates && (
-                  <div className="flex items-center justify-between p-4 border-b">
-                    <TabsList className="grid w-full grid-cols-2 max-w-[300px]">
-                      <TabsTrigger value="calendar" className="text-sm">
-                        Calendario
-                      </TabsTrigger>
-                      <TabsTrigger value="flexible" className="text-sm">
-                        Fechas flexibles
-                      </TabsTrigger>
-                    </TabsList>
-                  </div>
-                )}
-
-                {/* Calendar Tab */}
-                <TabsContent value="calendar" className={cn("m-0 space-y-4", showFlexibleDates ? "p-4" : "p-4")}>
-                  {/* Selected Range Display */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "text-sm font-medium px-3 py-1 rounded-md",
-                        dualTrigger && activeTrigger === 'from' ? "bg-primary/20 text-primary" : ""
-                      )}>
-                        {selectedRange.from ? formatDisplayDate(selectedRange.from) : (dualTrigger ? dualTriggerLabels.from : "Inicio")}
-                      </div>
-                      {hasReturnDate && (
-                        <>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          <div className={cn(
-                            "text-sm font-medium px-3 py-1 rounded-md",
-                            dualTrigger && activeTrigger === 'to' ? "bg-primary/20 text-primary" : ""
-                          )}>
-                            {selectedRange.to ? formatDisplayDate(selectedRange.to) : (dualTrigger ? dualTriggerLabels.to : "Fin")}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    {dualTrigger && (
-                      <div className="text-xs text-muted-foreground">
-                        {activeTrigger === 'from' ? 'Selecciona la fecha de ida' : 
-                         activeTrigger === 'to' && hasReturnDate ? 
-                           (selectedRange.from ? 'Selecciona la fecha de vuelta (debe ser posterior a la ida)' : 'Primero selecciona la fecha de ida') :
-                           !hasReturnDate ? 'Selecciona la fecha' : 'Seleccionando fechas de viaje'
-                        }
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Calendar Navigation */}
-                  <div className="flex items-center justify-between">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  {/* Dual Month Calendar */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                    {renderCalendar(currentMonth)}
-                    <div className="hidden md:block">
-                      {renderCalendar(nextMonth)}
-                    </div>
-                  </div>
-
-                  {/* Date Range Options */}
-                  <div className="space-y-3">
-                    <ToggleGroup
-                      type="single"
-                      value={exactDates ? "exact" : "flexible"}
-                      onValueChange={(value) => setExactDates(value === "exact")}
-                      className="justify-start"
-                    >
-                      <ToggleGroupItem value="exact" className="text-sm">
-                        Fechas exactas
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="1day" className="text-sm">
-                        ± 1 día
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="2days" className="text-sm">
-                        ± 2 días
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="3days" className="text-sm">
-                        ± 3 días
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="7days" className="text-sm">
-                        ± 7 días
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                  </div>
-                </TabsContent>
-
-                {/* Flexible Dates Tab - Only show if enabled */}
-                {showFlexibleDates && (
-                  <TabsContent value="flexible" className="m-0 p-4 space-y-6">
-                    <div className="text-center">
-                      <h3 className="text-lg font-semibold mb-2">¿Cuánto tiempo quieres quedarte?</h3>
-                      <p className="text-sm text-muted-foreground">Selecciona la duración y los meses que prefieres</p>
-                    </div>
-
-                    {/* Duration Selection */}
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-medium">Duración de la estadía</h4>
-                      <ToggleGroup
-                        type="single"
-                        value={flexibleDuration}
-                        onValueChange={(value) => value && setFlexibleDuration(value)}
-                        className="justify-center flex-wrap gap-2"
-                      >
-                        <ToggleGroupItem value="1" className="text-sm">
-                          1 noche
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="2-3" className="text-sm">
-                          2-3 noches
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="4-5" className="text-sm">
-                          4-5 noches
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="6-7" className="text-sm">
-                          6-7 noches
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </div>
-
-                    {/* Weekend Checkbox */}
-                    <div className="flex items-center justify-center space-x-2 p-3 bg-muted/30 rounded-lg">
-                      <input
-                        type="checkbox"
-                        id="weekend"
-                        checked={includeWeekend}
-                        onChange={(e) => setIncludeWeekend(e.target.checked)}
-                        className="rounded border-gray-300"
-                      />
-                      <label htmlFor="weekend" className="text-sm font-medium">
-                        Debe incluir fin de semana
-                      </label>
-                    </div>
-
-                    {/* Month Selection */}
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-medium">¿Cuándo quieres viajar?</h4>
-                      <p className="text-xs text-muted-foreground">Puedes seleccionar múltiples meses</p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {[
-                          { key: "june", label: "Junio", year: "2025" },
-                          { key: "july", label: "Julio", year: "2025" },
-                          { key: "august", label: "Agosto", year: "2025" },
-                          { key: "september", label: "Septiembre", year: "2025" },
-                          { key: "october", label: "Octubre", year: "2025" },
-                          { key: "november", label: "Noviembre", year: "2025" },
-                        ].map((month) => (
-                          <button
-                            key={month.key}
-                            onClick={() => {
-                              const newMonths = flexibleMonths.includes(month.key)
-                                ? flexibleMonths.filter(m => m !== month.key)
-                                : [...flexibleMonths, month.key];
-                              setFlexibleMonths(newMonths);
-                            }}
-                            className={cn(
-                              "p-3 rounded-lg border text-center transition-all text-sm hover:scale-105",
-                              flexibleMonths.includes(month.key)
-                                ? "bg-primary text-primary-foreground border-primary shadow-md"
-                                : "border-muted hover:bg-muted hover:border-primary/50"
-                            )}
-                          >
-                            <Calendar className="h-4 w-4 mx-auto mb-1" />
-                            <div className="font-medium">{month.label}</div>
-                            <div className="text-xs opacity-70">{month.year}</div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </TabsContent>
-                )}
-              </Tabs>
+              {showFlexibleDates ? (
+                // Si flexible dates está habilitado, usar StandardTabs
+                <StandardTabs
+                  items={[
+                    {
+                      value: "calendar",
+                      label: "Calendario",
+                      icon: <Calendar className="w-4 h-4" />,
+                      content: getCalendarContent(),
+                    },
+                    {
+                      value: "flexible",
+                      label: "Fechas flexibles",
+                      icon: <Calendar className="w-4 h-4" />,
+                      content: getFlexibleContent(),
+                    },
+                  ]}
+                  activeTab={activeTab}
+                  onTabChange={(tab) => setActiveTab(tab as 'calendar' | 'flexible')}
+                  mobilePlaceholder="Selecciona tipo de fecha"
+                />
+              ) : (
+                // Si no hay flexible dates, mostrar solo el contenido del calendario
+                getCalendarContent()
+              )}
 
               {/* Footer */}
               <div className="p-4 border-t bg-muted/30">
