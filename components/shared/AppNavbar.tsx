@@ -100,7 +100,7 @@ const handleLogout = () => {
         {/* SVG background */}
         <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[120px]">
           <svg
-            width="100%"
+            width="1366"
             height="106"
             viewBox="0 0 1366 106"
             fill="none"
