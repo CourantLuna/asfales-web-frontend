@@ -215,10 +215,10 @@ const navItems: {
           <span className="absolute inset-0 bg-white/80 z-0" />
           <div className="relative z-10">
             <h3 className="text-lg font-bold text-foreground">
-  Planifica cada detalle de tu viaje
+  Abre las puertas a nuevas experiencias
 </h3>
 <p className="text-sm text-muted-foreground">
-  Crea, organiza y comparte tus rutas de viaje paso a paso, según tu estilo y destino.
+  Elige, combina y reserva actividades únicas para hacer de cada viaje una historia inolvidable.
 </p>
 
           </div>

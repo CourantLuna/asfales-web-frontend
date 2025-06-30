@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
-import { Search, UsersIcon, Plane, Bus, Ship, Filter, Hotel, Home, Building2,
+import { Search, Plane, Bus, Ship, Filter, Hotel, Home, Building2,
 Mountain as MountainIcon,
   TentTree as TentTreeIcon,
   Footprints as FootprintsIcon,
@@ -18,7 +18,6 @@ Mountain as MountainIcon,
   Mountain,
   RouteIcon,
   Route, } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { Combobox, Option } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { GuestSelector, Room } from "@/components/shared/GuestSelector"
@@ -26,6 +25,7 @@ import { DateRange } from "react-day-picker"
 import  DateRangePicker  from "@/components/ui/date-range-picker"
 import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom"
 import { SingleDatePicker } from "@/components/ui/single-date-picker"
+import { PassengerSelector, PassengerGroup } from "@/components/shared/PassengerSelector"
 import React from "react"
 import { se } from "date-fns/locale";
 
@@ -79,6 +79,14 @@ const [range, setRange] = useState<DateRange | undefined>({
 // Estados para fechas de transporte
 const [fechaIda, setFechaIda] = useState<Date | undefined>(new Date())
 const [fechaVuelta, setFechaVuelta] = useState<Date | undefined>(new Date())
+
+// Estado para pasajeros de transporte
+const [passengers, setPassengers] = useState<PassengerGroup>({
+  adults: 1,
+  children: [],
+  infantsOnLap: [],
+  infantsInSeat: [],
+})
 
 // Handler para convertir tipos de fecha
 const handleRangeChange = (newRange: { from?: Date; to?: Date }) => {
@@ -182,7 +190,7 @@ const lodgingOptions: FilterOption[] = [
       </ToggleGroup>
 
       {/* Fechas y Pasajeros */}
-      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+      <div className="flex flex-col md:flex-row gap-4 items-end w-full">
         {/* Fechas de ida y vuelta con dual trigger */}
         <DateRangePickerCustom
           label="Fechas de viaje"
@@ -203,16 +211,11 @@ const lodgingOptions: FilterOption[] = [
         />
 
         {/* Pasajeros */}
-        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-          <label className="text-sm font-medium">Pasajeros</label>
-          <div className="relative w-full">
-            <Input
-              defaultValue="1 adulto"
-              className="pl-10 w-full"
-            />
-            <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
-        </div>
+        <PassengerSelector
+          label="Pasajeros"
+          initialPassengers={passengers}
+          onPassengersChange={setPassengers}
+        />
       </div>
     </div>
 
