@@ -58,6 +58,10 @@ export interface DateRangePickerCustomProps {
     from: string;
     to: string;
   };
+  /**
+   * Whether to show return date field (only applicable in dual trigger mode)
+   */
+  hasReturnDate?: boolean;
 }
 
 const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePickerCustomProps>(
@@ -71,7 +75,8 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
     showFlexibleDates = true, 
     dualTrigger = false,
     defaultActiveTab = "calendar",
-    dualTriggerLabels = { from: "Fecha de ida", to: "Fecha de vuelta" }
+    dualTriggerLabels = { from: "Fecha de ida", to: "Fecha de vuelta" },
+    hasReturnDate = true
   }, ref) => {
     const [open, setOpen] = React.useState(false);
     const [activeTab, setActiveTab] = React.useState(defaultActiveTab);
@@ -103,14 +108,21 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
         const newRange = { ...selectedRange };
         
         if (activeTrigger === 'from') {
-          // Si hay fecha de vuelta y la fecha de ida es mayor, ajustar
-          if (selectedRange.to && isAfter(date, selectedRange.to)) {
+          // Si no hay fecha de regreso habilitada, solo asignar fecha de ida
+          if (!hasReturnDate) {
             newRange.from = date;
-            newRange.to = undefined; // Limpiar fecha de vuelta si es anterior a la ida
+            newRange.to = undefined;
           } else {
-            newRange.from = date;
+            // Si hay fecha de vuelta y la fecha de ida es mayor, ajustar
+            if (selectedRange.to && isAfter(date, selectedRange.to)) {
+              newRange.from = date;
+              newRange.to = undefined; // Limpiar fecha de vuelta si es anterior a la ida
+            } else {
+              newRange.from = date;
+            }
           }
-        } else {
+        } else if (hasReturnDate) {
+          // Solo permitir seleccionar fecha de vuelta si hasReturnDate es true
           // Si hay fecha de ida y la fecha de vuelta es menor, no permitir
           if (selectedRange.from && isBefore(date, selectedRange.from)) {
             // No hacer nada - mantener la selección actual
@@ -183,8 +195,8 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
         // En modo dual trigger, deshabilitar fechas según el trigger activo
         let isDisabledByTrigger = false;
         if (dualTrigger && activeTrigger) {
-          if (activeTrigger === 'to' && selectedRange.from) {
-            // Si estamos seleccionando fecha de vuelta, deshabilitar fechas anteriores a la ida
+          if (activeTrigger === 'to' && selectedRange.from && hasReturnDate) {
+            // Si estamos seleccionando fecha de vuelta y está habilitada, deshabilitar fechas anteriores a la ida
             isDisabledByTrigger = isBefore(currentDate, selectedRange.from);
           }
         }
@@ -256,9 +268,13 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
           }
         }}>
           {dualTrigger ? (
-            // Dual trigger mode - two separate buttons
+            // Dual trigger mode - two separate buttons with individual labels
             <div className="flex gap-2">
+              {/* Fecha de ida */}
               <div className="relative flex-1">
+                <Label className="text-sm font-medium text-foreground mb-2 block">
+                  {dualTriggerLabels.from}
+                </Label>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -272,28 +288,35 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                     )}
                   >
                     <CalendarDays className="mr-2 h-4 w-4" />
-                    {selectedRange.from ? format(selectedRange.from, "MMM d", { locale: es }) : dualTriggerLabels.from}
+                    {selectedRange.from ? format(selectedRange.from, "MMM d", { locale: es }) : "Seleccionar fecha"}
                   </Button>
                 </PopoverTrigger>
               </div>
-              <div className="relative flex-1">
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    disabled={disabled}
-                    onClick={() => setActiveTrigger('to')}
-                    className={cn(
-                      "w-full justify-start h-12 text-left font-normal",
-                      "text-base md:text-sm",
-                      !selectedRange.to && "text-muted-foreground",
-                      activeTrigger === 'to' && open && "ring-2 ring-primary"
-                    )}
-                  >
-                    <CalendarDays className="mr-2 h-4 w-4" />
-                    {selectedRange.to ? format(selectedRange.to, "MMM d", { locale: es }) : dualTriggerLabels.to}
-                  </Button>
-                </PopoverTrigger>
-              </div>
+              
+              {/* Fecha de regreso - solo mostrar si hasReturnDate es true */}
+              {hasReturnDate && (
+                <div className="relative flex-1">
+                  <Label className="text-sm font-medium text-foreground mb-2 block">
+                    {dualTriggerLabels.to}
+                  </Label>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      disabled={disabled}
+                      onClick={() => setActiveTrigger('to')}
+                      className={cn(
+                        "w-full justify-start h-12 text-left font-normal",
+                        "text-base md:text-sm",
+                        !selectedRange.to && "text-muted-foreground",
+                        activeTrigger === 'to' && open && "ring-2 ring-primary"
+                      )}
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      {selectedRange.to ? format(selectedRange.to, "MMM d", { locale: es }) : "Seleccionar fecha"}
+                    </Button>
+                  </PopoverTrigger>
+                </div>
+              )}
             </div>
           ) : (
             // Single trigger mode - one button for range
@@ -342,20 +365,24 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                       )}>
                         {selectedRange.from ? formatDisplayDate(selectedRange.from) : (dualTrigger ? dualTriggerLabels.from : "Inicio")}
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                      <div className={cn(
-                        "text-sm font-medium px-3 py-1 rounded-md",
-                        dualTrigger && activeTrigger === 'to' ? "bg-primary/20 text-primary" : ""
-                      )}>
-                        {selectedRange.to ? formatDisplayDate(selectedRange.to) : (dualTrigger ? dualTriggerLabels.to : "Fin")}
-                      </div>
+                      {hasReturnDate && (
+                        <>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          <div className={cn(
+                            "text-sm font-medium px-3 py-1 rounded-md",
+                            dualTrigger && activeTrigger === 'to' ? "bg-primary/20 text-primary" : ""
+                          )}>
+                            {selectedRange.to ? formatDisplayDate(selectedRange.to) : (dualTrigger ? dualTriggerLabels.to : "Fin")}
+                          </div>
+                        </>
+                      )}
                     </div>
                     {dualTrigger && (
                       <div className="text-xs text-muted-foreground">
                         {activeTrigger === 'from' ? 'Selecciona la fecha de ida' : 
-                         activeTrigger === 'to' ? 
+                         activeTrigger === 'to' && hasReturnDate ? 
                            (selectedRange.from ? 'Selecciona la fecha de vuelta (debe ser posterior a la ida)' : 'Primero selecciona la fecha de ida') :
-                           'Seleccionando fechas de viaje'
+                           !hasReturnDate ? 'Selecciona la fecha' : 'Seleccionando fechas de viaje'
                         }
                       </div>
                     )}

@@ -54,6 +54,7 @@ export function DualTriggerExample() {
           from: "Fecha de ida",
           to: "Fecha de vuelta"
         }}
+        hasReturnDate={true}
       />
       {/* Display selected dates for debugging */}
       <div className="text-sm text-muted-foreground">
@@ -62,6 +63,33 @@ export function DualTriggerExample() {
         {range.from && range.to && range.from > range.to && (
           <div className="text-red-500">⚠️ Error: Fecha de ida no puede ser posterior a la fecha de vuelta</div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Example 5: One-way trip (only departure date)
+export function OneWayTripExample() {
+  const [range, setRange] = useState<{ from?: Date; to?: Date }>({});
+
+  return (
+    <div className="space-y-4">
+      <DateRangePickerCustom
+        label="Fecha de viaje"
+        value={range}
+        onChange={setRange}
+        dualTrigger={true}
+        showFlexibleDates={false}
+        dualTriggerLabels={{
+          from: "Fecha de salida",
+          to: "Fecha de regreso"
+        }}
+        hasReturnDate={false}
+      />
+      {/* Display selected date for debugging */}
+      <div className="text-sm text-muted-foreground">
+        {range.from && <div>Salida: {range.from.toLocaleDateString('es-ES')}</div>}
+        {!range.from && <div>Selecciona una fecha de salida</div>}
       </div>
     </div>
   );

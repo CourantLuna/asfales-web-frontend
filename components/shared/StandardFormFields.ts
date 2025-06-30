@@ -6,6 +6,7 @@ export { StandardCombobox } from "./StandardCombobox";
 export { GuestSelector } from "./GuestSelector";
 export { PassengerSelector } from "./PassengerSelector";
 export { StandardSearchField } from "./StandardSearchField";
+export { StandardTabs } from "./StandardTabs";
 
 export type { StandardInputProps } from "./StandardInput";
 export type { StandardTextareaProps } from "./StandardTextarea";
@@ -14,3 +15,4 @@ export type { StandardComboboxProps, StandardComboboxOption } from "./StandardCo
 export type { GuestSelectorProps, Room, Child } from "./GuestSelector";
 export type { PassengerSelectorProps, PassengerGroup, Child as PassengerChild, InfantOnLap, InfantInSeat } from "./PassengerSelector";
 export type { StandardSearchFieldProps, StandardSearchOption } from "./StandardSearchField";
+export type { StandardTabsProps, TabItem } from "./StandardTabs";
