@@ -173,7 +173,7 @@ export default function TravelOptionsTabs({
           onClick={handleBuscar}
         >
           <Search className="mr-2 h-4 w-4" />
-          Buscar
+          Buscar Opciones de Viaje
         </Button>
       </div>
     </div>
@@ -355,7 +355,7 @@ export default function TravelOptionsTabs({
   ];
 
   return (
-    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6">
+    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6 pt-[200px] lg:pt-[100px]">
       <StandardTabs
         items={tabItems}
         activeTab={activeTab}

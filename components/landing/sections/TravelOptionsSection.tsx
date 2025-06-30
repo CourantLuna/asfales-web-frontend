@@ -31,7 +31,7 @@ export default function TravelOptionsSection({
       </div>
 
       {/* Tabs interactivos */}
-      <div className="w-full px-4 mt-[300px] lg:mt-[220px] md:px-8 flex flex-col items-center text-center">
+      <div className="w-full px-4 mt-[150px] lg:mt-[120px] md:px-8 flex flex-col items-center text-center">
         <TravelOptionsTabs activeTab={activeTab} setActiveTab={setActiveTab}
               onScrollToResults={onScrollToResults} // <--- prop hacia abajo
 

@@ -5,17 +5,20 @@ import { Button } from "@/components/ui/button"
 import { Search, ArrowLeftRight, ArrowUpDown, MapPin  } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useStickyBoundary } from "@/hooks/useStickyBoundary";
 
 export default function SearchBoxOverlay({ onSearch }: { onSearch?: (origin: string, destination: string) => void }) {
+  // Hook personalizado para detectar sticky boundary
+  const { containerRef, stickyRef, isAtBottom: isStickyAtBottom } = useStickyBoundary({ 
+    threshold: 10, 
+    debug: process.env.NODE_ENV === 'development' // Solo debug en desarrollo
+  });
 
- 
+  const [swapAnimating, setSwapAnimating] = useState(false);
 
-const [swapAnimating, setSwapAnimating] = useState(false);
-
-function handleSwap() {
+  function handleSwap() {
   setSwapAnimating(true);
   const temp = origin;
   setValue("origin", destination);
@@ -42,26 +45,36 @@ const destination = watch("destination");
     <form onSubmit={handleSubmit((data) => onSearch?.(data.origin, data.destination))}>
 
     <div
+      ref={containerRef}
       className="relative
-    min-h-[calc(100vh+330px)] 
-    md:min-h-[calc(100vh+330px)] 
-    lg:min-h-[calc(100vh+250px)] w-full z-20 pointer-events-none "
+    min-h-[calc(100vh+410px)] 
+    md:min-h-[calc(100vh+410px)] 
+    lg:min-h-[calc(100vh+290px)] w-full z-20 pointer-events-none "
     >
       {/* BLOQUE STICKY: solo los campos */}
+      {/* La clase 'sticky-at-bottom' se añade automáticamente cuando el elemento sticky 
+          llega al límite inferior de su contenedor. Puedes personalizar los estilos 
+          en landingStyles.css para cambiar la apariencia en este estado. */}
       <div
-        className="sticky 
+        ref={stickyRef}
+        className={`sticky 
       top-[calc(68vh+((100vh-900px)*0.316))]  
       lg:top-[calc(86vh+((100vh-1000px)*0.1))]
-      w-full flex flex-col items-center justify-end"
+      w-full flex flex-col items-center justify-end transition-all duration-300 ${
+        isStickyAtBottom ? 'sticky-at-bottom' : ''
+      }`}
       >
-        <div className="flex flex-row items-center justify-center">
+        <div className="flex flex-row items-center justify-center w-full max-w-7xl">
           <div
-            className="flex flex-col lg:flex-row items-center justify-center gap-y-4 lg:gap-y-0 lg:gap-x-6 w-full max-w-7xl
-          mb-0"
+            className={`flex flex-col lg:flex-row items-center gap-y-4 lg:gap-y-0 lg:gap-x-6 w-full max-w-7xl mb-0 transition-all duration-300 ${
+              isStickyAtBottom 
+                ? 'justify-start  lg:px-12 xl:px-5' 
+                : 'justify-center'
+            }`}
           >
-<div className="pointer-events-auto hide-scrollbar flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0 lg:gap-x-4 overflow-y-auto max-h-[250px] px-2">
+<div className="pointer-events-auto hide-scrollbar flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0 lg:gap-x-2 overflow-y-auto max-h-[250px] px-2">
               {/* Origen */}
-              <div className={`flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px] transition-transform duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
+              <div className={`search-field flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px] transition-transform duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
                 <Search className=" items-center justify-center h-4 w-4 text-muted-foreground" />
                 <div className=" flex flex-col items-start">
                   <label htmlFor="origen" className="text-start text-gray-800 text-xs mb-0">
@@ -122,7 +135,7 @@ const destination = watch("destination");
               </div>
 
               {/* Destino */}
-              <div className={`flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px] transition-transform duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
+              <div className={`search-field flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px] transition-transform duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
                 <MapPin className="items-center justify-center h-4 w-4 text-muted-foreground" />
                 <div className="flex flex-col items-start">
                   <label htmlFor="destino" className="text-start text-gray-800 text-xs mb-0">
@@ -169,10 +182,12 @@ const destination = watch("destination");
 
       {/* BOTÓN NORMAL (flujo del documento, sin fixed/sticky) */}
       <div
-        className="relative z-[19] h-[76px] mt-0 
+        className={`relative z-[19] h-[76px] mt-0 
   top-[calc(63vh+((100vh-876px)*0.38))] 
   lg:top-[calc(68vh+((100vh-900px)*0.283))] 
-  flex items-end justify-center lg:gap-x-6"
+  flex items-end justify-center lg:gap-x-6 transition-opacity duration-300 ${
+    isStickyAtBottom ? 'opacity-0 pointer-events-none' : 'opacity-100'
+  }`}
       >
         {/* Botón de busqueda */}
         <Button
