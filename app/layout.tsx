@@ -31,7 +31,7 @@ export default function RootLayout({
         >
                   <Toaster  position="bottom-center"  richColors />
 
-          <ScrollbarControl /> {/* 👈 Aquí se activa/desactiva según la ruta */}
+          {/* 👈 Aquí se activa/desactiva según la ruta */}
           {children}
                
         </ThemeProvider>
