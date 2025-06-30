@@ -256,7 +256,7 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
     return (
       <div className={cn("flex flex-col gap-2 w-full md:w-[280px]", className)}>
         {label && (
-          <Label className="text-sm font-medium text-foreground">
+          <Label className="text-sm font-medium text-foreground text-start">
             {label}
           </Label>
         )}
@@ -272,7 +272,7 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
             <div className="flex gap-2">
               {/* Fecha de ida */}
               <div className="relative flex-1">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
+                <Label className="text-sm font-medium text-foreground mb-2 block text-start">
                   {dualTriggerLabels.from}
                 </Label>
                 <PopoverTrigger asChild>
@@ -296,7 +296,7 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
               {/* Fecha de regreso - solo mostrar si hasReturnDate es true */}
               {hasReturnDate && (
                 <div className="relative flex-1">
-                  <Label className="text-sm font-medium text-foreground mb-2 block">
+                  <Label className="text-sm font-medium text-foreground mb-2 block text-start">
                     {dualTriggerLabels.to}
                   </Label>
                   <PopoverTrigger asChild>

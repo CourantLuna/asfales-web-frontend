@@ -119,8 +119,8 @@ const StandardCombobox = React.forwardRef<HTMLButtonElement, StandardComboboxPro
           <Label
             htmlFor={comboboxId}
             className={cn(
-              // Standard label styling
-              "text-sm font-medium text-foreground",
+              // Standard label styling with left alignment
+              "text-sm font-medium text-foreground text-start",
               // Error state
               error && "text-destructive",
               labelClassName

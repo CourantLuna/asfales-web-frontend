@@ -74,48 +74,75 @@ const destination = watch("destination");
           >
 <div className="pointer-events-auto hide-scrollbar flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0 lg:gap-x-2 overflow-y-auto max-h-[250px] px-2">
               {/* Origen */}
-              <div className={`search-field flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px] transition-transform duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
-                <Search className=" items-center justify-center h-4 w-4 text-muted-foreground" />
-                <div className=" flex flex-col items-start">
-                  <label htmlFor="origen" className="text-start text-gray-800 text-xs mb-0">
-  Origen
-</label>
-<TooltipProvider>
-<Tooltip open={!!errors.destination && touchedFields.destination && !dirtyFields.destination}>
-    <TooltipTrigger asChild>
-      <input
-        id="origen"
-        type="text"
-        placeholder="República Dominicana (DO)"
-        className="w-full outline-none text-gray-800"
-        value={origin}
-        {...register("origin", { required: true })}
-        onChange={(e) => setValue("origin", e.target.value)}
-      />
-    </TooltipTrigger>
-    <TooltipContent 
-      className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
-      align="start"
-    side="top"
-    alignOffset={-4}
-    sideOffset={20}
-    >
-      El origen es obligatorio
-    </TooltipContent>
-  </Tooltip>
-</TooltipProvider>
-
-                </div>
+              <div className={`search-field transition-all duration-300 ${swapAnimating ? "animate-swap" : ""} ${
+                isStickyAtBottom 
+                  ? 'flex flex-col w-[280px]' 
+                  : 'flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px] '
+              }`}>
+                {isStickyAtBottom ? (
+                  // Estructura tipo StandardSearchField cuando está sticky
+                  <>
+                    <label htmlFor="origen" className="text-sm font-medium text-foreground mb-2 block text-start">
+                      Origen
+                    </label>
+                    <div className="inline-flex h-[48px] items-center gap-2 whitespace-nowrap px-4 rounded-md bg-white border border-input">
+                      <Search className="h-4 w-4 text-muted-foreground" />
+                      <input
+                        id="origen"
+                        type="text"
+                        placeholder="República Dominicana (DO)"
+                        className="w-full outline-none text-gray-800 py-2"
+                        value={origin}
+                        {...register("origin", { required: true })}
+                        onChange={(e) => setValue("origin", e.target.value)}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  // Estructura original cuando no está sticky
+                  <>
+                    <Search className="items-center justify-center h-4 w-4 text-muted-foreground" />
+                    <div className="flex flex-col items-start">
+                      <label htmlFor="origen" className="text-start text-gray-800 text-xs mb-0">
+                        Origen
+                      </label>
+                      <TooltipProvider>
+                        <Tooltip open={!!errors.origin && touchedFields.origin && !dirtyFields.origin}>
+                          <TooltipTrigger asChild>
+                            <input
+                              id="origen"
+                              type="text"
+                              placeholder="República Dominicana (DO)"
+                              className="w-full outline-none text-gray-800"
+                              value={origin}
+                              {...register("origin", { required: true })}
+                              onChange={(e) => setValue("origin", e.target.value)}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent 
+                            className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
+                            align="start"
+                            side="top"
+                            alignOffset={-4}
+                            sideOffset={20}
+                          >
+                            El origen es obligatorio
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Swap (desktop only) */}
               <div className="hidden lg:block relative">
-                <div className="absolute pt-0 -translate-y-1/2 left-[-20px]">
+                <div className={`absolute pt-0  left-[-20px] ${isStickyAtBottom ? '-translate-y-1/3 pt-3' : '-translate-y-1/2'}`} >
                   <Button
                     onClick={handleSwap}
                     size="icon"
                      type="button"
-                    className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10 shadow-lg"
+                    className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10"
                   >
                     <ArrowLeftRight className="h-4 w-4" />
                   </Button>
@@ -128,47 +155,72 @@ const destination = watch("destination");
                   onClick={handleSwap}
                   size="icon"
                    type="button"
-                  className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10 shadow-lg"
+                  className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10 "
                 >
                   <ArrowUpDown className="h-4 w-4" />
                 </Button>
               </div>
 
               {/* Destino */}
-              <div className={`search-field flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px] transition-transform duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
-                <MapPin className="items-center justify-center h-4 w-4 text-muted-foreground" />
-                <div className="flex flex-col items-start">
-                  <label htmlFor="destino" className="text-start text-gray-800 text-xs mb-0">
-  Destino
-</label>
-
-                  <TooltipProvider>
-<Tooltip open={!!errors.destination && touchedFields.destination && !dirtyFields.destination}>
-    <TooltipTrigger asChild>
-      <input
-        id="destino"
-        type="text"
-        placeholder="País, ciudad o aeropuerto"
-        className="w-full outline-none text-gray-800"
-        value={destination}
-        {...register("destination", { required: true })}
-        onChange={(e) => setValue("destination", e.target.value)}
-      />
-    </TooltipTrigger>
-    <TooltipContent
-    side="top"
-  className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
-  align="start"
-  alignOffset={-4}
-  sideOffset={20}
->
-
-      El destino es obligatorio
-    </TooltipContent>
-  </Tooltip>
-</TooltipProvider>
-
-                </div>
+              <div className={`search-field transition-all duration-300 ${swapAnimating ? "animate-swap" : ""} ${
+                isStickyAtBottom 
+                  ? 'flex flex-col w-[280px]' 
+                  : 'flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px]'
+              }`}>
+                {isStickyAtBottom ? (
+                  // Estructura tipo StandardSearchField cuando está sticky
+                  <>
+                    <label htmlFor="destino" className="text-sm font-medium text-foreground mb-2 block text-start">
+                      Destino
+                    </label>
+                    <div className="inline-flex h-[48px] items-center gap-2 whitespace-nowrap px-4 rounded-md bg-white border border-input">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <input
+                        id="destino"
+                        type="text"
+                        placeholder="País, ciudad o aeropuerto"
+                        className="w-full outline-none text-gray-800 py-2"
+                        value={destination}
+                        {...register("destination", { required: true })}
+                        onChange={(e) => setValue("destination", e.target.value)}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  // Estructura original cuando no está sticky
+                  <>
+                    <MapPin className="items-center justify-center h-4 w-4 text-muted-foreground" />
+                    <div className="flex flex-col items-start">
+                      <label htmlFor="destino" className="text-start text-gray-800 text-xs mb-0">
+                        Destino
+                      </label>
+                      <TooltipProvider>
+                        <Tooltip open={!!errors.destination && touchedFields.destination && !dirtyFields.destination}>
+                          <TooltipTrigger asChild>
+                            <input
+                              id="destino"
+                              type="text"
+                              placeholder="País, ciudad o aeropuerto"
+                              className="w-full outline-none text-gray-800"
+                              value={destination}
+                              {...register("destination", { required: true })}
+                              onChange={(e) => setValue("destination", e.target.value)}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
+                            align="start"
+                            alignOffset={-4}
+                            sideOffset={20}
+                          >
+                            El destino es obligatorio
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

@@ -45,7 +45,7 @@ export function QuickFilter({ label, options, selected, setSelected }: QuickFilt
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="flex justify-start items-center gap-2 border-dashed w-full md:w-auto h-12">
+        <Button variant="outline" className="flex justify-start items-center gap-2 border-dashed w-full md:w-auto  h-12">
           <Filter className="w-4 h-4" />
           {label}
           {visibleBadges.map((val) => {

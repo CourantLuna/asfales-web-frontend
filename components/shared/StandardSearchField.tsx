@@ -204,8 +204,8 @@ const StandardSearchField = React.forwardRef<HTMLInputElement, StandardSearchFie
           <Label
             htmlFor={searchId}
             className={cn(
-              // Standard label styling
-              "text-sm font-medium text-foreground",
+              // Standard label styling with left alignment
+              "text-sm font-medium text-foreground text-start",
               // Error state
               error && "text-destructive",
               labelClassName

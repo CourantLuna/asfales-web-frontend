@@ -47,7 +47,7 @@
 /* Estilos para cuando el sticky llega al límite inferior */
 .sticky-at-bottom .search-field {
   /* Mantener background original, solo cambiar borde a muted */
-  border: 1px solid hsl(var(--muted));
+  
 }
 
 /* Animación suave para los cambios */
