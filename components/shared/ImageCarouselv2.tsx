@@ -71,7 +71,7 @@ function OverlayDisplay({
           return (
             <span
               key={idx}
-              className={`absolute z-30 pointer-events-auto ${overlay.bgcolor??"bg-blue-600"} ${overlay.textColor ?? "text-white"} text-xs font-bold px-3 py-1 rounded-full shadow ${getAlignClass(overlay.align)}`}
+              className={`absolute z-10 pointer-events-auto ${overlay.bgcolor??"bg-blue-600"} ${overlay.textColor ?? "text-white"} text-xs font-bold px-3 py-1 rounded-full shadow ${getAlignClass(overlay.align)}`}
             >
               {badgeValue}
             </span>
@@ -88,7 +88,7 @@ function OverlayDisplay({
       }}
       aria-label="Guardar en favoritos"
       tabIndex={0}
-      className={`absolute z-30 pointer-events-auto ${overlay.bgcolor??"bg-white"} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)}`}
+      className={`absolute z-10 pointer-events-auto ${overlay.bgcolor??"bg-white"} flex items-center justify-center rounded-full p-2 group transition ${getAlignClass(overlay.align)}`}
     >
               <svg
                 width={22}

@@ -25,7 +25,7 @@ const sampleData = [
 export default function PredictionsSection() {
   return (
     <section className="bg-background py-16">
-      <div className="max-w-7xl mx-auto px-6 text-center">
+      <div className="max-w-7xl mx-auto px-6 text-start">
         <h2 className="text-3xl font-bold text-primary mb-2">
           Predicciones y tendencias del mercado
         </h2>

@@ -43,8 +43,8 @@ const features = [
 export default function WhyAsfales() {
   return (
     <section className="max-w-7xl mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold text-center mb-2">¿Por qué elegir ASFΛLES?</h2>
-      <p className="text-muted-foreground text-center mb-10">
+      <h2 className="text-3xl font-bold text-start mb-2">¿Por qué elegir ASFΛLES?</h2>
+      <p className="text-muted-foreground text-start mb-10">
         Pensado para viajeros reales como tú
       </p>
       <div className="grid md:grid-cols-2 gap-6">

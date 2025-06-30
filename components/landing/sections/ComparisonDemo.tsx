@@ -393,7 +393,7 @@ export default function ComparisonDemo() {
   return (
     <div>
     <section className="py-8 px-4 md:px-8 bg-white w-full  mx-auto">
-      <div className="text-center mb-10">
+      <div className="text-start mb-10">
         <h2 className="text-3xl font-bold tracking-tight text-gray-800">
           Comparando opciones de SDQ → Madrid
         </h2>

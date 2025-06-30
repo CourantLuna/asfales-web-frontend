@@ -31,7 +31,7 @@ export function Combobox({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className="w-full md:w-[280px] justify-between h-12 text-base md:text-sm">
+        <Button variant="outline" role="combobox" className="w-full md:w-[280px] justify-between h-12 text-sm md:text-sm">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {current?.icon && (
               <span className="flex-shrink-0">{current.icon}</span>
@@ -48,10 +48,10 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-full md:w-[280px] p-0" align="start">
+      <PopoverContent className="w-full md:w-[280px] p-0 max-h-[300px] overflow-hidden" align="start">
         <Command>
           <CommandInput placeholder="Buscar opción..." />
-          <CommandGroup>
+          <CommandGroup className="max-h-[250px] overflow-y-auto">
             {options.map((option) => (
               <CommandItem
                 key={option.value}

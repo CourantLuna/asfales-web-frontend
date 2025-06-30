@@ -8,10 +8,10 @@ export default function ItineraryPlanSection() {
   return (
     <section className="bg-muted py-12">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-800 text-center">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-800 text-start">
           Planifica tu itinerario paso a paso
         </h2>
-        <p className="text-muted-foreground mt-2 text-center mb-10">
+        <p className="text-muted-foreground mt-2 text-start mb-10">
           Sigue esta guía rápida para crear y gestionar tu itinerario de viaje.
         </p>
 

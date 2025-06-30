@@ -58,7 +58,7 @@ export default function LodgingSearch() {
   if (loading)
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;
 return (
-    <div className="flex flex-col gap-6 justify-content-between md:px-0 px-5">
+    <div className="flex flex-col gap-6 justify-content-between">
       {/* Compare Switch Control */}
       <CompareSwitchControl
         checked={compareMode}

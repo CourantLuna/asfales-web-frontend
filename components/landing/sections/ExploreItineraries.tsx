@@ -51,7 +51,7 @@ export default function ExploreItineraries() {
   return (
     <section className="w-full bg-muted">
      <div className="max-w-7xl mx-auto px-4 py-12">
-       <div className="text-center mb-10">
+       <div className="text-start mb-10">
         <h2 className="text-3xl font-bold">Ideas de Itinerarios Populares</h2>
         <p className="text-muted-foreground mt-2">
           Inspírate con planes colaborativos y experiencias compartidas por

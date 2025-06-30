@@ -21,6 +21,7 @@ Mountain as MountainIcon,
 import { Input } from "@/components/ui/input"
 import { Combobox, Option } from "@/components/ui/combobox" // Debes crear este wrapper según la doc oficial
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
+import { GuestSelector, Room } from "@/components/shared/GuestSelector"
 import { DateRange } from "react-day-picker"
 import  DateRangePicker  from "@/components/ui/date-range-picker"
 import React from "react"
@@ -63,6 +64,11 @@ useEffect(() => {
 const[selectedTransportTypes, setSelectedTransportTypes] = useState<string[]>(["air"])
 const [selectedLodgingTypes, setSelectedLodgingTypes] = useState<string[]>(["hotel"])
 const [selectedExperiences, setSelectedExperiences] = useState<string[]>(["playa"])
+const [guestRooms, setGuestRooms] = useState<Room[]>([{
+  id: "room-1",
+  adults: 2,
+  children: []
+}])
 const [range, setRange] = useState<DateRange | undefined>({
     from: new Date(),
     to: new Date()
@@ -227,14 +233,11 @@ const lodgingOptions: FilterOption[] = [
           </div>
         </div>
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-          <label className="text-sm font-medium">Huéspedes</label>
-          <div className="relative w-full">
-            <Input
-              defaultValue="2 adultos, 1 habitación"
-              className="pl-10 w-full"
-            />
-            <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
+          <GuestSelector
+            label="Huéspedes"
+            initialRooms={guestRooms}
+            onRoomsChange={setGuestRooms}
+          />
         </div>
       </div>
     </div>
@@ -295,14 +298,11 @@ const lodgingOptions: FilterOption[] = [
           </div>
         </div>
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-          <label className="text-sm font-medium">Personas</label>
-          <div className="relative w-full">
-            <Input
-              defaultValue="3 adultos, 1 habitación"
-              className="pl-10 w-full"
-            />
-            <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
+          <GuestSelector
+            label="Personas"
+            initialRooms={guestRooms}
+            onRoomsChange={setGuestRooms}
+          />
         </div>
       </div>
 
