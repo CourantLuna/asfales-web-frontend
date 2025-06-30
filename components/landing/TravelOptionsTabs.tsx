@@ -169,91 +169,79 @@ export default function TravelOptionsTabs({
 
   // Contenido de cada tab
   const getTransportContent = () => (
-      <div className="w-full  flex flex-col gap-4 items-start">
-            {/* Filtros */}
-
-
-        {/* ToggleGroup */}
-        <ToggleGroup
-          type="multiple"
-          defaultValue={["air"]}
-          className="gap-2 flex flex-wrap"
+    <div className="w-full flex flex-col gap-4 items-start">
+      {/* ToggleGroup */}
+      <ToggleGroup
+        type="multiple"
+        defaultValue={["air"]}
+        className="gap-2 flex flex-wrap"
+      >
+        <ToggleGroupItem
+          value="air"
+          aria-label="Aéreo"
+          className="px-4 py-2 h-12 gap-2 text-base md:text-sm"
         >
-          <ToggleGroupItem value="air" aria-label="Aéreo" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
-            <Plane className="mr-2 h-4 w-4 text-muted-foreground" />
-            Aéreo
-          </ToggleGroupItem>
-          <ToggleGroupItem value="land" aria-label="Terrestre" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
-            <Bus className="mr-2 h-4 w-4 text-muted-foreground" />
-            Terrestre
-          </ToggleGroupItem>
-          <ToggleGroupItem value="sea" aria-label="Marítimo" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
-            <Ship className="mr-2 h-4 w-4 text-muted-foreground" />
-            Marítimo
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        {/* Fechas y Pasajeros */}
-        <div className="flex flex-wrap gap-4 items-end w-full">
-          {/* Fechas de ida y vuelta con dual trigger */}
-          <DateRangePickerCustom
-            value={{ 
-              from: fechaIda, 
-              to: fechaVuelta 
-            }}
-            onChange={(range) => {
-              setFechaIda(range.from);
-              setFechaVuelta(range.to);
-            }}
-            showFlexibleDates={false}
-            dualTrigger={true}
-            dualTriggerLabels={{
-              from: "Fecha de ida",
-              to: "Fecha de vuelta"
-            }}
-            hasReturnDate={true}
-          />
-
-          {/* Pasajeros */}
-          <PassengerSelector
-            label="Pasajeros"
-            initialPassengers={passengers}
-            onPassengersChange={setPassengers}
-          />
-
-          <StandardSearchField 
-            label="Destino"
-            placeholder="¿A dónde quieres ir?"
-            value={searchValue}
-            onValueChange={setSearchValue}
-            dataSources={searchDataSources}
-            onSelect={(option, sourceType) => {
-              setSearchValue(option.label);
-              console.log("Destino seleccionado:", option, "Tipo:", sourceType);
-            }}
-            showClearButton={true}
-            minSearchLength={0}
-          />
-
-          <div className="self-end">
-        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
-          onClick={handleBuscar}
+          <Plane className="mr-2 h-4 w-4 text-muted-foreground" />
+          Aéreo
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="land"
+          aria-label="Terrestre"
+          className="px-4 py-2 h-12 gap-2 text-base md:text-sm"
         >
-          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
-          Buscar Opciones de Viaje
-        </Button>
-      </div>
-          
-        </div>
+          <Bus className="mr-2 h-4 w-4 text-muted-foreground" />
+          Terrestre
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="sea"
+          aria-label="Marítimo"
+          className="px-4 py-2 h-12 gap-2 text-base md:text-sm"
+        >
+          <Ship className="mr-2 h-4 w-4 text-muted-foreground" />
+          Marítimo
+        </ToggleGroupItem>
+      </ToggleGroup>
+      {/* Filtros */}
+      <div className="flex flex-wrap gap-4 items-end w-full">
+        {/* Fechas de ida y vuelta con dual trigger */}
+        <DateRangePickerCustom
+          value={{ from: fechaIda, to: fechaVuelta }}
+          onChange={(range) => {
+            setFechaIda(range.from);
+            setFechaVuelta(range.to);
+          }}
+          showFlexibleDates={false}
+          dualTrigger={true}
+          dualTriggerLabels={{ from: "Fecha de ida", to: "Fecha de vuelta" }}
+          hasReturnDate={true}
+        />
 
-         {/* Botón */}
-      
+        {/* Pasajeros */}
+        <PassengerSelector
+          label="Pasajeros"
+          initialPassengers={passengers}
+          onPassengersChange={setPassengers}
+        />
+
+        <StandardSearchField
+          label="Destino"
+          placeholder="¿A dónde quieres ir?"
+          value={searchValue}
+          onValueChange={setSearchValue}
+          dataSources={searchDataSources}
+          onSelect={(option, sourceType) => {
+            setSearchValue(option.label);
+            console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+          }}
+          showClearButton={true}
+          minSearchLength={0}
+        />
       </div>
+    </div>
   );
 
   const getLodgingContent = () => (
-    <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
-      <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+    <div className="w-full flex flex-col gap-4 items-start">
         {/* ToggleGroup */}
         <ToggleGroup type="multiple" className="gap-2 flex flex-wrap">
           <ToggleGroupItem value="hotel" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
@@ -274,49 +262,33 @@ export default function TravelOptionsTabs({
         </ToggleGroup>
 
         {/* Fechas y Huéspedes */}
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-          <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-            <DateRangePickerCustom
+        <div className="flex flex-wrap gap-4 items-end w-full">
+          <DateRangePickerCustom
               label="Fechas"
               value={range}
               onChange={handleRangeChange}
               showFlexibleDates={true}
               defaultActiveTab="flexible"
             />
-          </div>
-          <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-            <GuestSelector
+          <GuestSelector
               label="Huéspedes"
               initialRooms={guestRooms}
               onRoomsChange={setGuestRooms}
             />
-          </div>
         </div>
-      </div>
-
-      <div className="w-full md:w-[20%] flex justify-end">
-        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
-          onClick={handleBuscar}
-        >
-          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
-          Buscar
-        </Button>
-      </div>
+      
     </div>
   );
 
   const getExperiencesContent = () => (
-    <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
-      <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
+    <div className="flex flex-wrap gap-4 items-end w-full">
         {/* Fechas */}
-        <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
           <DateRangePickerCustom
             label="Fechas"
             value={range}
             onChange={handleRangeChange}
             showFlexibleDates={false}
           />
-        </div>
 
         {/* Filtro de experiencia */}
         <QuickFilter
@@ -325,40 +297,26 @@ export default function TravelOptionsTabs({
           setSelected={setSelectedExperiences}
           options={experiencesOptions}
         />
-      </div>
 
-      <div className="w-full md:w-[20%] flex justify-end">
-        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
-          onClick={handleBuscar}
-        >
-          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
-          Buscar
-        </Button>
-      </div>
+      
     </div>
   );
 
   const getItinerariesContent = () => (
-    <div className="flex flex-col md:flex-row w-full gap-4 items-end mt-2">
-      <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
-        {/* Fechas y Personas */}
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-          <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-            <DateRangePickerCustom
+    <div className="flex flex-wrap gap-4 items-end w-full">
+      <DateRangePickerCustom
               label="Fechas"
               value={range}
               onChange={handleRangeChange}
               showFlexibleDates={true}
             />
-          </div>
-          <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
+        
             <GuestSelector
               label="Personas"
               initialRooms={guestRooms}
               onRoomsChange={setGuestRooms}
             />
-          </div>
-        </div>
+          
 
         {/* Filtros rápidos */}
         <div className="flex flex-wrap gap-4 w-full">
@@ -385,16 +343,7 @@ export default function TravelOptionsTabs({
             setSelected={setSelectedExperiences}
           />
         </div>
-      </div>
-
-      <div className="w-full md:w-[20%] flex justify-end">
-        <Button className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm" variant={"default"}
-          onClick={handleBuscar}
-        >
-          <Search className="mr-2 h-4 w-4 text-primary-foreground" />
-          Buscar
-        </Button>
-      </div>
+      
     </div>
   );
 
@@ -434,6 +383,17 @@ export default function TravelOptionsTabs({
         onTabChange={handleTabChange}
         mobilePlaceholder="Selecciona una categoría"
       />
+      {/* Botón alineado abajo a la derecha */}
+  <div className="flex justify-end mt-4">
+    <Button 
+      className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"
+      variant="default"
+      onClick={handleBuscar}
+    >
+      <Search className="mr-2 h-4 w-4 text-primary-foreground" />
+      Buscar Opciones de Viaje
+    </Button>
+  </div>
     </div>
   );
 }
