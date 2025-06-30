@@ -62,12 +62,18 @@ function OverlayDisplay({
     <>
       {overlays.map((overlay, idx) => {
         if (overlay.type === "badge") {
+          // No renderizar el badge si no hay valor válido
+          const badgeValue = value?.[overlay.field];
+          if (!badgeValue || badgeValue === "" || badgeValue === null || badgeValue === undefined) {
+            return null;
+          }
+          
           return (
             <span
               key={idx}
               className={`absolute z-30 pointer-events-auto ${overlay.bgcolor??"bg-blue-600"} ${overlay.textColor ?? "text-white"} text-xs font-bold px-3 py-1 rounded-full shadow ${getAlignClass(overlay.align)}`}
             >
-              {value?.[overlay.field] ?? ""}
+              {badgeValue}
             </span>
           )
         }

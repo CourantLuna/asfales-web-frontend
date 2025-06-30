@@ -47,7 +47,7 @@ export default function CustomCard({
   showCompareCheckbox = true,
   compareChecked = false,
   onCompareCheckedChange,
-  compareLabel = "Compare",
+  compareLabel = "Comparar",
 }: CustomCardProps) {
 
     // --- Estado interno sólo si no vienen controlados ---

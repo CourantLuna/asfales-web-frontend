@@ -84,6 +84,7 @@ interface LodgingCardListProps {
   carouselWidth?: string;
   orientationCard?: "horizontal" | "vertical";
   onCardClick?: (idx: number, row: RowData) => void;
+  showCompareCheckbox?: boolean; // Nueva prop para controlar visibilidad de checkboxes
   // ...agrega más si necesitas
 }
 
@@ -101,6 +102,7 @@ export default function LodgingCardList({
   cardHeight,
   carouselWidth = "w-1/3",
   onCardClick,
+  showCompareCheckbox = false, // Por defecto false
 }: LodgingCardListProps) {
 
     // Estado de checks (índice => boolean)
@@ -149,6 +151,7 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
           overlayValues={overlayFieldMap(rowData)}
           onClick={() => onCardClick?.(idx, rowData)}
           // --- Control del compare checkbox ---
+          showCompareCheckbox={showCompareCheckbox}
           compareChecked={!!compareChecked[idx]}
           onCompareCheckedChange={checked => handleCompareChecked(idx, checked)}
           // -------------------------------------

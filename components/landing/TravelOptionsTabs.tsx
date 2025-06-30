@@ -106,7 +106,7 @@ const lodgingOptions: FilterOption[] = [
         className="w-full items-center flex flex-col bg-transparent"
       >
         {/* Combobox solo en móviles */}
-        <div className="block w-[240px] md:hidden">
+        <div className="block w-full md:hidden mb-4">
           <Combobox
             options={tabOptions}
             value={activeTab}

@@ -9,6 +9,7 @@ import EventDrivenProgress, {
 } from "@/components/shared/EventDrivenProgress";
 import React from "react";
 import CustomSelect, { CustomSelectOption } from "../shared/CustomSelect";
+import CompareSwitchControl from "../shared/CompareSwitchControl";
 import { Info } from "lucide-react";
 
 
@@ -32,6 +33,7 @@ export default function LodgingSearch() {
   const progressRef = useRef<EventDrivenProgressRef>(null);
 
   const [sort, setSort] = React.useState("recomendado");
+  const [compareMode, setCompareMode] = React.useState(false);
 
   // Dispara la barra de progreso siempre que loading sea distinto de false (true o undefined)
   useEffect(() => {
@@ -57,6 +59,16 @@ export default function LodgingSearch() {
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;
 return (
     <div className="flex flex-col gap-6 justify-content-between md:px-0 px-5">
+      {/* Compare Switch Control */}
+      <CompareSwitchControl
+        checked={compareMode}
+        onCheckedChange={setCompareMode}
+        titleOff="Comparar propiedades"
+        subtitleOff="Obtén una vista lado a lado de hasta 5 propiedades"
+        titleOn="Comparando propiedades"
+        subtitleOn="Selecciona propiedades para comparar lado a lado"
+      />
+
       {/* Barra de control superior */}
       <div className="flex w-full items-end justify-between gap-4 border-b border-muted pb-2">
         <div className="flex flex-col items-start gap-1">
@@ -86,6 +98,7 @@ return (
           alert(`¡Click en card #${idx}: ${row.title}!`)
         }
         rows={rows}
+        showCompareCheckbox={compareMode}
       />
     </div>
   );
