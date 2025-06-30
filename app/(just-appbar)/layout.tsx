@@ -8,8 +8,6 @@ import { ThemeProvider } from "next-themes"
 import { AppNavbar } from "@/components/shared/AppNavbar"
 import Footer from "@/components/shared/Footer"
 import ChatWidget from "@/components/shared/ChatWidget"
-import LandingSkeleton from "@/components/landing/LandingSkeleton"
-import BreadcrumbNav from "@/components/shared/BreadcrumbNav"
 
 const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
