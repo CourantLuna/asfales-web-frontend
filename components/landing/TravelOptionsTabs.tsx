@@ -24,6 +24,8 @@ import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { GuestSelector, Room } from "@/components/shared/GuestSelector"
 import { DateRange } from "react-day-picker"
 import  DateRangePicker  from "@/components/ui/date-range-picker"
+import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom"
+import { SingleDatePicker } from "@/components/ui/single-date-picker"
 import React from "react"
 import { se } from "date-fns/locale";
 
@@ -73,6 +75,21 @@ const [range, setRange] = useState<DateRange | undefined>({
     from: new Date(),
     to: new Date()
   })
+
+// Estados para fechas de transporte
+const [fechaIda, setFechaIda] = useState<Date | undefined>(new Date())
+const [fechaVuelta, setFechaVuelta] = useState<Date | undefined>(new Date())
+
+// Handler para convertir tipos de fecha
+const handleRangeChange = (newRange: { from?: Date; to?: Date }) => {
+  if (newRange.from && newRange.to) {
+    setRange({ from: newRange.from, to: newRange.to });
+  } else if (newRange.from) {
+    setRange({ from: newRange.from, to: undefined });
+  } else {
+    setRange(undefined);
+  }
+}
 
 const experiencesOptions: FilterOption[] = [
   { label: "Aventura", value: "aventura", icon: MountainIcon },
@@ -166,13 +183,24 @@ const lodgingOptions: FilterOption[] = [
 
       {/* Fechas y Pasajeros */}
       <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-        {/* Fechas */}
-       <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-          <label className="text-sm font-medium">Fechas</label>
-          <div className="relative w-full">
-            <DateRangePicker />
-          </div>
-        </div>
+        {/* Fechas de ida y vuelta con dual trigger */}
+        <DateRangePickerCustom
+          label="Fechas de viaje"
+          value={{ 
+            from: fechaIda, 
+            to: fechaVuelta 
+          }}
+          onChange={(range) => {
+            setFechaIda(range.from);
+            setFechaVuelta(range.to);
+          }}
+          showFlexibleDates={false}
+          dualTrigger={true}
+          dualTriggerLabels={{
+            from: "Fecha de ida",
+            to: "Fecha de vuelta"
+          }}
+        />
 
         {/* Pasajeros */}
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
@@ -227,10 +255,13 @@ const lodgingOptions: FilterOption[] = [
       {/* Fechas y Huéspedes */}
       <div className="flex flex-col md:flex-row gap-4 items-center w-full">
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-          <label className="text-sm font-medium">Fechas</label>
-          <div className="relative w-full">
-            <DateRangePicker />
-          </div>
+          <DateRangePickerCustom
+            label="Fechas"
+            value={range}
+            onChange={handleRangeChange}
+            showFlexibleDates={true}
+            defaultActiveTab="flexible"
+          />
         </div>
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
           <GuestSelector
@@ -259,10 +290,12 @@ const lodgingOptions: FilterOption[] = [
     <div className="w-full md:w-[80%] flex flex-wrap gap-4 items-end">
       {/* Fechas */}
       <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-        <label className="text-sm font-medium">Fechas</label>
-        <div className="relative w-full">
-          <DateRangePicker />
-        </div>
+        <DateRangePickerCustom
+          label="Fechas"
+          value={range}
+          onChange={handleRangeChange}
+          showFlexibleDates={false}
+        />
       </div>
 
       {/* Filtro de experiencia */}
@@ -292,10 +325,12 @@ const lodgingOptions: FilterOption[] = [
       {/* Fechas y Personas */}
       <div className="flex flex-col md:flex-row gap-4 items-center w-full">
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
-          <label className="text-sm font-medium">Fechas</label>
-          <div className="relative w-full">
-            <DateRangePicker  />
-          </div>
+          <DateRangePickerCustom
+            label="Fechas"
+            value={range}
+            onChange={handleRangeChange}
+            showFlexibleDates={true}
+          />
         </div>
         <div className="flex flex-col items-start gap-2 w-full md:w-[280px]">
           <GuestSelector
