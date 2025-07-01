@@ -10,7 +10,9 @@ import EventDrivenProgress, {
 import React from "react";
 import CustomSelect, { CustomSelectOption } from "../shared/CustomSelect";
 import CompareSwitchControl from "../shared/CompareSwitchControl";
+import { PriceRangeFilter } from "../shared/PriceRangeFilter";
 import { Info } from "lucide-react";
+import { FilterChips, FilterChip } from "../shared/FilterChips";
 
 
 
@@ -34,6 +36,48 @@ export default function LodgingSearch() {
 
   const [sort, setSort] = React.useState("recomendado");
   const [compareMode, setCompareMode] = React.useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [priceFilterString, setPriceFilterString] = useState<string>("");
+
+  // Función para resetear el filtro de precio
+  const resetPriceFilter = () => {
+    setPriceRange([0, 1000]);
+    console.log("Filtro de precio reseteado");
+    // Aquí podrías hacer la llamada a la API para remover el filtro
+  };
+
+  // Generar filtros activos para FilterChips
+  const generateActiveFilters = (): FilterChip[] => {
+    const filters: FilterChip[] = [];
+
+    // Filtro de precio
+    if (priceFilterString) {
+      filters.push({
+        id: "price",
+        label: "Precio",
+        value: priceFilterString,
+        onRemove: resetPriceFilter,
+      });
+    }
+
+    // Aquí puedes agregar más filtros en el futuro
+    // Ejemplo:
+    // if (locationFilter) {
+    //   filters.push({
+    //     id: "location",
+    //     label: "Ubicación",
+    //     value: locationFilter,
+    //     onRemove: resetLocationFilter,
+    //   });
+    // }
+
+    return filters;
+  };
+
+  const clearAllFilters = () => {
+    resetPriceFilter();
+    // Agregar más resets cuando tengas más filtros
+  };
 
   // Dispara la barra de progreso siempre que loading sea distinto de false (true o undefined)
   useEffect(() => {
@@ -69,9 +113,43 @@ return (
         subtitleOn="Selecciona propiedades para comparar lado a lado"
       />
 
+      {/* Filtros */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Filtro de Precio */}
+        <div className="w-full lg:w-80">
+          <PriceRangeFilter
+            min={0}
+            max={1000}
+            value={priceRange}
+            onChange={(newRange) => {
+              setPriceRange(newRange);
+              console.log("Filtrar por precio:", newRange);
+              // Aquí podrías hacer la llamada a la API para filtrar
+            }}
+            onOutputStringChange={setPriceFilterString}
+            label="Precio por noche"
+            currency="$"
+            step={10}
+          />
+        </div>
+        
+        {/* Aquí podrías agregar más filtros en el futuro */}
+        <div className="flex-1">
+          {/* Espacio para filtros adicionales */}
+        </div>
+      </div>
+
       {/* Barra de control superior */}
       <div className="flex w-full items-end justify-between gap-4 border-b border-muted pb-2">
         <div className="flex flex-col items-start gap-1">
+          {/* Mostrar filtros activos */}
+          <FilterChips
+            filters={generateActiveFilters()}
+            onClearAll={clearAllFilters}
+            showClearAll={true}
+            clearAllText="Limpiar filtros"
+          />
+          
           <span className="text-xs text-muted-foreground font-medium">
             {rows.length ? `${rows.length}+ alojamientos` : "Alojamientos encontrados"}
           </span>
