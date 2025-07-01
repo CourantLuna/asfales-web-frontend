@@ -79,9 +79,14 @@ export default function ChatsClient() {
           <p className="text-sm text-muted-foreground max-w-sm text-center">
             Aquí verás los mensajes enviados o recibidos de hoteles y actividades.
           </p>
-          <Link href="/login">
-            <Button className="px-6 py-2">Iniciar sesión</Button>
+           <div className="flex flex-col items-center space-y-2 mt-5">
+           <Link href="/login">
+            <Button className="px-6 py-2 h-12 w-[280px]">Iniciar sesión</Button>
           </Link>
+          <Link href="/register">
+            <Button variant={"link"} className="px-6 py-2 h-12 w-[280px]">Crear cuenta</Button>
+          </Link>
+         </div>
         </div>
       </ShowIfUnauth>
     </div>

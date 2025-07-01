@@ -32,7 +32,10 @@ export default function RootLayout({
                   <Toaster  position="bottom-center"  richColors />
 
           <ScrollbarControl /> 
+        <div className="min-h-screen h-screen w-full">
           {children}
+        </div>
+          
                
         </ThemeProvider>
       </body>

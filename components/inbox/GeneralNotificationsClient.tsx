@@ -1,4 +1,4 @@
-// components/NotificationsClient.tsx
+// components/GeneralNotificationsClient.tsx
 "use client";
 
 import React from "react";
@@ -35,9 +35,14 @@ export default function NotificationsClient() {
           <p className="text-sm text-muted-foreground max-w-sm text-center">
             Aquí recibirás alertas sobre tus viajes y tu cuenta. Inicia sesión para no perderte nada.
           </p>
-          <Link href="/login">
-            <Button className="px-6 py-2">Iniciar sesión</Button>
+         <div className="flex flex-col items-center space-y-2 mt-5">
+           <Link href="/login">
+            <Button className="px-6 py-2 h-12 w-[280px]">Iniciar sesión</Button>
           </Link>
+          <Link href="/register">
+            <Button variant={"link"} className="px-6 py-2 h-12 w-[280px]">Crear cuenta</Button>
+          </Link>
+         </div>
         </div>
       </ShowIfUnauth>
 
@@ -64,7 +69,7 @@ export default function NotificationsClient() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    <Link href={`/inbox/notifications/${notif.id}`} className="text-primary hover:underline">
+                    <Link href={`/inbox/general/${notif.id}`} className="text-primary hover:underline">
                       Ver detalles
                     </Link>
                   </p>
@@ -74,7 +79,7 @@ export default function NotificationsClient() {
             <Separator className="my-4" />
             <div className="text-right">
               <Button variant="outline" asChild>
-                <Link href="/inbox/notifications">Ver todas</Link>
+                <Link href="/inbox/general">Ver todas</Link>
               </Button>
             </div>
           </div>

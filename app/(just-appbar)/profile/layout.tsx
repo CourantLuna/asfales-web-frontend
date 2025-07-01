@@ -5,9 +5,9 @@ export default function ProfileLayout({
 }) {
    return (
       
-    <div className="w-full h-full mx-auto py-8 mt-[64px]">
+    <div className="w-full mx-auto">
        <div className="md:hidden mb-4  w-full">
-              <h1 className="text-2xl font-semibold mx-4 text-secondary ">Notificaciones</h1>
+              <h1 className="text-2xl font-semibold mx-4 text-secondary ">Perfil</h1>
       </div>
         <div>{children}</div>
     </div>

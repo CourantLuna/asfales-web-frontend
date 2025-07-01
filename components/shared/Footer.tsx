@@ -57,7 +57,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             <li><Link href="/compare" className="hover:text-secondary">Compara y escoge la mejor opción</Link></li>
             <li><Link href="/reserve/search" className="hover:text-secondary">Reservar y gana GoFar-Cash</Link></li>
-            <li><Link href="/notifications" className="hover:text-secondary">Activa alertas personalizadas</Link></li>
+            <li><Link href="/inbox/alerts" className="hover:text-secondary">Activa alertas personalizadas</Link></li>
             <li><Link href="/itineraries/new" className="hover:text-secondary">Crea y comparte itinerarios</Link></li>
             <li><Link href="/predictions" className="hover:text-secondary">Predicciones Asfales</Link></li>
           </ul>

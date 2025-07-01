@@ -120,7 +120,7 @@ const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
           value={activeTab}
           onValueChange={onTabChange}
           className={cn(
-            "w-full items-center flex flex-col bg-transparent",
+            "w-full items-center flex flex-col !bg-transparent",
             centerTabs && "items-center"
           )}
         >
