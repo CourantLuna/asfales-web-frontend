@@ -15,8 +15,8 @@ import {
   Shield,
   MessageCircle,
   DollarSign,
-  LogOut,
-  Medal
+  Medal,
+  LogOut
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShowIfUnauth } from "../ShowIfUnauth";
@@ -34,10 +34,36 @@ import Credits from "./Credits";
 import Reviews from "./Reviews";
 import SecuritySettings from "./SecuritySettings";
 import HelpFeedback from "./HelpFeedback";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 
 export default function Profile() {
   const router = useRouter();
+
+const handleLogout = () => {
+    logout(); // limpia localStorage y setUser(null)
+
+    // Reconstruye la URL manteniendo la ruta actual y añadiendo ?logout=1
+    const url = `?logout=1`;
+
+    // Cambia la URL sin recargar la app entera
+    router.push(url);
+  };
+
+    const { user, logout } = useAuth();
+
+     useEffect(() => {
+  // Solo ejecuta logout si hay usuario, pero su token es falso o vacío
+  if (user && !user.token) {
+    logout();
+  }
+  // Si user ya es null, no vuelve a entrar aquí
+}, [user, logout]);
+
+  const getFirstName = (name: string) => name?.split(" ")[0] ?? "";
+  const getEmail = (email: string) => email?.split(" ")[0] ?? "";
+
+  
   const searchParams = useSearchParams();
   const [activeSection, setActiveSection] = useState("profile");
 
@@ -46,6 +72,8 @@ export default function Profile() {
     const section = searchParams.get("section") || "profile";
     setActiveSection(section);
   }, [searchParams]);
+
+  
 
   const sidebarItems = [
     {
@@ -276,8 +304,8 @@ export default function Profile() {
                   <span className="text-blue-600 font-semibold text-sm">HG</span>
                 </div>
                 <div>
-                  <h2 className="font-semibold text-gray-900">Hi, Heydi</h2>
-                  <p className="text-sm text-gray-500">heydi081@gmail.com</p>
+                  <h2 className="font-semibold text-gray-900">Hola, {getFirstName(user?.name ?? "usuario")}</h2>
+                  <p className="text-sm text-gray-500">{getEmail(user?.email ?? "usuario@gmail.com")}</p>
                 </div>
               </div>
               <div className="mt-4 bg-blue-50 rounded-lg p-3 border border-gray-200 w-full">
@@ -340,7 +368,9 @@ export default function Profile() {
 
               {/* Sign Out Button */}
               <div className="mt-8 pt-6 border-t">
-                <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
+                <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={handleLogout}
+                >
                   <LogOut className="w-4 h-4 mr-3" />
                   Cerrar sesión
                 </Button>

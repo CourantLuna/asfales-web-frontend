@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { AppNavbar } from "@/components/shared/AppNavbar";
 import Footer from "@/components/shared/Footer";
 import { TopBarTabs } from "@/components/shared/TopBarTabs";
+import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,7 @@ export default function JustAppbarLayout({ children }: { children: React.ReactNo
           {children}
         </main>
         <Footer />
+        <ScrollToTopFAB />
       </ThemeProvider>
     </div>
   );
