@@ -22,8 +22,11 @@ export type StandardSearchDataSource = {
   id: string;
   label: string;
   icon: React.ReactNode;
-  options: StandardSearchOption[];
   type: 'recent' | 'airport' | 'hotel' | 'city' | 'custom';
+  options: any[]; // Datos sin formatear
+  nameLabelField: string; // Nombre del campo para el label (ej: "name", "title", "label")
+  nameValueField: string; // Nombre del campo para el value (ej: "id", "code", "value")
+  nameDescriptionField?: string; // Nombre del campo para la descripción (opcional)
 };
 
 export interface StandardSearchFieldProps {
@@ -155,11 +158,16 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
       const MAX_INITIAL_OPTIONS = 6;
       const allOptions: (StandardSearchOption & { sourceId: string; sourceType: string; sourceIcon: React.ReactNode })[] = [];
       
-      // Flatten all options from all sources with source metadata
+      // Flatten all options from all sources with source metadata and dynamic field mapping
       dataSources.forEach(source => {
         source.options.forEach(option => {
+          // Map dynamic fields to StandardSearchOption format
           allOptions.push({
-            ...option,
+            label: option[source.nameLabelField] || '',
+            value: option[source.nameValueField] || '',
+            description: source.nameDescriptionField ? option[source.nameDescriptionField] : undefined,
+            icon: source.icon, // Use source icon for all options
+            disabled: option.disabled || false,
             sourceId: source.id,
             sourceType: source.type,
             sourceIcon: source.icon
@@ -190,8 +198,13 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
         const flatOptions: (StandardSearchOption & { sourceId: string; sourceType: string; sourceIcon: React.ReactNode })[] = [];
         (result as StandardSearchDataSource[]).forEach(source => {
           source.options.forEach(option => {
+            // Map dynamic fields to StandardSearchOption format
             flatOptions.push({
-              ...option,
+              label: option[source.nameLabelField] || '',
+              value: option[source.nameValueField] || '',
+              description: source.nameDescriptionField ? option[source.nameDescriptionField] : undefined,
+              icon: source.icon,
+              disabled: option.disabled || false,
               sourceId: source.id,
               sourceType: source.type,
               sourceIcon: source.icon
