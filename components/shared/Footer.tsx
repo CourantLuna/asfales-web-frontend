@@ -6,7 +6,7 @@ import { FaCcAmex, FaCcMastercard, FaCcVisa, FaMoneyBillAlt } from "react-icons/
 
 export default function Footer() {
   return (
-    <footer className=" bg-gray-200 text-primary py-12 w-full bottom-0">
+    <footer className="hidden md:block bg-gray-200 text-primary py-12 w-full bottom-0">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-4 gap-8">
         {/* Compañía */}
         <div>

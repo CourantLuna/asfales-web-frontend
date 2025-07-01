@@ -3,7 +3,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { MessageSquare, MoreVertical, Minus, Plus, Send, Laptop } from "lucide-react"
+import { MessageSquare, MoreVertical, Minus, Plus, Send, Laptop, MessagesSquare } from "lucide-react"
+import { useIsMobile } from "@/hooks/use-mobile"
+
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
@@ -19,6 +21,9 @@ export default function ChatWidget() {
     setInput("")
   }
 
+    const isMobile = useIsMobile();
+
+
   return (
     <>
       {/* FAB Button */}
@@ -26,9 +31,11 @@ export default function ChatWidget() {
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 z-40 rounded-full shadow-lg text-primary hover:text-white hover:bg-primary"
         variant="outline"
+        size = {isMobile ? "icon" : "default"}
       >
-        <MessageSquare className="w-8 h-8" />
-        {isOpen ? (
+        <MessagesSquare className="w-8 h-8" />
+       { isMobile ? null :  
+       isOpen ? (
           <span>Te estoy ayudando</span>
         ) : (
           <span>Te ayudo</span>

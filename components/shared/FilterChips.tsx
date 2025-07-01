@@ -145,7 +145,7 @@ const FilterChipItem = React.forwardRef<HTMLDivElement, FilterChip>(
         )}
       >
         <span className="text-xs font-medium">
-          {label}: {value}
+          {label ? `${label}: ${value}` : value}
         </span>
         
         {removable && (

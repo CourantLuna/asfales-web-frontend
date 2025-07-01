@@ -18,6 +18,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge"
+import { useIsMobile } from "@/hooks/use-mobile";
 
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -86,15 +87,21 @@ const handleLogout = () => {
  requestAnimationFrame(animate);
  };
 
-  // Validación del token al montar (por seguridad futura)
-  useEffect(() => {
-    if (user && !user.token) logout();
-  }, [user, logout]);
+ useEffect(() => {
+  // Solo ejecuta logout si hay usuario, pero su token es falso o vacío
+  if (user && !user.token) {
+    logout();
+  }
+  // Si user ya es null, no vuelve a entrar aquí
+}, [user, logout]);
+
+  const isMobile = useIsMobile();
+  if (isMobile) return null; // Solo visible en desktop/tablet
 
   const getFirstName = (name: string) => name?.split(" ")[0] ?? "";
 
   return (
-    <header className="relative w-full z-30">
+    <header className="hidden md:block relative w-full z-30">
       {/* Sticky nav */}
       <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8 pr-[18px] pointer-events-none">
         {/* SVG background */}
@@ -133,8 +140,8 @@ const handleLogout = () => {
               />
             </Button>
 
-            {/* Mobile menu */}
-            <div className="lg:hidden pointer-events-auto">
+            {/* Tablet menu */}
+            <div className="hidden md:flex lg:hidden pointer-events-auto">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button size="icon" variant="ghost">

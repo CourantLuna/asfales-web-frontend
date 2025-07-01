@@ -13,6 +13,8 @@ import CompareSwitchControl from "../shared/CompareSwitchControl";
 import { PriceRangeFilter } from "../shared/PriceRangeFilter";
 import { Info } from "lucide-react";
 import { FilterChips, FilterChip } from "../shared/FilterChips";
+import { CheckboxFilter, CheckboxOption } from "../shared/CheckboxFilter";
+import { Separator } from "@radix-ui/react-separator";
 
 
 
@@ -39,12 +41,54 @@ export default function LodgingSearch() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [priceFilterString, setPriceFilterString] = useState<string>("");
 
+  // Estados para filtros de checkbox
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [amenitiesOutputString, setAmenitiesOutputString] = useState<string>("");
+  const [amenitiesChips, setAmenitiesChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
+
+  // Memoizar las opciones para evitar recreaciones
+  const amenitiesOptions: CheckboxOption[] = React.useMemo(() => [
+    { value: "wifi", label: "WiFi gratuito", count: 145 },
+    { value: "parking", label: "Estacionamiento", count: 98 },
+    { value: "pool", label: "Piscina", count: 67 },
+    { value: "gym", label: "Gimnasio", count: 43 },
+    { value: "spa", label: "Spa", count: 28 },
+    { value: "restaurant", label: "Restaurante", count: 112 },
+    { value: "breakfast", label: "Desayuno incluido", count: 89 },
+    { value: "pets", label: "Se admiten mascotas", count: 34 },
+    { value: "concierge", label: "Servicio de conserjería", count: 56 },
+    { value: "laundry", label: "Servicio de lavandería", count: 78 },
+    { value: "room-service", label: "Servicio a la habitación", count: 91 },
+    { value: "business", label: "Centro de negocios", count: 42 },
+  ], []);
+
+  // Memoizar callbacks para evitar recreaciones
+  const handleAmenitiesChange = React.useCallback((values: string[]) => {
+    setSelectedAmenities(values);
+    console.log("Servicios seleccionados:", values);
+  }, []);
+
+  const handleAmenitiesOutputStringChange = React.useCallback((outputString: string) => {
+    setAmenitiesOutputString(outputString);
+  }, []);
+
+  const handleAmenitiesChipsChange = React.useCallback((chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+    setAmenitiesChips(chips);
+  }, []);
+
   // Función para resetear el filtro de precio
-  const resetPriceFilter = () => {
+  const resetPriceFilter = React.useCallback(() => {
     setPriceRange([0, 1000]);
     console.log("Filtro de precio reseteado");
     // Aquí podrías hacer la llamada a la API para remover el filtro
-  };
+  }, []);
+
+  // Función para resetear filtros de servicios
+  const resetAmenitiesFilter = React.useCallback(() => {
+    setSelectedAmenities([]);
+    console.log("Filtro de servicios reseteado");
+  }, []);
+
 
   // Generar filtros activos para FilterChips
   const generateActiveFilters = (): FilterChip[] => {
@@ -60,6 +104,16 @@ export default function LodgingSearch() {
       });
     }
 
+    // Filtros de servicios individuales
+    amenitiesChips.forEach(chip => {
+      filters.push({
+        id: chip.id,
+        label: "", // Sin prefijo "Servicios:"
+        value: chip.label,
+        onRemove: chip.onRemove,
+      });
+    });
+
     // Aquí puedes agregar más filtros en el futuro
     // Ejemplo:
     // if (locationFilter) {
@@ -74,10 +128,11 @@ export default function LodgingSearch() {
     return filters;
   };
 
-  const clearAllFilters = () => {
+  const clearAllFilters = React.useCallback(() => {
     resetPriceFilter();
+    resetAmenitiesFilter();
     // Agregar más resets cuando tengas más filtros
-  };
+  }, [resetPriceFilter, resetAmenitiesFilter]);
 
   // Dispara la barra de progreso siempre que loading sea distinto de false (true o undefined)
   useEffect(() => {
@@ -102,8 +157,15 @@ export default function LodgingSearch() {
   if (loading)
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;
 return (
-    <div className="flex flex-col gap-6 justify-content-between">
+
+
+  <div className="flex flex-col lg:flex-row gap-6 mt-2">
+      {/* Columna de Filtros - Lado Izquierdo */}
+      <div className="w-full lg:w-80 flex-shrink-0 mt-1">
       {/* Compare Switch Control */}
+
+            <div className="space-y-6">
+
       <CompareSwitchControl
         checked={compareMode}
         onCheckedChange={setCompareMode}
@@ -113,11 +175,23 @@ return (
         subtitleOn="Selecciona propiedades para comparar lado a lado"
       />
 
-      {/* Filtros */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filtro de Precio */}
-        <div className="w-full lg:w-80">
-          <PriceRangeFilter
+      <Separator className="my-4" />
+               <CheckboxFilter
+                label="Servicios del hotel"
+                options={amenitiesOptions}
+                selectedValues={selectedAmenities}
+                onChange={handleAmenitiesChange}
+                onOutputStringChange={handleAmenitiesOutputStringChange}
+                onIndividualChipsChange={handleAmenitiesChipsChange}
+                showCounts={true}
+                maxSelections={8} // Máximo de 8 selecciones
+                initialVisibleCount={4}
+                showMoreText="Ver más servicios"
+                showLessText="Ver menos"
+              />
+
+      <Separator className="my-4" />
+  <PriceRangeFilter
             min={0}
             max={1000}
             value={priceRange}
@@ -131,27 +205,32 @@ return (
             currency="$"
             step={10}
           />
-        </div>
-        
-        {/* Aquí podrías agregar más filtros en el futuro */}
-        <div className="flex-1">
-          {/* Espacio para filtros adicionales */}
-        </div>
+
+  
+      
+       
+      </div>
+      
       </div>
 
+      {/* Contenido Principal - Lado Derecho */}
+    <div className=" min-w-0">
+      {/* Filtros Activos */}
+      <div>
+        <FilterChips
+          filters={generateActiveFilters()}
+          onClearAll={clearAllFilters}
+          showClearAll={true}
+          clearAllText="Limpiar filtros"
+        />
+      </div>
       {/* Barra de control superior */}
-      <div className="flex w-full items-end justify-between gap-4 border-b border-muted pb-2">
+      <div className="flex w-full items-center justify-between gap-4 border-b border-muted pb-2 mb-6">
         <div className="flex flex-col items-start gap-1">
-          {/* Mostrar filtros activos */}
-          <FilterChips
-            filters={generateActiveFilters()}
-            onClearAll={clearAllFilters}
-            showClearAll={true}
-            clearAllText="Limpiar filtros"
-          />
-          
           <span className="text-xs text-muted-foreground font-medium">
-            {rows.length ? `${rows.length}+ alojamientos` : "Alojamientos encontrados"}
+            {rows.length
+              ? `${rows.length}+ alojamientos`
+              : "Alojamientos encontrados"}
           </span>
           <div className="flex items-center gap-1">
             <span className="font-medium text-sm underline underline-offset-2 cursor-pointer hover:text-primary transition-colors">
@@ -161,7 +240,9 @@ return (
           </div>
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-xs text-muted-foreground mb-0.5">Ordenar por</span>
+          <span className="text-xs text-muted-foreground mb-0.5">
+            Ordenar por
+          </span>
           <CustomSelect
             options={sortOptions}
             selectedKey={sort}
@@ -170,15 +251,21 @@ return (
         </div>
       </div>
 
-      {/* Cards */}
-      <LodgingCardList
-        onCardClick={(idx, row) =>
-          alert(`¡Click en card #${idx}: ${row.title}!`)
-        }
-        rows={rows}
-        showCompareCheckbox={compareMode}
-      />
+      <div className="flex flex-col gap-6">
+        {/* Cards de Alojamientos */}
+        <LodgingCardList
+          cardHeight="h-[300px]"
+          onCardClick={(idx, row) =>
+            alert(`¡Click en card #${idx}: ${row.title}!`)
+          }
+          rows={rows}
+          showCompareCheckbox={compareMode}
+        />
+      </div>
     </div>
+    
+</div>
+    
   );
 }
 

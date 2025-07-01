@@ -108,7 +108,7 @@ export default function LoginPage() {
               className="mx-auto w-48"
             />
           </div>
-          <Card className="shadow-lg border-none">
+          <Card className="shadow-lg border-none rounded-lg">
             <CardContent className="space-y-6 pt-6">
               <div className="text-center space-y-1">
                 <h2 className="text-2xl font-bold">Bienvenido a Asfales</h2>

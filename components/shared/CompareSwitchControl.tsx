@@ -40,7 +40,7 @@ interface CompareSwitchControlProps {
 }
 
 export default function CompareSwitchControl({
-  checked,
+  checked = false,
   onCheckedChange,
   titleOff = "Compare properties",
   subtitleOff = "Get a side-by-side view of up to 5 properties",
@@ -68,7 +68,7 @@ export default function CompareSwitchControl({
         </p>
       </div>
       <Switch
-        checked={checked}
+        checked={!!checked}
         onCheckedChange={onCheckedChange}
         disabled={disabled}
         aria-label={checked ? titleOn : titleOff}

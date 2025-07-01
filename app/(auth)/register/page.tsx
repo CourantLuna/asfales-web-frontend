@@ -125,7 +125,7 @@ export default function RegisterPage() {
             className="w-[200px] mb-6"
           />
 
-          <Card className="w-full shadow-lg border-none">
+          <Card className="w-full shadow-lg border-none rounded-lg">
             <CardContent className="pt-6">
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold">Crea tu cuenta</h2>

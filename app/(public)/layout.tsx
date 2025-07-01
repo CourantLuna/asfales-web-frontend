@@ -11,6 +11,7 @@ import LandingSkeleton from "@/components/landing/LandingSkeleton";
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { TopBarTabs } from "@/components/shared/TopBarTabs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +33,8 @@ export default function RootLayout({
     <div className={inter.className + " flex flex-col min-h-screen h-full w-full"}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
         <AppNavbar />
+                <TopBarTabs />
+        
         <LandingSkeleton>
           <div className="w-full max-w-7xl px-5 mx-auto justify-content-center">
             <BreadcrumbNav />
