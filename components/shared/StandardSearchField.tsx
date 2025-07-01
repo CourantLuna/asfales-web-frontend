@@ -236,7 +236,6 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
         {/* Label */}
         {label && (
           <Label
-            htmlFor={searchId}
             className={cn(
               // Standard label styling with left alignment
               "text-sm font-medium text-foreground text-start",
@@ -256,7 +255,6 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              id={searchId}
               ref={ref}
               variant="outline"
               disabled={disabled}
@@ -278,6 +276,7 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
                   ? `${searchId}-helper`
                   : undefined
               }
+              aria-label={label || placeholder}
             >
               <Search className="mr-2 h-4 w-4 text-muted-foreground" />
               <span className="truncate">{displayValue}</span>

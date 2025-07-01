@@ -17,7 +17,9 @@ Mountain as MountainIcon,
   Mountain,
   Route,
   Clock,
-  MapPin, } from "lucide-react"
+  MapPin,
+  ArrowLeftRight,
+  ArrowUpDown, } from "lucide-react"
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { GuestSelector, Room } from "@/components/shared/GuestSelector"
 import { DateRange } from "react-day-picker"
@@ -27,6 +29,7 @@ import { StandardTabs, TabItem } from "@/components/shared/StandardTabs"
 import { StandardToggleGroup } from "@/components/shared/StandardToggleGroup"
 import React from "react"
 import { StandardSearchField } from "../shared/StandardSearchField";
+import { set } from "date-fns";
 
 export default function TravelOptionsTabs({
   activeTab,
@@ -106,7 +109,15 @@ export default function TravelOptionsTabs({
   })
 
   // Estados para búsqueda de destinos
-  const [searchValue, setSearchValue] = useState<string>("")
+  const [travelingFrom, setTravelingFrom] = useState<string>("")
+  const [goingTo, setGoingTo] = useState<string>("")
+
+  // Función para intercambiar origen y destino
+  const handleSwapLocations = () => {
+    const temp = travelingFrom;
+    setTravelingFrom(goingTo);
+    setGoingTo(temp);
+  };
   
   // Fuentes de datos para el buscador con diferentes tipos
   const searchDataSources = [
@@ -217,19 +228,7 @@ export default function TravelOptionsTabs({
           onPassengersChange={setPassengers}
         />
 
-        <StandardSearchField
-          label="Destino"
-          placeholder="¿A dónde quieres ir?"
-          value={searchValue}
-          onValueChange={setSearchValue}
-          dataSources={searchDataSources}
-          onSelect={(option, sourceType) => {
-            setSearchValue(option.label);
-            console.log("Destino seleccionado:", option, "Tipo:", sourceType);
-          }}
-          showClearButton={true}
-          minSearchLength={0}
-        />
+        
       </div>
     </div>
   );
@@ -381,16 +380,78 @@ export default function TravelOptionsTabs({
   ];
 
   return (
-    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6 ">
+    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6 items-end ">
       <StandardTabs
         items={tabItems}
         activeTab={activeTab}
         onTabChange={handleTabChange}
         mobilePlaceholder="Selecciona una categoría"
       />
-      {/* Botón alineado abajo a la derecha */}
-  <div className="flex justify-end mt-4">
-    <Button 
+
+  <div className="flex flex-wrap gap-2 md:gap-4 w-full py-2 left-0">
+       {/* Swap (desktop only) */}
+              <div className="hidden md:block relative">
+                <div className="absolute pt-[1px] translate-y-3/4 left-[283px]">
+                  <Button
+                    onClick={handleSwapLocations}
+                    size="icon"
+                    type="button"
+                    className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10"
+                  >
+                    <ArrowLeftRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              
+      {/* Campo Origen */}
+        <StandardSearchField
+          label="Origen"
+          placeholder="¿Donde empieza tu aventura?"
+          value={travelingFrom}
+          onValueChange={setTravelingFrom}
+          dataSources={searchDataSources}
+          onSelect={(option, sourceType) => {
+            setTravelingFrom(option.label);
+            console.log("Origen seleccionado:", option, "Tipo:", sourceType);
+          }}
+          showClearButton={true}
+          minSearchLength={0}       
+        />
+
+        {/* Swap (mobile) */}
+              <div className="md:hidden my-0 flex justify-center">
+
+                <div className="absolute  translate-y-[-7px] left-3/4">
+
+                <Button
+                  onClick={handleSwapLocations}
+                  size="icon"
+                  type="button"
+                  className="rounded-full bg-[#FFA500] hover:bg-[#FFA500] text-white w-10 h-10"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                </Button>
+                </div>
+              </div>
+      
+      {/* Campo Destino */}
+        <StandardSearchField
+          label="Destino"
+          placeholder="¿A dónde quieres ir?"
+          value={goingTo}
+          onValueChange={setGoingTo}
+          dataSources={searchDataSources}
+          onSelect={(option, sourceType) => {
+            setGoingTo(option.label);
+            console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+          }}
+          showClearButton={true}
+          minSearchLength={0}
+        />
+
+   <div className="flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
+     <Button 
       className="bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"
       variant="default"
       onClick={handleBuscar}
@@ -398,7 +459,10 @@ export default function TravelOptionsTabs({
       <Search className="mr-2 h-4 w-4 text-primary-foreground" />
       Buscar Opciones de Viaje
     </Button>
-  </div>
+   </div>
+</div>
+    
+  
     </div>
   );
 }

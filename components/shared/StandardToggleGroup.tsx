@@ -170,7 +170,6 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
         {/* Label */}
         {label && (
           <Label
-            htmlFor={toggleId}
             className={cn(
               "text-sm font-medium text-foreground text-start",
               error && "text-destructive",
