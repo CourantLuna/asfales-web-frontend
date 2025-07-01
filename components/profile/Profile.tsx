@@ -15,7 +15,8 @@ import {
   Shield,
   MessageCircle,
   DollarSign,
-  LogOut
+  LogOut,
+  Medal
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShowIfUnauth } from "../ShowIfUnauth";
@@ -116,6 +117,13 @@ export default function Profile() {
   ];
 
   const handleSectionChange = (sectionId: string) => {
+    // En pantallas menores a lg, navegar a página separada
+    if (window.innerWidth < 1024) { // lg breakpoint es 1024px
+      router.push(`/profile/${sectionId}`);
+      return;
+    }
+    
+    // En desktop, cambiar contenido en la misma página
     setActiveSection(sectionId);
     // Opcional: actualizar URL
     const newUrl = `${window.location.pathname}?section=${sectionId}`;
@@ -253,22 +261,16 @@ export default function Profile() {
     </ShowIfUnauth>
 
     <ShowIfAuth>
-      <div className="min-h-screen bg-gray-50">
-        {/* Mobile Header */}
-        <div className="md:hidden bg-white border-b">
-          <div className="flex items-center justify-between p-4">
-            <h1 className="text-lg font-semibold">Mi cuenta</h1>
-            <Button variant="ghost" size="sm">
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
+      <div className="md:hidden mb-1 border-b   w-full">
+              <h1 className="text-xl text-center font-semibold m-4 text-secondary ">Perfil</h1>
+      </div>
+      <div className="w-full pt-1 pb-2 px-4 md:p-6">
 
         <div className="flex flex-col md:flex-row max-w-7xl mx-auto">
           {/* Sidebar */}
-          <div className="w-full md:w-80 bg-white md:min-h-screen border-r md:border-r-gray-200">
-            {/* Desktop Header */}
-            <div className="hidden md:block p-6 border-b">
+          <div className="w-full md:w-80 bg-white">
+            {/* Header */}
+            <div className="pb-4 p-1">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-semibold text-sm">HG</span>
@@ -278,17 +280,34 @@ export default function Profile() {
                   <p className="text-sm text-gray-500">heydi081@gmail.com</p>
                 </div>
               </div>
-              <div className="mt-4 bg-blue-50 rounded-lg p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-blue-600">OneKeyPass™</span>
-                  <span className="text-sm font-semibold">$0.00</span>
+              <div className="mt-4 bg-blue-50 rounded-lg p-3 border border-gray-200 w-full">
+                <div className="flex items-center justify-center mb-2">
+                  <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded font-medium">Blue</span>
+                </div>
+                <div className="flex items-center justify-center mb-3">
+                  <div className="flex items-center space-x-1">
+                    <span className="text-sm font-medium text-gray-900">GoFarPass™</span>
+                    <div className="w-4 h-4 bg-gray-400 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs">?</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-3 text-center">$0.00</div>
+                <div className="flex items-center justify-center">
+                  <button className="flex items-center text-sm text-gray-700 hover:text-gray-900">
+                    <Medal className="w-4 h-4 mr-2" />
+                    <span>Ver actividad de recompensas</span>
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
 
             {/* Menu Items */}
-            <div className="p-4 md:p-6">
-              <div className="space-y-1">
+            <div className="p-1 md:p-4">
+              <div className="space-y-4">
                 {sidebarItems.map((item) => (
                   <button
                     key={item.id}
@@ -296,7 +315,7 @@ export default function Profile() {
                     className={`w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-colors ${
                       activeSection === item.id 
                         ? "bg-blue-50 border border-blue-200 text-blue-600" 
-                        : "hover:bg-gray-50 text-gray-700"
+                        : "hover:bg-gray-50 text-gray-700 border border-gray-200"
                     }`}
                   >
                     <item.icon className={`w-5 h-5 ${
@@ -308,7 +327,7 @@ export default function Profile() {
                       }`}>
                         {item.title}
                       </p>
-                      <p className="text-xs text-gray-500 hidden md:block">
+                      <p className="text-xs text-gray-500">
                         {item.subtitle}
                       </p>
                     </div>
@@ -329,8 +348,8 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1 p-4 md:p-8">
+          {/* Main Content - Solo en desktop (lg+) */}
+          <div className="flex-1 p-4 md:p-8 hidden lg:block">
             {renderContent()}
           </div>
         </div>

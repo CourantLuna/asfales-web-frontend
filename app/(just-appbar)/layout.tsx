@@ -14,7 +14,7 @@ export default function JustAppbarLayout({ children }: { children: React.ReactNo
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
         <AppNavbar />
         <TopBarTabs />
-        <div  className=" w-full h-full py-8 mt-[64px]">
+        <div  className=" w-full h-full py-1 mt-[64px]">
 {children}
         </div>
       </ThemeProvider>
