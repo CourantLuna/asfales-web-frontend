@@ -11,7 +11,7 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
     const router = useRouter();
 
     useEffect(() => {
-    router.prefetch("/inbox/notifications");
+    router.prefetch("/inbox/general");
     router.prefetch("/inbox/chats");
     router.prefetch("/inbox/alerts");
   }, [router]);
@@ -21,7 +21,7 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
     ? "chats"
     : pathname.endsWith("/alerts")
     ? "alerts"
-    : "notifications";
+    : "general";
 
   const classNameTab = `
     flex-1 justify-center border-b-2 border-transparent bg-transparent
@@ -32,13 +32,17 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
   `;
 
   return (
-    <div className="w-full h-full max-w-7xl mx-auto px-4 py-8 border-b">
-      <Tabs value={activeTab} className="mt-[130px] flex justify-center border-b-2">
+    <div className="w-full h-full mx-auto py-8 mt-[64px]">
+      <div className="md:hidden mb-4  w-full">
+              <h1 className="text-2xl font-semibold mx-4 text-secondary ">Notificaciones</h1>
+
+      </div>
+      <Tabs value={activeTab} className="  md:mt-[60px] flex justify-center border-b-2">
         <TabsList className="bg-transparent grid  grid-cols-3">
-          <TabsTrigger value="notifications" asChild className={classNameTab}>
-            <Link href="/inbox/notifications" className="flex items-center justify-center gap-2">
+          <TabsTrigger value="general" asChild className={classNameTab}>
+            <Link href="/inbox/general" className="flex items-center justify-center gap-2">
               <Bell className="w-4 h-4" />
-              Notificaciones
+              General
             </Link>
           </TabsTrigger>
 
@@ -58,7 +62,7 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
         </TabsList>
       </Tabs>
 
-      <div className="mt-6">{children}</div>
+      <div className="mt-6 max-w-7xl mx-auto">{children}</div>
     </div>
   );
 }

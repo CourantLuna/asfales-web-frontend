@@ -38,7 +38,7 @@ export function TopBarTabs() {
       match: ["/itinerarios", "/itinerario", "/grupos"],
     },
     {
-      label: "Bandeja",
+      label: "Notificaciones",
       icon: Bell,
       href: "/inbox/notifications",
       match: ["/inbox"],
@@ -48,12 +48,12 @@ export function TopBarTabs() {
     {
       label: "Perfil",
       icon: User,
-      href: "/perfil",
-      match: ["/perfil", "/ajustes", "/soporte", "/ayuda"],
+      href: "/profile",
+      match: ["/profile", "/settings", "/support", "/help"],
     },
   ];
 
-  if (!isMobile) return null;
+//   if (!isMobile) return null;
 
   const currentTab =
     TABS.find((tab) => tab.match.some((p) => pathname === p || pathname.startsWith(p + "/")))?.href || "/";
@@ -63,7 +63,7 @@ export function TopBarTabs() {
   };
 
   return (
-    <nav className="w-full fixed top-0 left-0 right-0 z-50 md:hidden bg-primary shadow-sm border-b border-primary">
+    <nav className=" md:hidden w-full fixed top-0 left-0 right-0 z-50 md:hidden bg-primary shadow-sm border-b border-primary">
       <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="w-full h-16 bg-primary p-0 rounded-none border-0 grid grid-cols-5 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary/20">
           {TABS.map(({ label, icon: Icon, href, showBadge, badgeCount }) => (
@@ -104,7 +104,7 @@ export function TopBarTabs() {
                 )}
               </div>
               <span className={cn(
-                "text-xs font-medium transition-colors duration-200",
+                "text-[0.6rem] font-medium transition-colors duration-200",
                 "data-[state=active]:text-secondary data-[state=active]:font-bold"
               )}>
                 {label}

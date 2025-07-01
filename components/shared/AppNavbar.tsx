@@ -189,7 +189,7 @@ const handleLogout = () => {
               size="icon"
               variant="outline"
               className="rounded-full hidden lg:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
-              onClick={() => router.push("inbox/notifications")}
+              onClick={() => router.push("inbox/general")}
             >
               <Bell className="h-5 w-5 " />
             </Button>
@@ -306,7 +306,7 @@ const handleLogout = () => {
 
 
                 <DropdownMenuItem className="flex lg:hidden"
-                onClick={() => router.push("inbox/notifications")}>
+                onClick={() => router.push("inbox/general")}>
                   <Bell className="mr-2 h-4 w-4" />
                   Notificaciones
                   
