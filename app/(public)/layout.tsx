@@ -12,7 +12,7 @@ import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TopBarTabs } from "@/components/shared/TopBarTabs";
-import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
+// import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,7 +45,7 @@ export default function RootLayout({
         
         <Footer />
         <ChatWidget />
-        <ScrollToTopFAB />
+        {/* <ScrollToTopFAB /> */}
       </ThemeProvider>
     </div>
   );
