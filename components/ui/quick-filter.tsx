@@ -53,7 +53,7 @@ export function QuickFilter({ label, options, selected, setSelected }: QuickFilt
             return (
               <span
                 key={val}
-                className="bg-yellow-400 text-black font-medium ml-1 text-xs rounded px-2 py-0.5"
+                className="bg-secondary text-white font-medium ml-1 text-xs rounded px-2 py-0.5"
               >
                 {opt?.label}
               </span>

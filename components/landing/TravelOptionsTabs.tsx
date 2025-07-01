@@ -24,6 +24,7 @@ import { DateRange } from "react-day-picker"
 import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom"
 import { PassengerSelector, PassengerGroup } from "@/components/shared/PassengerSelector"
 import { StandardTabs, TabItem } from "@/components/shared/StandardTabs"
+import { StandardToggleGroup } from "@/components/shared/StandardToggleGroup"
 import React from "react"
 import { StandardSearchField } from "../shared/StandardSearchField";
 
@@ -170,37 +171,30 @@ export default function TravelOptionsTabs({
   // Contenido de cada tab
   const getTransportContent = () => (
     <div className="w-full flex flex-col gap-4 items-start">
-      {/* ToggleGroup */}
-      <ToggleGroup
+      {/* Tipo de Transporte */}
+      <StandardToggleGroup
+        label="Tipo de Transporte"
         type="multiple"
-        defaultValue={["air"]}
-        className="gap-2 flex flex-wrap"
-      >
-        <ToggleGroupItem
-          value="air"
-          aria-label="Aéreo"
-          className="px-4 py-2 h-12 gap-2 text-base md:text-sm"
-        >
-          <Plane className="mr-2 h-4 w-4 text-muted-foreground" />
-          Aéreo
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="land"
-          aria-label="Terrestre"
-          className="px-4 py-2 h-12 gap-2 text-base md:text-sm"
-        >
-          <Bus className="mr-2 h-4 w-4 text-muted-foreground" />
-          Terrestre
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="sea"
-          aria-label="Marítimo"
-          className="px-4 py-2 h-12 gap-2 text-base md:text-sm"
-        >
-          <Ship className="mr-2 h-4 w-4 text-muted-foreground" />
-          Marítimo
-        </ToggleGroupItem>
-      </ToggleGroup>
+        value={selectedTransportTypes}
+        onValueChange={(value) => setSelectedTransportTypes(Array.isArray(value) ? value : [value])}
+        options={[
+          {
+            value: "air",
+            label: "Aéreo",
+            icon: <Plane className="mr-2 h-4 w-4" />
+          },
+          {
+            value: "land", 
+            label: "Terrestre",
+            icon: <Bus className="mr-2 h-4 w-4" />
+          },
+          {
+            value: "sea",
+            label: "Marítimo", 
+            icon: <Ship className="mr-2 h-4 w-4" />
+          }
+        ]}
+      />
       {/* Filtros */}
       <div className="flex flex-wrap gap-4 items-end w-full">
         {/* Fechas de ida y vuelta con dual trigger */}
@@ -242,24 +236,35 @@ export default function TravelOptionsTabs({
 
   const getLodgingContent = () => (
     <div className="w-full flex flex-col gap-4 items-start">
-        {/* ToggleGroup */}
-        <ToggleGroup type="multiple" className="gap-2 flex flex-wrap">
-          <ToggleGroupItem value="hotel" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
-            <Hotel className="mr-2 h-4 w-4 text-muted-foreground" />
-            Hoteles
-          </ToggleGroupItem>
-          <ToggleGroupItem value="house" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
-            <Home className="mr-2 h-4 w-4 text-muted-foreground" />
-            Casas
-          </ToggleGroupItem>
-          <ToggleGroupItem value="apartment" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
-            <Building2 className="mr-2 h-4 w-4 text-muted-foreground" />
-            Apartamentos
-          </ToggleGroupItem>
-          <ToggleGroupItem value="guest" className="px-4 py-2 h-12 gap-2 text-base md:text-sm">
-            🛏 Casa de huéspedes
-          </ToggleGroupItem>
-        </ToggleGroup>
+        {/* Tipo de Alojamiento */}
+        <StandardToggleGroup
+          label="Tipo de Alojamiento"
+          type="multiple"
+          value={selectedLodgingTypes}
+          onValueChange={(value) => setSelectedLodgingTypes(Array.isArray(value) ? value : [value])}
+          options={[
+            {
+              value: "hotel",
+              label: "Hoteles",
+              icon: <Hotel className="mr-2 h-4 w-4" />
+            },
+            {
+              value: "house",
+              label: "Casas",
+              icon: <Home className="mr-2 h-4 w-4" />
+            },
+            {
+              value: "apartment",
+              label: "Apartamentos",
+              icon: <Building2 className="mr-2 h-4 w-4" />
+            },
+            {
+              value: "guest",
+              label: "Casa de huéspedes",
+              icon: <span className="mr-2">🛏</span>
+            }
+          ]}
+        />
 
         {/* Fechas y Huéspedes */}
         <div className="flex flex-wrap gap-4 items-end w-full">
@@ -376,7 +381,7 @@ export default function TravelOptionsTabs({
   ];
 
   return (
-    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6 pt-[240px] lg:pt-[120px]">
+    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6 ">
       <StandardTabs
         items={tabItems}
         activeTab={activeTab}

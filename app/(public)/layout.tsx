@@ -33,7 +33,7 @@ export default function RootLayout({
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
         <AppNavbar />
         <LandingSkeleton>
-          <div className="w-full max-w-7xl md:px-0 px-5 mx-auto justify-content-center">
+          <div className="w-full max-w-7xl px-5 mx-auto justify-content-center">
             <BreadcrumbNav />
             {children}
           </div>
