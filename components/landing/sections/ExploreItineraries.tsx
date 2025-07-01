@@ -49,7 +49,7 @@ const itineraries = [
 
 export default function ExploreItineraries() {
   return (
-    <section className="w-full bg-muted">
+    <section className="w-full">
      <div className="max-w-7xl mx-auto px-4 py-12">
        <div className="text-start mb-10">
         <h2 className="text-3xl font-bold">Ideas de Itinerarios Populares</h2>
@@ -111,7 +111,7 @@ export default function ExploreItineraries() {
         </CarouselContent>
       </Carousel>
 
-      <div className="mt-10 flex justify-center">
+      <div className="mt-10 flex justify-end">
       <Button className="bg-primary  w-full md:w-[280px] h-[48px] px-6 py-3" variant={"default"}>
           <Eye className="w-4 h-4 mr-2" />
           Ver itinerarios compartidos

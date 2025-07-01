@@ -402,7 +402,7 @@ export default function TravelOptionsTabs({
   ];
 
   return (
-    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6 items-end justify-start flex flex-col">
+    <div className="w-full max-w-7xl bg-white rounded-lg shadow-md p-6 items-end justify-start flex flex-col gap-2">
       <StandardTabs
         items={tabItems}
         activeTab={activeTab}

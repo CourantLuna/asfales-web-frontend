@@ -103,7 +103,7 @@ export function CustomizedSearchFieldsExample() {
   const [destination, setDestination] = useState("");
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg">
+    <div className="p-6 rounded-lg">
       <h3 className="text-lg font-semibold mb-4">Ejemplo Personalizado</h3>
       <SearchFieldsWithSwap
         originLabel="Desde"

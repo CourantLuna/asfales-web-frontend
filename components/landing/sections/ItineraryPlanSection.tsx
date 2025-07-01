@@ -6,8 +6,8 @@ import { CalendarPlus, PlusCircle, Users, CheckCircle } from "lucide-react";
 
 export default function ItineraryPlanSection() {
   return (
-    <section className="bg-muted py-12">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className=" py-12">
+      <div className="max-w-7xl mx-auto px-8 lg:px-0">
         <h2 className="text-3xl font-bold tracking-tight text-gray-800 text-start">
           Planifica tu itinerario paso a paso
         </h2>

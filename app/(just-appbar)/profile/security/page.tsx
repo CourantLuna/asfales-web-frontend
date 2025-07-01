@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function SecurityPage() {
   return (
-    <div className="min-h-screen bg-gray-50 lg:hidden">
+    <div className="min-h-screen lg:hidden">
       {/* Header con botón de regreso */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="flex items-center p-4">

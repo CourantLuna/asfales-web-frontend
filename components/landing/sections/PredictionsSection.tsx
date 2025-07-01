@@ -24,13 +24,12 @@ const sampleData = [
 
 export default function PredictionsSection() {
   return (
-    <section className="bg-background py-16">
-      <div className="max-w-7xl mx-auto px-6 text-start">
-        <h2 className="text-3xl font-bold text-primary mb-2">
+    <section className="py-8 px-4 md:px-8 w-full  mx-auto">
+      <div className="text-start mb-10">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-800">
           Predicciones y tendencias del mercado
         </h2>
-        <Separator className="mx-auto my-4 w-24" />
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground mt-2">
           Nuestro algoritmo predictivo analiza datos históricos de precios, demanda y factores estacionales para ayudarte a encontrar el mejor momento para reservar tu viaje.
         </p>
 
@@ -45,14 +44,15 @@ export default function PredictionsSection() {
           </ResponsiveContainer>
         </Card>
 
-        <Button
+        <div className="flex justify-end mt-5">
+          <Button
           variant="secondary"
-          size="lg"
-          className="mt-8"
+          className="w-full md:w-[280px] h-[48px] px-6 py-3"
           onClick={() => console.log("CTA Predicciones clic")}
         >
           Conoce el mejor momento para viajar
         </Button>
+        </div>
       </div>
     </section>
   );

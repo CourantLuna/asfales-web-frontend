@@ -254,7 +254,7 @@ return (
       <div className="flex flex-col gap-6">
         {/* Cards de Alojamientos */}
         <LodgingCardList
-          cardHeight="h-[300px]"
+          cardHeight="min-h-[300px]"
           onCardClick={(idx, row) =>
             alert(`¡Click en card #${idx}: ${row.title}!`)
           }

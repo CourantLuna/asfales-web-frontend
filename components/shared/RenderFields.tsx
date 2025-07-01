@@ -224,18 +224,36 @@ export function MultiColumnFields({
   yAligns = [],
   className = "",
   width = "w-full",
-  
+  singleColumn = false, // Nueva propiedad para fusionar en una sola columna
 }: {
   columns: ColField[][];
   rowData: RowData;
   gap?: number;
   aligns?: ("start" | "center" | "end")[];
   yAligns?: ("start" | "center" | "end")[]; // <--- nuevo!
-
   className?: string;
   width?: string;
+  singleColumn?: boolean; // Nueva propiedad
 }) {
-      const gapClass = gap ? `gap-${gap}` : "";
+  const gapClass = gap ? `gap-${gap}` : "";
+
+  // Si singleColumn es true, fusionar todas las columnas en una sola
+  if (singleColumn) {
+    const allFields = columns.flat();
+    return (
+      <div className={`flex flex-col ${width} h-full ${className} `}>
+        <RenderFields 
+          fields={allFields} 
+          rowData={rowData} 
+          align={aligns[0] || "start"} 
+          yAlign={yAligns[0] || "start"} 
+          className={`flex-1 gap-1 ${gapClass}`}
+        />
+      </div>
+    );
+  }
+
+  // Comportamiento normal con múltiples columnas
   return (
     <div className={`flex flex-row ${width} h-full ${gapClass} ${className}`}>
       {columns.map((fields, idx) => (

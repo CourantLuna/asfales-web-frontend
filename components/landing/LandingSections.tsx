@@ -46,9 +46,9 @@ export default function LandingSections({ children }: LandingPageProps) {
 
   return (
       <div className="relative min-h-svh">
+              <LandingBanner />
               <WhyAsfales />
               <ComparisonDemo />
-              <LandingBanner />
               <ItineraryPlanSection />
               <ExploreItineraries />
               <PredictionsSection />

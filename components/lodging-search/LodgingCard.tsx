@@ -159,6 +159,7 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
             <MultiColumnFields
               columns={columns}
               rowData={rowData}
+              singleColumn={isMobile}
               gap={0}
               aligns={["start", "end"]}
               yAligns={["start", "end"]}

@@ -5,7 +5,7 @@ import React from "react";
 
 export default function FAQSection() {
   return (
-    <section className="w-full px-6 py-8 bg-background text-start">
+    <section className="w-full px-6 py-8 text-start">
      <div className="max-w-7xl mx-auto">
          <h2 className="text-3xl font-bold tracking-tight text-gray-800 text-start">Preguntas Frecuentes</h2>
       <p className="text-muted-foreground mt-2 text-start mb-10">

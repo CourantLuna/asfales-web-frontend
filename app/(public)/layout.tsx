@@ -30,20 +30,21 @@ export default function RootLayout({
   }, [router]);
 
   return (
-    <div className={inter.className + " flex flex-col min-h-screen h-full w-full"}>
+    <div className={inter.className + " flex flex-col min-h-screen w-full"}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
         <AppNavbar />
-                <TopBarTabs />
+        <TopBarTabs />
         
         <LandingSkeleton>
-          <div className="w-full max-w-7xl px-5 mx-auto justify-content-center">
+          <main className="flex-1 w-full max-w-7xl px-5 md:px-10 xl:px-0 mx-auto">
             <BreadcrumbNav />
             {children}
-          </div>
+          </main>
         </LandingSkeleton>
+        
+        <Footer />
+        <ChatWidget />
       </ThemeProvider>
-      <Footer />
-      <ChatWidget />
     </div>
   );
 }

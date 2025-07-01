@@ -10,15 +10,15 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function JustAppbarLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={inter.className + " flex flex-col min-h-screen h-screen w-full"}>
+    <div className={inter.className + " flex flex-col min-h-screen w-full"}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
         <AppNavbar />
         <TopBarTabs />
-        <div  className=" w-full h-full py-1 mt-[64px]">
-{children}
-        </div>
+        <main className="flex-1 w-full pt-[64px]">
+          {children}
+        </main>
+        <Footer />
       </ThemeProvider>
-      <Footer />
     </div>
   );
 }
