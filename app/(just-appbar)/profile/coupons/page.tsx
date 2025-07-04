@@ -1,5 +1,5 @@
-import CouponsPage from "@/components/profile/coupons/CouponsPage";
+import Coupons from "@/components/profile/Coupons";
 
 export default function Page() {
-  return <CouponsPage />;
+  return <Coupons />;
 }

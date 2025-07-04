@@ -1,13 +1,15 @@
+import MobileHeader from "@/components/mobile/MobileHeader";
+
 export default function ProfileLayout({
    children,
 }: {
    children: React.ReactNode;
 }) {
    return (
-      
-    <div className="w-full mx-auto md:pt-5">
-       
-        <div>{children}</div>
-    </div>
+      <div className="w-full mx-auto md:pt-5">
+         <MobileHeader />
+         {/* Padding superior para compensar ambos headers: AppNavbar (64px) + MobileHeader (56px) = 120px */}
+         <div className="pt-[60px] md:pt-0">{children}</div>
+      </div>
    );
 }

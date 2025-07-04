@@ -289,9 +289,7 @@ const handleLogout = () => {
     </ShowIfUnauth>
 
     <ShowIfAuth>
-      <div className="md:hidden mb-1 border-b   w-full">
-              <h1 className="text-xl text-center font-semibold m-4 text-secondary ">Perfil</h1>
-      </div>
+      
       <div className="w-full pt-1 pb-2 px-4 md:p-6">
 
         <div className="flex flex-col md:flex-row max-w-7xl mx-auto">
@@ -304,7 +302,7 @@ const handleLogout = () => {
                   <span className="text-blue-600 font-semibold text-sm">HG</span>
                 </div>
                 <div>
-                  <h2 className="font-semibold text-gray-900">Hola, {getFirstName(user?.name ?? "usuario")}</h2>
+                  <h1 className="font-semibold text-2xl text-gray-900">Hola, {getFirstName(user?.name ?? "usuario")}</h1>
                   <p className="text-sm text-gray-500">{getEmail(user?.email ?? "usuario@gmail.com")}</p>
                 </div>
               </div>
@@ -334,7 +332,7 @@ const handleLogout = () => {
             </div>
 
             {/* Menu Items */}
-            <div className="p-1 md:p-4">
+            <div className="p-1">
               <div className="space-y-4">
                 {sidebarItems.map((item) => (
                   <button
@@ -368,7 +366,7 @@ const handleLogout = () => {
 
               {/* Sign Out Button */}
               <div className="mt-8 pt-6 border-t">
-                <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                <Button variant="ghost" className="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={handleLogout}
                 >
                   <LogOut className="w-4 h-4 mr-3" />

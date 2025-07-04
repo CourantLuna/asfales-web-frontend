@@ -8,30 +8,22 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { RouteUtils } from "@/constants/routes";
 
 export default function BreadcrumbNav() {
   const pathname = usePathname();
 
   const paths = pathname.split("/").filter(Boolean);
 
-  // Mapa de nombres custom
-  const routeNames: Record<string, string> = {
-    "global-lodging-search": "Opciones de Alojamiento",
-    "global-transport-search": "Opciones de Transporte",
-    "global-experiences-search": "Experiencias y Actividades",
-    "global-itineraries-search": "Itinerarios y Paquetes",
-    // ...
-  };
-
-   // Si estamos en la raíz, no renderices el breadcrumb
+  // Si estamos en la raíz, no renderices el breadcrumb
   if (paths.length === 0) return null;
-
 
   const breadcrumbItems = paths.map((path, idx) => {
     const href = `/${paths.slice(0, idx + 1).join("/")}`;
-    const key = decodeURIComponent(path).toLowerCase();
+    const title = RouteUtils.getBreadcrumbTitle(path);
+    
     return {
-      name: routeNames[key] || decodeURIComponent(path),
+      name: title,
       href,
     };
   });
@@ -50,7 +42,7 @@ export default function BreadcrumbNav() {
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href={item.href}>
-                  {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+                  {item.name}
                 </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -60,4 +52,3 @@ export default function BreadcrumbNav() {
     </Breadcrumb>
   );
 }
-
