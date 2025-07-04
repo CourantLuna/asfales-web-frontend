@@ -56,6 +56,22 @@ export default function LodgingSearch() {
 
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
+  // Estados para filtros de calificación por estrellas
+  const [selectedStarRating, setSelectedStarRating] = useState<string[]>([]);
+  const [starRatingChips, setStarRatingChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
+
+  // Estados para filtros de tipo de pago
+  const [selectedPaymentType, setSelectedPaymentType] = useState<string[]>([]);
+  const [paymentTypeChips, setPaymentTypeChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
+
+  // Estados para filtros de opciones de cancelación
+  const [selectedCancellationOptions, setSelectedCancellationOptions] = useState<string[]>([]);
+  const [cancellationOptionsChips, setCancellationOptionsChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
+
+  // Estados para filtros de tipo de propiedad
+  const [selectedPropertyType, setSelectedPropertyType] = useState<string[]>([]);
+  const [propertyTypeChips, setPropertyTypeChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
+
   // Opciones para calificación de huéspedes
   const guestRatingOptions = [
     {
@@ -79,6 +95,42 @@ export default function LodgingSearch() {
       count: 329
     }
   ];
+
+  // Opciones para calificación por estrellas
+  const starRatingOptions: CheckboxOption[] = React.useMemo(() => [
+    { value: "5-stars", label: "5 estrellas", count: 4 },
+    { value: "4-stars", label: "4 estrellas", count: 44 },
+    { value: "3-stars", label: "3 estrellas", count: 102 },
+    { value: "2-stars", label: "2 estrellas", count: 123 },
+    { value: "1-star", label: "1 estrella", count: 4 },
+  ], []);
+
+  // Opciones para tipo de pago
+  const paymentTypeOptions: CheckboxOption[] = React.useMemo(() => [
+    { value: "reserve-now-pay-later", label: "Reserva ahora, paga después", count: 287 },
+  ], []);
+
+  // Opciones para cancelación de propiedad
+  const cancellationOptions: CheckboxOption[] = React.useMemo(() => [
+    { value: "fully-refundable", label: "Propiedad totalmente reembolsable", count: 245 },
+  ], []);
+
+  // Opciones para tipo de propiedad
+  const propertyTypeOptions: CheckboxOption[] = React.useMemo(() => [
+    { value: "motel", label: "Motel", count: 23 },
+    { value: "hotel", label: "Hotel", count: 209 },
+    { value: "bed-breakfast", label: "Bed & breakfast", count: 1 },
+    { value: "guesthouse", label: "Guesthouse", count: 10 },
+    { value: "hostel-backpacker", label: "Hostel/Backpacker accommodation", count: 3 },
+    { value: "cabin", label: "Cabaña", count: 4 },
+    { value: "apartment", label: "Apartamento", count: 68 },
+    { value: "private-vacation-home", label: "Casa de vacaciones privada", count: 79 },
+    { value: "cottage", label: "Cottage", count: 2 },
+    { value: "condo", label: "Condo", count: 10 },
+    { value: "aparthotel", label: "Aparthotel", count: 5 },
+    { value: "lodge", label: "Lodge", count: 2 },
+    { value: "camping", label: "Camping", count: 3 },
+  ], []);
 
   const amenitiesOptions = [
     {
@@ -206,12 +258,6 @@ export default function LodgingSearch() {
     { value: "fitness-center", label: "Gimnasio", count: 187 },
   ], []);
 
-  // Callbacks para servicios del hotel
-  const handleAmenitiesChange = React.useCallback((values: string[]) => {
-    setSelectedAmenities(values);
-    console.log("Servicios seleccionados:", values);
-  }, []);
-
   // Handler para StandardToggleGroup que maneja tanto string como string[]
   const handleStandardToggleChange = React.useCallback((value: string | string[]) => {
     const newValues = Array.isArray(value) ? value : [value];
@@ -233,12 +279,46 @@ export default function LodgingSearch() {
     console.log("Amenities seleccionados:", newValues);
   }, [amenitiesOptions]);
 
-  const handleAmenitiesOutputStringChange = React.useCallback((outputString: string) => {
-    setAmenitiesOutputString(outputString);
+// Agregar después de handlePopularFiltersChipsChange
+
+  // Handlers para calificación por estrellas
+  const handleStarRatingChange = React.useCallback((values: string[]) => {
+    setSelectedStarRating(values);
+    console.log("Calificación por estrellas seleccionada:", values);
   }, []);
 
-  const handleAmenitiesChipsChange = React.useCallback((chips: Array<{id: string, label: string, onRemove: () => void}>) => {
-    setAmenitiesChips(chips);
+  const handleStarRatingChipsChange = React.useCallback((chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+    setStarRatingChips(chips);
+  }, []);
+
+  // Handlers para tipo de pago
+  const handlePaymentTypeChange = React.useCallback((values: string[]) => {
+    setSelectedPaymentType(values);
+    console.log("Tipo de pago seleccionado:", values);
+  }, []);
+
+  const handlePaymentTypeChipsChange = React.useCallback((chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+    setPaymentTypeChips(chips);
+  }, []);
+
+  // Handlers para opciones de cancelación
+  const handleCancellationOptionsChange = React.useCallback((values: string[]) => {
+    setSelectedCancellationOptions(values);
+    console.log("Opciones de cancelación seleccionadas:", values);
+  }, []);
+
+  const handleCancellationOptionsChipsChange = React.useCallback((chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+    setCancellationOptionsChips(chips);
+  }, []);
+
+  // Handlers para tipo de propiedad
+  const handlePropertyTypeChange = React.useCallback((values: string[]) => {
+    setSelectedPropertyType(values);
+    console.log("Tipo de propiedad seleccionado:", values);
+  }, []);
+
+  const handlePropertyTypeChipsChange = React.useCallback((chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+    setPropertyTypeChips(chips);
   }, []);
 
   // Callbacks para filtros populares
@@ -283,6 +363,33 @@ export default function LodgingSearch() {
   const resetGuestRating = React.useCallback(() => {
     setSelectedGuestRating("");
     console.log("Calificación de huéspedes reseteada");
+  }, []);
+
+  // Agregar después de resetGuestRating
+
+  // Funciones para resetear nuevos filtros
+  const resetStarRatingFilter = React.useCallback(() => {
+    setSelectedStarRating([]);
+    setStarRatingChips([]);
+    console.log("Filtro de calificación por estrellas reseteado");
+  }, []);
+
+  const resetPaymentTypeFilter = React.useCallback(() => {
+    setSelectedPaymentType([]);
+    setPaymentTypeChips([]);
+    console.log("Filtro de tipo de pago reseteado");
+  }, []);
+
+  const resetCancellationOptionsFilter = React.useCallback(() => {
+    setSelectedCancellationOptions([]);
+    setCancellationOptionsChips([]);
+    console.log("Filtro de opciones de cancelación reseteado");
+  }, []);
+
+  const resetPropertyTypeFilter = React.useCallback(() => {
+    setSelectedPropertyType([]);
+    setPropertyTypeChips([]);
+    console.log("Filtro de tipo de propiedad reseteado");
   }, []);
 
   // Generar filtros activos para FilterChips
@@ -332,16 +439,63 @@ export default function LodgingSearch() {
       });
     });
 
+    // Agregar antes de return filters; en generateActiveFilters
+
+    // Filtros de calificación por estrellas individuales
+    starRatingChips.forEach(chip => {
+      filters.push({
+        id: chip.id,
+        label: "",
+        value: chip.label,
+        onRemove: chip.onRemove,
+      });
+    });
+
+    // Filtros de tipo de pago individuales
+    paymentTypeChips.forEach(chip => {
+      filters.push({
+        id: chip.id,
+        label: "",
+        value: chip.label,
+        onRemove: chip.onRemove,
+      });
+    });
+
+    // Filtros de opciones de cancelación individuales
+    cancellationOptionsChips.forEach(chip => {
+      filters.push({
+        id: chip.id,
+        label: "",
+        value: chip.label,
+        onRemove: chip.onRemove,
+      });
+    });
+
+    // Filtros de tipo de propiedad individuales
+    propertyTypeChips.forEach(chip => {
+      filters.push({
+        id: chip.id,
+        label: "",
+        value: chip.label,
+        onRemove: chip.onRemove,
+      });
+    });
+
     return filters;
   };
+
+  // Reemplazar clearAllFilters existente
 
   const clearAllFilters = React.useCallback(() => {
     resetPriceFilter();
     resetAmenitiesFilter();
     resetPopularFilters();
     resetGuestRating();
-  }, [resetPriceFilter, resetAmenitiesFilter, resetPopularFilters, resetGuestRating]);
-
+    resetStarRatingFilter();
+    resetPaymentTypeFilter();
+    resetCancellationOptionsFilter();
+    resetPropertyTypeFilter();
+  }, [resetPriceFilter, resetAmenitiesFilter, resetPopularFilters, resetGuestRating, resetStarRatingFilter, resetPaymentTypeFilter, resetCancellationOptionsFilter, resetPropertyTypeFilter]);
   // Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
     if (loading !== false) {
@@ -365,7 +519,7 @@ export default function LodgingSearch() {
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 mt-2">
+    <div className="flex flex-col lg:flex-row gap-6 mt-2 mb-12">
       {/* Columna de Filtros - Lado Izquierdo */}
       <div className="w-full lg:w-60 flex-shrink-0 mt-1">
         <div className="space-y-6">
@@ -440,6 +594,68 @@ export default function LodgingSearch() {
             labelClassName="text-lg font-semibold mb-4"
             toggleGroupClassName="gap-3"
             toggleItemClassName="border-2 hover:border-primary/50 transition-colors"
+          />
+
+          // Agregar después del StandardToggleGroup de Amenities
+
+          <Separator className="my-4" />
+
+          {/* Calificación por estrellas */}
+          <CheckboxFilter
+            label="Calificación por estrellas"
+            options={starRatingOptions}
+            selectedValues={selectedStarRating}
+            onChange={handleStarRatingChange}
+            onIndividualChipsChange={handleStarRatingChipsChange}
+            showCounts={true}
+            maxSelections={5}
+            initialVisibleCount={5}
+            showMoreText="Ver más"
+            showLessText="Ver menos"
+          />
+
+          <Separator className="my-4" />
+
+          {/* Tipo de pago */}
+          <CheckboxFilter
+            label="Tipo de pago"
+            options={paymentTypeOptions}
+            selectedValues={selectedPaymentType}
+            onChange={handlePaymentTypeChange}
+            onIndividualChipsChange={handlePaymentTypeChipsChange}
+            showCounts={true}
+            maxSelections={1}
+            initialVisibleCount={1}
+          />
+
+          <Separator className="my-4" />
+
+          {/* Opciones de cancelación de propiedad */}
+          <CheckboxFilter
+            label="Opciones de cancelación"
+            options={cancellationOptions}
+            selectedValues={selectedCancellationOptions}
+            onChange={handleCancellationOptionsChange}
+            onIndividualChipsChange={handleCancellationOptionsChipsChange}
+            showCounts={true}
+            maxSelections={1}
+            initialVisibleCount={1}
+          />
+
+          <Separator className="my-4" />
+
+          {/* Tipo de propiedad */}
+          <CheckboxFilter
+            label="Tipo de propiedad"
+            options={propertyTypeOptions}
+            selectedValues={selectedPropertyType}
+            onChange={handlePropertyTypeChange}
+            onIndividualChipsChange={handlePropertyTypeChipsChange}
+            showCounts={true}
+            maxSelections={10}
+            initialVisibleCount={8}
+            showMoreText="Ver más"
+            showLessText="Ver menos"
           />
 
          

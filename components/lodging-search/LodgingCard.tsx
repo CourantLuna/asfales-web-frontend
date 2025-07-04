@@ -213,7 +213,7 @@ export default function LodgingCardList({
               <Button
                 onClick={handleShowMore}
                 variant="outline"
-                className="w-full md:w-60 flex items-center space-x-2 px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+                className="w-full md:w-80 flex items-center space-x-2 px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 <span>
@@ -226,7 +226,7 @@ export default function LodgingCardList({
               <Button
                 onClick={handleShowLess}
                 variant="ghost"
-                className="w-full md:w-60 text-gray-600 hover:text-gray-800 flex items-center space-x-2 px-6 py-2 border-2"
+                className="w-full md:w-80 text-gray-600 hover:text-gray-800 flex items-center space-x-2 px-6 py-2 border-2"
               >
                 <Minus className="h-4 w-4" />
                   <span>
