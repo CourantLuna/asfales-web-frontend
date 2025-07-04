@@ -242,7 +242,7 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
       <div
         className={cn(
           // Responsive width: full on mobile, 280px on desktop
-          "w-full md:w-[280px] flex flex-col gap-2",
+          "w-full flex flex-col gap-2",
           containerClassName
         )}
       >

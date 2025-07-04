@@ -11,12 +11,13 @@ import React from "react";
 import CustomSelect, { CustomSelectOption } from "../shared/CustomSelect";
 import CompareSwitchControl from "../shared/CompareSwitchControl";
 import { PriceRangeFilter } from "../shared/PriceRangeFilter";
-import { AirVent, Bath, Bus, Car, Dices, Dumbbell, Gamepad2, Info, LandPlot, MapPin, Mountain, Phone, Utensils, WashingMachine, Waves, Wifi } from "lucide-react";
+import { AirVent, Bath, Bus, Car, Dices, Dumbbell, Gamepad2, Info, LandPlot, MapPin, Mountain, Phone, Utensils, WashingMachine, Waves, Wifi, Building2 } from "lucide-react";
 import { FilterChips, FilterChip } from "../shared/FilterChips";
 import { CheckboxFilter, CheckboxOption } from "../shared/CheckboxFilter";
 import { Separator } from "@/components/ui/separator";
 import { StandardToggleGroup } from "../shared/StandardToggleGroup";
 import { StandardRadioGroup } from "../shared/StandardRadioGroup";
+import { StandardSearchField } from "../shared/StandardSearchField";
 
 // Ejemplo de opciones:
 const sortOptions: CustomSelectOption[] = [
@@ -40,6 +41,10 @@ export default function LodgingSearch() {
   const [compareMode, setCompareMode] = React.useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [priceFilterString, setPriceFilterString] = useState<string>("");
+  
+  // Estado para búsqueda por nombre de propiedad
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [filteredRows, setFilteredRows] = useState<RowData[]>([]);
 
   // Estados para filtros de checkbox - Servicios del hotel
   // const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
@@ -74,11 +79,6 @@ export default function LodgingSearch() {
 
   // Opciones para calificación de huéspedes
   const guestRatingOptions = [
-    {
-      value: "any",
-      label: "Cualquiera",
-      count: undefined
-    },
     {
       value: "wonderful",
       label: "Excelente 9+",
@@ -279,8 +279,6 @@ export default function LodgingSearch() {
     console.log("Amenities seleccionados:", newValues);
   }, [amenitiesOptions]);
 
-// Agregar después de handlePopularFiltersChipsChange
-
   // Handlers para calificación por estrellas
   const handleStarRatingChange = React.useCallback((values: string[]) => {
     setSelectedStarRating(values);
@@ -396,6 +394,16 @@ export default function LodgingSearch() {
   const generateActiveFilters = (): FilterChip[] => {
     const filters: FilterChip[] = [];
 
+    // Filtro de búsqueda por nombre
+    if (searchValue.trim()) {
+      filters.push({
+        id: "search",
+        label: "Búsqueda",
+        value: searchValue,
+        onRemove: () => setSearchValue(""),
+      });
+    }
+
     // Filtro de precio
     if (priceFilterString) {
       filters.push({
@@ -495,7 +503,57 @@ export default function LodgingSearch() {
     resetPaymentTypeFilter();
     resetCancellationOptionsFilter();
     resetPropertyTypeFilter();
+    setSearchValue(""); // Limpiar búsqueda
   }, [resetPriceFilter, resetAmenitiesFilter, resetPopularFilters, resetGuestRating, resetStarRatingFilter, resetPaymentTypeFilter, resetCancellationOptionsFilter, resetPropertyTypeFilter]);
+
+  // Configuración del data source para búsqueda de propiedades
+  const dataSourcesLodging = React.useMemo(() => [
+    {
+      id: "hotels",
+      label: "Hoteles",
+      icon: <Building2 className="h-4 w-4" />,
+      type: "hotel" as const,
+      nameLabelField: "title",
+      nameValueField: "title", 
+      nameDescriptionField: "descMain",
+      options: rows
+    }
+  ], [rows]);
+
+  // Handler para búsqueda por nombre de propiedad
+  const handleSearchChange = React.useCallback((value: string) => {
+    setSearchValue(value);
+    
+    if (value.trim() === "") {
+      setFilteredRows(rows);
+    } else {
+      const filtered = rows.filter(row => 
+        row.title?.toLowerCase().includes(value.toLowerCase()) ||
+        row.descMain?.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredRows(filtered);
+    }
+  }, [rows]);
+
+  // Handler para selección de propiedad
+  const handleLodgingSelect = React.useCallback((option: any, sourceType: string) => {
+    setSearchValue(option.label);
+    const filtered = rows.filter(row => row.title === option.value);
+    setFilteredRows(filtered);
+  }, [rows]);
+
+  // Actualizar filteredRows cuando cambien los rows
+  React.useEffect(() => {
+    if (searchValue.trim() === "") {
+      setFilteredRows(rows);
+    } else {
+      const filtered = rows.filter(row => 
+        row.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
+        row.descMain?.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setFilteredRows(filtered);
+    }
+  }, [rows, searchValue]);
   // Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
     if (loading !== false) {
@@ -523,6 +581,22 @@ export default function LodgingSearch() {
       {/* Columna de Filtros - Lado Izquierdo */}
       <div className="w-full lg:w-60 flex-shrink-0 mt-1">
         <div className="space-y-6">
+          {/*Busqueda por nombre de propiedad*/}
+          
+          <StandardSearchField
+            label="Buscar por nombre de propiedad"
+            placeholder="Buscar alojamiento..."
+            value={searchValue}
+            onValueChange={handleSearchChange}
+            dataSources={dataSourcesLodging}
+            onSelect={handleLodgingSelect}
+            showClearButton={true}
+            minSearchLength={2}
+            disabled={false}
+            emptyMessage="No se encontraron propiedades"
+            searchPlaceholder="Escribir para buscar propiedades..."
+          />
+
           {/* Compare Switch Control */}
           <CompareSwitchControl
             checked={compareMode}
@@ -595,8 +669,6 @@ export default function LodgingSearch() {
             toggleGroupClassName="gap-3"
             toggleItemClassName="border-2 hover:border-primary/50 transition-colors"
           />
-
-          // Agregar después del StandardToggleGroup de Amenities
 
           <Separator className="my-4" />
 
@@ -679,8 +751,8 @@ export default function LodgingSearch() {
         <div className="flex w-full items-center justify-between gap-4 border-b border-muted pb-2 mb-6">
           <div className="flex flex-col items-start gap-1">
             <span className="text-xs text-muted-foreground font-medium">
-              {rows.length
-                ? `${rows.length}+ alojamientos`
+              {filteredRows.length
+                ? `${filteredRows.length}+ alojamientos`
                 : "Alojamientos encontrados"}
             </span>
             <div className="flex items-center gap-1">
@@ -705,11 +777,11 @@ export default function LodgingSearch() {
         <div className="flex flex-col gap-6">
           {/* Cards de Alojamientos */}
           <LodgingCardList
-            cardHeight="min-h-[300px]"
+            
             onCardClick={(idx, row) =>
               alert(`¡Click en card #${idx}: ${row.title}!`)
             }
-            rows={rows}
+            rows={filteredRows}
             showCompareCheckbox={compareMode}
             initialVisibleCards={6}
             cardsPerStep={6}
@@ -726,12 +798,12 @@ export default function LodgingSearch() {
 // ...resto del código permanece igual
 export function mapLodgingToRowData(lodging: Lodging): RowData {
   return {
-    title: lodging.hotelName,
+    title: lodging.lodgingName,
     images: [
-      lodging.hotelImage1,
-      lodging.hotelImage2,
-      lodging.hotelImage3,
-      lodging.hotelImage4,
+      lodging.image1,
+      lodging.image2,
+      lodging.image3,
+      lodging.image4,
     ].filter(Boolean),
     feature1: lodging.feature1,
     feature2: lodging.feature1,

@@ -177,6 +177,7 @@ const SearchFieldsWithSwap = React.forwardRef<HTMLDivElement, SearchFieldsWithSw
 
         {/* Campo Origen */}
         <StandardSearchField
+          containerClassName="w-[full] md:w-[280px]"
           label={originLabel}
           placeholder={originPlaceholder}
           value={originValue}
@@ -222,6 +223,8 @@ const SearchFieldsWithSwap = React.forwardRef<HTMLDivElement, SearchFieldsWithSw
 
         {/* Campo Destino */}
         <StandardSearchField
+                  containerClassName="w-[full] md:w-[280px]"
+
           label={destinationLabel}
           placeholder={destinationPlaceholder}
           value={destinationValue}

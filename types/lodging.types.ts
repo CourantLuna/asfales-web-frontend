@@ -1,9 +1,9 @@
 export interface Lodging {
-  hotelName: string;
-  hotelImage1?: string;
-  hotelImage2?: string;
-  hotelImage3?: string;
-  hotelImage4?: string;
+  lodgingName: string;
+  image1?: string;
+  image2?: string;
+  image3?: string;
+  image4?: string;
   location?: string;
   feature1?: string;
   feature2?: string;

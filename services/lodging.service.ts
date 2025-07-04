@@ -20,11 +20,11 @@ export async function fetchLodgings(): Promise<Lodging[]> {
 
 function toCamelCaseLodging(apiLodging: any): Lodging {
   return {
-    hotelName: apiLodging["hotel_name"] ?? "",
-    hotelImage1: apiLodging["hotel_image_1"],
-    hotelImage2: apiLodging["hotel_image_2"],
-    hotelImage3: apiLodging["hotel_image_3"],
-    hotelImage4: apiLodging["hotel_image_4"],
+    lodgingName: apiLodging["name"] ?? "",
+    image1: apiLodging["image_1"],
+    image2: apiLodging["image_2"],
+    image3: apiLodging["image_3"],
+    image4: apiLodging["image_4"],
     location: apiLodging["location"],
     feature1: apiLodging["feature_1"],
     feature2: apiLodging["feature_2"],
