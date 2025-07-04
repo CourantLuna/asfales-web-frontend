@@ -1,5 +1,5 @@
-import CreditsPage from "@/components/profile/credits/CreditsPage";
+import Credits from "@/components/profile/Credits";
 
 export default function Page() {
-  return <CreditsPage />;
+  return <Credits />;
 }

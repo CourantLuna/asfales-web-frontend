@@ -1,5 +1,5 @@
-import PaymentsPage from "@/components/profile/payments/PaymentsPage";
+import PaymentMethods from "@/components/profile/PaymentMethods";
 
 export default function Page() {
-  return <PaymentsPage />;
+  return <PaymentMethods />;
 }

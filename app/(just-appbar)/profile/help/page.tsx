@@ -1,5 +1,5 @@
-import HelpPage from "@/components/profile/help/HelpPage";
+import HelpFeedback from "@/components/profile/HelpFeedback";
 
 export default function Page() {
-  return <HelpPage />;
+  return <HelpFeedback />;
 }

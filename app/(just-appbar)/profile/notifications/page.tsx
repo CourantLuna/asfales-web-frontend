@@ -1,5 +1,5 @@
-import NotificationsPage from "@/components/profile/notifications/NotificationsPage";
+import NotificationsConfig from "@/components/profile/NotificationsConfig";
 
 export default function Page() {
-  return <NotificationsPage />;
+  return <NotificationsConfig />;
 }

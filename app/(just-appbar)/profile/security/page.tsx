@@ -1,5 +1,5 @@
-import SecurityPage from "@/components/profile/security/SecurityPage";
+import SecuritySettings from "@/components/profile/SecuritySettings";
 
 export default function Page() {
-  return <SecurityPage />;
+  return <SecuritySettings />;
 }

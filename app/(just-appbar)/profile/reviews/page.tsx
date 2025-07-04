@@ -1,5 +1,5 @@
-import ReviewsPage from "@/components/profile/reviews/ReviewsPage";
+import Reviews from "@/components/profile/Reviews";
 
 export default function Page() {
-  return <ReviewsPage />;
+  return <Reviews />;
 }
