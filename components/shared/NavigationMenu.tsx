@@ -277,7 +277,7 @@ const navItems: {
 
 export function NavigationMenuDemo() {
   return (
-    <NavigationMenu className="pointer-events-auto">
+    <NavigationMenu className="pointer-events-auto lg:ml-40">
       <NavigationMenuList className="gap-3">
         {navItems.map((item) => (
           <NavigationMenuItem key={item.title}>

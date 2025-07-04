@@ -382,7 +382,7 @@ const handleLogout = () => {
 
       {/* Navigation inferior en desktop */}
 
-      <div className="absolute top-12 left-[140px] z-50 hidden lg:flex w-[90%] justify-start px-4 md:px-8 pointer-events-none">
+      <div className="absolute top-12  z-50 hidden lg:flex w-full justify-start px-4 md:px-8 pointer-events-none">
         <NavigationMenuDemo></NavigationMenuDemo>
       </div>
     </header>
