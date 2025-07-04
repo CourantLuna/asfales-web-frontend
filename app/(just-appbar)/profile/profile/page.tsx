@@ -1,5 +1,5 @@
-import ProfileInfoPage from "@/components/profile/ProfileInfoPage";
+import ProfileInfo from "@/components/profile/ProfileInfo";
 
 export default function Page() {
-  return <ProfileInfoPage />;
+  return <ProfileInfo />;
 }

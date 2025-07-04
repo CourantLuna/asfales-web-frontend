@@ -320,12 +320,10 @@ const handleLogout = () => {
                 </div>
                 <div className="text-2xl font-bold text-gray-900 mb-3 text-center">$0.00</div>
                 <div className="flex items-center justify-center">
-                  <button className="flex items-center text-sm text-gray-700 hover:text-gray-900">
+                  <button className="flex items-center justify-between w-full text-sm text-gray-700 hover:text-gray-900">
                     <Medal className="w-4 h-4 mr-2" />
                     <span>Ver actividad de recompensas</span>
-                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <ChevronRight className={`w-4 h-4`} />
                   </button>
                 </div>
               </div>
@@ -357,7 +355,7 @@ const handleLogout = () => {
                         {item.subtitle}
                       </p>
                     </div>
-                    <ChevronRight className={`w-4 h-4 md:hidden ${
+                    <ChevronRight className={`w-4 h-4 ${
                       activeSection === item.id ? "text-blue-600" : "text-gray-400"
                     }`} />
                   </button>
