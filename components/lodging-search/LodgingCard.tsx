@@ -3,14 +3,14 @@ import CustomCard from "../shared/CustomCard";
 import { OverlayCarrusel, OverlayValue } from "../shared/ImageCarouselv2";
 import { ColField, MultiColumnFields, RowData } from "../shared/RenderFields";
 import { toast } from "sonner";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Plus, Minus } from "lucide-react";
 import { useIsMobile } from "../ui/use-mobile";
+import { Button } from "../ui/button";
+import { tr } from "date-fns/locale";
 
 // 1. Define un array de rows
 
-
 const column1: ColField[] = [
-
   {
     key: "feature1",
     type: "icon",
@@ -72,8 +72,6 @@ const overlaysFormat: OverlayCarrusel[] = [
   // { type: "badge", bgcolor: "bg-secondary", align: "bottom-right", field: "badge2" },
 ];
 
-
-
 interface LodgingCardListProps {
   rows: RowData[];
   columns?: ColField[][];
@@ -85,9 +83,14 @@ interface LodgingCardListProps {
   orientationCard?: "horizontal" | "vertical";
   onCardClick?: (idx: number, row: RowData) => void;
   showCompareCheckbox?: boolean; // Nueva prop para controlar visibilidad de checkboxes
+  // Nuevas props para paginación
+  initialVisibleCards?: number; // Número inicial de cards visibles
+  cardsPerStep?: number; // Número de cards que se muestran por cada "Mostrar más"
+  showMoreLabel?: string; // Texto personalizable del botón
+  showLessLabel?: string; // Texto para colapsar (opcional)
+  enableShowLess?: boolean; // Si permitir colapsar
   // ...agrega más si necesitas
 }
-
 
 export default function LodgingCardList({
   rows,
@@ -103,70 +106,161 @@ export default function LodgingCardList({
   carouselWidth = "w-1/3",
   onCardClick,
   showCompareCheckbox = false, // Por defecto false
+  // Valores por defecto para paginación
+  initialVisibleCards = 6,
+  cardsPerStep = 10,
+  showMoreLabel = "Mostrar más",
+  showLessLabel = "Mostrar menos",
+  enableShowLess = true, // Por defecto true
 }: LodgingCardListProps) {
 
-    // Estado de checks (índice => boolean)
+  // Estado de checks (índice => boolean)
   const [compareChecked, setCompareChecked] = useState<{[idx: number]: boolean}>({});
-
-    const isMobile = useIsMobile();
-
+  
+  // Estado para controlar cuántas cards mostrar
+  const [visibleCards, setVisibleCards] = useState(initialVisibleCards);
+  
+  const isMobile = useIsMobile();
 
   // Handler para cada card
-const handleCompareChecked = (idx: number, checked: boolean) => {
-  setCompareChecked(prev => ({ ...prev, [idx]: checked }));
-  toast(checked ? "Añadido a comparar" : "Removido de comparar", {
-    description: rows[idx]?.title,
-    duration: 1800,
-    icon: (
-      <span className="flex items-center justify-center">
-        {checked
-          ? <CheckCircle className="text-green-500 w-6 h-6" />
-          : <XCircle className="text-red-500 w-6 h-6" />}
-      </span>
-    ),
-    style: {
-      backgroundColor: checked ? "#D1FADF" : "#FEE2E2",
-      color: "#232323",
-      fontWeight: 500,
-      gap: "20px",
-      width: "300px",
-    },
-      
-  });
-};
-    
+  const handleCompareChecked = (idx: number, checked: boolean) => {
+    setCompareChecked(prev => ({ ...prev, [idx]: checked }));
+    toast(checked ? "Añadido a comparar" : "Removido de comparar", {
+      description: rows[idx]?.title,
+      duration: 1800,
+      icon: (
+        <span className="flex items-center justify-center">
+          {checked
+            ? <CheckCircle className="text-green-500 w-6 h-6" />
+            : <XCircle className="text-red-500 w-6 h-6" />}
+        </span>
+      ),
+      style: {
+        backgroundColor: checked ? "#D1FADF" : "#FEE2E2",
+        color: "#232323",
+        fontWeight: 500,
+        gap: "20px",
+        width: "300px",
+      },
+    });
+  };
+
+  // Handlers para mostrar más/menos
+  const handleShowMore = () => {
+    setVisibleCards(prev => Math.min(prev + cardsPerStep, rows.length));
+  };
+
+  const handleShowLess = () => {
+    setVisibleCards(initialVisibleCards);
+  };
+
+  // Calcular cards visibles
+  const visibleRows = rows.slice(0, visibleCards);
+  const hasMoreCards = visibleCards < rows.length;
+  const canShowLess = enableShowLess && visibleCards > initialVisibleCards;
+
+  // Calcular cuántas cards más se pueden mostrar
+  const remainingCards = rows.length - visibleCards;
+  const nextStepCards = Math.min(cardsPerStep, remainingCards);
+
   return (
-    <>
-      {rows.map((rowData, idx) => (
-        <CustomCard
-          key={rowData.title + idx}
-          orientationCard={isMobile ? "vertical" : "horizontal"}
-          cardWidth={cardWidth}
-          cardHeight={cardHeight}
-          carouselWidth={carouselWidth}
-          images={rowData.images}
-          title={rowData.title}
-          description={rowData.subtitle}
-          overlayCarrusel={overlays}
-          overlayValues={overlayFieldMap(rowData)}
-          onClick={() => onCardClick?.(idx, rowData)}
-          // --- Control del compare checkbox ---
-          showCompareCheckbox={showCompareCheckbox}
-          compareChecked={!!compareChecked[idx]}
-          onCompareCheckedChange={checked => handleCompareChecked(idx, checked)}
-          // -------------------------------------
-          content={
-            <MultiColumnFields
-              columns={columns}
-              rowData={rowData}
-              singleColumn={isMobile}
-              gap={0}
-              aligns={["start", "end"]}
-              yAligns={["start", "end"]}
-            />
-          }
-        />
-      ))}
-    </>
+    <div className="space-y-4">
+      {/* Lista de cards */}
+      <div className="space-y-4">
+        {visibleRows.map((rowData, idx) => (
+          <CustomCard
+            key={rowData.title + idx}
+            orientationCard={isMobile ? "vertical" : "horizontal"}
+            cardWidth={cardWidth}
+            cardHeight={cardHeight}
+            carouselWidth={carouselWidth}
+            images={rowData.images}
+            title={rowData.title}
+            description={rowData.subtitle}
+            overlayCarrusel={overlays}
+            overlayValues={overlayFieldMap(rowData)}
+            onClick={() => onCardClick?.(idx, rowData)}
+            // --- Control del compare checkbox ---
+            showCompareCheckbox={showCompareCheckbox}
+            compareChecked={!!compareChecked[idx]}
+            onCompareCheckedChange={checked => handleCompareChecked(idx, checked)}
+            // -------------------------------------
+            content={
+              <MultiColumnFields
+                columns={columns}
+                rowData={rowData}
+                singleColumn={isMobile}
+                gap={0}
+                aligns={["start", "end"]}
+                yAligns={["start", "end"]}
+              />
+            }
+          />
+        ))}
+      </div>
+
+      {/* Información de resultados y botones */}
+      {(hasMoreCards || canShowLess) && (
+        <div className="flex flex-col items-center space-y-3 py-6 md:w-auto w-full">
+          {/* Contador de resultados */}
+          <div className="text-sm text-gray-600 text-center">
+            Mostrando {visibleCards} de {rows.length} alojamientos
+          </div>
+
+          {/* Botones de acción */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            {hasMoreCards && (
+              <Button
+                onClick={handleShowMore}
+                variant="outline"
+                className="w-full md:w-60 flex items-center space-x-2 px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                <span>
+                  {showMoreLabel} ({nextStepCards} más)
+                </span>
+              </Button>
+            )}
+
+            {canShowLess && (
+              <Button
+                onClick={handleShowLess}
+                variant="ghost"
+                className="w-full md:w-60 text-gray-600 hover:text-gray-800 flex items-center space-x-2 px-6 py-2 border-2"
+              >
+                <Minus className="h-4 w-4" />
+                  <span>
+                    {showLessLabel}
+                  </span>
+                </Button>
+            )}
+          </div>
+
+          {/* Progreso visual opcional */}
+          {rows.length > initialVisibleCards && (
+            <div className="w-full max-w-xs">
+              <div className="bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(visibleCards / rows.length) * 100}%` }}
+                />
+              </div>
+              <div className="text-xs text-gray-500 mt-1 text-center">
+                {Math.round((visibleCards / rows.length) * 100)}% cargado
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Mensaje cuando no hay más cards */}
+      {!hasMoreCards && rows.length > initialVisibleCards && (
+        <div className="text-center py-4">
+          <p className="text-gray-600 text-sm">
+            ✨ Has visto todos los alojamientos disponibles
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

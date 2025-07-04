@@ -14,6 +14,8 @@ export interface StandardToggleOption {
   icon?: React.ReactNode;
   /** Whether this option is disabled */
   disabled?: boolean;
+  /** Optional count for the option */
+  count?: number;
 }
 
 export interface StandardToggleGroupProps {
@@ -81,6 +83,18 @@ export interface StandardToggleGroupProps {
    * ID for the toggle group
    */
   id?: string;
+  /**
+   * Layout variant: 'horizontal' (default) or 'vertical'
+   */
+  variant?: "horizontal" | "vertical";
+  /**
+   * Whether to wrap items in a grid layout
+   */
+  wrap?: boolean;
+  /**
+   * Grid columns for wrap layout
+   */
+  gridCols?: "auto" | 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroupProps>(
@@ -102,6 +116,9 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
       error,
       helperText,
       id,
+      variant = "horizontal",
+      wrap = false,
+      gridCols = 2,
     },
     ref
   ) => {
@@ -142,15 +159,6 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
       }
     };
 
-    // Helper function to get all selection states
-    const getAllSelectionStates = (): Record<string, boolean> => {
-      const states: Record<string, boolean> = {};
-      options.forEach(option => {
-        states[option.value] = getOptionState(option.value);
-      });
-      return states;
-    };
-
     // Get properly typed values for ToggleGroup
     const toggleGroupValue = type === "multiple" 
       ? (Array.isArray(internalValue) ? internalValue : []) 
@@ -160,10 +168,61 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
       ? (Array.isArray(defaultValue) ? defaultValue : [])
       : (typeof defaultValue === "string" ? defaultValue : undefined);
 
+    // Get grid columns class
+    const getGridColsClass = () => {
+      if (!wrap) return "";
+      switch (gridCols) {
+        case 1: return "grid-cols-1";
+        case 2: return "grid-cols-2";
+        case 3: return "grid-cols-3";
+        case 4: return "grid-cols-4";
+        case 5: return "grid-cols-5";
+        case 6: return "grid-cols-6";
+        case "auto": return "grid-cols-2"; // Auto defaults to 2 columns
+        default: return "grid-cols-2"; // Default to 2 columns
+      }
+    };
+
+    // Base toggle group classes
+    const toggleGroupClasses = cn(
+      wrap 
+        ? `grid gap-3 ${getGridColsClass()}`
+        : "gap-2 flex flex-wrap justify-start",
+      toggleGroupClassName
+    );
+
+    // Base toggle item classes
+    const getToggleItemClasses = (isSelected: boolean) => {
+      const baseClasses = variant === "vertical" 
+        ? "flex-col h-full w-full px-2 py-2 text-xs"
+        : wrap 
+          ? "flex-col w-full px-2 py-1 text-xs gap-"
+          : "px-2 py-1  gap-2 text-base md:text-xs flex-row";
+      
+      return cn(
+        baseClasses,
+        "justify-center font-normal items-center overflow-hidden",
+        // Error state
+        error && "border-destructive focus-visible:ring-destructive",
+        toggleItemClassName
+      );
+    };
+
+    // Icon size classes
+    const getIconClasses = (isSelected: boolean) => {
+      const sizeClasses = (variant === "vertical" || wrap) ? "w-5 h-5" : "w-4 h-4";
+      return cn(
+        "flex-shrink-0",
+        sizeClasses,
+        isSelected ? "text-secondary" : "text-muted-foreground"
+      );
+    };
+
     return (
       <div
+        ref={ref}
         className={cn(
-          "w-full flex flex-col gap-2",
+          "w-full flex flex-col gap-1",
           containerClassName
         )}
       >
@@ -191,10 +250,7 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
             onValueChange={handleValueChange}
             defaultValue={Array.isArray(toggleGroupDefaultValue) ? toggleGroupDefaultValue : []}
             disabled={disabled}
-            className={cn(
-              "gap-2 flex flex-wrap justify-start",
-              toggleGroupClassName
-            )}
+            className={toggleGroupClasses}
             id={toggleId}
           >
             {options.map((option) => {
@@ -205,24 +261,24 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
                   value={option.value}
                   aria-label={option.label}
                   disabled={option.disabled || disabled}
-                  className={cn(
-                    // Standard styling consistent with other components
-                    "px-4 py-2 h-12 gap-2 text-base md:text-sm",
-                    "justify-start font-normal",
-                    // Error state
-                    error && "border-destructive focus-visible:ring-destructive",
-                    toggleItemClassName
-                  )}
+                  className={getToggleItemClasses(isSelected)}
                 >
                   {option.icon && (
-                    <span className={cn(
-                      "flex-shrink-0",
-                      isSelected ? "text-secondary" : ""
-                    )}>
+                    <span className={getIconClasses(isSelected) }>
                       {option.icon}
                     </span>
                   )}
-                  <span className="truncate">{option.label}</span>
+                  <span className={cn(
+                    "text-center leading-tight break-words hyphens-auto",
+                    (variant === "vertical" || wrap) ? "text-[11px]" : "text-sm"
+                  )}>
+                    {option.label}
+                    {option.count && (
+                      <span className="ml-1 text-muted-foreground text-[10px]">
+                        ({option.count})
+                      </span>
+                    )}
+                  </span>
                 </ToggleGroupItem>
               );
             })}
@@ -234,10 +290,7 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
             onValueChange={handleValueChange}
             defaultValue={typeof toggleGroupDefaultValue === "string" ? toggleGroupDefaultValue : undefined}
             disabled={disabled}
-            className={cn(
-              "gap-2 flex flex-wrap justify-start",
-              toggleGroupClassName
-            )}
+            className={toggleGroupClasses}
             id={toggleId}
           >
             {options.map((option) => {
@@ -248,24 +301,24 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
                   value={option.value}
                   aria-label={option.label}
                   disabled={option.disabled || disabled}
-                  className={cn(
-                    // Standard styling consistent with other components
-                    "px-4 py-2 h-12 gap-2 text-base md:text-sm",
-                    "justify-start font-normal",
-                    // Error state
-                    error && "border-destructive focus-visible:ring-destructive",
-                    toggleItemClassName
-                  )}
+                  className={getToggleItemClasses(isSelected)}
                 >
                   {option.icon && (
-                    <div className={cn(
-                      "flex-shrink-0",
-                      isSelected ? "text-secondary" : "text-muted-foreground"
-                    )}>
+                    <div className={getIconClasses(isSelected)}>
                       {option.icon}
                     </div>
                   )}
-                  <span className="truncate">{option.label}</span>
+                  <span className={cn(
+                    "text-center leading-tight break-words hyphens-auto",
+                    (variant === "vertical" || wrap) ? "text-xs" : "text-sm"
+                  )}>
+                    {option.label}
+                    {option.count && (
+                      <span className="ml-1 text-muted-foreground text-xs">
+                        ({option.count})
+                      </span>
+                    )}
+                  </span>
                 </ToggleGroupItem>
               );
             })}

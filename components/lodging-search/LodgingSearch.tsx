@@ -11,12 +11,12 @@ import React from "react";
 import CustomSelect, { CustomSelectOption } from "../shared/CustomSelect";
 import CompareSwitchControl from "../shared/CompareSwitchControl";
 import { PriceRangeFilter } from "../shared/PriceRangeFilter";
-import { Info } from "lucide-react";
+import { AirVent, Bath, Bus, Car, Dices, Dumbbell, Gamepad2, Info, LandPlot, MapPin, Mountain, Phone, Utensils, WashingMachine, Waves, Wifi } from "lucide-react";
 import { FilterChips, FilterChip } from "../shared/FilterChips";
 import { CheckboxFilter, CheckboxOption } from "../shared/CheckboxFilter";
-import { Separator } from "@radix-ui/react-separator";
-
-
+import { Separator } from "@/components/ui/separator";
+import { StandardToggleGroup } from "../shared/StandardToggleGroup";
+import { StandardRadioGroup } from "../shared/StandardRadioGroup";
 
 // Ejemplo de opciones:
 const sortOptions: CustomSelectOption[] = [
@@ -41,32 +41,197 @@ export default function LodgingSearch() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [priceFilterString, setPriceFilterString] = useState<string>("");
 
-  // Estados para filtros de checkbox
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  // Estados para filtros de checkbox - Servicios del hotel
+  // const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [amenitiesOutputString, setAmenitiesOutputString] = useState<string>("");
   const [amenitiesChips, setAmenitiesChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
 
-  // Memoizar las opciones para evitar recreaciones
-  const amenitiesOptions: CheckboxOption[] = React.useMemo(() => [
-    { value: "wifi", label: "WiFi gratuito", count: 145 },
-    { value: "parking", label: "Estacionamiento", count: 98 },
-    { value: "pool", label: "Piscina", count: 67 },
-    { value: "gym", label: "Gimnasio", count: 43 },
-    { value: "spa", label: "Spa", count: 28 },
-    { value: "restaurant", label: "Restaurante", count: 112 },
-    { value: "breakfast", label: "Desayuno incluido", count: 89 },
-    { value: "pets", label: "Se admiten mascotas", count: 34 },
-    { value: "concierge", label: "Servicio de conserjería", count: 56 },
-    { value: "laundry", label: "Servicio de lavandería", count: 78 },
-    { value: "room-service", label: "Servicio a la habitación", count: 91 },
-    { value: "business", label: "Centro de negocios", count: 42 },
+  // Estados para filtros populares
+  const [selectedPopularFilters, setSelectedPopularFilters] = useState<string[]>([]);
+  const [popularFiltersOutputString, setPopularFiltersOutputString] = useState<string>("");
+  const [popularFiltersChips, setPopularFiltersChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
+
+  // Estado para calificación de huéspedes
+  const [selectedGuestRating, setSelectedGuestRating] = useState<string>("");
+
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+
+  // Opciones para calificación de huéspedes
+  const guestRatingOptions = [
+    {
+      value: "any",
+      label: "Cualquiera",
+      count: undefined
+    },
+    {
+      value: "wonderful",
+      label: "Excelente 9+",
+      count: 154
+    },
+    {
+      value: "very-good",
+      label: "Muy bueno 8+",
+      count: 272
+    },
+    {
+      value: "good",
+      label: "Bueno 7+",
+      count: 329
+    }
+  ];
+
+  const amenitiesOptions = [
+    {
+      value: "pet-friendly",
+      label: "Pet friendly",
+      icon: <Waves className="w-full h-full" />,
+      count: 413
+    },
+    {
+      value: "pool",
+      label: "Pool",
+      icon: <Waves className="w-full h-full" />,
+      count: 105
+    },
+    {
+      value: "hot-tub",
+      label: "Hot tub",
+      icon: <Bath className="w-full h-full" />,
+      count: 67
+    },
+    {
+      value: "wifi",
+      label: "Wifi included",
+      icon: <Wifi className="w-full h-full" />,
+      count: 407
+    },
+    {
+      value: "spa",
+      label: "Spa",
+      icon: <Bath className="w-full h-full" />,
+      count: 13
+    },
+    {
+      value: "gym",
+      label: "Gym",
+      icon: <Dumbbell className="w-full h-full" />,
+      count: 177
+    },
+    {
+      value: "kitchen",
+      label: "Kitchen",
+      icon: <Utensils className="w-full h-full" />,
+      count: 229
+    },
+    {
+      value: "air-conditioned",
+      label: "Air conditioned",
+      icon: <AirVent className="w-full h-full" />,
+      count: 337
+    },
+    {
+      value: "ocean-view",
+      label: "Ocean view",
+      icon: <Mountain className="w-full h-full" />,
+      count: 13
+    },
+    {
+      value: "restaurant",
+      label: "Restaurant",
+      icon: <Utensils className="w-full h-full" />,
+      count: 90
+    },
+    {
+      value: "outdoor-space",
+      label: "Outdoor space",
+      icon: <MapPin className="w-full h-full" />,
+      count: 198
+    },
+    {
+      value: "washer-dryer",
+      label: "Washer and dryer",
+      icon: <WashingMachine className="w-full h-full" />,
+      count: 29
+    },
+    {
+      value: "electric-car",
+      label: "Electric car charging station",
+      icon: <Car className="w-full h-full" />,
+      count: 70
+    },
+    {
+      value: "golf-course",
+      label: "Golf course",
+      icon: <LandPlot className="w-full h-full" />,
+      count: 0,
+      disabled: true
+    },
+    {
+      value: "water-park",
+      label: "Water park",
+      icon: <Waves className="w-full h-full" />,
+      count: 7
+    },
+    {
+      value: "airport-shuttle",
+      label: "Airport shuttle included",
+      icon: <Bus className="w-full h-full" />,
+      count: 23
+    },
+    {
+      value: "casino",
+      label: "Casino",
+      icon: <Dices className="w-full h-full" />,
+      count: 1
+    },
+    {
+      value: "cribs",
+      label: "Cribs",
+      icon: <Phone className="w-full h-full" />,
+      count: 127
+    }
+  ];
+
+  // Opciones para filtros populares
+  const popularFiltersOptions: CheckboxOption[] = React.useMemo(() => [
+    { value: "pet-friendly", label: "Se admiten mascotas", count: 413 },
+    { value: "motel", label: "Motel", count: 44 },
+    { value: "pool", label: "Piscina", count: 143 },
+    { value: "hotel", label: "Hotel", count: 308 },
+    { value: "breakfast-included", label: "Desayuno incluido", count: 246 },
+    { value: "spa", label: "Spa y bienestar", count: 89 },
+    { value: "beach-access", label: "Acceso a la playa", count: 67 },
+    { value: "family-friendly", label: "Ideal para familias", count: 201 },
+    { value: "business-center", label: "Centro de negocios", count: 156 },
+    { value: "fitness-center", label: "Gimnasio", count: 187 },
   ], []);
 
-  // Memoizar callbacks para evitar recreaciones
+  // Callbacks para servicios del hotel
   const handleAmenitiesChange = React.useCallback((values: string[]) => {
     setSelectedAmenities(values);
     console.log("Servicios seleccionados:", values);
   }, []);
+
+  // Handler para StandardToggleGroup que maneja tanto string como string[]
+  const handleStandardToggleChange = React.useCallback((value: string | string[]) => {
+    const newValues = Array.isArray(value) ? value : [value];
+    setSelectedAmenities(newValues);
+    
+    // Generar chips manualmente para StandardToggleGroup
+    const newChips = newValues.map(val => {
+      const option = amenitiesOptions.find(opt => opt.value === val);
+      return {
+        id: `amenity-${val}`,
+        label: option?.label || val,
+        onRemove: () => {
+          setSelectedAmenities(prev => prev.filter(v => v !== val));
+        }
+      };
+    });
+    setAmenitiesChips(newChips);
+    
+    console.log("Amenities seleccionados:", newValues);
+  }, [amenitiesOptions]);
 
   const handleAmenitiesOutputStringChange = React.useCallback((outputString: string) => {
     setAmenitiesOutputString(outputString);
@@ -76,11 +241,30 @@ export default function LodgingSearch() {
     setAmenitiesChips(chips);
   }, []);
 
+  // Callbacks para filtros populares
+  const handlePopularFiltersChange = React.useCallback((values: string[]) => {
+    setSelectedPopularFilters(values);
+    console.log("Filtros populares seleccionados:", values);
+  }, []);
+
+  // Callback para calificación de huéspedes
+  const handleGuestRatingChange = React.useCallback((value: string) => {
+    setSelectedGuestRating(value);
+    console.log("Calificación seleccionada:", value);
+  }, []);
+
+  const handlePopularFiltersOutputStringChange = React.useCallback((outputString: string) => {
+    setPopularFiltersOutputString(outputString);
+  }, []);
+
+  const handlePopularFiltersChipsChange = React.useCallback((chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+    setPopularFiltersChips(chips);
+  }, []);
+
   // Función para resetear el filtro de precio
   const resetPriceFilter = React.useCallback(() => {
     setPriceRange([0, 1000]);
     console.log("Filtro de precio reseteado");
-    // Aquí podrías hacer la llamada a la API para remover el filtro
   }, []);
 
   // Función para resetear filtros de servicios
@@ -89,6 +273,17 @@ export default function LodgingSearch() {
     console.log("Filtro de servicios reseteado");
   }, []);
 
+  // Función para resetear filtros populares
+  const resetPopularFilters = React.useCallback(() => {
+    setSelectedPopularFilters([]);
+    console.log("Filtros populares reseteados");
+  }, []);
+
+  // Función para resetear calificación de huéspedes
+  const resetGuestRating = React.useCallback(() => {
+    setSelectedGuestRating("");
+    console.log("Calificación de huéspedes reseteada");
+  }, []);
 
   // Generar filtros activos para FilterChips
   const generateActiveFilters = (): FilterChip[] => {
@@ -104,26 +299,38 @@ export default function LodgingSearch() {
       });
     }
 
+    // Filtro de calificación de huéspedes
+    if (selectedGuestRating && selectedGuestRating !== "any") {
+      const ratingOption = guestRatingOptions.find(opt => opt.value === selectedGuestRating);
+      if (ratingOption) {
+        filters.push({
+          id: "guest-rating",
+          label: "Calificación",
+          value: ratingOption.label,
+          onRemove: resetGuestRating,
+        });
+      }
+    }
+
     // Filtros de servicios individuales
     amenitiesChips.forEach(chip => {
       filters.push({
         id: chip.id,
-        label: "", // Sin prefijo "Servicios:"
+        label: "", // Sin prefijo
         value: chip.label,
         onRemove: chip.onRemove,
       });
     });
 
-    // Aquí puedes agregar más filtros en el futuro
-    // Ejemplo:
-    // if (locationFilter) {
-    //   filters.push({
-    //     id: "location",
-    //     label: "Ubicación",
-    //     value: locationFilter,
-    //     onRemove: resetLocationFilter,
-    //   });
-    // }
+    // Filtros populares individuales
+    popularFiltersChips.forEach(chip => {
+      filters.push({
+        id: chip.id,
+        label: "", // Sin prefijo
+        value: chip.label,
+        onRemove: chip.onRemove,
+      });
+    });
 
     return filters;
   };
@@ -131,13 +338,13 @@ export default function LodgingSearch() {
   const clearAllFilters = React.useCallback(() => {
     resetPriceFilter();
     resetAmenitiesFilter();
-    // Agregar más resets cuando tengas más filtros
-  }, [resetPriceFilter, resetAmenitiesFilter]);
+    resetPopularFilters();
+    resetGuestRating();
+  }, [resetPriceFilter, resetAmenitiesFilter, resetPopularFilters, resetGuestRating]);
 
-  // Dispara la barra de progreso siempre que loading sea distinto de false (true o undefined)
+  // Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
     if (loading !== false) {
-      // Espera un tick para asegurar que el ref esté listo
       setTimeout(() => {
         progressRef.current?.start();
       }, 0);
@@ -156,49 +363,61 @@ export default function LodgingSearch() {
 
   if (loading)
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;
-return (
 
-
-  <div className="flex flex-col lg:flex-row gap-6 mt-2">
+  return (
+    <div className="flex flex-col lg:flex-row gap-6 mt-2">
       {/* Columna de Filtros - Lado Izquierdo */}
-      <div className="w-full lg:w-80 flex-shrink-0 mt-1">
-      {/* Compare Switch Control */}
+      <div className="w-full lg:w-60 flex-shrink-0 mt-1">
+        <div className="space-y-6">
+          {/* Compare Switch Control */}
+          <CompareSwitchControl
+            checked={compareMode}
+            onCheckedChange={setCompareMode}
+            titleOff="Comparar propiedades"
+            subtitleOff="Obtén una vista lado a lado de hasta 5 propiedades"
+            titleOn="Comparando propiedades"
+            subtitleOn="Selecciona propiedades para comparar lado a lado"
+          />
 
-            <div className="space-y-6">
+          <Separator className="my-4 bg-muted" />
 
-      <CompareSwitchControl
-        checked={compareMode}
-        onCheckedChange={setCompareMode}
-        titleOff="Comparar propiedades"
-        subtitleOff="Obtén una vista lado a lado de hasta 5 propiedades"
-        titleOn="Comparando propiedades"
-        subtitleOn="Selecciona propiedades para comparar lado a lado"
-      />
+          {/* Filtros Populares */}
+          <CheckboxFilter
+            label="Filtros populares"
+            options={popularFiltersOptions}
+            selectedValues={selectedPopularFilters}
+            onChange={handlePopularFiltersChange}
+            onOutputStringChange={handlePopularFiltersOutputStringChange}
+            onIndividualChipsChange={handlePopularFiltersChipsChange}
+            showCounts={true}
+            maxSelections={10}
+            initialVisibleCount={5}
+            showMoreText="Ver más filtros"
+            showLessText="Ver menos"
+          />
 
-      <Separator className="my-4" />
-               <CheckboxFilter
-                label="Servicios del hotel"
-                options={amenitiesOptions}
-                selectedValues={selectedAmenities}
-                onChange={handleAmenitiesChange}
-                onOutputStringChange={handleAmenitiesOutputStringChange}
-                onIndividualChipsChange={handleAmenitiesChipsChange}
-                showCounts={true}
-                maxSelections={8} // Máximo de 8 selecciones
-                initialVisibleCount={4}
-                showMoreText="Ver más servicios"
-                showLessText="Ver menos"
-              />
+          <Separator className="my-4" />
 
-      <Separator className="my-4" />
-  <PriceRangeFilter
+          {/* Calificación de huéspedes */}
+          <StandardRadioGroup
+            label="Calificación de huéspedes"
+            options={guestRatingOptions}
+            value={selectedGuestRating}
+            onValueChange={handleGuestRatingChange}
+            variant="vertical"
+            helperText="Filtra por calificación promedio"
+          />
+
+          <Separator className="my-4" />
+
+          {/* Filtro de Precio */}
+          <PriceRangeFilter
             min={0}
             max={1000}
             value={priceRange}
             onChange={(newRange) => {
               setPriceRange(newRange);
               console.log("Filtrar por precio:", newRange);
-              // Aquí podrías hacer la llamada a la API para filtrar
             }}
             onOutputStringChange={setPriceFilterString}
             label="Precio por noche"
@@ -206,79 +425,98 @@ return (
             step={10}
           />
 
-  
-      
-       
-      </div>
-      
+          {/* Servicios del Hotel */}
+
+          <StandardToggleGroup
+            label="Amenities"
+            options={amenitiesOptions}
+            value={selectedAmenities}
+            onValueChange={handleStandardToggleChange}
+            type="multiple"
+            variant="vertical"
+            wrap={true}
+            gridCols="auto" // Responsive: 2 cols on mobile, 3 on tablet, 4 on desktop
+            containerClassName="w-full"
+            labelClassName="text-lg font-semibold mb-4"
+            toggleGroupClassName="gap-3"
+            toggleItemClassName="border-2 hover:border-primary/50 transition-colors"
+          />
+
+         
+
+        </div>
       </div>
 
       {/* Contenido Principal - Lado Derecho */}
-    <div className=" min-w-0">
-      {/* Filtros Activos */}
-      <div>
-        <FilterChips
-          filters={generateActiveFilters()}
-          onClearAll={clearAllFilters}
-          showClearAll={true}
-          clearAllText="Limpiar filtros"
-        />
-      </div>
-      {/* Barra de control superior */}
-      <div className="flex w-full items-center justify-between gap-4 border-b border-muted pb-2 mb-6">
-        <div className="flex flex-col items-start gap-1">
-          <span className="text-xs text-muted-foreground font-medium">
-            {rows.length
-              ? `${rows.length}+ alojamientos`
-              : "Alojamientos encontrados"}
-          </span>
-          <div className="flex items-center gap-1">
-            <span className="font-medium text-sm underline underline-offset-2 cursor-pointer hover:text-primary transition-colors">
-              ¿Cómo funciona nuestro orden?
+      <div className="min-w-0 flex-1">
+        {/* Filtros Activos */}
+        <div>
+          <FilterChips
+            filters={generateActiveFilters()}
+            onClearAll={clearAllFilters}
+            showClearAll={true}
+            clearAllText="Limpiar filtros"
+          />
+        </div>
+
+        {/* Barra de control superior */}
+        <div className="flex w-full items-center justify-between gap-4 border-b border-muted pb-2 mb-6">
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-xs text-muted-foreground font-medium">
+              {rows.length
+                ? `${rows.length}+ alojamientos`
+                : "Alojamientos encontrados"}
             </span>
-            <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-sm underline underline-offset-2 cursor-pointer hover:text-primary transition-colors">
+                ¿Cómo funciona nuestro orden?
+              </span>
+              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+            </div>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-xs text-muted-foreground mb-0.5">
+              Ordenar por
+            </span>
+            <CustomSelect
+              options={sortOptions}
+              selectedKey={sort}
+              onChange={setSort}
+            />
           </div>
         </div>
-        <div className="flex flex-col items-end">
-          <span className="text-xs text-muted-foreground mb-0.5">
-            Ordenar por
-          </span>
-          <CustomSelect
-            options={sortOptions}
-            selectedKey={sort}
-            onChange={setSort}
+
+        <div className="flex flex-col gap-6">
+          {/* Cards de Alojamientos */}
+          <LodgingCardList
+            cardHeight="min-h-[300px]"
+            onCardClick={(idx, row) =>
+              alert(`¡Click en card #${idx}: ${row.title}!`)
+            }
+            rows={rows}
+            showCompareCheckbox={compareMode}
+            initialVisibleCards={6}
+            cardsPerStep={6}
+            showMoreLabel="Mostrar más alojamientos"
+            showLessLabel="Mostrar menos"
+            enableShowLess={true}
           />
         </div>
       </div>
-
-      <div className="flex flex-col gap-6">
-        {/* Cards de Alojamientos */}
-        <LodgingCardList
-          cardHeight="min-h-[300px]"
-          onCardClick={(idx, row) =>
-            alert(`¡Click en card #${idx}: ${row.title}!`)
-          }
-          rows={rows}
-          showCompareCheckbox={compareMode}
-        />
-      </div>
     </div>
-    
-</div>
-    
   );
 }
 
+// ...resto del código permanece igual
 export function mapLodgingToRowData(lodging: Lodging): RowData {
   return {
-    // Mapear lo que necesita tu UI
     title: lodging.hotelName,
     images: [
       lodging.hotelImage1,
       lodging.hotelImage2,
       lodging.hotelImage3,
       lodging.hotelImage4,
-    ].filter(Boolean), // solo las que existen
+    ].filter(Boolean),
     feature1: lodging.feature1,
     feature2: lodging.feature1,
     descMain: lodging.descMain,
@@ -291,10 +529,9 @@ export function mapLodgingToRowData(lodging: Lodging): RowData {
     badge1: lodging.badge1,
     badge2: lodging.availableBadge,
     badge2ndColumn: lodging.availableBadge,
-    isFavorite: false, // puedes setear desde API si tienes el campo
-    rating: lodging.rating, // si tu API tiene campo rating
-    ratingLabel: lodging.ratingLabel, // idem
-    ratingCount: lodging.ratingCount, // idem
-    // ...otros campos que uses en tu sistema
+    isFavorite: false,
+    rating: lodging.rating,
+    ratingLabel: lodging.ratingLabel,
+    ratingCount: lodging.ratingCount,
   };
 }
