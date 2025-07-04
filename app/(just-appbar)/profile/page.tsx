@@ -1,5 +1,11 @@
+// app/(just-appbar)/profile/page.tsx
 import Profile from "@/components/profile/Profile";
+import React, { Suspense } from "react";
 
 export default function ProfilePage() {
-  return <Profile />;
+  return (
+    <Suspense fallback={<div>Cargando perfil...</div>}>
+      <Profile />
+    </Suspense>
+  );
 }
