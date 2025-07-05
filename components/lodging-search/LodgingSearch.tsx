@@ -18,6 +18,8 @@ import { Separator } from "@/components/ui/separator";
 import { StandardToggleGroup } from "../shared/StandardToggleGroup";
 import { StandardRadioGroup } from "../shared/StandardRadioGroup";
 import { StandardSearchField } from "../shared/StandardSearchField";
+import ResultFilters, { FilterConfig } from "../shared/ResultFilters";
+
 
 // Ejemplo de opciones:
 const sortOptions: CustomSelectOption[] = [
@@ -45,6 +47,8 @@ export default function LodgingSearch() {
   // Estado para búsqueda por nombre de propiedad
   const [searchValue, setSearchValue] = useState<string>("");
   const [filteredRows, setFilteredRows] = useState<RowData[]>([]);
+  
+  const [isFiltersSheetOpen, setIsFiltersSheetOpen] = useState(false);
 
   // Estados para filtros de checkbox - Servicios del hotel
   // const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
@@ -257,6 +261,158 @@ export default function LodgingSearch() {
     { value: "business-center", label: "Centro de negocios", count: 156 },
     { value: "fitness-center", label: "Gimnasio", count: 187 },
   ], []);
+  
+  // Componente reutilizable para el contenido de filtros
+  const FiltersContent = () => (
+    <div className="space-y-6">
+      {/* Búsqueda por nombre de propiedad */}
+      <StandardSearchField
+        label="Buscar por nombre de propiedad"
+        placeholder="Buscar alojamiento..."
+        value={searchValue}
+        onValueChange={handleSearchChange}
+        dataSources={dataSourcesLodging}
+        onSelect={handleLodgingSelect}
+        showClearButton={true}
+        minSearchLength={2}
+        disabled={false}
+        emptyMessage="No se encontraron propiedades"
+        searchPlaceholder="Escribir para buscar propiedades..."
+      />
+  
+      {/* Compare Switch Control */}
+      <CompareSwitchControl
+        checked={compareMode}
+        onCheckedChange={setCompareMode}
+        titleOff="Comparar propiedades"
+        subtitleOff="Obtén una vista lado a lado de hasta 5 propiedades"
+        titleOn="Comparando propiedades"
+        subtitleOn="Selecciona propiedades para comparar lado a lado"
+      />
+  
+      <Separator className="my-4 bg-muted" />
+  
+      {/* Filtros Populares */}
+      <CheckboxFilter
+        label="Filtros populares"
+        options={popularFiltersOptions}
+        selectedValues={selectedPopularFilters}
+        onChange={handlePopularFiltersChange}
+        onOutputStringChange={handlePopularFiltersOutputStringChange}
+        onIndividualChipsChange={handlePopularFiltersChipsChange}
+        showCounts={true}
+        maxSelections={10}
+        initialVisibleCount={5}
+        showMoreText="Ver más filtros"
+        showLessText="Ver menos"
+      />
+  
+      <Separator className="my-4" />
+  
+      {/* Calificación de huéspedes */}
+      <StandardRadioGroup
+        label="Calificación de huéspedes"
+        options={guestRatingOptions}
+        value={selectedGuestRating}
+        onValueChange={handleGuestRatingChange}
+        variant="vertical"
+        helperText="Filtra por calificación promedio"
+      />
+  
+      <Separator className="my-4" />
+  
+      {/* Filtro de Precio */}
+      <PriceRangeFilter
+        min={0}
+        max={1000}
+        value={priceRange}
+        onChange={(newRange) => {
+          setPriceRange(newRange);
+          console.log("Filtrar por precio:", newRange);
+        }}
+        onOutputStringChange={setPriceFilterString}
+        label="Precio por noche"
+        currency="$"
+        step={10}
+      />
+  
+      {/* Servicios del Hotel */}
+      <StandardToggleGroup
+        label="Amenities"
+        options={amenitiesOptions}
+        value={selectedAmenities}
+        onValueChange={handleStandardToggleChange}
+        type="multiple"
+        variant="vertical"
+        wrap={true}
+        gridCols="auto"
+        containerClassName="w-full"
+        labelClassName="text-lg font-semibold mb-4"
+        toggleGroupClassName="gap-3"
+        toggleItemClassName="border-2 hover:border-primary/50 transition-colors"
+      />
+  
+      <Separator className="my-4" />
+  
+      {/* Calificación por estrellas */}
+      <CheckboxFilter
+        label="Calificación por estrellas"
+        options={starRatingOptions}
+        selectedValues={selectedStarRating}
+        onChange={handleStarRatingChange}
+        onIndividualChipsChange={handleStarRatingChipsChange}
+        showCounts={true}
+        maxSelections={5}
+        initialVisibleCount={5}
+        showMoreText="Ver más"
+        showLessText="Ver menos"
+      />
+  
+      <Separator className="my-4" />
+  
+      {/* Tipo de pago */}
+      <CheckboxFilter
+        label="Tipo de pago"
+        options={paymentTypeOptions}
+        selectedValues={selectedPaymentType}
+        onChange={handlePaymentTypeChange}
+        onIndividualChipsChange={handlePaymentTypeChipsChange}
+        showCounts={true}
+        maxSelections={1}
+        initialVisibleCount={1}
+      />
+  
+      <Separator className="my-4" />
+  
+      {/* Opciones de cancelación de propiedad */}
+      <CheckboxFilter
+        label="Opciones de cancelación"
+        options={cancellationOptions}
+        selectedValues={selectedCancellationOptions}
+        onChange={handleCancellationOptionsChange}
+        onIndividualChipsChange={handleCancellationOptionsChipsChange}
+        showCounts={true}
+        maxSelections={1}
+        initialVisibleCount={1}
+      />
+  
+      <Separator className="my-4" />
+  
+      {/* Tipo de propiedad */}
+      <CheckboxFilter
+        label="Tipo de propiedad"
+        options={propertyTypeOptions}
+        selectedValues={selectedPropertyType}
+        onChange={handlePropertyTypeChange}
+        onIndividualChipsChange={handlePropertyTypeChipsChange}
+        showCounts={true}
+        maxSelections={10}
+        initialVisibleCount={8}
+        showMoreText="Ver más"
+        showLessText="Ver menos"
+      />
+    </div>
+  );
 
   // Handler para StandardToggleGroup que maneja tanto string como string[]
   const handleStandardToggleChange = React.useCallback((value: string | string[]) => {
@@ -505,7 +661,11 @@ export default function LodgingSearch() {
     resetPropertyTypeFilter();
     setSearchValue(""); // Limpiar búsqueda
   }, [resetPriceFilter, resetAmenitiesFilter, resetPopularFilters, resetGuestRating, resetStarRatingFilter, resetPaymentTypeFilter, resetCancellationOptionsFilter, resetPropertyTypeFilter]);
-
+  
+  const handleApplyFilters = React.useCallback(() => {
+    setIsFiltersSheetOpen(false);
+  }, []);
+  
   // Configuración del data source para búsqueda de propiedades
   const dataSourcesLodging = React.useMemo(() => [
     {
@@ -554,6 +714,244 @@ export default function LodgingSearch() {
       setFilteredRows(filtered);
     }
   }, [rows, searchValue]);
+
+  // Configuración de filtros para ResultFilters
+  const filtersConfig: FilterConfig[] = React.useMemo(() => [
+    // Filtro de búsqueda
+    {
+      id: "property-search",
+      type: "search",
+      label: "Buscar por nombre de propiedad",
+      placeholder: "Buscar alojamiento...",
+      value: searchValue,
+      onValueChange: handleSearchChange,
+      dataSources: dataSourcesLodging,
+      onSelect: handleLodgingSelect,
+      showClearButton: true,
+      minSearchLength: 2,
+      disabled: false,
+      emptyMessage: "No se encontraron propiedades",
+      searchPlaceholder: "Escribir para buscar propiedades..."
+    },
+    // Compare Switch Control personalizado
+  {
+    id: "compare-switch",
+    type: "custom",
+    content: (
+      <CompareSwitchControl
+        checked={compareMode}
+        onCheckedChange={setCompareMode}
+        titleOff="Comparar propiedades"
+        subtitleOff="Obtén una vista lado a lado de hasta 5 propiedades"
+        titleOn="Comparando propiedades"
+        subtitleOn="Selecciona propiedades para comparar lado a lado"
+      />
+    ),
+    containerClassName: "my-4"
+  },
+    
+    // Separador
+    {
+      id: "separator-1",
+      type: "separator",
+      className: "bg-muted"
+    },
+    
+    // Filtros populares
+    {
+      id: "popular-filters",
+      type: "checkbox",
+      label: "Filtros populares",
+      options: popularFiltersOptions,
+      selectedValues: selectedPopularFilters,
+      onChange: handlePopularFiltersChange,
+      onOutputStringChange: handlePopularFiltersOutputStringChange,
+      onIndividualChipsChange: handlePopularFiltersChipsChange,
+      showCounts: true,
+      maxSelections: 10,
+      initialVisibleCount: 5,
+      showMoreText: "Ver más filtros",
+      showLessText: "Ver menos"
+    },
+    
+    // Separador
+    {
+      id: "separator-2",
+      type: "separator"
+    },
+    
+    // Calificación de huéspedes
+    {
+      id: "guest-rating",
+      type: "radio",
+      label: "Calificación de huéspedes",
+      options: guestRatingOptions,
+      value: selectedGuestRating,
+      onValueChange: handleGuestRatingChange,
+      variant: "vertical",
+      helperText: "Filtra por calificación promedio"
+    },
+    
+    // Separador
+    {
+      id: "separator-3",
+      type: "separator"
+    },
+    
+    // Filtro de precio
+    {
+      id: "price-range",
+      type: "range",
+      label: "Precio por noche",
+      min: 0,
+      max: 1000,
+      value: priceRange,
+      onChange: (newRange) => {
+        setPriceRange(newRange);
+        console.log("Filtrar por precio:", newRange);
+      },
+      onOutputStringChange: setPriceFilterString,
+      currency: "$",
+      step: 10
+    },
+    
+    // Amenities
+    {
+      id: "amenities",
+      type: "toggle",
+      label: "Amenities",
+      options: amenitiesOptions,
+      value: selectedAmenities,
+      onValueChange: handleStandardToggleChange,
+      type_toggle: "multiple",
+      variant: "vertical",
+      wrap: true,
+      gridCols: "auto",
+      containerClassName: "w-full",
+      labelClassName: "text-lg font-semibold mb-4",
+      toggleGroupClassName: "gap-3",
+      toggleItemClassName: "border-2 hover:border-primary/50 transition-colors"
+    },
+    
+    // Separador
+    {
+      id: "separator-4",
+      type: "separator"
+    },
+    
+    // Calificación por estrellas
+    {
+      id: "star-rating",
+      type: "checkbox",
+      label: "Calificación por estrellas",
+      options: starRatingOptions,
+      selectedValues: selectedStarRating,
+      onChange: handleStarRatingChange,
+      onIndividualChipsChange: handleStarRatingChipsChange,
+      showCounts: true,
+      maxSelections: 5,
+      initialVisibleCount: 5,
+      showMoreText: "Ver más",
+      showLessText: "Ver menos"
+    },
+    
+    // Separador
+    {
+      id: "separator-5",
+      type: "separator"
+    },
+    
+    // Tipo de pago
+    {
+      id: "payment-type",
+      type: "checkbox",
+      label: "Tipo de pago",
+      options: paymentTypeOptions,
+      selectedValues: selectedPaymentType,
+      onChange: handlePaymentTypeChange,
+      onIndividualChipsChange: handlePaymentTypeChipsChange,
+      showCounts: true,
+      maxSelections: 1,
+      initialVisibleCount: 1
+    },
+    
+    // Separador
+    {
+      id: "separator-6",
+      type: "separator"
+    },
+    
+    // Opciones de cancelación
+    {
+      id: "cancellation-options",
+      type: "checkbox",
+      label: "Opciones de cancelación",
+      options: cancellationOptions,
+      selectedValues: selectedCancellationOptions,
+      onChange: handleCancellationOptionsChange,
+      onIndividualChipsChange: handleCancellationOptionsChipsChange,
+      showCounts: true,
+      maxSelections: 1,
+      initialVisibleCount: 1
+    },
+    
+    // Separador
+    {
+      id: "separator-7",
+      type: "separator"
+    },
+    
+    // Tipo de propiedad
+    {
+      id: "property-type",
+      type: "checkbox",
+      label: "Tipo de propiedad",
+      options: propertyTypeOptions,
+      selectedValues: selectedPropertyType,
+      onChange: handlePropertyTypeChange,
+      onIndividualChipsChange: handlePropertyTypeChipsChange,
+      showCounts: true,
+      maxSelections: 10,
+      initialVisibleCount: 8,
+      showMoreText: "Ver más",
+      showLessText: "Ver menos"
+    }
+  ], [
+    searchValue,
+    handleSearchChange,
+    dataSourcesLodging,
+    handleLodgingSelect,
+    popularFiltersOptions,
+    selectedPopularFilters,
+    handlePopularFiltersChange,
+    handlePopularFiltersOutputStringChange,
+    handlePopularFiltersChipsChange,
+    guestRatingOptions,
+    selectedGuestRating,
+    handleGuestRatingChange,
+    priceRange,
+    setPriceFilterString,
+    amenitiesOptions,
+    selectedAmenities,
+    handleStandardToggleChange,
+    starRatingOptions,
+    selectedStarRating,
+    handleStarRatingChange,
+    handleStarRatingChipsChange,
+    paymentTypeOptions,
+    selectedPaymentType,
+    handlePaymentTypeChange,
+    handlePaymentTypeChipsChange,
+    cancellationOptions,
+    selectedCancellationOptions,
+    handleCancellationOptionsChange,
+    handleCancellationOptionsChipsChange,
+    propertyTypeOptions,
+    selectedPropertyType,
+    handlePropertyTypeChange,
+    handlePropertyTypeChipsChange
+  ]);
+
   // Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
     if (loading !== false) {
@@ -580,159 +978,7 @@ export default function LodgingSearch() {
     <div className="flex flex-col lg:flex-row gap-6 mt-2 mb-12">
       {/* Columna de Filtros - Lado Izquierdo */}
       <div className="w-full lg:w-60 flex-shrink-0 mt-1">
-        <div className="space-y-6">
-          {/*Busqueda por nombre de propiedad*/}
-          
-          <StandardSearchField
-            label="Buscar por nombre de propiedad"
-            placeholder="Buscar alojamiento..."
-            value={searchValue}
-            onValueChange={handleSearchChange}
-            dataSources={dataSourcesLodging}
-            onSelect={handleLodgingSelect}
-            showClearButton={true}
-            minSearchLength={2}
-            disabled={false}
-            emptyMessage="No se encontraron propiedades"
-            searchPlaceholder="Escribir para buscar propiedades..."
-          />
-
-          {/* Compare Switch Control */}
-          <CompareSwitchControl
-            checked={compareMode}
-            onCheckedChange={setCompareMode}
-            titleOff="Comparar propiedades"
-            subtitleOff="Obtén una vista lado a lado de hasta 5 propiedades"
-            titleOn="Comparando propiedades"
-            subtitleOn="Selecciona propiedades para comparar lado a lado"
-          />
-
-          <Separator className="my-4 bg-muted" />
-
-          {/* Filtros Populares */}
-          <CheckboxFilter
-            label="Filtros populares"
-            options={popularFiltersOptions}
-            selectedValues={selectedPopularFilters}
-            onChange={handlePopularFiltersChange}
-            onOutputStringChange={handlePopularFiltersOutputStringChange}
-            onIndividualChipsChange={handlePopularFiltersChipsChange}
-            showCounts={true}
-            maxSelections={10}
-            initialVisibleCount={5}
-            showMoreText="Ver más filtros"
-            showLessText="Ver menos"
-          />
-
-          <Separator className="my-4" />
-
-          {/* Calificación de huéspedes */}
-          <StandardRadioGroup
-            label="Calificación de huéspedes"
-            options={guestRatingOptions}
-            value={selectedGuestRating}
-            onValueChange={handleGuestRatingChange}
-            variant="vertical"
-            helperText="Filtra por calificación promedio"
-          />
-
-          <Separator className="my-4" />
-
-          {/* Filtro de Precio */}
-          <PriceRangeFilter
-            min={0}
-            max={1000}
-            value={priceRange}
-            onChange={(newRange) => {
-              setPriceRange(newRange);
-              console.log("Filtrar por precio:", newRange);
-            }}
-            onOutputStringChange={setPriceFilterString}
-            label="Precio por noche"
-            currency="$"
-            step={10}
-          />
-
-          {/* Servicios del Hotel */}
-
-          <StandardToggleGroup
-            label="Amenities"
-            options={amenitiesOptions}
-            value={selectedAmenities}
-            onValueChange={handleStandardToggleChange}
-            type="multiple"
-            variant="vertical"
-            wrap={true}
-            gridCols="auto" // Responsive: 2 cols on mobile, 3 on tablet, 4 on desktop
-            containerClassName="w-full"
-            labelClassName="text-lg font-semibold mb-4"
-            toggleGroupClassName="gap-3"
-            toggleItemClassName="border-2 hover:border-primary/50 transition-colors"
-          />
-
-          <Separator className="my-4" />
-
-          {/* Calificación por estrellas */}
-          <CheckboxFilter
-            label="Calificación por estrellas"
-            options={starRatingOptions}
-            selectedValues={selectedStarRating}
-            onChange={handleStarRatingChange}
-            onIndividualChipsChange={handleStarRatingChipsChange}
-            showCounts={true}
-            maxSelections={5}
-            initialVisibleCount={5}
-            showMoreText="Ver más"
-            showLessText="Ver menos"
-          />
-
-          <Separator className="my-4" />
-
-          {/* Tipo de pago */}
-          <CheckboxFilter
-            label="Tipo de pago"
-            options={paymentTypeOptions}
-            selectedValues={selectedPaymentType}
-            onChange={handlePaymentTypeChange}
-            onIndividualChipsChange={handlePaymentTypeChipsChange}
-            showCounts={true}
-            maxSelections={1}
-            initialVisibleCount={1}
-          />
-
-          <Separator className="my-4" />
-
-          {/* Opciones de cancelación de propiedad */}
-          <CheckboxFilter
-            label="Opciones de cancelación"
-            options={cancellationOptions}
-            selectedValues={selectedCancellationOptions}
-            onChange={handleCancellationOptionsChange}
-            onIndividualChipsChange={handleCancellationOptionsChipsChange}
-            showCounts={true}
-            maxSelections={1}
-            initialVisibleCount={1}
-          />
-
-          <Separator className="my-4" />
-
-          {/* Tipo de propiedad */}
-          <CheckboxFilter
-            label="Tipo de propiedad"
-            options={propertyTypeOptions}
-            selectedValues={selectedPropertyType}
-            onChange={handlePropertyTypeChange}
-            onIndividualChipsChange={handlePropertyTypeChipsChange}
-            showCounts={true}
-            maxSelections={10}
-            initialVisibleCount={8}
-            showMoreText="Ver más"
-            showLessText="Ver menos"
-          />
-
-         
-
-        </div>
+        <ResultFilters filters={filtersConfig} />
       </div>
 
       {/* Contenido Principal - Lado Derecho */}
@@ -748,8 +994,8 @@ export default function LodgingSearch() {
         </div>
 
         {/* Barra de control superior */}
-        <div className="flex w-full items-center justify-between gap-4 border-b border-muted pb-2 mb-6">
-          <div className="flex flex-col items-start gap-1">
+                <div className="flex flex-col md:flex-row w-full items-center md:justify-between justify-center gap-4 border-b border-muted pb-2 mb-6">
+          <div className="flex flex-col items-center md:items-start gap-1 w-full md:w-auto">
             <span className="text-xs text-muted-foreground font-medium">
               {filteredRows.length
                 ? `${filteredRows.length}+ alojamientos`
@@ -762,7 +1008,7 @@ export default function LodgingSearch() {
               <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
             </div>
           </div>
-          <div className="flex flex-col items-end">
+          <div className="flex flex-col items-center md:items-end w-full md:w-auto">
             <span className="text-xs text-muted-foreground mb-0.5">
               Ordenar por
             </span>
@@ -823,3 +1069,5 @@ export function mapLodgingToRowData(lodging: Lodging): RowData {
     ratingCount: lodging.ratingCount,
   };
 }
+
+
