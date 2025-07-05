@@ -208,25 +208,10 @@ const sortOptions: CustomSelectOption[] = [
   },
 ];
 
-// Tipos para el sistema de filtros
-interface FilterState<T = any> {
-  value: T;
-  chips: Array<{id: string, label: string, onRemove: () => void}>;
-  outputString?: string;
-}
-
-interface FilterHandlers<T = any> {
-  onChange: (value: T) => void;
-  onChipsChange: (chips: Array<{id: string, label: string, onRemove: () => void}>) => void;
-  onOutputStringChange?: (outputString: string) => void;
-  onReset: () => void;
-}
-
 export default function LodgingSearch() {
   const [rows, setRows] = useState<RowData[]>([]);
   const [loading, setLoading] = React.useState(true);
   const progressRef = useRef<EventDrivenProgressRef>(null);
-
 
   // Configuración del data source para búsqueda de propiedades
   const dataSourcesLodging = React.useMemo(() => [
@@ -242,8 +227,142 @@ export default function LodgingSearch() {
     }
   ], [rows]);
 
+  // Configuración genérica de filtros
+  const filters = React.useMemo(() => [
+    {
+      id: "search",
+      type: "search" as const,
+      label: "Buscar",
+      placeholder: "Buscar alojamiento...",
+      showClearButton: true,
+      minSearchLength: 2,
+      dataSources: dataSourcesLodging
+    },
+    { id: "separator-1", type: "separator" as const, className: "bg-muted" },
+    {
+      id: "popular-filters",
+      type: "checkbox" as const,
+      label: "Filtros populares",
+      showCounts: true,
+      maxSelections: 10,
+      initialVisibleCount: 5,
+      showMoreText: "Ver más filtros",
+      showLessText: "Ver menos"
+    },
+    { id: "separator-2", type: "separator" as const },
+    {
+      id: "guest-rating",
+      type: "radio" as const,
+      label: "Calificación de huéspedes",
+      variant: "vertical" as const,
+      helperText: "Filtra por calificación promedio"
+    },
+    { id: "separator-3", type: "separator" as const },
+    {
+      id: "price-range",
+      type: "range" as const,
+      label: "Precio por noche",
+      min: 0,
+      max: 1000,
+      currency: "$",
+      step: 10
+    },
+    {
+      id: "amenities",
+      type: "toggle" as const,
+      label: "Amenities",
+      type_toggle: "multiple" as const,
+      variant: "vertical" as const,
+      wrap: true,
+      gridCols: "auto" as const,
+      containerClassName: "w-full",
+      labelClassName: "text-lg font-semibold mb-4",
+      toggleGroupClassName: "gap-3",
+      toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
+      maxSelections: 10
+    },
+    { id: "separator-4", type: "separator" as const },
+    {
+      id: "star-rating",
+      type: "checkbox" as const,
+      label: "Calificación por estrellas",
+      showCounts: true,
+      maxSelections: 5,
+      initialVisibleCount: 5,
+      showMoreText: "Ver más",
+      showLessText: "Ver menos"
+    },
+    { id: "separator-5", type: "separator" as const },
+    {
+      id: "payment-type",
+      type: "checkbox" as const,
+      label: "Tipo de pago",
+      showCounts: true,
+      maxSelections: 1,
+      initialVisibleCount: 1
+    },
+    { id: "separator-6", type: "separator" as const },
+    {
+      id: "cancellation-options",
+      type: "checkbox" as const,
+      label: "Opciones de cancelación",
+      showCounts: true,
+      maxSelections: 1,
+      initialVisibleCount: 1
+    },
+    { id: "separator-7", type: "separator" as const },
+    {
+      id: "property-type",
+      type: "checkbox" as const,
+      label: "Tipo de propiedad",
+      showCounts: true,
+      maxSelections: 10,
+      initialVisibleCount: 8,
+      showMoreText: "Ver más",
+      showLessText: "Ver menos"
+    }
+  ], [dataSourcesLodging]);
 
-
+  // Configuración de opciones para cada filtro
+  const filterOptions = React.useMemo(() => ({
+    "popular-filters": popularFiltersOptions.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      count: opt.count
+    })),
+    "guest-rating": guestRatingOptions.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      count: opt.count
+    })),
+    "amenities": amenitiesOptions.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      count: opt.count,
+      icon: opt.icon,
+      disabled: opt.disabled
+    })),
+    "star-rating": starRatingOptions.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      count: opt.count
+    })),
+    "payment-type": paymentTypeOptions.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      count: opt.count
+    })),
+    "cancellation-options": cancellationOptions.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      count: opt.count
+    })),
+    "property-type": propertyTypeOptions.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      count: opt.count
+    }))
+  }), []);
 
   // Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
@@ -256,9 +375,6 @@ export default function LodgingSearch() {
     }
   }, [loading]);
 
-
-
-
   // Solo para DEMO: simula una carga lenta
   useEffect(() => {
     setLoading(true);
@@ -267,29 +383,17 @@ export default function LodgingSearch() {
       .finally(() => setLoading(false));
   }, []);
 
-
-
-
   if (loading)
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;
-
-
-
 
   return (
     <SearchWithFilters
       rows={rows}
-      guestRatingOptions={guestRatingOptions}
-      starRatingOptions={starRatingOptions}
-      paymentTypeOptions={paymentTypeOptions}
-      cancellationOptions={cancellationOptions}
-      propertyTypeOptions={propertyTypeOptions}
-      amenitiesOptions={amenitiesOptions}
-      popularFiltersOptions={popularFiltersOptions}
+      // Nueva API genérica
+      filters={filters}
+      filterOptions={filterOptions}
+      // Configuración
       sortOptions={sortOptions}
-      dataSources={dataSourcesLodging}
-      priceRange={{ min: 0, max: 1000, step: 10 }}
-      currency="$"
       enableCompareMode={true}
       compareConfig={{
         titleOff: "Comparar propiedades",
@@ -297,6 +401,7 @@ export default function LodgingSearch() {
         titleOn: "Comparando propiedades",
         subtitleOn: "Selecciona propiedades para comparar lado a lado"
       }}
+      // Textos personalizables
       searchPlaceholder="Buscar alojamiento..."
       noResultsMessage="No se encontraron propiedades"
       clearFiltersText="Limpiar filtros"
@@ -320,9 +425,6 @@ export default function LodgingSearch() {
     />
   );
 }
-
-
-
 
 // ...resto del código permanece igual
 export function mapLodgingToRowData(lodging: Lodging): RowData {

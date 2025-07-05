@@ -2,29 +2,11 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Info } from "lucide-react";
 import { FilterChips, FilterChip } from "./FilterChips";
-import { CheckboxOption } from "./CheckboxFilter";
 import ResultFilters, { FilterConfig } from "./ResultFilters";
 import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 import { RowData } from "./RenderFields";
 import CompareSwitchControl from "./CompareSwitchControl";
 import { Separator } from "@radix-ui/react-select";
-
-
-// Tipos para el sistema de filtros
-interface FilterState<T = any> {
-  value: T;
-  chips: Array<{id: string, label: string, onRemove: () => void}>;
-  outputString?: string;
-}
-
-
-interface FilterHandlers<T = any> {
-  onChange: (value: T) => void;
-  onChipsChange: (chips: Array<{id: string, label: string, onRemove: () => void}>) => void;
-  onOutputStringChange?: (outputString: string) => void;
-  onReset: () => void;
-}
-
 
 interface DataSource {
   id: string;
@@ -37,33 +19,61 @@ interface DataSource {
   options: RowData[];
 }
 
+// Configuración genérica para un filtro
+interface GenericFilterConfig {
+  id: string;
+  type: 'checkbox' | 'radio' | 'toggle' | 'range' | 'search' | 'custom' | 'separator';
+  label?: string;
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  currency?: string;
+  showCounts?: boolean;
+  maxSelections?: number;
+  initialVisibleCount?: number;
+  showMoreText?: string;
+  showLessText?: string;
+  variant?: 'vertical' | 'horizontal';
+  helperText?: string;
+  containerClassName?: string;
+  labelClassName?: string;
+  toggleGroupClassName?: string;
+  toggleItemClassName?: string;
+  type_toggle?: 'single' | 'multiple';
+  wrap?: boolean;
+  gridCols?: 'auto' | 1 | 2 | 3 | 4 | 5 | 6;
+  className?: string;
+  content?: React.ReactNode;
+  emptyMessage?: string;
+  searchPlaceholder?: string;
+  minSearchLength?: number;
+  disabled?: boolean;
+  showClearButton?: boolean;
+  dataSources?: DataSource[];
+  onSelect?: (option: any, sourceType: string) => void;
+}
+
+// Opción genérica para filtros
+interface GenericFilterOption {
+  value: string;
+  label: string;
+  count?: number;
+  icon?: React.ReactNode;
+  disabled?: boolean;
+}
 
 interface SearchWithFiltersProps {
   // Datos
   rows: RowData[];
  
-  // Opciones de filtros
-  guestRatingOptions?: Array<{value: string, label: string, count: number}>;
-  starRatingOptions?: CheckboxOption[];
-  paymentTypeOptions?: CheckboxOption[];
-  cancellationOptions?: CheckboxOption[];
-  propertyTypeOptions?: CheckboxOption[];
-  amenitiesOptions?: Array<{value: string, label: string, icon?: React.ReactNode, count: number, disabled?: boolean}>;
-  popularFiltersOptions?: CheckboxOption[];
- 
+  // Configuración genérica de filtros
+  filters: GenericFilterConfig[];
+  filterOptions: { [filterId: string]: GenericFilterOption[] };
+
   // Configuración de ordenamiento
   sortOptions: CustomSelectOption[];
  
-  // Configuración de data sources
-  dataSources: DataSource[];
- 
-  // Configuración adicional
-  priceRange?: { min: number, max: number, step: number };
-  currency?: string;
- 
-  // Configuración de filtros personalizados
-  customFilters?: FilterConfig[];
-
   // Configuración del modo de comparación
   enableCompareMode?: boolean;
   compareConfig?: {
@@ -82,7 +92,7 @@ interface SearchWithFiltersProps {
  
   // Callbacks
   onCardClick?: (idx: number, row: RowData) => void;
-  onFiltersChange?: (filters: any) => void;
+  onFiltersChange?: (filters: Record<string, any>) => void;
  
   // Textos personalizables
   searchPlaceholder?: string;
@@ -93,21 +103,11 @@ interface SearchWithFiltersProps {
   resultsCountText?: (count: number) => string;
 }
 
-
 export default function SearchWithFilters({
   rows,
-  guestRatingOptions = [],
-  starRatingOptions = [],
-  paymentTypeOptions = [],
-  cancellationOptions = [],
-  propertyTypeOptions = [],
-  amenitiesOptions = [],
-  popularFiltersOptions = [],
+  filters,
+  filterOptions,
   sortOptions,
-  dataSources,
-  priceRange = { min: 0, max: 1000, step: 10 },
-  currency = "$",
-  customFilters = [],
   enableCompareMode = false,
   compareConfig = {
     titleOff: "Comparar elementos",
@@ -129,134 +129,75 @@ export default function SearchWithFilters({
   // Estados principales
   const [sort, setSort] = useState(sortOptions[0]?.key || "");
   const [compareMode, setCompareMode] = useState(false);
-  const [priceRangeValue, setPriceRangeValue] = useState<[number, number]>([priceRange.min, priceRange.max]);
-  const [priceFilterString, setPriceFilterString] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
   const [filteredRows, setFilteredRows] = useState<RowData[]>(rows);
+  
+  // Estados dinámicos para filtros genéricos - Inicialización estática para evitar loops
+  const [filterStates, setFilterStates] = useState<Record<string, any>>({});
+  const [activeChips, setActiveChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
 
-
-  // Hook personalizado para manejar filtros
-  const useFilter = useCallback(<T,>(
-    initialValue: T,
-    filterName: string
-  ): [FilterState<T>, FilterHandlers<T>] => {
-    const [value, setValue] = useState<T>(initialValue);
-    const [chips, setChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
-    const [outputString, setOutputString] = useState<string>("");
-
-
-    const onChange = useCallback((newValue: T) => {
-      setValue(newValue);
-      console.log(`${filterName} seleccionado:`, newValue);
-    }, [filterName]);
-
-
-    const onChipsChange = useCallback((newChips: Array<{id: string, label: string, onRemove: () => void}>) => {
-      setChips(newChips);
-    }, []);
-
-
-    const onOutputStringChange = useCallback((newOutputString: string) => {
-      setOutputString(newOutputString);
-    }, []);
-
-
-    const onReset = useCallback(() => {
-      setValue(initialValue);
-      setChips([]);
-      setOutputString("");
-      console.log(`Filtro ${filterName} reseteado`);
-    }, [initialValue, filterName]);
-
-
-    return [
-      { value, chips, outputString },
-      { onChange, onChipsChange, onOutputStringChange, onReset }
-    ];
-  }, []);
-
-
-  // Hook para filtros de amenities
-  const useAmenitiesFilter = useCallback((
-    initialValue: string[],
-    options: Array<{value: string, label: string}>
-  ): [FilterState<string[]>, FilterHandlers<string | string[]>] => {
-    const [value, setValue] = useState<string[]>(initialValue);
-    const [chips, setChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
-
-
-    const onChange = useCallback((newValue: string | string[]) => {
-      const newValues = Array.isArray(newValue) ? newValue : [newValue];
-      setValue(newValues);
-     
-      const newChips = newValues.map(val => {
-        const option = options.find(opt => opt.value === val);
-        return {
-          id: `amenity-${val}`,
-          label: option?.label || val,
-          onRemove: () => {
-            setValue(prev => prev.filter(v => v !== val));
-          }
-        };
+  // Inicializar estados de filtros una sola vez
+  React.useEffect(() => {
+    if (Object.keys(filterStates).length === 0) {
+      const initialStates: Record<string, any> = {};
+      filters.forEach(filter => {
+        if (filter.type === 'checkbox' || filter.type === 'toggle') {
+          initialStates[filter.id] = [];
+        } else if (filter.type === 'radio') {
+          initialStates[filter.id] = '';
+        } else if (filter.type === 'range') {
+          initialStates[filter.id] = [filter.min || 0, filter.max || 1000];
+        } else if (filter.type === 'search') {
+          initialStates[filter.id] = '';
+        }
       });
-      setChips(newChips);
-     
-      console.log("Amenities seleccionados:", newValues);
-    }, [options]);
+      setFilterStates(initialStates);
+    }
+  }, [filters]);
 
-
-    const onChipsChange = useCallback((newChips: Array<{id: string, label: string, onRemove: () => void}>) => {
-      setChips(newChips);
-    }, []);
-
-
-    const onReset = useCallback(() => {
-      setValue(initialValue);
-      setChips([]);
-      console.log("Filtro de amenities reseteado");
-    }, [initialValue]);
-
-
-    return [
-      { value, chips },
-      { onChange, onChipsChange, onReset }
-    ];
+  // Función para actualizar estado de filtro
+  const updateFilterState = useCallback((filterId: string, value: any) => {
+    setFilterStates(prev => ({
+      ...prev,
+      [filterId]: value
+    }));
   }, []);
 
-
-  // Estados de filtros
-  const [popularFiltersState, popularFiltersHandlers] = useFilter<string[]>([], "Filtros populares");
-  const [guestRatingState, guestRatingHandlers] = useFilter<string>("", "Calificación de huéspedes");
-  const [starRatingState, starRatingHandlers] = useFilter<string[]>([], "Calificación por estrellas");
-  const [paymentTypeState, paymentTypeHandlers] = useFilter<string[]>([], "Tipo de pago");
-  const [cancellationOptionsState, cancellationOptionsHandlers] = useFilter<string[]>([], "Opciones de cancelación");
-  const [propertyTypeState, propertyTypeHandlers] = useFilter<string[]>([], "Tipo de propiedad");
-  const [amenitiesState, amenitiesHandlers] = useAmenitiesFilter([], amenitiesOptions);
-
-
-  // Handlers para casos especiales
-  const handlePriceChange = useCallback((newRange: [number, number]) => {
-    setPriceRangeValue(newRange);
-    console.log("Filtrar por precio:", newRange);
+  // Función para generar chips de filtro
+  const updateFilterChips = useCallback((filterId: string, chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+    setActiveChips(prev => {
+      // Remover chips existentes de este filtro
+      const filtered = prev.filter(chip => !chip.id.startsWith(filterId));
+      // Agregar nuevos chips
+      return [...filtered, ...chips];
+    });
   }, []);
 
+  // Función para resetear filtro
+  const resetFilter = useCallback((filterId: string) => {
+    const filter = filters.find(f => f.id === filterId);
+    if (!filter) return;
 
-  const resetPriceFilter = useCallback(() => {
-    setPriceRangeValue([priceRange.min, priceRange.max]);
-    setPriceFilterString("");
-    console.log("Filtro de precio reseteado");
-  }, [priceRange]);
+    let resetValue;
+    if (filter.type === 'checkbox' || filter.type === 'toggle') {
+      resetValue = [];
+    } else if (filter.type === 'radio') {
+      resetValue = '';
+    } else if (filter.type === 'range') {
+      resetValue = [filter.min || 0, filter.max || 1000];
+    } else if (filter.type === 'search') {
+      resetValue = '';
+    }
 
-
-  const resetSearchFilter = useCallback(() => {
-    setSearchValue("");
-    console.log("Filtro de búsqueda reseteado");
-  }, []);
-
+    updateFilterState(filterId, resetValue);
+    // Remover chips de este filtro
+    setActiveChips(prev => prev.filter(chip => !chip.id.startsWith(filterId)));
+  }, [filters, updateFilterState]);
 
   // Handler para búsqueda
   const handleSearchChange = useCallback((value: string) => {
     setSearchValue(value);
+    updateFilterState('search', value);
    
     if (value.trim() === "") {
       setFilteredRows(rows);
@@ -267,16 +208,15 @@ export default function SearchWithFilters({
       );
       setFilteredRows(filtered);
     }
-  }, [rows]);
-
+  }, [rows, updateFilterState]);
 
   // Handler para selección de elemento
   const handleItemSelect = useCallback((option: any, sourceType: string) => {
     setSearchValue(option.label);
+    updateFilterState('search', option.label);
     const filtered = rows.filter(row => row.title === option.value);
     setFilteredRows(filtered);
-  }, [rows]);
-
+  }, [rows, updateFilterState]);
 
   // Actualizar filteredRows cuando cambien los rows
   React.useEffect(() => {
@@ -291,57 +231,25 @@ export default function SearchWithFilters({
     }
   }, [rows, searchValue]);
 
-
   // Generar filtros activos
   const generateActiveFilters = useCallback((): FilterChip[] => {
-    const filters: FilterChip[] = [];
-
+    const filterChips: FilterChip[] = [];
 
     if (searchValue.trim()) {
-      filters.push({
+      filterChips.push({
         id: "search",
         label: "Búsqueda",
         value: searchValue,
-        onRemove: resetSearchFilter,
+        onRemove: () => {
+          setSearchValue("");
+          updateFilterState('search', '');
+        },
       });
     }
 
-
-    if (priceFilterString) {
-      filters.push({
-        id: "price",
-        label: "Precio",
-        value: priceFilterString,
-        onRemove: resetPriceFilter,
-      });
-    }
-
-
-    if (guestRatingState.value && guestRatingState.value !== "any") {
-      const ratingOption = guestRatingOptions.find(opt => opt.value === guestRatingState.value);
-      if (ratingOption) {
-        filters.push({
-          id: "guest-rating",
-          label: "Calificación",
-          value: ratingOption.label,
-          onRemove: guestRatingHandlers.onReset,
-        });
-      }
-    }
-
-
-    const allChips = [
-      ...amenitiesState.chips,
-      ...popularFiltersState.chips,
-      ...starRatingState.chips,
-      ...paymentTypeState.chips,
-      ...cancellationOptionsState.chips,
-      ...propertyTypeState.chips
-    ];
-
-
-    allChips.forEach(chip => {
-      filters.push({
+    // Agregar chips de otros filtros activos
+    activeChips.forEach(chip => {
+      filterChips.push({
         id: chip.id,
         label: "",
         value: chip.label,
@@ -349,243 +257,201 @@ export default function SearchWithFilters({
       });
     });
 
-
-    return filters;
-  }, [
-    searchValue, priceFilterString, guestRatingState.value, guestRatingOptions,
-    amenitiesState.chips, popularFiltersState.chips, starRatingState.chips,
-    paymentTypeState.chips, cancellationOptionsState.chips, propertyTypeState.chips,
-    resetSearchFilter, resetPriceFilter, guestRatingHandlers.onReset
-  ]);
-
+    return filterChips;
+  }, [searchValue, activeChips, updateFilterState]);
 
   // Limpiar todos los filtros
   const clearAllFilters = useCallback(() => {
-    resetPriceFilter();
-    resetSearchFilter();
-    amenitiesHandlers.onReset();
-    popularFiltersHandlers.onReset();
-    guestRatingHandlers.onReset();
-    starRatingHandlers.onReset();
-    paymentTypeHandlers.onReset();
-    cancellationOptionsHandlers.onReset();
-    propertyTypeHandlers.onReset();
-  }, [
-    resetPriceFilter, resetSearchFilter, amenitiesHandlers.onReset,
-    popularFiltersHandlers.onReset, guestRatingHandlers.onReset,
-    starRatingHandlers.onReset, paymentTypeHandlers.onReset,
-    cancellationOptionsHandlers.onReset, propertyTypeHandlers.onReset
-  ]);
+    setSearchValue("");
+    setActiveChips([]);
+    
+    // Resetear todos los filtros
+    filters.forEach(filter => {
+      resetFilter(filter.id);
+    });
+  }, [filters, resetFilter]);
 
-
-  // Configuración de filtros
+  // Configuración de filtros genérica - Memorizada para evitar re-creación innecesaria
   const filtersConfig: FilterConfig[] = useMemo(() => {
-    const baseFilters: FilterConfig[] = [
-      {
-        id: "search",
-        type: "search",
-        label: "Buscar",
-        placeholder: searchPlaceholder,
-        value: searchValue,
-        onValueChange: handleSearchChange,
-        dataSources: dataSources,
-        onSelect: handleItemSelect,
-        showClearButton: true,
-        minSearchLength: 2,
-        disabled: false,
-        emptyMessage: noResultsMessage,
-        searchPlaceholder: searchPlaceholder
-      },
-      { id: "separator-1", type: "separator", className: "bg-muted" }
-    ];
+    const configFilters: FilterConfig[] = [];
 
+    filters.forEach(filter => {
+      const options = filterOptions[filter.id] || [];
 
-    if (popularFiltersOptions.length > 0) {
-      baseFilters.push({
-        id: "popular-filters",
-        type: "checkbox",
-        label: "Filtros populares",
-        options: popularFiltersOptions,
-        selectedValues: popularFiltersState.value,
-        onChange: popularFiltersHandlers.onChange,
-        onOutputStringChange: popularFiltersHandlers.onOutputStringChange,
-        onIndividualChipsChange: popularFiltersHandlers.onChipsChange,
-        showCounts: true,
-        maxSelections: 10,
-        initialVisibleCount: 5,
-        showMoreText: "Ver más filtros",
-        showLessText: "Ver menos"
-      });
-      baseFilters.push({ id: "separator-2", type: "separator" });
-    }
-
-
-    if (guestRatingOptions.length > 0) {
-      baseFilters.push({
-        id: "guest-rating",
-        type: "radio",
-        label: "Calificación de huéspedes",
-        options: guestRatingOptions,
-        value: guestRatingState.value,
-        onValueChange: guestRatingHandlers.onChange,
-        variant: "vertical",
-        helperText: "Filtra por calificación promedio"
-      });
-      baseFilters.push({ id: "separator-3", type: "separator" });
-    }
-
-
-    baseFilters.push({
-      id: "price-range",
-      type: "range",
-      label: "Precio por noche",
-      min: priceRange.min,
-      max: priceRange.max,
-      value: priceRangeValue,
-      onChange: handlePriceChange,
-      onOutputStringChange: setPriceFilterString,
-      currency: currency,
-      step: priceRange.step
+      if (filter.type === 'search') {
+        configFilters.push({
+          id: filter.id,
+          type: "search",
+          label: filter.label || "Buscar",
+          placeholder: filter.placeholder || searchPlaceholder,
+          value: filterStates[filter.id] || '',
+          onValueChange: handleSearchChange,
+          dataSources: filter.dataSources || [],
+          onSelect: filter.onSelect || handleItemSelect,
+          showClearButton: filter.showClearButton !== false,
+          minSearchLength: filter.minSearchLength || 2,
+          disabled: filter.disabled || false,
+          emptyMessage: filter.emptyMessage || noResultsMessage,
+          searchPlaceholder: filter.searchPlaceholder || searchPlaceholder
+        });
+      } else if (filter.type === 'custom' && filter.content) {
+        configFilters.push({
+          id: filter.id,
+          type: "custom",
+          content: filter.content,
+          containerClassName: filter.containerClassName
+        });
+      } else if (filter.type === 'separator') {
+        configFilters.push({
+          id: filter.id,
+          type: "separator",
+          className: filter.className
+        });
+      } else if (filter.type === 'checkbox' && options.length > 0) {
+        configFilters.push({
+          id: filter.id,
+          type: "checkbox",
+          label: filter.label || "",
+          options: options,
+          selectedValues: filterStates[filter.id] || [],
+          onChange: (value: any) => {
+            updateFilterState(filter.id, value);
+            // Generar chips para este filtro
+            const chips = Array.isArray(value) ? value.map((val: string) => {
+              const option = options.find((opt: any) => opt.value === val);
+              return {
+                id: `${filter.id}-${val}`,
+                label: option?.label || val,
+                onRemove: () => {
+                  const newValue = (filterStates[filter.id] || []).filter((v: string) => v !== val);
+                  updateFilterState(filter.id, newValue);
+                }
+              };
+            }) : [];
+            updateFilterChips(filter.id, chips);
+          },
+          onIndividualChipsChange: (chips: any) => updateFilterChips(filter.id, chips),
+          showCounts: filter.showCounts !== false,
+          maxSelections: filter.maxSelections || 10,
+          initialVisibleCount: filter.initialVisibleCount || 5,
+          showMoreText: filter.showMoreText || "Ver más",
+          showLessText: filter.showLessText || "Ver menos"
+        });
+      } else if (filter.type === 'radio' && options.length > 0) {
+        configFilters.push({
+          id: filter.id,
+          type: "radio",
+          label: filter.label || "",
+          options: options,
+          value: filterStates[filter.id] || '',
+          onValueChange: (value: any) => {
+            updateFilterState(filter.id, value);
+            // Generar chip para este filtro
+            if (value && value !== "any") {
+              const option = options.find((opt: any) => opt.value === value);
+              if (option) {
+                const chips = [{
+                  id: `${filter.id}-${value}`,
+                  label: option.label,
+                  onRemove: () => resetFilter(filter.id)
+                }];
+                updateFilterChips(filter.id, chips);
+              }
+            } else {
+              updateFilterChips(filter.id, []);
+            }
+          },
+          variant: filter.variant || "vertical",
+          helperText: filter.helperText
+        });
+      } else if (filter.type === 'range') {
+        configFilters.push({
+          id: filter.id,
+          type: "range",
+          label: filter.label || "Rango",
+          min: filter.min || 0,
+          max: filter.max || 1000,
+          value: filterStates[filter.id] || [filter.min || 0, filter.max || 1000],
+          onChange: (value: any) => {
+            updateFilterState(filter.id, value);
+          },
+          onOutputStringChange: (outputString: string) => {
+            if (outputString) {
+              const chips = [{
+                id: `${filter.id}-range`,
+                label: outputString,
+                onRemove: () => resetFilter(filter.id)
+              }];
+              updateFilterChips(filter.id, chips);
+            } else {
+              updateFilterChips(filter.id, []);
+            }
+          },
+          currency: filter.currency || "$",
+          step: filter.step || 1
+        });
+      } else if (filter.type === 'toggle' && options.length > 0) {
+        configFilters.push({
+          id: filter.id,
+          type: "toggle",
+          label: filter.label || "",
+          options: options,
+          value: filterStates[filter.id] || [],
+          onValueChange: (value: any) => {
+            updateFilterState(filter.id, value);
+            // Generar chips para este filtro
+            const chips = Array.isArray(value) ? value.map((val: string) => {
+              const option = options.find((opt: any) => opt.value === val);
+              return {
+                id: `${filter.id}-${val}`,
+                label: option?.label || val,
+                onRemove: () => {
+                  const newValue = (filterStates[filter.id] || []).filter((v: string) => v !== val);
+                  updateFilterState(filter.id, newValue);
+                }
+              };
+            }) : [];
+            updateFilterChips(filter.id, chips);
+          },
+          type_toggle: filter.type_toggle || "multiple",
+          variant: filter.variant || "vertical",
+          wrap: filter.wrap,
+          gridCols: filter.gridCols as any,
+          containerClassName: filter.containerClassName,
+          labelClassName: filter.labelClassName,
+          toggleGroupClassName: filter.toggleGroupClassName,
+          toggleItemClassName: filter.toggleItemClassName,
+          onIndividualChipsChange: (chips: any) => updateFilterChips(filter.id, chips),
+          maxSelections: filter.maxSelections || 10
+        });
+      }
     });
 
-
-    if (amenitiesOptions.length > 0) {
-      baseFilters.push({
-        id: "amenities",
-        type: "toggle",
-        label: "Amenities",
-        options: amenitiesOptions,
-        value: amenitiesState.value,
-        onValueChange: amenitiesHandlers.onChange,
-        type_toggle: "multiple",
-        variant: "vertical",
-        wrap: true,
-        gridCols: "auto",
-        containerClassName: "w-full",
-        labelClassName: "text-lg font-semibold mb-4",
-        toggleGroupClassName: "gap-3",
-        toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
-        onOutputStringChange: amenitiesHandlers.onOutputStringChange,
-        onIndividualChipsChange: amenitiesHandlers.onChipsChange,
-        maxSelections: 10
-      });
-      baseFilters.push({ id: "separator-4", type: "separator" });
-    }
-
-
-    if (starRatingOptions.length > 0) {
-      baseFilters.push({
-        id: "star-rating",
-        type: "checkbox",
-        label: "Calificación por estrellas",
-        options: starRatingOptions,
-        selectedValues: starRatingState.value,
-        onChange: starRatingHandlers.onChange,
-        onIndividualChipsChange: starRatingHandlers.onChipsChange,
-        showCounts: true,
-        maxSelections: 5,
-        initialVisibleCount: 5,
-        showMoreText: "Ver más",
-        showLessText: "Ver menos"
-      });
-      baseFilters.push({ id: "separator-5", type: "separator" });
-    }
-
-
-    if (paymentTypeOptions.length > 0) {
-      baseFilters.push({
-        id: "payment-type",
-        type: "checkbox",
-        label: "Tipo de pago",
-        options: paymentTypeOptions,
-        selectedValues: paymentTypeState.value,
-        onChange: paymentTypeHandlers.onChange,
-        onIndividualChipsChange: paymentTypeHandlers.onChipsChange,
-        showCounts: true,
-        maxSelections: 1,
-        initialVisibleCount: 1
-      });
-      baseFilters.push({ id: "separator-6", type: "separator" });
-    }
-
-
-    if (cancellationOptions.length > 0) {
-      baseFilters.push({
-        id: "cancellation-options",
-        type: "checkbox",
-        label: "Opciones de cancelación",
-        options: cancellationOptions,
-        selectedValues: cancellationOptionsState.value,
-        onChange: cancellationOptionsHandlers.onChange,
-        onIndividualChipsChange: cancellationOptionsHandlers.onChipsChange,
-        showCounts: true,
-        maxSelections: 1,
-        initialVisibleCount: 1
-      });
-      baseFilters.push({ id: "separator-7", type: "separator" });
-    }
-
-
-    if (propertyTypeOptions.length > 0) {
-      baseFilters.push({
-        id: "property-type",
-        type: "checkbox",
-        label: "Tipo de propiedad",
-        options: propertyTypeOptions,
-        selectedValues: propertyTypeState.value,
-        onChange: propertyTypeHandlers.onChange,
-        onIndividualChipsChange: propertyTypeHandlers.onChipsChange,
-        showCounts: true,
-        maxSelections: 10,
-        initialVisibleCount: 8,
-        showMoreText: "Ver más",
-        showLessText: "Ver menos"
-      });
-    }
-
-
-    return [...baseFilters, ...customFilters];
+    return configFilters;
   }, [
-    searchValue, handleSearchChange, dataSources, handleItemSelect, compareMode,
-    popularFiltersOptions, popularFiltersState.value, popularFiltersHandlers,
-    guestRatingOptions, guestRatingState.value, guestRatingHandlers,
-    priceRangeValue, handlePriceChange, amenitiesOptions, amenitiesState.value, amenitiesHandlers,
-    starRatingOptions, starRatingState.value, starRatingHandlers,
-    paymentTypeOptions, paymentTypeState.value, paymentTypeHandlers,
-    cancellationOptions, cancellationOptionsState.value, cancellationOptionsHandlers,
-    propertyTypeOptions, propertyTypeState.value, propertyTypeHandlers,
-    customFilters, priceRange, currency, searchPlaceholder, noResultsMessage
+    filters, filterOptions, filterStates, searchPlaceholder,
+    noResultsMessage, handleSearchChange, handleItemSelect, updateFilterState,
+    updateFilterChips, resetFilter
   ]);
 
-
-  // Notificar cambios de filtros
+  // Notificar cambios de filtros - Solo cuando realmente cambian
   React.useEffect(() => {
     if (onFiltersChange) {
       onFiltersChange({
+        ...filterStates,
         search: searchValue,
-        price: priceRangeValue,
-        guestRating: guestRatingState.value,
-        amenities: amenitiesState.value,
-        popularFilters: popularFiltersState.value,
-        starRating: starRatingState.value,
-        paymentType: paymentTypeState.value,
-        cancellation: cancellationOptionsState.value,
-        propertyType: propertyTypeState.value,
         compareMode
       });
     }
   }, [
-    searchValue, priceRangeValue, guestRatingState.value, amenitiesState.value,
-    popularFiltersState.value, starRatingState.value, paymentTypeState.value,
-    cancellationOptionsState.value, propertyTypeState.value, compareMode, onFiltersChange
+    filterStates, searchValue, compareMode, onFiltersChange
   ]);
-
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 mt-2 mb-12">
       {/* Columna de Filtros - Lado Izquierdo */}
       <div className="w-full lg:w-60 flex-shrink-0 mt-1">
-         {/* Modo de Comparación */}
+        {/* Modo de Comparación */}
         {enableCompareMode && (
           <div className="my-4">
             <CompareSwitchControl
@@ -603,7 +469,6 @@ export default function SearchWithFilters({
         <ResultFilters filters={filtersConfig} />
       </div>
 
-
       {/* Contenido Principal - Lado Derecho */}
       <div className="min-w-0 flex-1">
         {/* Filtros Activos */}
@@ -615,8 +480,6 @@ export default function SearchWithFilters({
             clearAllText={clearFiltersText}
           />
         </div>
-
-       
 
         {/* Barra de control superior */}
         <div className="flex flex-col md:flex-row w-full items-center md:justify-between justify-center gap-4 border-b border-muted pb-2 mb-6">
@@ -643,7 +506,6 @@ export default function SearchWithFilters({
           </div>
         </div>
 
-
         {/* Resultados */}
         <div className="flex flex-col gap-6">
           {renderResults({
@@ -656,6 +518,8 @@ export default function SearchWithFilters({
     </div>
   );
 }
+
+export type { GenericFilterConfig, GenericFilterOption, DataSource };
 
 
 
