@@ -101,6 +101,10 @@ export interface ToggleFilterConfig extends BaseFilter {
   labelClassName?: string;
   toggleGroupClassName?: string;
   toggleItemClassName?: string;
+  // ✨ NUEVAS PROPS para compatibilidad con CheckboxFilter
+  onOutputStringChange?: (outputString: string) => void;
+  onIndividualChipsChange?: (chips: Array<{id: string, label: string, onRemove: () => void}>) => void;
+  maxSelections?: number;
 }
 
 export type FilterConfig = 
@@ -208,6 +212,10 @@ export default function ResultFilters({ filters, className = "" }: ResultFilters
             labelClassName={filter.labelClassName}
             toggleGroupClassName={filter.toggleGroupClassName}
             toggleItemClassName={filter.toggleItemClassName}
+            // ✨ NUEVAS PROPS
+      onOutputStringChange={filter.onOutputStringChange}
+      onIndividualChipsChange={filter.onIndividualChipsChange}
+      maxSelections={filter.maxSelections}
           />
         );
 

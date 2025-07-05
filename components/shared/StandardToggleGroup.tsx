@@ -95,6 +95,20 @@ export interface StandardToggleGroupProps {
    * Grid columns for wrap layout
    */
   gridCols?: "auto" | 1 | 2 | 3 | 4 | 5 | 6;
+  
+  // ✨ NUEVAS PROPS para compatibilidad con CheckboxFilter
+  /**
+   * Callback for output string changes (like CheckboxFilter)
+   */
+  onOutputStringChange?: (outputString: string) => void;
+  /**
+   * Callback for individual chips changes (like CheckboxFilter)
+   */
+  onIndividualChipsChange?: (chips: Array<{id: string, label: string, onRemove: () => void}>) => void;
+  /**
+   * Maximum number of selections allowed
+   */
+  maxSelections?: number;
 }
 
 const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroupProps>(
@@ -119,6 +133,10 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
       variant = "horizontal",
       wrap = false,
       gridCols = 2,
+      // ✨ NUEVAS PROPS
+      onOutputStringChange,
+      onIndividualChipsChange,
+      maxSelections,
     },
     ref
   ) => {
@@ -139,8 +157,68 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
       }
     }, [value]);
 
+    // ✨ NUEVA FUNCIÓN: Generar output string (como CheckboxFilter)
+    const generateOutputString = React.useCallback((selectedValues: string[]) => {
+      if (selectedValues.length === 0) return "";
+      
+      const selectedLabels = selectedValues.map(val => {
+        const option = options.find(opt => opt.value === val);
+        return option?.label || val;
+      });
+      
+      if (selectedLabels.length === 1) {
+        return selectedLabels[0];
+      } else {
+        return `${selectedLabels.length} seleccionados`;
+      }
+    }, [options]);
+
+    // ✨ NUEVA FUNCIÓN: Generar chips (como CheckboxFilter)
+    const generateChips = React.useCallback((selectedValues: string[]) => {
+      return selectedValues.map(val => {
+        const option = options.find(opt => opt.value === val);
+        return {
+          id: `${toggleId}-${val}`,
+          label: option?.label || val,
+          onRemove: () => {
+            const newValues = selectedValues.filter(v => v !== val);
+            const processedValue = type === "multiple" ? newValues : newValues[0] || "";
+            setInternalValue(processedValue);
+            onValueChange?.(processedValue);
+          }
+        };
+      });
+    }, [options, toggleId, type, onValueChange]);
+
+    // ✨ EFECTO: Actualizar output string y chips cuando cambian los valores
+    React.useEffect(() => {
+      const currentValues = type === "multiple" 
+        ? (Array.isArray(internalValue) ? internalValue : [])
+        : (typeof internalValue === "string" && internalValue ? [internalValue] : []);
+      
+      // Generar output string
+      if (onOutputStringChange) {
+        const outputString = generateOutputString(currentValues);
+        onOutputStringChange(outputString);
+      }
+      
+      // Generar chips
+      if (onIndividualChipsChange) {
+        const chips = generateChips(currentValues);
+        onIndividualChipsChange(chips);
+      }
+    }, [internalValue, type, generateOutputString, generateChips, onOutputStringChange, onIndividualChipsChange]);
+
     // Handle value changes with proper typing
     const handleValueChange = (newValue: string | string[]) => {
+      // ✨ NUEVA LÓGICA: Verificar maxSelections
+      if (type === "multiple" && maxSelections) {
+        const newValues = Array.isArray(newValue) ? newValue : [newValue].filter(Boolean);
+        if (newValues.length > maxSelections) {
+          return; // No permitir más selecciones
+        }
+      }
+
       // Ensure the value type matches the selection type
       const processedValue = type === "multiple" 
         ? Array.isArray(newValue) ? newValue : [newValue].filter(Boolean)
@@ -178,8 +256,8 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
         case 4: return "grid-cols-4";
         case 5: return "grid-cols-5";
         case 6: return "grid-cols-6";
-        case "auto": return "grid-cols-2"; // Auto defaults to 2 columns
-        default: return "grid-cols-2"; // Default to 2 columns
+        case "auto": return "grid-cols-2";
+        default: return "grid-cols-2";
       }
     };
 

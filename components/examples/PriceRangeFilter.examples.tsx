@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { PriceRangeFilter, usePriceRangeOutputString } from "./PriceRangeFilter";
+import { PriceRangeFilter, usePriceRangeOutputString } from "../shared/PriceRangeFilter";
 
 /**
  * Ejemplo con output string dinámico

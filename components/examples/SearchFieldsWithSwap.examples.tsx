@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { SearchFieldsWithSwap } from "./SearchFieldsWithSwap";
+import { SearchFieldsWithSwap } from "../shared/SearchFieldsWithSwap";
 import { Clock, MapPin, Plane, Building2 } from "lucide-react";
 
 // Datos de ejemplo para las fuentes de búsqueda

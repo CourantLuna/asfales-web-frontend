@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { CheckboxFilter, CheckboxOption } from "./CheckboxFilter";
+import { CheckboxFilter, CheckboxOption } from "../shared/CheckboxFilter";
 
 /**
  * Ejemplo básico de CheckboxFilter

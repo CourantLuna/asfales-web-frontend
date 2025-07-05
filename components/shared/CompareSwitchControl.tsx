@@ -55,7 +55,7 @@ export default function CompareSwitchControl({
   return (
     <div
       className={cn(
-        "hidden lg:flex items-center justify-between p-4 bg-card border border-border rounded-lg shadow-sm",
+        "flex items-center justify-between p-4 bg-card border border-border rounded-lg shadow-sm",
         className
       )}
     >
