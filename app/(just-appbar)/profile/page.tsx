@@ -4,7 +4,7 @@ import React, { Suspense } from "react";
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={<div>Cargando perfil...</div>}>
+    <Suspense fallback={<div>Cargando...</div>}>
       <Profile />
     </Suspense>
   );

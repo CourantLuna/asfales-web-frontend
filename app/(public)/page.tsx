@@ -5,7 +5,7 @@ import LandingSections from "@/components/landing/LandingSections";
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>cargando...</div>}>
       <LandingSections />
     </Suspense>
   );

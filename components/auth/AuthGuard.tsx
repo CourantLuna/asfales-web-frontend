@@ -25,7 +25,7 @@ export function AuthGuard({ parentPath, children }: AuthGuardProps) {
   }, [user, loading, isAtParent, parentPath, router]);
 
   // Mientras loading y NO estamos en el padre, muestra loader
-  if (loading && !isAtParent) return <div>Loading...</div>;
+  if (loading && !isAtParent) return <div>Cargando...</div>;
   // Si loading y estoy en el padre, deja pasar normal (de hecho, puedes poner un splash si quieres)
   // Si no hay usuario y estoy en el padre, deja pasar
   // Si hay usuario, deja pasar
