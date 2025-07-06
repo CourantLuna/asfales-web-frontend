@@ -164,12 +164,24 @@ export default function SearchWithFilters({
   }, []);
 
   // Función para generar chips de filtro
-  const updateFilterChips = useCallback((filterId: string, chips: Array<{id: string, label: string, onRemove: () => void}>) => {
-    setActiveChips(prev => {
-      // Remover chips existentes de este filtro
-      const filtered = prev.filter(chip => !chip.id.startsWith(filterId));
-      // Agregar nuevos chips
-      return [...filtered, ...chips];
+const updateFilterChips = useCallback((filterId: string, chips: Array<{id: string, label: string, onRemove: () => void}>) => {
+  setActiveChips(prev => {
+    // Remover chips existentes de este filtro
+    const filtered = prev.filter(chip => !chip.id.startsWith(`${filterId}-`));
+    // Agregar nuevos chips
+    return [...filtered, ...chips];
+  });
+}, []);
+
+  // Función helper para remover un valor específico de un filtro múltiple
+  const removeFilterValue = useCallback((filterId: string, valueToRemove: string) => {
+    setFilterStates(prev => {
+      const currentValues = prev[filterId] || [];
+      const newValue = currentValues.filter((v: string) => v !== valueToRemove);
+      return {
+        ...prev,
+        [filterId]: newValue
+      };
     });
   }, []);
 
@@ -190,9 +202,63 @@ export default function SearchWithFilters({
     }
 
     updateFilterState(filterId, resetValue);
-    // Remover chips de este filtro
-    setActiveChips(prev => prev.filter(chip => !chip.id.startsWith(filterId)));
   }, [filters, updateFilterState]);
+
+  // Regenerar chips automáticamente cuando cambien los filterStates
+  React.useEffect(() => {
+    const newChips: Array<{id: string, label: string, onRemove: () => void}> = [];
+    
+    filters.forEach(filter => {
+      const values = filterStates[filter.id];
+      const options = filterOptions[filter.id] || [];
+      
+      // Chips para checkbox y toggle (múltiples valores)
+      if ((filter.type === 'checkbox' || filter.type === 'toggle') && values && Array.isArray(values) && values.length > 0) {
+        values.forEach((val: string) => {
+          const option = options.find((opt: any) => opt.value === val);
+          if (option) {
+            newChips.push({
+              id: `${filter.id}-${val}`,
+              label: option.label,
+              onRemove: () => removeFilterValue(filter.id, val)
+            });
+          }
+        });
+      }
+      
+      // Chips para radio (un solo valor)
+      else if (filter.type === 'radio' && values && values !== '' && values !== 'any') {
+        const option = options.find((opt: any) => opt.value === values);
+        if (option) {
+          newChips.push({
+            id: `${filter.id}-${values}`,
+            label: option.label,
+            onRemove: () => resetFilter(filter.id)
+          });
+        }
+      }
+      
+      // Chips para range (valores mínimo y máximo)
+      else if (filter.type === 'range' && values && Array.isArray(values)) {
+        const [min, max] = values;
+        const defaultMin = filter.min || 0;
+        const defaultMax = filter.max || 1000;
+        
+        // Solo mostrar chip si los valores son diferentes a los defaults
+        if (min !== defaultMin || max !== defaultMax) {
+          const currency = filter.currency || "$";
+          const label = `${currency}${min} - ${currency}${max}`;
+          newChips.push({
+            id: `${filter.id}-range`,
+            label: label,
+            onRemove: () => resetFilter(filter.id)
+          });
+        }
+      }
+    });
+    
+    setActiveChips(newChips);
+  }, [filterStates, filters, filterOptions, removeFilterValue, resetFilter]);
 
   // Handler para búsqueda
   const handleSearchChange = useCallback((value: string) => {
@@ -307,36 +373,22 @@ export default function SearchWithFilters({
           type: "separator",
           className: filter.className
         });
-      } else if (filter.type === 'checkbox' && options.length > 0) {
-        configFilters.push({
-          id: filter.id,
-          type: "checkbox",
-          label: filter.label || "",
-          options: options,
-          selectedValues: filterStates[filter.id] || [],
-          onChange: (value: any) => {
-            updateFilterState(filter.id, value);
-            // Generar chips para este filtro
-            const chips = Array.isArray(value) ? value.map((val: string) => {
-              const option = options.find((opt: any) => opt.value === val);
-              return {
-                id: `${filter.id}-${val}`,
-                label: option?.label || val,
-                onRemove: () => {
-                  const newValue = (filterStates[filter.id] || []).filter((v: string) => v !== val);
-                  updateFilterState(filter.id, newValue);
-                }
-              };
-            }) : [];
-            updateFilterChips(filter.id, chips);
-          },
-          onIndividualChipsChange: (chips: any) => updateFilterChips(filter.id, chips),
-          showCounts: filter.showCounts !== false,
-          maxSelections: filter.maxSelections || 10,
-          initialVisibleCount: filter.initialVisibleCount || 5,
-          showMoreText: filter.showMoreText || "Ver más",
-          showLessText: filter.showLessText || "Ver menos"
-        });
+      }  else if (filter.type === 'checkbox' && options.length > 0) {
+      configFilters.push({
+        id: filter.id,
+        type: "checkbox",
+        label: filter.label || "",
+        options: options,
+        selectedValues: filterStates[filter.id] || [],
+        onChange: (value: any) => {
+          updateFilterState(filter.id, value);
+        },
+        showCounts: filter.showCounts !== false,
+        maxSelections: filter.maxSelections || 10,
+        initialVisibleCount: filter.initialVisibleCount || 5,
+        showMoreText: filter.showMoreText || "Ver más",
+        showLessText: filter.showLessText || "Ver menos"
+      });
       } else if (filter.type === 'radio' && options.length > 0) {
         configFilters.push({
           id: filter.id,
@@ -346,20 +398,6 @@ export default function SearchWithFilters({
           value: filterStates[filter.id] || '',
           onValueChange: (value: any) => {
             updateFilterState(filter.id, value);
-            // Generar chip para este filtro
-            if (value && value !== "any") {
-              const option = options.find((opt: any) => opt.value === value);
-              if (option) {
-                const chips = [{
-                  id: `${filter.id}-${value}`,
-                  label: option.label,
-                  onRemove: () => resetFilter(filter.id)
-                }];
-                updateFilterChips(filter.id, chips);
-              }
-            } else {
-              updateFilterChips(filter.id, []);
-            }
           },
           variant: filter.variant || "vertical",
           helperText: filter.helperText
@@ -375,63 +413,37 @@ export default function SearchWithFilters({
           onChange: (value: any) => {
             updateFilterState(filter.id, value);
           },
-          onOutputStringChange: (outputString: string) => {
-            if (outputString) {
-              const chips = [{
-                id: `${filter.id}-range`,
-                label: outputString,
-                onRemove: () => resetFilter(filter.id)
-              }];
-              updateFilterChips(filter.id, chips);
-            } else {
-              updateFilterChips(filter.id, []);
-            }
-          },
           currency: filter.currency || "$",
           step: filter.step || 1
         });
       } else if (filter.type === 'toggle' && options.length > 0) {
-        configFilters.push({
-          id: filter.id,
-          type: "toggle",
-          label: filter.label || "",
-          options: options,
-          value: filterStates[filter.id] || [],
-          onValueChange: (value: any) => {
-            updateFilterState(filter.id, value);
-            // Generar chips para este filtro
-            const chips = Array.isArray(value) ? value.map((val: string) => {
-              const option = options.find((opt: any) => opt.value === val);
-              return {
-                id: `${filter.id}-${val}`,
-                label: option?.label || val,
-                onRemove: () => {
-                  const newValue = (filterStates[filter.id] || []).filter((v: string) => v !== val);
-                  updateFilterState(filter.id, newValue);
-                }
-              };
-            }) : [];
-            updateFilterChips(filter.id, chips);
-          },
-          type_toggle: filter.type_toggle || "multiple",
-          variant: filter.variant || "vertical",
-          wrap: filter.wrap,
-          gridCols: filter.gridCols as any,
-          containerClassName: filter.containerClassName,
-          labelClassName: filter.labelClassName,
-          toggleGroupClassName: filter.toggleGroupClassName,
-          toggleItemClassName: filter.toggleItemClassName,
-          onIndividualChipsChange: (chips: any) => updateFilterChips(filter.id, chips),
-          maxSelections: filter.maxSelections || 10
-        });
-      }
-    });
+      configFilters.push({
+        id: filter.id,
+        type: "toggle",
+        label: filter.label || "",
+        options: options,
+        value: filterStates[filter.id] || [],
+        onValueChange: (value: any) => {
+          updateFilterState(filter.id, value);
+        },
+        type_toggle: filter.type_toggle || "multiple",
+        variant: filter.variant || "vertical",
+        wrap: filter.wrap,
+        gridCols: filter.gridCols as any,
+        containerClassName: filter.containerClassName,
+        labelClassName: filter.labelClassName,
+        toggleGroupClassName: filter.toggleGroupClassName,
+        toggleItemClassName: filter.toggleItemClassName,
+        maxSelections: filter.maxSelections || 10
+      });
+    }
+  });
 
     return configFilters;
   }, [
     filters, filterOptions, filterStates, searchPlaceholder,
     noResultsMessage, handleSearchChange, handleItemSelect, updateFilterState,
-    updateFilterChips, resetFilter
+    resetFilter
   ]);
 
   // Notificar cambios de filtros - Solo cuando realmente cambian
