@@ -4,12 +4,27 @@ import "../../../styles/landingStyles.css";
 import { Button } from "@/components/ui/button"
 import { Search, ArrowLeftRight, ArrowUpDown, MapPin  } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { StandardSearchField, StandardSearchDataSource } from "@/components/shared/StandardSearchField";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useStickyBoundary } from "@/hooks/useStickyBoundary";
 
-export default function SearchBoxOverlay({ onSearch }: { onSearch?: (origin: string, destination: string) => void }) {
+export default function SearchBoxOverlay({ 
+  onSearch,
+  dataSources = [],
+  originValue,
+  onOriginValueChange,
+  destinationValue,
+  onDestinationValueChange
+}: { 
+  onSearch?: (origin: string, destination: string) => void;
+  dataSources?: StandardSearchDataSource[];
+  originValue?: string;
+  onOriginValueChange?: (value: string) => void;
+  destinationValue?: string;
+  onDestinationValueChange?: (value: string) => void;
+}) {
   // Hook personalizado para detectar sticky boundary
   const { containerRef, stickyRef, isAtBottom: isStickyAtBottom } = useStickyBoundary({ 
     threshold: 10, 
@@ -35,11 +50,50 @@ const {
   formState: { errors, isValid, touchedFields, dirtyFields }
 } = useForm<{ origin: string; destination: string }>({
   mode: "onChange",
-  defaultValues: { origin: "", destination: "" },
+  defaultValues: { origin: "", destination: "" }, // Usar valores deterministas
 });
 
 const origin = watch("origin");
 const destination = watch("destination");
+
+// Inicializar valores del formulario con props controladas
+useEffect(() => {
+  if (originValue !== undefined && originValue !== "" && origin === "") {
+    setValue("origin", originValue);
+  }
+}, [originValue, setValue, origin]);
+
+useEffect(() => {
+  if (destinationValue !== undefined && destinationValue !== "" && destination === "") {
+    setValue("destination", destinationValue);
+  }
+}, [destinationValue, setValue, destination]);
+
+// Sincronizar valores con props controladas - solo cuando hay cambio externo
+useEffect(() => {
+  if (originValue !== undefined && originValue !== origin) {
+    setValue("origin", originValue);
+  }
+}, [originValue, setValue]);
+
+useEffect(() => {
+  if (destinationValue !== undefined && destinationValue !== destination) {
+    setValue("destination", destinationValue);
+  }
+}, [destinationValue, setValue]);
+
+// Notificar cambios al padre - solo cuando hay cambio interno
+useEffect(() => {
+  if (onOriginValueChange && origin !== originValue) {
+    onOriginValueChange(origin);
+  }
+}, [origin, onOriginValueChange]);
+
+useEffect(() => {
+  if (onDestinationValueChange && destination !== destinationValue) {
+    onDestinationValueChange(destination);
+  }
+}, [destination, onDestinationValueChange]);
 
   return (
     <form onSubmit={handleSubmit((data) => onSearch?.(data.origin, data.destination))}>
@@ -68,37 +122,22 @@ const destination = watch("destination");
           <div className="flex flex-col lg:flex-row items-center gap-y-4 lg:gap-y-0 lg:gap-x-6 w-full max-w-7xl mb-0 transition-all duration-300 justify-center">
             <div className="pointer-events-auto hide-scrollbar flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0 lg:gap-x-2 overflow-y-auto max-h-[250px] px-2">
               {/* Origen */}
-              <div className={`search-field transition-all duration-300 ${swapAnimating ? "animate-swap" : ""} flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px]`}>
-                <Search className="items-center justify-center h-4 w-4 text-muted-foreground" />
-                <div className="flex flex-col items-start">
-                  <label htmlFor="origen" className="text-start text-gray-800 text-xs mb-0">
-                    Origen
-                  </label>
-                  <TooltipProvider>
-                    <Tooltip open={!!errors.origin && touchedFields.origin && !dirtyFields.origin}>
-                      <TooltipTrigger asChild>
-                        <input
-                          id="origen"
-                          type="text"
-                          placeholder="¿A donde?"
-                          className="w-full outline-none text-gray-800"
-                          value={origin}
-                          {...register("origin", { required: true })}
-                          onChange={(e) => setValue("origin", e.target.value)}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent 
-                        className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
-                        align="start"
-                        side="top"
-                        alignOffset={-4}
-                        sideOffset={20}
-                      >
-                        El origen es obligatorio
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+              <div className={`transition-all duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
+                <StandardSearchField
+                  containerClassName="w-[280px]"
+                  label="Origen"
+                  placeholder="¿A donde?"
+                  value={origin}
+                  onValueChange={(value) => setValue("origin", value)}
+                  dataSources={dataSources}
+                  onSelect={(option, sourceType) => {
+                    setValue("origin", option.label);
+                  }}
+                  showClearButton={true}
+                  minSearchLength={0}
+                  variant="compact"
+                  fieldIcon={<Search className="h-5 w-5 text-primary" />}
+                />
               </div>
 
               {/* Swap (desktop only) */}
@@ -128,37 +167,22 @@ const destination = watch("destination");
               </div>
 
               {/* Destino */}
-              <div className={`search-field transition-all duration-300 ${swapAnimating ? "animate-swap" : ""} flex flex-row items-center justify-center gap-x-4 bg-white rounded-lg px-2 py-2 w-[280px]`}>
-                <MapPin className="items-center justify-center h-4 w-4 text-muted-foreground" />
-                <div className="flex flex-col items-start">
-                  <label htmlFor="destino" className="text-start text-gray-800 text-xs mb-0">
-                    Destino
-                  </label>
-                  <TooltipProvider>
-                    <Tooltip open={!!errors.destination && touchedFields.destination && !dirtyFields.destination}>
-                      <TooltipTrigger asChild>
-                        <input
-                          id="destino"
-                          type="text"
-                          placeholder="País, ciudad o aeropuerto"
-                          className="w-full outline-none text-gray-800"
-                          value={destination}
-                          {...register("destination", { required: true })}
-                          onChange={(e) => setValue("destination", e.target.value)}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="bg-destructive text-destructive-foreground border border-destructive font-semibold px-3 py-2 rounded-md shadow-lg"
-                        align="start"
-                        alignOffset={-4}
-                        sideOffset={20}
-                      >
-                        El destino es obligatorio
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+              <div className={`transition-all duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
+                <StandardSearchField
+                  containerClassName="w-[280px]"
+                  label="Destino"
+                  placeholder="País, ciudad o aeropuerto"
+                  value={destination}
+                  onValueChange={(value) => setValue("destination", value)}
+                  dataSources={dataSources}
+                  onSelect={(option, sourceType) => {
+                    setValue("destination", option.label);
+                  }}
+                  showClearButton={true}
+                  minSearchLength={0}
+                  variant="compact"
+                  fieldIcon={<MapPin className="h-5 w-5 text-primary" />}
+                />
               </div>
             </div>
 

@@ -118,6 +118,16 @@ export interface StandardSearchFieldProps {
    * ID for the search field
    */
   id?: string;
+  /**
+   * Presentation variant
+   * - 'default': Label arriba, button abajo con icono + texto inline
+   * - 'compact': Sin label separado, button con layout de dos columnas (icono + label/value)
+   */
+  variant?: 'default' | 'compact';
+  /**
+   * Icon para el campo de búsqueda (solo para variant compact)
+   */
+  fieldIcon?: React.ReactNode;
 }
 
 const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFieldProps>(
@@ -144,6 +154,8 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
       isLoading = false,
       emptyMessage = "No se encontraron resultados",
       id,
+      variant = 'default',
+      fieldIcon,
     },
     ref
   ) => {
@@ -238,6 +250,86 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
 
     const displayValue = value || placeholder;
 
+    // Render del botón trigger según la variante
+    const renderTriggerButton = () => {
+      if (variant === 'compact') {
+        return (
+          <Button
+            ref={ref}
+            variant="outline"
+            disabled={disabled}
+            className={cn(
+              // Layout de dos columnas para compact
+              "w-full h-16 p-4 justify-start font-normal",
+              // Error state styling
+              error && "border-destructive focus-visible:ring-destructive",
+              searchClassName
+            )}
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={
+              error
+                ? `${searchId}-error`
+                : helperText
+                ? `${searchId}-helper`
+                : undefined
+            }
+            aria-label={label || placeholder}
+          >
+            <div className="flex items-center gap-4 w-full">
+              {/* Columna 1: Icono (pequeña, full height) */}
+              <div className="flex-shrink-0 flex items-center justify-center">
+                {fieldIcon || <Search className="h-5 w-5 text-muted-foreground" />}
+              </div>
+              
+              {/* Columna 2: Label arriba, Value abajo */}
+              <div className="flex-1 min-w-0 text-left">
+                <div className="text-start text-gray-800 text-xs mb-0 leading-tight">
+                  {label}
+                </div>
+                <div className={cn(
+                  "text-gray-800 truncate leading-tight mt-1",
+                  !value && "text-muted-foreground"
+                )}>
+                  {value || placeholder}
+                </div>
+              </div>
+            </div>
+          </Button>
+        );
+      }
+
+      // Variante default (actual)
+      return (
+        <Button
+          ref={ref}
+          variant="outline"
+          disabled={disabled}
+          className={cn(
+            // Standard button height and spacing
+            "w-full justify-start h-12 text-left font-normal px-4 gap-2",
+            // Text sizes: base on mobile, sm on desktop
+            "text-base md:text-sm",
+            // Error state styling
+            error && "border-destructive focus-visible:ring-destructive",
+            !value && "text-muted-foreground",
+            searchClassName
+          )}
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby={
+            error
+              ? `${searchId}-error`
+              : helperText
+              ? `${searchId}-helper`
+              : undefined
+          }
+          aria-label={label || placeholder}
+        >
+          <Search className="mr-2 h-4 w-4 text-muted-foreground" />
+          <span className="truncate">{displayValue}</span>
+        </Button>
+      );
+    };
+
     return (
       <div
         className={cn(
@@ -246,8 +338,8 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
           containerClassName
         )}
       >
-        {/* Label */}
-        {label && (
+        {/* Label - Solo mostrar en variante default */}
+        {label && variant === 'default' && (
           <Label
             className={cn(
               // Standard label styling with left alignment
@@ -267,33 +359,7 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
         {/* Search Button */}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button
-              ref={ref}
-              variant="outline"
-              disabled={disabled}
-              className={cn(
-                // Standard button height and spacing
-                "w-full justify-start h-12 text-left font-normal px-4 gap-2",
-                // Text sizes: base on mobile, sm on desktop
-                "text-base md:text-sm",
-                // Error state styling
-                error && "border-destructive focus-visible:ring-destructive",
-                !value && "text-muted-foreground",
-                searchClassName
-              )}
-              aria-invalid={error ? "true" : "false"}
-              aria-describedby={
-                error
-                  ? `${searchId}-error`
-                  : helperText
-                  ? `${searchId}-helper`
-                  : undefined
-              }
-              aria-label={label || placeholder}
-            >
-              <Search className="mr-2 h-4 w-4 text-muted-foreground" />
-              <span className="truncate">{displayValue}</span>
-            </Button>
+            {renderTriggerButton()}
           </PopoverTrigger>
 
           {/* Large Search Dialog-like Popover */}

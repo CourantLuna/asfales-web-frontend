@@ -5,10 +5,20 @@ export default function TravelOptionsSection({
   activeTab,
   setActiveTab,
   onScrollToResults,
+  travelingFrom,
+  setTravelingFrom,
+  goingTo,
+  setGoingTo,
+  searchDataSources,
 }: {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onScrollToResults: () => void;
+  travelingFrom: string;
+  setTravelingFrom: (value: string) => void;
+  goingTo: string;
+  setGoingTo: (value: string) => void;
+  searchDataSources: any[];
 }) {
   return (
     <section className="relative w-full flex justify-center py-4">
@@ -32,9 +42,15 @@ export default function TravelOptionsSection({
 
       {/* Tabs interactivos */}
       <div className="w-full px-4 mt-[125px] lg:mt-[120px] md:px-8 flex flex-col items-center text-center">
-        <TravelOptionsTabs activeTab={activeTab} setActiveTab={setActiveTab}
-              onScrollToResults={onScrollToResults} // <--- prop hacia abajo
-
+        <TravelOptionsTabs 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab}
+          onScrollToResults={onScrollToResults}
+          travelingFrom={travelingFrom}
+          setTravelingFrom={setTravelingFrom}
+          goingTo={goingTo}
+          setGoingTo={setGoingTo}
+          searchDataSources={searchDataSources}
         />
       </div>
     </section>

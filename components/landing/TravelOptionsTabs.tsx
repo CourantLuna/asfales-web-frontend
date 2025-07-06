@@ -32,11 +32,21 @@ import { set } from "date-fns";
 export default function TravelOptionsTabs({
   activeTab,
   setActiveTab,
-  onScrollToResults
+  onScrollToResults,
+  travelingFrom: externalTravelingFrom,
+  setTravelingFrom: externalSetTravelingFrom,
+  goingTo: externalGoingTo,
+  setGoingTo: externalSetGoingTo,
+  searchDataSources: externalSearchDataSources
 }: {
   activeTab: string,
   setActiveTab: (tab: string) => void,
-  onScrollToResults: () => void
+  onScrollToResults: () => void,
+  travelingFrom?: string,
+  setTravelingFrom?: (value: string) => void,
+  goingTo?: string,
+  setGoingTo?: (value: string) => void,
+  searchDataSources?: any[]
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -106,9 +116,35 @@ export default function TravelOptionsTabs({
     infantsInSeat: [],
   })
 
-  // Estados para búsqueda de destinos
-  const [travelingFrom, setTravelingFrom] = useState<string>("")
-  const [goingTo, setGoingTo] = useState<string>("")
+  // Estados para búsqueda de destinos - usar valores externos si están disponibles
+  const [travelingFrom, setTravelingFrom] = useState<string>(() => externalTravelingFrom || "")
+  const [goingTo, setGoingTo] = useState<string>(() => externalGoingTo || "")
+
+  // Sincronizar con valores externos - solo cuando hay cambio externo
+  useEffect(() => {
+    if (externalTravelingFrom !== undefined && externalTravelingFrom !== travelingFrom) {
+      setTravelingFrom(externalTravelingFrom);
+    }
+  }, [externalTravelingFrom]);
+
+  useEffect(() => {
+    if (externalGoingTo !== undefined && externalGoingTo !== goingTo) {
+      setGoingTo(externalGoingTo);
+    }
+  }, [externalGoingTo]);
+
+  // Notificar cambios al padre si las funciones están disponibles - solo cuando hay cambio interno
+  useEffect(() => {
+    if (externalSetTravelingFrom && travelingFrom !== externalTravelingFrom) {
+      externalSetTravelingFrom(travelingFrom);
+    }
+  }, [travelingFrom, externalSetTravelingFrom]);
+
+  useEffect(() => {
+    if (externalSetGoingTo && goingTo !== externalGoingTo) {
+      externalSetGoingTo(goingTo);
+    }
+  }, [goingTo, externalSetGoingTo]);
 
   // Función para intercambiar origen y destino
   const handleSwapLocations = () => {
@@ -117,8 +153,8 @@ export default function TravelOptionsTabs({
     setGoingTo(temp);
   };
   
-  // Fuentes de datos para el buscador con diferentes tipos
-  const searchDataSources = [
+  // Fuentes de datos para el buscador - usar externas si están disponibles
+  const searchDataSources = externalSearchDataSources || [
     {
       id: "recent",
       label: "Búsquedas recientes", 
