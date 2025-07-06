@@ -8,6 +8,7 @@ import { StandardSearchField, StandardSearchDataSource } from "@/components/shar
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter, usePathname } from "next/navigation";
 import { useStickyBoundary } from "@/hooks/useStickyBoundary";
 
 export default function SearchBoxOverlay({ 
@@ -16,7 +17,9 @@ export default function SearchBoxOverlay({
   originValue,
   onOriginValueChange,
   destinationValue,
-  onDestinationValueChange
+  onDestinationValueChange,
+  activeTab = "transport",
+  onScrollToResults
 }: { 
   onSearch?: (origin: string, destination: string) => void;
   dataSources?: StandardSearchDataSource[];
@@ -24,7 +27,12 @@ export default function SearchBoxOverlay({
   onOriginValueChange?: (value: string) => void;
   destinationValue?: string;
   onDestinationValueChange?: (value: string) => void;
+  activeTab?: string;
+  onScrollToResults?: () => void;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  
   // Hook personalizado para detectar sticky boundary
   const { containerRef, stickyRef, isAtBottom: isStickyAtBottom } = useStickyBoundary({ 
     threshold: 10, 
@@ -34,12 +42,25 @@ export default function SearchBoxOverlay({
   const [swapAnimating, setSwapAnimating] = useState(false);
 
   function handleSwap() {
-  setSwapAnimating(true);
-  const temp = origin;
-  setValue("origin", destination);
-  setValue("destination", temp);
-  setTimeout(() => setSwapAnimating(false), 200);
-}
+    setSwapAnimating(true);
+    const temp = origin;
+    setValue("origin", destination);
+    setValue("destination", temp);
+    setTimeout(() => setSwapAnimating(false), 200);
+  }
+
+  function handleBuscar() {
+    // Primero ejecutar la función de búsqueda personalizada si existe
+    if (onSearch) {
+      onSearch(origin, destination);
+    }
+    // Luego hacer scroll a resultados si está disponible
+    if (onScrollToResults) {
+      onScrollToResults();
+    }
+    // Finalmente navegar a la página de búsqueda según el tab activo
+    router.push(`/global-${activeTab}-search`);
+  }
 
 
 const {
@@ -96,7 +117,9 @@ useEffect(() => {
 }, [destination, onDestinationValueChange]);
 
   return (
-    <form onSubmit={handleSubmit((data) => onSearch?.(data.origin, data.destination))}>
+    <form onSubmit={handleSubmit((data) => {
+      handleBuscar();
+    })}>
 
     <div
       ref={containerRef}
@@ -205,12 +228,13 @@ useEffect(() => {
       >
         {/* Botón de busqueda */}
         <Button
-  type="submit"
-  className="z-[19] rounded-full pointer-events-auto rounded-lg bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px] lg:ml-[624px] mt-[30px]"
->
-  <Search className="mr-2 h-4 w-4" />
-  Buscar Opciones de Viaje
-</Button>
+          type="submit"
+          onClick={handleBuscar}
+          className="z-[19] rounded-full pointer-events-auto rounded-lg bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px] lg:ml-[624px] mt-[30px]"
+        >
+          <Search className="mr-2 h-4 w-4" />
+          Buscar Opciones de Viaje
+        </Button>
 
 
       </div>

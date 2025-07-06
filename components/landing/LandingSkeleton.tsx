@@ -95,10 +95,9 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
     }
   ];
 
-function scrollToResults() {
-  smoothScrollTo(resultsRef.current?.offsetTop ?? 0, 1000);
-}
-
+  function scrollToResults() {
+    smoothScrollTo(resultsRef.current?.offsetTop ?? 0, 1000);
+  }
 
   function smoothScrollTo(targetY: number, duration = 800) {
     const startY = window.scrollY;
@@ -136,6 +135,8 @@ function scrollToResults() {
           onOriginValueChange={setTravelingFrom}
           destinationValue={goingTo}
           onDestinationValueChange={setGoingTo}
+          activeTab={activeTab}
+          onScrollToResults={scrollToResults}
         />
       </div>
 

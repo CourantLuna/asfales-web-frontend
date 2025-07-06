@@ -50,6 +50,7 @@ export default function TravelOptionsTabs({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [searchButtonLabel, setsearchButtonLabel] = useState("Buscar Opciones de Viaje");
 
   function handleTabChange(tab: string) {
     setActiveTab(tab);
@@ -60,15 +61,21 @@ export default function TravelOptionsTabs({
 
   function handleBuscar() {
     if (onScrollToResults) onScrollToResults(); // <--- mueve el scroll
+    
     // const y = window.scrollY || window.pageYOffset;
     // alert(`Scroll Y actual: ${y}`);
     router.push(`/global-${activeTab}-search`);
+    setsearchButtonLabel("Filtrar Resultados");
   }
 
   useEffect(() => {
     const match = pathname.match(/^\/global-(.*)-search$/);
     if (match) {
       setActiveTab(match[1]);
+      setsearchButtonLabel("Filtrar Resultados");
+    } else {
+      setActiveTab("transport");
+      setsearchButtonLabel("Buscar Opciones de Viaje");
     }
   }, [pathname]);
 
@@ -466,7 +473,7 @@ export default function TravelOptionsTabs({
         console.log("Destino seleccionado:", option, "Tipo:", sourceType);
       }}
       customSwapHandler={handleSwapLocations}
-      searchButtonText="Buscar Opciones de Viaje"
+      searchButtonText={searchButtonLabel}
       onSearch={handleBuscar}
       swapButtonColor="#FFA500"
       showClearButton={true}

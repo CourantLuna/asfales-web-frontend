@@ -116,7 +116,7 @@ export function ScrollToTopFAB({
         className={cn(
           // Estilo FAB - circular y elevado
           "h-12 w-12 rounded-full shadow-lg hover:shadow-xl",
-          "bg-primary hover:bg-primary/90 text-secondary",
+          "bg-primary hover:bg-primary/90 text-white",
           "transition-all duration-200 ease-in-out",
           "hover:scale-110 active:scale-95",
           // Efecto de resplandor sutil

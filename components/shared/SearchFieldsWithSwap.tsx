@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { StandardSearchField, StandardSearchDataSource } from "@/components/shared/StandardSearchField";
-import { ArrowLeftRight, ArrowUpDown, Search } from "lucide-react";
+import { ArrowLeftRight, ArrowUpDown, Filter, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface SearchFieldsWithSwapProps {
@@ -287,7 +287,11 @@ const SearchFieldsWithSwap = React.forwardRef<HTMLDivElement, SearchFieldsWithSw
               onClick={onSearch}
               disabled={disabled}
             >
-              <Search className="mr-2 h-4 w-4 text-primary-foreground" />
+              {searchButtonText === "Buscar Opciones de Viaje" ? (
+                <Search className="mr-2 h-4 w-4" />
+              ) : (
+                <Filter className="mr-2 h-4 w-4" />
+              )}
               {searchButtonText}
             </Button>
           </div>
