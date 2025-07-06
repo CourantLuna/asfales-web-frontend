@@ -12,7 +12,10 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Asfales",
   description: "A modern Next.js starter with theme support",
-  generator: "v0.dev"
+  generator: "v0.dev",
+  other: {
+    "google-adsense-account": "ca-pub-1409189363480446",
+  }
 }
 
 export default function RootLayout({
