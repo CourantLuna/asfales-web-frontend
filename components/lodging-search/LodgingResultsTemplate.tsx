@@ -14,6 +14,38 @@ import { CustomSelectOption } from "../shared/CustomSelect";
 import { AirVent, Bath, Bus, Car, Dices, Dumbbell, MapPin, Mountain, Phone, Utensils, WashingMachine, Waves, Wifi, Building2, LandPlot } from "lucide-react";
 import { CheckboxOption } from "../shared/CheckboxFilter";
 import SearchWithFilters from "../shared/SearchWithFilters";
+import { AdItem } from "../shared/Ads";
+
+// Datos de ejemplo para los anuncios
+const travelAds: AdItem[] = [
+  {
+    id: "premium-hotels",
+    src: "https://tpc.googlesyndication.com/simgad/7006773931942455307?",
+    alt: "Hoteles Premium - Reserva Directa",
+    href: "https://premium-hotels.com/ofertas-especiales",
+    title: "Hoteles de lujo con descuentos exclusivos - Hasta 40% OFF",
+    height: 600, // Solo height para layout columna
+    width: 160, // Solo width para layout columna
+  },
+  {
+    id: "airline-deals",
+    src: "https://tpc.googlesyndication.com/simgad/12562425310683427121?",
+    alt: "Precios Increíbles",
+    href: "https://airline-deals.com/promociones-vuelos",
+    title: "Vuelos nacionales e internacionales desde $199",
+    height: 600, // Solo height para layout columna
+    width: 160, // Solo width para layout columna
+  },
+  {
+    id: "vacation-packages",
+    src: "https://tpc.googlesyndication.com/simgad/8989349070575090120?",
+    alt: "Paquetes RIU Vacacionales Todo Incluido",
+    href: "https://vacation-packages.com/ofertas-caribe-riu",
+    title: "Paquetes todo incluido al Caribe - 7 días desde $899",
+    height: 220, // Solo height para layout columna
+    width: 160, // Solo width para layout columna
+  },
+];
 
 // Opciones para calificación de huéspedes - moved outside component as regular constant
 const guestRatingOptions = [
@@ -450,6 +482,12 @@ export default function LodgingResultsTemplate({
           titleOn: "Comparando propiedades",
           subtitleOn: "Selecciona propiedades para comparar lado a lado"
         }}
+        ads={travelAds} // Anuncios de ejemplo
+        adsGap={4} // Espacio entre anuncios (space-y-4 para col)
+        adsDirection="col" // Dirección columna: width=full, height=individual
+        showAds={true} // Mostrar anuncios
+        adsContainerClassName="hidden xl:block flex-shrink-0 w-[12%]" // Clase para el contenedor de anuncios
+
         // Textos personalizables
         searchPlaceholder="Buscar alojamiento..."
         noResultsMessage="No se encontraron propiedades"

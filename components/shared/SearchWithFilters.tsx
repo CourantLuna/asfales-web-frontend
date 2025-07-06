@@ -5,6 +5,7 @@ import { FilterChips, FilterChip } from "./FilterChips";
 import ResultFilters, { FilterConfig } from "./ResultFilters";
 import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 import { RowData } from "./RenderFields";
+import Ads, { AdItem } from "./Ads";
 import CompareSwitchControl from "./CompareSwitchControl";
 import { Separator } from "@radix-ui/react-select";
 import { Button } from "@/components/ui/button";
@@ -84,6 +85,13 @@ interface SearchWithFiltersProps {
 
   // Configuración de ordenamiento
   sortOptions: CustomSelectOption[];
+  
+  // Configuración de anuncios
+ ads?: AdItem[];
+  adsDirection?: 'row' | 'col' | 'wrap';
+  adsGap?: number;
+  adsContainerClassName?: string;
+  showAds?: boolean;
  
   // Configuración del modo de comparación
   enableCompareMode?: boolean;
@@ -119,6 +127,11 @@ export default function SearchWithFilters({
   filters,
   filterOptions,
   sortOptions,
+  ads = [],
+  adsDirection = 'col',
+  adsGap = 4,
+  adsContainerClassName,
+  showAds = true,
   enableCompareMode = false,
   compareConfig = {
     titleOff: "Comparar elementos",
@@ -508,7 +521,7 @@ export default function SearchWithFilters({
   );
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 mt-2 mb-12">
+    <div className="flex flex-col lg:flex-row mt-2 mb-12 gap-6">
       {/* Columna de Filtros - Lado Izquierdo (Desktop) */}
       <div className="hidden lg:block w-full lg:w-60 flex-shrink-0 mt-1">
         <FiltersContent />
@@ -622,6 +635,17 @@ export default function SearchWithFilters({
           })}
         </div>
       </div>
+
+        {showAds && ads && ads.length > 0 && (
+            <Ads
+              ads={ads}
+              direction={adsDirection}
+              gap={adsGap}
+              containerClassName={adsContainerClassName}
+            />
+        )}
+
+
     </div>
   );
 }

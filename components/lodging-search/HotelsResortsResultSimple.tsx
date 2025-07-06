@@ -54,7 +54,7 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
 
   return (
     <div className="container mx-auto  py-6">
-      {/* Información de búsqueda */}
+      {/* Información de búsqueda debug only */}
       <div className="mb-6 p-4 bg-blue-50 rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">
           Hoteles y Resorts - Versión Simple

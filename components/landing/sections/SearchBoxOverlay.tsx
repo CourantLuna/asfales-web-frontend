@@ -46,6 +46,15 @@ export default function SearchBoxOverlay({
     const temp = origin;
     setValue("origin", destination);
     setValue("destination", temp);
+    
+    // Notificar al padre sobre el intercambio
+    if (onOriginValueChange && destination !== originValue) {
+      onOriginValueChange(destination);
+    }
+    if (onDestinationValueChange && temp !== destinationValue) {
+      onDestinationValueChange(temp);
+    }
+    
     setTimeout(() => setSwapAnimating(false), 200);
   }
 
@@ -67,54 +76,31 @@ const {
   register,
   setValue,
   watch,
-    handleSubmit, // <--- AGREGAR AQUÍ
+  handleSubmit,
   formState: { errors, isValid, touchedFields, dirtyFields }
 } = useForm<{ origin: string; destination: string }>({
   mode: "onChange",
-  defaultValues: { origin: "", destination: "" }, // Usar valores deterministas
+  defaultValues: { 
+    origin: originValue || "", 
+    destination: destinationValue || "" 
+  },
 });
 
 const origin = watch("origin");
 const destination = watch("destination");
 
-// Inicializar valores del formulario con props controladas
-useEffect(() => {
-  if (originValue !== undefined && originValue !== "" && origin === "") {
-    setValue("origin", originValue);
-  }
-}, [originValue, setValue, origin]);
-
-useEffect(() => {
-  if (destinationValue !== undefined && destinationValue !== "" && destination === "") {
-    setValue("destination", destinationValue);
-  }
-}, [destinationValue, setValue, destination]);
-
-// Sincronizar valores con props controladas - solo cuando hay cambio externo
+// SOLO sincronizar desde props hacia el formulario (evitar bucles)
 useEffect(() => {
   if (originValue !== undefined && originValue !== origin) {
-    setValue("origin", originValue);
+    setValue("origin", originValue, { shouldValidate: false });
   }
-}, [originValue, setValue]);
+}, [originValue]);
 
 useEffect(() => {
   if (destinationValue !== undefined && destinationValue !== destination) {
-    setValue("destination", destinationValue);
+    setValue("destination", destinationValue, { shouldValidate: false });
   }
-}, [destinationValue, setValue]);
-
-// Notificar cambios al padre - solo cuando hay cambio interno
-useEffect(() => {
-  if (onOriginValueChange && origin !== originValue) {
-    onOriginValueChange(origin);
-  }
-}, [origin, onOriginValueChange]);
-
-useEffect(() => {
-  if (onDestinationValueChange && destination !== destinationValue) {
-    onDestinationValueChange(destination);
-  }
-}, [destination, onDestinationValueChange]);
+}, [destinationValue]);
 
   return (
     <form onSubmit={handleSubmit((data) => {
@@ -147,19 +133,31 @@ useEffect(() => {
               {/* Origen */}
               <div className={`transition-all duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
                 <StandardSearchField
+                  variant="compact"
                   containerClassName="w-[280px]"
                   label="Origen"
                   placeholder="¿A donde?"
                   value={origin}
-                  onValueChange={(value) => setValue("origin", value)}
+                  onValueChange={(value) => {
+                    setValue("origin", value, { shouldValidate: false });
+                    // Notificar al padre solo cuando el usuario cambia algo
+                    if (onOriginValueChange && value !== originValue) {
+                      onOriginValueChange(value);
+                    }
+                  }}
                   dataSources={dataSources}
                   onSelect={(option, sourceType) => {
-                    setValue("origin", option.label);
-                  }}
+  // StandardSearchField ya maneja el valor correctamente via onValueChange
+  console.log('🎯 SearchBoxOverlay - Origin selected:', {
+    label: option.label,
+    value: option.value,
+    sourceType
+  });
+}}
                   showClearButton={true}
                   minSearchLength={0}
-                  variant="compact"
                   fieldIcon={<Search className="h-5 w-5 text-primary" />}
+                  
                 />
               </div>
 
@@ -192,20 +190,32 @@ useEffect(() => {
               {/* Destino */}
               <div className={`transition-all duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
                 <StandardSearchField
-                  containerClassName="w-[280px]"
-                  label="Destino"
-                  placeholder="País, ciudad o aeropuerto"
-                  value={destination}
-                  onValueChange={(value) => setValue("destination", value)}
-                  dataSources={dataSources}
-                  onSelect={(option, sourceType) => {
-                    setValue("destination", option.label);
-                  }}
-                  showClearButton={true}
-                  minSearchLength={0}
-                  variant="compact"
-                  fieldIcon={<MapPin className="h-5 w-5 text-primary" />}
-                />
+                                  variant="compact"
+                         containerClassName="w-full md:w-[280px]"
+                         label={"Destino"}
+                         placeholder={"¿Hacia donde?"}
+                         value={destination}
+                         onValueChange={(value) => {
+                           setValue("destination", value, { shouldValidate: false });
+                           // Notificar al padre solo cuando el usuario cambia algo
+                           if (onDestinationValueChange && value !== destinationValue) {
+                             onDestinationValueChange(value);
+                           }
+                         }}
+                         dataSources={dataSources}
+                         onSelect={(option, sourceType) => {
+                           // StandardSearchField ya maneja el valor correctamente via onValueChange
+                           // El value se almacena, el label se muestra
+                           console.log("🎯 TravelOptionsTabs - Destino seleccionado:", {
+                             label: option.label,
+                             value: option.value,
+                             sourceType
+                           });
+                         }}
+                         showClearButton={true}
+                         minSearchLength={0}
+                         disabled={false}
+                       />
               </div>
             </div>
 

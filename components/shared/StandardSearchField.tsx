@@ -315,7 +315,7 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
                   "text-gray-800 truncate leading-tight mt-1",
                   !value && "text-muted-foreground"
                 )}>
-                  {value || placeholder}
+                  {displayValue}
                 </div>
               </div>
 

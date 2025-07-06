@@ -126,41 +126,29 @@ export default function TravelOptionsTabs({
     infantsInSeat: [],
   })
 
-  // Estados para búsqueda de destinos - usar valores externos si están disponibles
-  const [travelingFrom, setTravelingFrom] = useState<string>(() => externalTravelingFrom || "")
-  const [goingTo, setGoingTo] = useState<string>(() => externalGoingTo || "")
+  // No necesitamos estado local, usamos directamente los valores del padre
+  // Esto elimina la necesidad de sincronización y previene bucles infinitos
+  const travelingFrom = externalTravelingFrom || "";
+  const goingTo = externalGoingTo || "";
 
-  // Sincronizar con valores externos - solo cuando hay cambio externo
-  useEffect(() => {
-    if (externalTravelingFrom !== undefined && externalTravelingFrom !== travelingFrom) {
-      setTravelingFrom(externalTravelingFrom);
+  // Funciones wrapper que notifican al padre cuando el usuario cambia algo
+  const handleTravelingFromChange = (value: string) => {
+    if (externalSetTravelingFrom) {
+      externalSetTravelingFrom(value);
     }
-  }, [externalTravelingFrom]);
+  };
 
-  useEffect(() => {
-    if (externalGoingTo !== undefined && externalGoingTo !== goingTo) {
-      setGoingTo(externalGoingTo);
+  const handleGoingToChange = (value: string) => {
+    if (externalSetGoingTo) {
+      externalSetGoingTo(value);
     }
-  }, [externalGoingTo]);
-
-  // Notificar cambios al padre si las funciones están disponibles - solo cuando hay cambio interno
-  useEffect(() => {
-    if (externalSetTravelingFrom && travelingFrom !== externalTravelingFrom) {
-      externalSetTravelingFrom(travelingFrom);
-    }
-  }, [travelingFrom, externalSetTravelingFrom]);
-
-  useEffect(() => {
-    if (externalSetGoingTo && goingTo !== externalGoingTo) {
-      externalSetGoingTo(goingTo);
-    }
-  }, [goingTo, externalSetGoingTo]);
+  };
 
   // Función para intercambiar origen y destino
   const handleSwapLocations = () => {
     const temp = travelingFrom;
-    setTravelingFrom(goingTo);
-    setGoingTo(temp);
+    handleTravelingFromChange(goingTo);
+    handleGoingToChange(temp);
   };
   
   // Fuentes de datos para el buscador - usar externas si están disponibles
@@ -304,19 +292,29 @@ export default function TravelOptionsTabs({
       originLabel="Origen"
       originPlaceholder="¿Dónde empieza tu aventura?"
       originValue={travelingFrom}
-      onOriginValueChange={setTravelingFrom}
+      onOriginValueChange={handleTravelingFromChange}
       destinationLabel="Destino"
       destinationPlaceholder="¿A dónde quieres ir?"
       destinationValue={goingTo}
-      onDestinationValueChange={setGoingTo}
+      onDestinationValueChange={handleGoingToChange}
       dataSources={searchDataSources}
       onOriginSelect={(option, sourceType) => {
-        setTravelingFrom(option.label);
-        console.log("Origen seleccionado:", option, "Tipo:", sourceType);
+        // StandardSearchField ya maneja el valor correctamente via onValueChange
+        // El value se almacena, el label se muestra
+        console.log("🎯 TravelOptionsTabs - Origen seleccionado:", {
+          label: option.label,
+          value: option.value,
+          sourceType
+        });
       }}
       onDestinationSelect={(option, sourceType) => {
-        setGoingTo(option.label);
-        console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+        // StandardSearchField ya maneja el valor correctamente via onValueChange
+        // El value se almacena, el label se muestra
+        console.log("🎯 TravelOptionsTabs - Destino seleccionado:", {
+          label: option.label,
+          value: option.value,
+          sourceType
+        });
       }}
       customSwapHandler={handleSwapLocations}
       
@@ -369,11 +367,16 @@ export default function TravelOptionsTabs({
           label={"Destino"}
           placeholder={"¿Hacia donde?"}
           value={goingTo}
-          onValueChange={setGoingTo}
+          onValueChange={handleGoingToChange}
           dataSources={searchDataSources}
           onSelect={(option, sourceType) => {
-            setGoingTo(option.label);
-            console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+            // StandardSearchField ya maneja el valor correctamente via onValueChange
+            // El value se almacena, el label se muestra
+            console.log("🎯 TravelOptionsTabs - Destino seleccionado:", {
+              label: option.label,
+              value: option.value,
+              sourceType
+            });
           }}
           showClearButton={true}
           minSearchLength={0}
@@ -422,11 +425,16 @@ export default function TravelOptionsTabs({
           label={"Destino"}
           placeholder={"¿Hacia donde?"}
           value={goingTo}
-          onValueChange={setGoingTo}
+          onValueChange={handleGoingToChange}
           dataSources={searchDataSources}
           onSelect={(option, sourceType) => {
-            setGoingTo(option.label);
-            console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+            // StandardSearchField ya maneja el valor correctamente via onValueChange
+            // El value se almacena, el label se muestra
+            console.log("🎯 TravelOptionsTabs - Destino seleccionado:", {
+              label: option.label,
+              value: option.value,
+              sourceType
+            });
           }}
           showClearButton={true}
           minSearchLength={0}
@@ -484,19 +492,29 @@ export default function TravelOptionsTabs({
       originLabel="Origen"
       originPlaceholder="Voy desde..."
       originValue={travelingFrom}
-      onOriginValueChange={setTravelingFrom}
+      onOriginValueChange={handleTravelingFromChange}
       destinationLabel="Destino"
       destinationPlaceholder="Voy hacia..."
       destinationValue={goingTo}
-      onDestinationValueChange={setGoingTo}
+      onDestinationValueChange={handleGoingToChange}
       dataSources={searchDataSources}
       onOriginSelect={(option, sourceType) => {
-        setTravelingFrom(option.label);
-        console.log("Origen seleccionado:", option, "Tipo:", sourceType);
+        // StandardSearchField ya maneja el valor correctamente via onValueChange
+        // El value se almacena, el label se muestra
+        console.log("🎯 TravelOptionsTabs - Origen seleccionado:", {
+          label: option.label,
+          value: option.value,
+          sourceType
+        });
       }}
       onDestinationSelect={(option, sourceType) => {
-        setGoingTo(option.label);
-        console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+        // StandardSearchField ya maneja el valor correctamente via onValueChange
+        // El value se almacena, el label se muestra
+        console.log("🎯 TravelOptionsTabs - Destino seleccionado:", {
+          label: option.label,
+          value: option.value,
+          sourceType
+        });
       }}
       customSwapHandler={handleSwapLocations}
       showSearchButton={false}
