@@ -20,6 +20,7 @@ export function ScrollToTopFAB({
 }: ScrollToTopFABProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
 
   // Validar que scrollToPosition sea menor que threshold
   const targetPosition = Math.max(0, Math.min(scrollToPosition, threshold - 1));
@@ -42,16 +43,24 @@ export function ScrollToTopFAB({
     if (!isMounted) return;
 
     const toggleVisibility = () => {
-      if (window.scrollY > threshold) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
+      const wasVisible = isVisible;
+      const shouldBeVisible = window.scrollY > threshold;
+      
+      if (shouldBeVisible !== wasVisible) {
+        setIsVisible(shouldBeVisible);
+        
+        // Activar animación de salto cuando aparece
+        if (shouldBeVisible && !wasVisible) {
+          setShouldAnimate(true);
+          // Desactivar la animación después de que termine
+          setTimeout(() => setShouldAnimate(false), 800);
+        }
       }
     };
 
     window.addEventListener("scroll", toggleVisibility);
     return () => window.removeEventListener("scroll", toggleVisibility);
-  }, [threshold, isMounted]);
+  }, [threshold, isMounted, isVisible]);
 
   const scrollToTop = () => {
     if (typeof window === "undefined") return;
@@ -94,7 +103,7 @@ export function ScrollToTopFAB({
     <div
       className={cn(
         // Use CSS media queries for mobile detection to avoid hydration issues
-        "fixed bottom-20 right-4 z-40 transition-all duration-300 ease-in-out",
+        "fixed bottom-20 right-4 md:right-8 lg:right-12 z-40 transition-all duration-300 ease-in-out",
         isVisible 
           ? "opacity-100 translate-y-0 scale-100" 
           : "opacity-0 translate-y-4 scale-90 pointer-events-none",
@@ -113,10 +122,36 @@ export function ScrollToTopFAB({
           // Efecto de resplandor sutil
           "ring-2 ring-primary/20 hover:ring-primary/30"
         )}
+        style={{
+          // Animación personalizada de salto hacia arriba
+          animation: shouldAnimate ? 'fabJumpUp 0.8s ease-out' : undefined,
+        }}
         aria-label={`Scroll to ${targetPosition === 0 ? 'top' : `position ${targetPosition}px`}`}
       >
-        <ArrowUp className="h-5 w-5" />
+        <ArrowUp 
+          className="h-5 w-5 transition-transform duration-300"
+          style={{
+            // Animación sutil para la flecha
+            animation: shouldAnimate ? 'arrowFloat 0.8s ease-in-out' : undefined,
+          }}
+        />
       </Button>
+      
+      {/* Estilos CSS personalizados para las animaciones */}
+      <style jsx>{`
+        @keyframes fabJumpUp {
+          0% { transform: translateY(0px) scale(1); }
+          25% { transform: translateY(-8px) scale(1.05); }
+          50% { transform: translateY(-12px) scale(1.08); }
+          75% { transform: translateY(-4px) scale(1.02); }
+          100% { transform: translateY(0px) scale(1); }
+        }
+        
+        @keyframes arrowFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-2px); }
+        }
+      `}</style>
     </div>
   );
 }
