@@ -20,6 +20,7 @@ import { usePathname } from "next/navigation";
 
 import { useAuth } from "@/lib/hooks/useAuth";
 import { ShowIfAuth } from "../ShowIfAuth";
+import { set } from "date-fns";
 
 export default function ProfileSideBar() {
   const router = useRouter();
@@ -38,6 +39,7 @@ const handleLogout = () => {
   // Solo ejecuta logout si hay usuario, pero su token es falso o vacío
   if (user && !user.token) {
     logout();
+    setActiveSection(null); // Limpia la sección activa al hacer logout
   }
   // Si user ya es null, no vuelve a entrar aquí
 }, [user, logout]);
@@ -53,7 +55,7 @@ const handleLogout = () => {
     const isLargeScreen = window.innerWidth >= 1024; // lg breakpoint
     
     if (pathname === '/profile') {
-      if (isLargeScreen) {
+      if (isLargeScreen && user) {
         // En pantallas grandes, activar profile-info por defecto
         setActiveSection('profile-info');
         handleSectionChange('profile-info');
@@ -61,7 +63,7 @@ const handleLogout = () => {
         // En pantallas pequeñas, no activar ninguna sección
         setActiveSection(null);
       }
-    } else if (pathname?.includes('/profile/')) {
+    } else if (pathname?.includes('/profile/') && user) {
       // Extraer la sección de la URL
       const sectionId = pathname.split('/profile/')[1];
       setActiveSection(sectionId);
