@@ -47,6 +47,7 @@ export default function RootLayout({
         
         <Footer />
         <ChatWidget />
+        <ScrollToTopFAB threshold={2500} scrollToPosition={1000} duration={1200} />
         {/* <ScrollToTopFAB /> */}
       </ThemeProvider>
     </div>

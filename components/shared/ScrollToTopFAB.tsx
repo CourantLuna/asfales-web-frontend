@@ -8,16 +8,30 @@ import { cn } from "@/lib/utils";
 interface ScrollToTopFABProps {
   threshold?: number; // Distancia en px para mostrar el FAB
   duration?: number; // Duración de la animación de scroll
+  scrollToPosition?: number; // Posición Y específica a la que regresar (debe ser menor que threshold)
   className?: string;
 }
 
 export function ScrollToTopFAB({ 
   threshold = 300, 
   duration = 800,
+  scrollToPosition = 0,
   className = ""
 }: ScrollToTopFABProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+
+  // Validar que scrollToPosition sea menor que threshold
+  const targetPosition = Math.max(0, Math.min(scrollToPosition, threshold - 1));
+  
+  // Warning en desarrollo si la configuración no es óptima
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && scrollToPosition >= threshold) {
+      console.warn(
+        `ScrollToTopFAB: scrollToPosition (${scrollToPosition}) should be less than threshold (${threshold}) for optimal UX. Using ${targetPosition} instead.`
+      );
+    }
+  }, [scrollToPosition, threshold, targetPosition]);
 
   // Prevent hydration mismatch by only rendering after mount
   useEffect(() => {
@@ -44,7 +58,12 @@ export function ScrollToTopFAB({
 
     const currentY = window.scrollY;
     const start = currentY;
+    const target = targetPosition;
+    const distance = start - target;
     const startTime = performance.now();
+
+    // Si ya estamos en la posición objetivo o muy cerca, no hacer nada
+    if (Math.abs(distance) < 10) return;
 
     const animate = (time: number) => {
       const elapsed = time - startTime;
@@ -55,7 +74,8 @@ export function ScrollToTopFAB({
         ? 2 * progress * progress 
         : 1 - Math.pow(-2 * progress + 2, 2) / 2;
       
-      window.scrollTo(0, start * (1 - easeInOut));
+      const currentPosition = start - (distance * easeInOut);
+      window.scrollTo(0, currentPosition);
       
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -75,7 +95,6 @@ export function ScrollToTopFAB({
       className={cn(
         // Use CSS media queries for mobile detection to avoid hydration issues
         "fixed bottom-20 right-4 z-40 transition-all duration-300 ease-in-out",
-        "block md:hidden", // Only show on mobile using CSS
         isVisible 
           ? "opacity-100 translate-y-0 scale-100" 
           : "opacity-0 translate-y-4 scale-90 pointer-events-none",
@@ -94,7 +113,7 @@ export function ScrollToTopFAB({
           // Efecto de resplandor sutil
           "ring-2 ring-primary/20 hover:ring-primary/30"
         )}
-        aria-label="Scroll to top"
+        aria-label={`Scroll to ${targetPosition === 0 ? 'top' : `position ${targetPosition}px`}`}
       >
         <ArrowUp className="h-5 w-5" />
       </Button>
