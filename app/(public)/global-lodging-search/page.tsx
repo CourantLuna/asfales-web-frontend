@@ -1,8 +1,8 @@
 
-import LodgingSearch from "@/components/lodging-search/LodgingSearch";
+import LodgingSearchMedellinDemo from "@/components/lodging-search/LodgingSearchMedellinDemo";
 
 export default function lodgingSearch() {
   return (
-  <LodgingSearch/>
+  <LodgingSearchMedellinDemo/>
   );
 }

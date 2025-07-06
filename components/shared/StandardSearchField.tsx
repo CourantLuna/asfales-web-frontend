@@ -235,7 +235,7 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
 
     const handleSelect = (option: StandardSearchOption & { sourceId: string; sourceType: string }) => {
       if (!option.disabled) {
-        onValueChange(option.label);
+        onValueChange(option.value);
         onSelect?.(option, option.sourceType);
         setOpen(false);
         setInternalValue("");
@@ -255,7 +255,25 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
       setInternalValue("");
     };
 
-    const displayValue = value || placeholder;
+    // Función para mapear el value (código) al label (nombre mostrado)
+    const getDisplayLabelFromValue = (currentValue: string): string => {
+      if (!currentValue) return "";
+      
+      // Buscar en todas las fuentes de datos
+      for (const source of dataSources) {
+        for (const option of source.options) {
+          const optionValue = option[source.nameValueField] || '';
+          if (optionValue === currentValue) {
+            return option[source.nameLabelField] || '';
+          }
+        }
+      }
+      
+      // Si no se encuentra el mapeo, devolver el valor tal como está
+      return currentValue;
+    };
+
+    const displayValue = value ? getDisplayLabelFromValue(value) : placeholder;
 
     // Render del botón trigger según la variante
     const renderTriggerButton = () => {

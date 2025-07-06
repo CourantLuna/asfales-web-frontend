@@ -23,17 +23,17 @@ import { Building2, Clock, MapPin, Plane, Search } from 'lucide-react';
       options: [
         { 
           destination: "Medellín (MDE - A. Internacional José...)", 
-          searchId: "med1", 
+          searchId: "MDE", 
           period: "3 de julio–6 de julio"
         },
         { 
           destination: "Miami (MIA - Aeropuerto Internacional...)", 
-          searchId: "mia1", 
+          searchId: "MIA", 
           period: "1 de julio–30 de agosto • 60 noches • 2..."
         },
         { 
           destination: "San Juan de la Maguana", 
-          searchId: "sj1", 
+          searchId: "SJM", 
           period: "2 de junio–3 de junio • 1 noche • 2..."
         },
       ]
@@ -47,10 +47,10 @@ import { Building2, Clock, MapPin, Plane, Search } from 'lucide-react';
       nameValueField: "code",
       nameDescriptionField: "city",
       options: [
-        { name: "Madrid (MAD - Aeropuerto Barajas)", code: "mad", city: "Capital de España" },
-        { name: "Barcelona (BCN - Aeropuerto El Prat)", code: "bcn", city: "Ciudad mediterránea" },
-        { name: "París (CDG - Charles de Gaulle)", code: "par", city: "Ciudad de la luz" },
-        { name: "Londres (LHR - Heathrow)", code: "lon", city: "Capital británica" },
+        { name: "Madrid (MAD - Aeropuerto Barajas)", code: "MAD", city: "Capital de España" },
+        { name: "Barcelona (BCN - Aeropuerto El Prat)", code: "BCN", city: "Ciudad mediterránea" },
+        { name: "París (CDG - Charles de Gaulle)", code: "CDG", city: "Ciudad de la luz" },
+        { name: "Londres (LHR - Heathrow)", code: "LHR", city: "Capital británica" },
       ]
     },
     {
@@ -62,10 +62,10 @@ import { Building2, Clock, MapPin, Plane, Search } from 'lucide-react';
       nameValueField: "cityCode",
       nameDescriptionField: "description",
       options: [
-        { cityName: "Roma, Italia", cityCode: "rom", description: "Ciudad eterna" },
-        { cityName: "Nueva York, EE.UU.", cityCode: "nyc", description: "La gran manzana" },
-        { cityName: "Tokyo, Japón", cityCode: "tyo", description: "Metrópolis moderna" },
-        { cityName: "Buenos Aires, Argentina", cityCode: "bue", description: "París de Sudamérica" },
+        { cityName: "Roma, Italia", cityCode: "ROM", description: "Ciudad eterna" },
+        { cityName: "Nueva York, EE.UU.", cityCode: "NYC", description: "La gran manzana" },
+        { cityName: "Tokyo, Japón", cityCode: "TYO", description: "Metrópolis moderna" },
+        { cityName: "Buenos Aires, Argentina", cityCode: "BUE", description: "París de Sudamérica" },
       ]
     },
     {
@@ -105,8 +105,8 @@ export default function LodgingSearchBar(
    const router = useRouter();
 
    // Estados locales para manejar valores si no vienen como props
-   const [localGoingTo, setLocalGoingTo] = useState<string>("");
-   const [localTravelingFrom, setLocalTravelingFrom] = useState<string>("nyc");
+   const [localGoingTo, setLocalGoingTo] = useState<string>("MAD");
+   const [localTravelingFrom, setLocalTravelingFrom] = useState<string>("NYC");
 
    const [guestRooms, setGuestRooms] = useState<Room[]>([{
     id: "room-1",
@@ -123,6 +123,7 @@ export default function LodgingSearchBar(
     const currentTravelingFrom = travelingFrom !== undefined ? travelingFrom : localTravelingFrom;
     
     const handleGoingToChange = (value: string) => {
+      console.log('🔍 handleGoingToChange called with value:', value);
       if (setGoingTo) {
         setGoingTo(value);
       } else {
@@ -151,8 +152,12 @@ export default function LodgingSearchBar(
 
     function handleBuscar() {
     
-    // const y = window.scrollY || window.pageYOffset;
-    // alert(`Scroll Y actual: ${y}`);
+    console.log('🚀 handleBuscar called with values:', {
+      currentGoingTo,
+      currentTravelingFrom,
+      goingTo,
+      travelingFrom
+    });
     
     // Construir los parámetros de la URL de forma segura
     const params = new URLSearchParams();
@@ -184,7 +189,9 @@ export default function LodgingSearchBar(
     }
     
     // Navegar con la URL construida
-    router.push(`lodgings/hotels-and-resorts?${params.toString()}`);
+    const finalUrl = `/lodgings/hotels-and-resorts?${params.toString()}`;
+    console.log('🌐 Final URL:', finalUrl);
+    router.replace(finalUrl);
   }
    return (
        <div>
@@ -199,11 +206,10 @@ export default function LodgingSearchBar(
           onValueChange={handleGoingToChange}
           dataSources={searchDataSources}
           onSelect={(option, sourceType) => {
-            // Actualizar el valor del destino con el label de la opción seleccionada
-            handleGoingToChange(option.label);
-            
-            // Opcional: Lógica adicional basada en el tipo de fuente
-            console.log(`Seleccionado: ${option.label} (${sourceType})`, {
+            // StandardSearchField ya maneja el value correctamente via onValueChange
+            // Solo necesitamos lógica adicional opcional aquí
+            console.log(`🎯 onSelect called:`, {
+              label: option.label,
               value: option.value,
               description: option.description,
               sourceType

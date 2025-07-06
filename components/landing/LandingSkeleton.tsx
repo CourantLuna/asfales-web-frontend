@@ -22,6 +22,17 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
   const [travelingFrom, setTravelingFrom] = useState<string>("");
   const [goingTo, setGoingTo] = useState<string>("");
   
+  // Funciones wrapper para logging
+  const handleTravelingFromChange = (value: string) => {
+    console.log('🔄 travelingFrom changed to:', value);
+    setTravelingFrom(value);
+  };
+  
+  const handleGoingToChange = (value: string) => {
+    console.log('🔄 goingTo changed to:', value);
+    setGoingTo(value);
+  };
+  
   // Fuentes de datos compartidas
   const searchDataSources = [
     {
@@ -117,9 +128,11 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
   }
 
   const handleSearch = (origin: string, destination: string) => {
+    console.log('🔍 LandingSkeleton.handleSearch called with:', { origin, destination });
     setSearchValues({ origin, destination });
-    setTravelingFrom(origin);
-    setGoingTo(destination);
+    handleTravelingFromChange(origin);
+    handleGoingToChange(destination);
+    console.log('🔍 State updated:', { travelingFrom: origin, goingTo: destination });
     smoothScrollTo(resultsRef.current?.offsetTop ?? 0, 1000);
   };
 
@@ -132,9 +145,9 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
           onSearch={handleSearch}
           dataSources={searchDataSources}
           originValue={travelingFrom}
-          onOriginValueChange={setTravelingFrom}
+          onOriginValueChange={handleTravelingFromChange}
           destinationValue={goingTo}
-          onDestinationValueChange={setGoingTo}
+          onDestinationValueChange={handleGoingToChange}
           activeTab={activeTab}
           onScrollToResults={scrollToResults}
         />
@@ -150,9 +163,9 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
             onScrollToResults={scrollToResults}
             // Props para sincronización de campos
             travelingFrom={travelingFrom}
-            setTravelingFrom={setTravelingFrom}
+            setTravelingFrom={handleTravelingFromChange}
             goingTo={goingTo}
-            setGoingTo={setGoingTo}
+            setGoingTo={handleGoingToChange}
             searchDataSources={searchDataSources}
           />
 

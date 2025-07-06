@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import LodgingResultsWithFilters from '../lodging-search/LodgingResultsWithFilters';
+import LodgingResultsWithFilters from '../lodging-search/LodgingResultsTemplate';
 
 /**
  * Componente padre ejemplo que demuestra cómo configurar 

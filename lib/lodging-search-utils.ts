@@ -13,6 +13,97 @@ export interface LodgingSearchParams {
 }
 
 /**
+ * Mapa de códigos de destino a información completa
+ */
+const destinationMap: Record<string, { name: string; fullName: string; country?: string }> = {
+  'MDE': { 
+    name: 'Medellín', 
+    fullName: 'Medellín (MDE - A. Internacional José María Córdova)', 
+    country: 'Colombia' 
+  },
+  'MIA': { 
+    name: 'Miami', 
+    fullName: 'Miami (MIA - Aeropuerto Internacional de Miami)', 
+    country: 'Estados Unidos' 
+  },
+  'SJM': { 
+    name: 'San Juan de la Maguana', 
+    fullName: 'San Juan de la Maguana', 
+    country: 'República Dominicana' 
+  },
+  'MAD': { 
+    name: 'Madrid', 
+    fullName: 'Madrid (MAD - Aeropuerto Barajas)', 
+    country: 'España' 
+  },
+  'BCN': { 
+    name: 'Barcelona', 
+    fullName: 'Barcelona (BCN - Aeropuerto El Prat)', 
+    country: 'España' 
+  },
+  'CDG': { 
+    name: 'París', 
+    fullName: 'París (CDG - Charles de Gaulle)', 
+    country: 'Francia' 
+  },
+  'LHR': { 
+    name: 'Londres', 
+    fullName: 'Londres (LHR - Heathrow)', 
+    country: 'Reino Unido' 
+  },
+  'ROM': { 
+    name: 'Roma', 
+    fullName: 'Roma, Italia', 
+    country: 'Italia' 
+  },
+  'NYC': { 
+    name: 'Nueva York', 
+    fullName: 'Nueva York, EE.UU.', 
+    country: 'Estados Unidos' 
+  },
+  'TYO': { 
+    name: 'Tokyo', 
+    fullName: 'Tokyo, Japón', 
+    country: 'Japón' 
+  },
+  'BUE': { 
+    name: 'Buenos Aires', 
+    fullName: 'Buenos Aires, Argentina', 
+    country: 'Argentina' 
+  },
+};
+
+/**
+ * Convierte un código de destino a su nombre legible
+ */
+export function getDestinationName(code?: string): string {
+  if (!code) return '';
+  
+  // Si el código existe en el mapa, devolver el nombre
+  if (destinationMap[code.toUpperCase()]) {
+    return destinationMap[code.toUpperCase()].name;
+  }
+  
+  // Si no es un código conocido, asumir que es texto libre y devolverlo tal como está
+  return code;
+}
+
+/**
+ * Convierte un código de destino a su nombre completo
+ */
+export function getDestinationFullName(code?: string): string {
+  if (!code) return '';
+  
+  // Si el código existe en el mapa, devolver el nombre completo
+  if (destinationMap[code.toUpperCase()]) {
+    return destinationMap[code.toUpperCase()].fullName;
+  }
+  
+  // Si no es un código conocido, asumir que es texto libre y devolverlo tal como está
+  return code;
+}
+
+/**
  * Parsea los parámetros de URL para búsqueda de alojamiento
  */
 export function parseLodgingSearchParams(searchParams: URLSearchParams): LodgingSearchParams {
