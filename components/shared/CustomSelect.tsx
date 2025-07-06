@@ -30,7 +30,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
   return (
         <Select value={selectedKey} onValueChange={handleChange}>
-      <SelectTrigger className={`rounded-md w-full h-12 md:w-[280px] bg-white px-3 py-2 text-left ${className}`}>
+      <SelectTrigger className={`rounded-md w-full h-12 lg:w-[280px] bg-white px-3 py-2 text-left ${className}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

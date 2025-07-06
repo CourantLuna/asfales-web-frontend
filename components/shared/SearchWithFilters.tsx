@@ -1,12 +1,21 @@
 "use client";
 import React, { useState, useCallback, useMemo } from "react";
-import { Info } from "lucide-react";
+import { Info, Filter, X } from "lucide-react";
 import { FilterChips, FilterChip } from "./FilterChips";
 import ResultFilters, { FilterConfig } from "./ResultFilters";
 import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 import { RowData } from "./RenderFields";
 import CompareSwitchControl from "./CompareSwitchControl";
 import { Separator } from "@radix-ui/react-select";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface DataSource {
   id: string;
@@ -131,6 +140,7 @@ export default function SearchWithFilters({
   const [compareMode, setCompareMode] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const [filteredRows, setFilteredRows] = useState<RowData[]>(rows);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   
   // Estados dinámicos para filtros genéricos - Inicialización estática para evitar loops
   const [filterStates, setFilterStates] = useState<Record<string, any>>({});
@@ -162,16 +172,6 @@ export default function SearchWithFilters({
       [filterId]: value
     }));
   }, []);
-
-  // Función para generar chips de filtro
-const updateFilterChips = useCallback((filterId: string, chips: Array<{id: string, label: string, onRemove: () => void}>) => {
-  setActiveChips(prev => {
-    // Remover chips existentes de este filtro
-    const filtered = prev.filter(chip => !chip.id.startsWith(`${filterId}-`));
-    // Agregar nuevos chips
-    return [...filtered, ...chips];
-  });
-}, []);
 
   // Función helper para remover un valor específico de un filtro múltiple
   const removeFilterValue = useCallback((filterId: string, valueToRemove: string) => {
@@ -459,30 +459,98 @@ const updateFilterChips = useCallback((filterId: string, chips: Array<{id: strin
     filterStates, searchValue, compareMode, onFiltersChange
   ]);
 
+  // Componente de filtros reutilizable
+  const FiltersContent = () => (
+    <>
+      {/* Modo de Comparación */}
+      {enableCompareMode && (
+        <div className="my-4">
+          <CompareSwitchControl
+            checked={compareMode}
+            onCheckedChange={setCompareMode}
+            titleOff={compareConfig.titleOff || "Comparar elementos"}
+            subtitleOff={compareConfig.subtitleOff || "Obtén una vista lado a lado de hasta 5 elementos"}
+            titleOn={compareConfig.titleOn || "Comparando elementos"}
+            subtitleOn={compareConfig.subtitleOn || "Selecciona elementos para comparar lado a lado"}
+          />
+        </div>
+      )}
+      <Separator className="my-4" />
+      {/* Filtros de Resultados */}
+      <ResultFilters filters={filtersConfig} />
+    </>
+  );
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 mt-2 mb-12">
-      {/* Columna de Filtros - Lado Izquierdo */}
-      <div className="w-full lg:w-60 flex-shrink-0 mt-1">
-        {/* Modo de Comparación */}
-        {enableCompareMode && (
-          <div className="my-4">
-            <CompareSwitchControl
-              checked={compareMode}
-              onCheckedChange={setCompareMode}
-              titleOff={compareConfig.titleOff || "Comparar elementos"}
-              subtitleOff={compareConfig.subtitleOff || "Obtén una vista lado a lado de hasta 5 elementos"}
-              titleOn={compareConfig.titleOn || "Comparando elementos"}
-              subtitleOn={compareConfig.subtitleOn || "Selecciona elementos para comparar lado a lado"}
-            />
-          </div>
-        )}
-        <Separator className="my-4" />
-        {/* Filtros de Resultados */}
-        <ResultFilters filters={filtersConfig} />
+      {/* Columna de Filtros - Lado Izquierdo (Desktop) */}
+      <div className="hidden lg:block w-full lg:w-60 flex-shrink-0 mt-1">
+        <FiltersContent />
       </div>
 
       {/* Contenido Principal - Lado Derecho */}
       <div className="min-w-0 flex-1">
+        {/* Botón de Filtros para Mobile/Tablet */}
+        <div className="lg:hidden mb-4">
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="w-full md:w-[280px] h-12 text-primary">
+                <Filter className="w-4 h-4 mr-2" />
+                Busca y Filtra
+                {activeChips.length > 0 && (
+                  <span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs">
+                    {activeChips.length}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-full sm:w-80 p-0">
+              <SheetHeader className="p-6 pb-4">
+                <SheetTitle>Filtros</SheetTitle>
+                <SheetDescription>
+                  Personaliza tu búsqueda con los filtros disponibles
+                </SheetDescription>
+              </SheetHeader>
+              <div className="px-6 pb-6 overflow-y-auto max-h-[calc(100vh-180px)]">
+                 { /* Selector de ordenamiento en mobile/laptop */}
+          <div className="lg:hidden flex flex-col items-center md:items-end w-full md:w-auto">
+            <span className="text-xs text-muted-foreground mb-0.5">
+              {sortByText}
+            </span>
+            <CustomSelect
+              options={sortOptions}
+              selectedKey={sort}
+              onChange={setSort}
+            />
+          </div>
+          
+                <FiltersContent />
+                
+              </div>
+              <div className="border-t p-4 mt-auto">
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={clearAllFilters}
+                    className="flex-1"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => setIsSheetOpen(false)}
+                    className="flex-1"
+                  >
+                    Aplicar filtros
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
         {/* Filtros Activos */}
         <div>
           <FilterChips
@@ -506,7 +574,8 @@ const updateFilterChips = useCallback((filterId: string, chips: Array<{id: strin
               <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
             </div>
           </div>
-          <div className="flex flex-col items-center md:items-end w-full md:w-auto">
+          { /* Selector de ordenamiento en Desktop */}
+          <div className="hidden lg:block flex flex-col items-center md:items-end w-full md:w-auto">
             <span className="text-xs text-muted-foreground mb-0.5">
               {sortByText}
             </span>

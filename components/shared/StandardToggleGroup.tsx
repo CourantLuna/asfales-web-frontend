@@ -256,7 +256,7 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
         case 4: return "grid-cols-4";
         case 5: return "grid-cols-5";
         case 6: return "grid-cols-6";
-        case "auto": return "grid-cols-2";
+        case "auto": return "grid-cols-3 md:grid-cols-2";
         default: return "grid-cols-2";
       }
     };
