@@ -32,12 +32,12 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
   `;
 
   return (
-    <div className="w-full mx-auto pt-5">
+    <div className="w-full mx-auto pt-5 flex-1 flex-col flex">
       <div className="md:hidden mb-4  w-full">
               <h1 className="text-2xl font-semibold mx-4 text-secondary ">Notificaciones</h1>
 
       </div>
-      <Tabs value={activeTab} className="  md:mt-[60px] flex justify-center border-b-2">
+      <Tabs value={activeTab} className=" flex justify-center border-b-2">
         <TabsList className="bg-transparent grid  grid-cols-3">
           <TabsTrigger value="general" asChild className={classNameTab}>
             <Link href="/inbox/general" className="flex items-center justify-center gap-2">
@@ -62,7 +62,7 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
         </TabsList>
       </Tabs>
 
-      <div className="mt-6 max-w-7xl mx-auto">{children}</div>
+      <div className="mt-6 max-w-7xl mx-auto flex-1 flex flex-col h-full mt-30 md:mt-0 md:justify-center">{children}</div>
     </div>
   );
 }

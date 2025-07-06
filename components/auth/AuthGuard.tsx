@@ -17,7 +17,7 @@ export function AuthGuard({ parentPath, children }: AuthGuardProps) {
   const isAtParent = pathname === parentPath;
 
   useEffect(() => {
-    if (loading) return; // ⬅️ AHORA sí sabemos cuándo terminó de cargar
+    // if (loading) return; // ⬅️ AHORA sí sabemos cuándo terminó de cargar
     if (!user && !isAtParent && !didRedirect.current) {
       didRedirect.current = true;
       router.replace(`${parentPath}`); // Redirige al padre si no hay usuario
@@ -25,7 +25,7 @@ export function AuthGuard({ parentPath, children }: AuthGuardProps) {
   }, [user, loading, isAtParent, parentPath, router]);
 
   // Mientras loading y NO estamos en el padre, muestra loader
-  if (loading && !isAtParent) return <div>Cargando...</div>;
+  // if (loading && !isAtParent) return <div>Cargando...</div>;
   // Si loading y estoy en el padre, deja pasar normal (de hecho, puedes poner un splash si quieres)
   // Si no hay usuario y estoy en el padre, deja pasar
   // Si hay usuario, deja pasar

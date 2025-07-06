@@ -1,3 +1,5 @@
+// File: asfales-web-frontend/components/lodging-search/LodgingResultsWithFilters.tsx
+
 "use client";
 import { Lodging } from "@/types/lodging.types";
 import { RowData } from "../shared/RenderFields";
@@ -208,7 +210,34 @@ const sortOptions: CustomSelectOption[] = [
   },
 ];
 
-export default function LodgingSearch() {
+// Configuración de valores por defecto para filtros
+interface FilterDefaults {
+  search?: string;
+  popularFilters?: string[];
+  guestRating?: string;
+  priceRange?: [number, number];
+  amenities?: string[];
+  starRating?: string[];
+  paymentType?: string[];
+  cancellationOptions?: string[];
+  propertyType?: string[];
+}
+
+interface LodgingResultsWithFiltersProps {
+  // Configuración de valores por defecto para cada filtro
+  filterDefaults?: FilterDefaults;
+  // Otros props que puedas necesitar en el futuro
+  className?: string;
+  onFiltersChange?: (filters: Record<string, any>) => void;
+  onCardClick?: (idx: number, row: any) => void;
+}
+
+export default function LodgingResultsWithFilters({
+  filterDefaults = {},
+  className,
+  onFiltersChange,
+  onCardClick
+}: LodgingResultsWithFiltersProps) {
   const [rows, setRows] = useState<RowData[]>([]);
   const [loading, setLoading] = React.useState(true);
   const progressRef = useRef<EventDrivenProgressRef>(null);
@@ -237,7 +266,7 @@ export default function LodgingSearch() {
       showClearButton: true,
       minSearchLength: 2,
       dataSources: dataSourcesLodging,
-      // defaultValue: "Hotel" // Ejemplo: búsqueda por defecto
+      defaultValue: filterDefaults.search // Configurable desde el padre
     },
     { id: "separator-1", type: "separator" as const, className: "bg-muted" },
     {
@@ -249,7 +278,7 @@ export default function LodgingSearch() {
       initialVisibleCount: 5,
       showMoreText: "Ver más filtros",
       showLessText: "Ver menos",
-      // defaultValue: ["pet-friendly", "pool"] // Ejemplo: filtros seleccionados por defecto
+      defaultValue: filterDefaults.popularFilters // Configurable desde el padre
     },
     { id: "separator-2", type: "separator" as const },
     {
@@ -258,7 +287,7 @@ export default function LodgingSearch() {
       label: "Calificación de huéspedes",
       variant: "vertical" as const,
       helperText: "Filtra por calificación promedio",
-      // defaultValue: "very-good" // Ejemplo: calificación seleccionada por defecto
+      defaultValue: filterDefaults.guestRating // Configurable desde el padre
     },
     { id: "separator-3", type: "separator" as const },
     {
@@ -269,7 +298,7 @@ export default function LodgingSearch() {
       max: 1000,
       currency: "$",
       step: 10,
-      // defaultValue: [50, 500] // Ejemplo: rango de precio por defecto
+      defaultValue: filterDefaults.priceRange // Configurable desde el padre
     },
     {
       id: "amenities",
@@ -284,7 +313,7 @@ export default function LodgingSearch() {
       toggleGroupClassName: "gap-3",
       toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
       maxSelections: 10,
-      // defaultValue: ["wifi", "pool"] // Ejemplo: amenities seleccionados por defecto
+      defaultValue: filterDefaults.amenities // Configurable desde el padre
     },
     { id: "separator-4", type: "separator" as const },
     {
@@ -295,8 +324,8 @@ export default function LodgingSearch() {
       maxSelections: 5,
       initialVisibleCount: 5,
       showMoreText: "Ver más",
-      showLessText: "Ver menos"
-      // defaultValue: ["4-stars", "5-stars"] // Ejemplo: estrellas seleccionadas por defecto
+      showLessText: "Ver menos",
+      defaultValue: filterDefaults.starRating // Configurable desde el padre
     },
     { id: "separator-5", type: "separator" as const },
     {
@@ -305,8 +334,8 @@ export default function LodgingSearch() {
       label: "Tipo de pago",
       showCounts: true,
       maxSelections: 1,
-      initialVisibleCount: 1
-      // defaultValue: ["reserve-now-pay-later"] // Ejemplo: tipo de pago por defecto
+      initialVisibleCount: 1,
+      defaultValue: filterDefaults.paymentType // Configurable desde el padre
     },
     { id: "separator-6", type: "separator" as const },
     {
@@ -315,8 +344,8 @@ export default function LodgingSearch() {
       label: "Opciones de cancelación",
       showCounts: true,
       maxSelections: 1,
-      initialVisibleCount: 1
-      // defaultValue: ["fully-refundable"] // Ejemplo: cancelación por defecto
+      initialVisibleCount: 1,
+      defaultValue: filterDefaults.cancellationOptions // Configurable desde el padre
     },
     { id: "separator-7", type: "separator" as const },
     {
@@ -327,10 +356,10 @@ export default function LodgingSearch() {
       maxSelections: 10,
       initialVisibleCount: 8,
       showMoreText: "Ver más",
-      showLessText: "Ver menos"
-      // defaultValue: ["hotel", "apartment"] // Ejemplo: tipos de propiedad por defecto
+      showLessText: "Ver menos",
+      defaultValue: filterDefaults.propertyType // Configurable desde el padre
     }
-  ], [dataSourcesLodging]);
+  ], [dataSourcesLodging, filterDefaults]);
 
   // Configuración de opciones para cada filtro
   const filterOptions = React.useMemo(() => ({
@@ -396,42 +425,44 @@ export default function LodgingSearch() {
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;
 
   return (
-    <SearchWithFilters
-      rows={rows}
-      // Nueva API genérica
-      filters={filters}
-      filterOptions={filterOptions}
-      // Configuración
-      sortOptions={sortOptions}
-      enableCompareMode={true}
-      compareConfig={{
-        titleOff: "Comparar propiedades",
-        subtitleOff: "Obtén una vista lado a lado de hasta 5 propiedades",
-        titleOn: "Comparando propiedades",
-        subtitleOn: "Selecciona propiedades para comparar lado a lado"
-      }}
-      // Textos personalizables
-      searchPlaceholder="Buscar alojamiento..."
-      noResultsMessage="No se encontraron propiedades"
-      clearFiltersText="Limpiar filtros"
-      sortByText="Ordenar por"
-      howItWorksText="¿Cómo funciona nuestro orden?"
-      resultsCountText={(count) => `${count}+ alojamientos`}
-      renderResults={({ filteredRows, compareMode, onCardClick }) => (
-        <LodgingCardList
-          onCardClick={onCardClick}
-          rows={filteredRows}
-          showCompareCheckbox={compareMode}
-          initialVisibleCards={6}
-          cardsPerStep={6}
-          showMoreLabel="Mostrar más alojamientos"
-          showLessLabel="Mostrar menos"
-          enableShowLess={true}
-        />
-      )}
-      onCardClick={(idx, row) => alert(`¡Click en card #${idx}: ${row.title}!`)}
-      onFiltersChange={(filters) => console.log("Filters changed:", filters)}
-    />
+    <div className={className}>
+      <SearchWithFilters
+        rows={rows}
+        // Nueva API genérica
+        filters={filters}
+        filterOptions={filterOptions}
+        // Configuración
+        sortOptions={sortOptions}
+        enableCompareMode={true}
+        compareConfig={{
+          titleOff: "Comparar propiedades",
+          subtitleOff: "Obtén una vista lado a lado de hasta 5 propiedades",
+          titleOn: "Comparando propiedades",
+          subtitleOn: "Selecciona propiedades para comparar lado a lado"
+        }}
+        // Textos personalizables
+        searchPlaceholder="Buscar alojamiento..."
+        noResultsMessage="No se encontraron propiedades"
+        clearFiltersText="Limpiar filtros"
+        sortByText="Ordenar por"
+        howItWorksText="¿Cómo funciona nuestro orden?"
+        resultsCountText={(count) => `${count}+ alojamientos`}
+        renderResults={({ filteredRows, compareMode, onCardClick: internalOnCardClick }) => (
+          <LodgingCardList
+            onCardClick={onCardClick || internalOnCardClick}
+            rows={filteredRows}
+            showCompareCheckbox={compareMode}
+            initialVisibleCards={6}
+            cardsPerStep={6}
+            showMoreLabel="Mostrar más alojamientos"
+            showLessLabel="Mostrar menos"
+            enableShowLess={true}
+          />
+        )}
+        onCardClick={onCardClick || ((idx, row) => alert(`¡Click en card #${idx}: ${row.title}!`))}
+        onFiltersChange={onFiltersChange || ((filters) => console.log("Filters changed:", filters))}
+      />
+    </div>
   );
 }
 

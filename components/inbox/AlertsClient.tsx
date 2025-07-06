@@ -69,7 +69,7 @@ export default function AlertsClient() {
       </ShowIfAuth>
 
       <ShowIfUnauth>
-        <div className="flex flex-col items-center justify-center py-16 space-y-4">
+        <div className="flex flex-col items-center justify-center text-center">
           <Image
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/AlertsNoAuthIcon-vVX6vXUoLuaODu6m3e8sDcW2j6ts49.svg"
             alt="Lock Icon"

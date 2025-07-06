@@ -17,7 +17,9 @@ Mountain as MountainIcon,
   Mountain,
   Route,
   Clock,
-  MapPin, } from "lucide-react"
+  MapPin,
+  Search,
+  Filter, } from "lucide-react"
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
 import { GuestSelector, Room } from "@/components/shared/GuestSelector"
 import { DateRange } from "react-day-picker"
@@ -28,6 +30,7 @@ import { StandardToggleGroup } from "@/components/shared/StandardToggleGroup"
 import { SearchFieldsWithSwap } from "@/components/shared/SearchFieldsWithSwap"
 import React from "react"
 import { set } from "date-fns";
+import { StandardSearchField } from "../shared/StandardSearchField";
 
 export default function TravelOptionsTabs({
   activeTab,
@@ -295,57 +298,103 @@ export default function TravelOptionsTabs({
 
         
       </div>
+
+      {/* Search Fields - Origin to Destination */}
+    <SearchFieldsWithSwap
+      originLabel="Origen"
+      originPlaceholder="¿Dónde empieza tu aventura?"
+      originValue={travelingFrom}
+      onOriginValueChange={setTravelingFrom}
+      destinationLabel="Destino"
+      destinationPlaceholder="¿A dónde quieres ir?"
+      destinationValue={goingTo}
+      onDestinationValueChange={setGoingTo}
+      dataSources={searchDataSources}
+      onOriginSelect={(option, sourceType) => {
+        setTravelingFrom(option.label);
+        console.log("Origen seleccionado:", option, "Tipo:", sourceType);
+      }}
+      onDestinationSelect={(option, sourceType) => {
+        setGoingTo(option.label);
+        console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+      }}
+      customSwapHandler={handleSwapLocations}
+      
+      minSearchLength={0}
+            showSearchButton={false}
+
+    />
     </div>
   );
 
   const getLodgingContent = () => (
     <div className="w-full flex flex-col gap-4 items-start">
-        {/* Tipo de Alojamiento */}
-        <StandardToggleGroup
-          label="Tipo de Alojamiento"
-          type="multiple"
-          value={selectedLodgingTypes}
-          onValueChange={(value) => setSelectedLodgingTypes(Array.isArray(value) ? value : [value])}
-          options={[
-            {
-              value: "hotel",
-              label: "Hoteles",
-              icon: <Hotel className="mr-2 h-4 w-4" />
-            },
-            {
-              value: "house",
-              label: "Casas",
-              icon: <Home className="mr-2 h-4 w-4" />
-            },
-            {
-              value: "apartment",
-              label: "Apartamentos",
-              icon: <Building2 className="mr-2 h-4 w-4" />
-            },
-            {
-              value: "guest",
-              label: "Casa de huéspedes",
-              icon: <span className="mr-2">🛏</span>
-            }
-          ]}
+      {/* Tipo de Alojamiento */}
+      <StandardToggleGroup
+        label="Tipo de Alojamiento"
+        type="multiple"
+        value={selectedLodgingTypes}
+        onValueChange={(value) =>
+          setSelectedLodgingTypes(Array.isArray(value) ? value : [value])
+        }
+        options={[
+          {
+            value: "hotel",
+            label: "Hoteles",
+            icon: <Hotel className="mr-2 h-4 w-4" />,
+          },
+          {
+            value: "house",
+            label: "Casas",
+            icon: <Home className="mr-2 h-4 w-4" />,
+          },
+          {
+            value: "apartment",
+            label: "Apartamentos",
+            icon: <Building2 className="mr-2 h-4 w-4" />,
+          },
+          {
+            value: "guest",
+            label: "Casa de huéspedes",
+            icon: <span className="mr-2">🛏</span>,
+          },
+        ]}
+      />
+
+      {/* Fechas y Huéspedes */}
+      <div className="flex flex-wrap gap-4 items-end w-full">
+         {/* Campo Destino */}
+        <StandardSearchField
+          containerClassName="w-full md:w-[280px]"
+          label={"Destino"}
+          placeholder={"¿Hacia donde?"}
+          value={goingTo}
+          onValueChange={setGoingTo}
+          dataSources={searchDataSources}
+          onSelect={(option, sourceType) => {
+            setGoingTo(option.label);
+            console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+          }}
+          showClearButton={true}
+          minSearchLength={0}
+          disabled={false}
+        />
+        
+        <DateRangePickerCustom
+          label="Fechas"
+          value={range}
+          onChange={handleRangeChange}
+          showFlexibleDates={true}
+          defaultActiveTab="flexible"
+        />
+        <GuestSelector
+          label="Huéspedes"
+          initialRooms={guestRooms}
+          onRoomsChange={setGuestRooms}
         />
 
-        {/* Fechas y Huéspedes */}
-        <div className="flex flex-wrap gap-4 items-end w-full">
-          <DateRangePickerCustom
-              label="Fechas"
-              value={range}
-              onChange={handleRangeChange}
-              showFlexibleDates={true}
-              defaultActiveTab="flexible"
-            />
-          <GuestSelector
-              label="Huéspedes"
-              initialRooms={guestRooms}
-              onRoomsChange={setGuestRooms}
-            />
-        </div>
-      
+       
+      </div>
     </div>
   );
 
@@ -367,6 +416,24 @@ export default function TravelOptionsTabs({
           options={experiencesOptions}
         />
 
+        {/* Campo Destino */}
+        <StandardSearchField
+          containerClassName="w-full md:w-[280px]"
+          label={"Destino"}
+          placeholder={"¿Hacia donde?"}
+          value={goingTo}
+          onValueChange={setGoingTo}
+          dataSources={searchDataSources}
+          onSelect={(option, sourceType) => {
+            setGoingTo(option.label);
+            console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+          }}
+          showClearButton={true}
+          minSearchLength={0}
+          disabled={false}
+        />
+
+       
       
     </div>
   );
@@ -412,6 +479,30 @@ export default function TravelOptionsTabs({
             setSelected={setSelectedExperiences}
           />
         </div>
+            {/* Search Fields - Origin to Destination */}
+    <SearchFieldsWithSwap
+      originLabel="Origen"
+      originPlaceholder="Voy desde..."
+      originValue={travelingFrom}
+      onOriginValueChange={setTravelingFrom}
+      destinationLabel="Destino"
+      destinationPlaceholder="Voy hacia..."
+      destinationValue={goingTo}
+      onDestinationValueChange={setGoingTo}
+      dataSources={searchDataSources}
+      onOriginSelect={(option, sourceType) => {
+        setTravelingFrom(option.label);
+        console.log("Origen seleccionado:", option, "Tipo:", sourceType);
+      }}
+      onDestinationSelect={(option, sourceType) => {
+        setGoingTo(option.label);
+        console.log("Destino seleccionado:", option, "Tipo:", sourceType);
+      }}
+      customSwapHandler={handleSwapLocations}
+      showSearchButton={false}
+      showClearButton={true}
+      minSearchLength={0}
+    />
       
     </div>
   );
@@ -453,32 +544,22 @@ export default function TravelOptionsTabs({
         mobilePlaceholder="Selecciona una categoría"
       />
 
-    {/* Search Fields - Origin to Destination */}
-    <SearchFieldsWithSwap
-      originLabel="Origen"
-      originPlaceholder="¿Dónde empieza tu aventura?"
-      originValue={travelingFrom}
-      onOriginValueChange={setTravelingFrom}
-      destinationLabel="Destino"
-      destinationPlaceholder="¿A dónde quieres ir?"
-      destinationValue={goingTo}
-      onDestinationValueChange={setGoingTo}
-      dataSources={searchDataSources}
-      onOriginSelect={(option, sourceType) => {
-        setTravelingFrom(option.label);
-        console.log("Origen seleccionado:", option, "Tipo:", sourceType);
-      }}
-      onDestinationSelect={(option, sourceType) => {
-        setGoingTo(option.label);
-        console.log("Destino seleccionado:", option, "Tipo:", sourceType);
-      }}
-      customSwapHandler={handleSwapLocations}
-      searchButtonText={searchButtonLabel}
-      onSearch={handleBuscar}
-      swapButtonColor="#FFA500"
-      showClearButton={true}
-      minSearchLength={0}
-    />
+    <div className="flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
+                    <Button
+                      className={
+                        "bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"}
+                      variant="default"
+                      onClick={handleBuscar}
+                      disabled={!goingTo || !travelingFrom}
+                    >
+                      {searchButtonLabel === "Buscar Opciones de Viaje" ? (
+                        <Search className="mr-2 h-4 w-4" />
+                      ) : (
+                        <Filter className="mr-2 h-4 w-4" />
+                      )}
+                      {searchButtonLabel}
+                    </Button>
+                  </div>
     
   
     </div>

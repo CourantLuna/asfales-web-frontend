@@ -143,7 +143,7 @@ useEffect(() => {
       >
         <div className="flex flex-row items-center justify-center w-full max-w-7xl">
           <div className="flex flex-col lg:flex-row items-center gap-y-4 lg:gap-y-0 lg:gap-x-6 w-full max-w-7xl mb-0 transition-all duration-300 justify-center">
-            <div className="pointer-events-auto hide-scrollbar flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0 lg:gap-x-2 overflow-y-auto max-h-[250px] px-2">
+            <div className= {`${isStickyAtBottom ? "pointer-events-none" : "pointer-events-auto"} hide-scrollbar flex flex-col md:flex-col lg:flex-row items-center justify-center gap-y-2 md:gap-y-2 lg:gap-y-0 lg:gap-x-2 overflow-y-auto max-h-[250px] px-2`}>
               {/* Origen */}
               <div className={`transition-all duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
                 <StandardSearchField

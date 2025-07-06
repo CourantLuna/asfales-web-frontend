@@ -61,6 +61,8 @@ interface GenericFilterConfig {
   showClearButton?: boolean;
   dataSources?: DataSource[];
   onSelect?: (option: any, sourceType: string) => void;
+  // Nuevo: valores por defecto
+  defaultValue?: any; // Para checkbox/toggle: string[], para radio: string, para range: [number, number], para search: string
 }
 
 // Opción genérica para filtros
@@ -152,13 +154,25 @@ export default function SearchWithFilters({
       const initialStates: Record<string, any> = {};
       filters.forEach(filter => {
         if (filter.type === 'checkbox' || filter.type === 'toggle') {
-          initialStates[filter.id] = [];
+          // Si hay defaultValue y es un array, usarlo, sino array vacío
+          initialStates[filter.id] = filter.defaultValue && Array.isArray(filter.defaultValue) 
+            ? filter.defaultValue 
+            : [];
         } else if (filter.type === 'radio') {
-          initialStates[filter.id] = '';
+          // Si hay defaultValue y es string, usarlo, sino string vacío
+          initialStates[filter.id] = filter.defaultValue && typeof filter.defaultValue === 'string' 
+            ? filter.defaultValue 
+            : '';
         } else if (filter.type === 'range') {
-          initialStates[filter.id] = [filter.min || 0, filter.max || 1000];
+          // Si hay defaultValue y es array de 2 elementos, usarlo, sino rango por defecto
+          initialStates[filter.id] = filter.defaultValue && Array.isArray(filter.defaultValue) && filter.defaultValue.length === 2
+            ? filter.defaultValue 
+            : [filter.min || 0, filter.max || 1000];
         } else if (filter.type === 'search') {
-          initialStates[filter.id] = '';
+          // Si hay defaultValue y es string, usarlo, sino string vacío
+          initialStates[filter.id] = filter.defaultValue && typeof filter.defaultValue === 'string' 
+            ? filter.defaultValue 
+            : '';
         }
       });
       setFilterStates(initialStates);
@@ -192,13 +206,25 @@ export default function SearchWithFilters({
 
     let resetValue;
     if (filter.type === 'checkbox' || filter.type === 'toggle') {
-      resetValue = [];
+      // Resetear a defaultValue si existe, sino array vacío
+      resetValue = filter.defaultValue && Array.isArray(filter.defaultValue) 
+        ? filter.defaultValue 
+        : [];
     } else if (filter.type === 'radio') {
-      resetValue = '';
+      // Resetear a defaultValue si existe, sino string vacío
+      resetValue = filter.defaultValue && typeof filter.defaultValue === 'string' 
+        ? filter.defaultValue 
+        : '';
     } else if (filter.type === 'range') {
-      resetValue = [filter.min || 0, filter.max || 1000];
+      // Resetear a defaultValue si existe, sino rango por defecto
+      resetValue = filter.defaultValue && Array.isArray(filter.defaultValue) && filter.defaultValue.length === 2
+        ? filter.defaultValue 
+        : [filter.min || 0, filter.max || 1000];
     } else if (filter.type === 'search') {
-      resetValue = '';
+      // Resetear a defaultValue si existe, sino string vacío
+      resetValue = filter.defaultValue && typeof filter.defaultValue === 'string' 
+        ? filter.defaultValue 
+        : '';
     }
 
     updateFilterState(filterId, resetValue);
@@ -523,7 +549,7 @@ export default function SearchWithFilters({
               onChange={setSort}
             />
           </div>
-          
+
                 <FiltersContent />
                 
               </div>

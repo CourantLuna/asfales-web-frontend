@@ -248,6 +248,13 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
       setInternalValue("");
     };
 
+    const handleClearSelection = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onValueChange("");
+      setInternalValue("");
+    };
+
     const displayValue = value || placeholder;
 
     // Render del botón trigger según la variante
@@ -293,6 +300,25 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
                   {value || placeholder}
                 </div>
               </div>
+
+              {/* Botón X para limpiar selección (solo si hay valor) */}
+              {value && (
+                <div
+                  onClick={handleClearSelection}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground flex-shrink-0 cursor-pointer rounded-md hover:bg-muted transition-colors flex items-center justify-center"
+                  aria-label="Limpiar selección"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleClearSelection(e as any);
+                    }
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </div>
+              )}
             </div>
           </Button>
         );
@@ -325,7 +351,25 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
           aria-label={label || placeholder}
         >
           <Search className="mr-2 h-4 w-4 text-muted-foreground" />
-          <span className="truncate">{displayValue}</span>
+          <span className="truncate flex-1">{displayValue}</span>
+          {/* Botón X para limpiar selección (solo si hay valor) */}
+          {value && (
+            <div
+              onClick={handleClearSelection}
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground flex-shrink-0 ml-2 cursor-pointer rounded-md hover:bg-muted transition-colors flex items-center justify-center"
+              aria-label="Limpiar selección"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleClearSelection(e as any);
+                }
+              }}
+            >
+              <X className="h-4 w-4" />
+            </div>
+          )}
         </Button>
       );
     };

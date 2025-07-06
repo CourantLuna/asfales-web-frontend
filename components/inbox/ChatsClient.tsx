@@ -19,7 +19,7 @@ const mockChats = [
 
 export default function ChatsClient() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <div>
       <ShowIfAuth>
         {mockChats.length === 0 ? (
           <div className="flex flex-col items-center">
@@ -65,7 +65,7 @@ export default function ChatsClient() {
         )}
       </ShowIfAuth>
       <ShowIfUnauth>
-        <div className="flex flex-col items-center justify-center py-16 space-y-4 text-center">
+        <div className="flex flex-col items-center justify-center text-center">
           <Image
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/ChatsNoAuthIcon-MOcuXqMiznUOYyhUhXIzNq2JDIvhg9.svg"
             alt="Lock Icon"
