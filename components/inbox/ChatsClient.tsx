@@ -19,10 +19,10 @@ const mockChats = [
 
 export default function ChatsClient() {
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
       <ShowIfAuth>
         {mockChats.length === 0 ? (
-          <div className="flex flex-col items-center py-20 space-y-4">
+          <div className="flex flex-col items-center">
             <MessageCircle className="w-12 h-12 text-primary opacity-80" />
             <h3 className="text-xl font-semibold text-foreground">
               No tienes mensajes

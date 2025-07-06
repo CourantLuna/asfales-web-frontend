@@ -16,6 +16,7 @@ import {
   Gift
 } from "lucide-react";
 import Image from "next/image";
+import { ShowIfAuth } from "../ShowIfAuth";
 
 interface NotificationSetting {
   id: string;
@@ -80,15 +81,17 @@ export default function NotificationsConfig() {
   };
 
   return (
-    <div className="space-y-6 p-6 bg-gray-50 rounded-lg lg:border">
+    <ShowIfAuth>
+    <div className=" rounded-lg lg:border lg:p-6">
       {/* Header */}
-      <div className="bg-white rounded-lg lg:border">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 px-6">
+      <div className="px-6">
+        <h1 className=" hidden lg:block text-xl font-semibold text-secondary mb-2 ">
           Comunicaciones
         </h1>
-        <p className="text-gray-600 px-6">
+        <p className="text-gray-600 ">
           Controla qué notificaciones recibes de nuestra familia de marcas.
         </p>
+        </div>
 
       {/* Asfales Brand Section */}
       <Card>
@@ -298,8 +301,8 @@ export default function NotificationsConfig() {
           Restablecer a predeterminado
         </Button>
       </div>
-    </div>
+    
           </div>
-
+     </ShowIfAuth>       
   );
 }

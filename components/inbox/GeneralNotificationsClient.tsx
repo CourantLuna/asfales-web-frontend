@@ -19,9 +19,9 @@ const mockNotifications = [
 
 export default function NotificationsClient() {
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
       <ShowIfUnauth>
-        <div className="flex flex-col items-center justify-center py-16 space-y-4 text-center">
+        <div className="flex flex-col items-center justify-center text-center">
           <Image
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/NotificationNoAuthIcon-UwuOMtm7SHX3ClXBxLTIu9fw7SV5oM.svg"
             alt="Lock Icon"

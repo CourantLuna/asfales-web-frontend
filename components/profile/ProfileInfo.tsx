@@ -21,6 +21,7 @@ import {
   ChevronUp,
   ChevronDown
 } from "lucide-react";
+import { ShowIfAuth } from "../ShowIfAuth";
 
 interface ProfileInfoProps {
   className?: string;
@@ -28,7 +29,7 @@ interface ProfileInfoProps {
 
 export default function ProfileInfo({ className }: ProfileInfoProps) {
   const [showAdditionalTravelers, setShowAdditionalTravelers] = useState(false);
-
+  
   // Datos del usuario (esto vendría de tu API/estado)
   const userData = {
     name: "Ana Rodríguez",
@@ -57,7 +58,9 @@ export default function ProfileInfo({ className }: ProfileInfoProps) {
   };
 
   return (
-    <div className={`space-y-6 ${className || ''} bg-white rounded-lg lg:border p-6`}>
+        <ShowIfAuth>
+    
+    <div className={` lg:px-6 ${className || ''} bg-white rounded-lg lg:border`}>
      
 
       {/* Información básica */}
@@ -66,14 +69,14 @@ export default function ProfileInfo({ className }: ProfileInfoProps) {
           <div>
              {/* Header con nombre del usuario */}
       <div className="pb-5">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl font-bold text-primary lg:mb-2 ">
           {userData.name}
         </h1>
       </div>
-            <CardTitle className="text-2xl font-semibold">
+            <CardTitle className="hidden lg:block text-xl font-semibold text-secondary">
               Información básica
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground lg:mt-1">
               Asegúrate de que esta información coincida con tu ID de viaje, como tu pasaporte o licencia.
             </p>
           </div>
@@ -268,5 +271,6 @@ export default function ProfileInfo({ className }: ProfileInfoProps) {
         )}
       </Card>
     </div>
+    </ShowIfAuth>
   );
 }

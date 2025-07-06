@@ -56,12 +56,6 @@ export function AppNavbar() {
 
 const handleLogout = () => {
     logout(); // limpia localStorage y setUser(null)
-
-    // Reconstruye la URL manteniendo la ruta actual y añadiendo ?logout=1
-    const url = `?logout=1`;
-
-    // Cambia la URL sin recargar la app entera
-    router.push(url);
   };
   
 
@@ -102,7 +96,7 @@ const handleLogout = () => {
   const getFirstName = (name: string) => name?.split(" ")[0] ?? "";
 
   return (
-    <header className="hidden md:block relative w-full z-30">
+    <header className="hidden lg:block relative w-full z-30">
       {/* Sticky nav */}
       <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8 pr-[18px] pointer-events-none">
         {/* SVG background */}
@@ -140,57 +134,17 @@ const handleLogout = () => {
                 height={40}
               />
             </Button>
-
-            {/* Tablet menu */}
-            <div className="hidden md:flex lg:hidden pointer-events-auto">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button size="icon" variant="ghost">
-                    <Menu className="h-8 w-8" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                  <SheetHeader>
-                    <SheetTitle className="text-left text-lg">
-                      Explorar
-                    </SheetTitle>
-                  </SheetHeader>
-                  <nav className="mt-6 space-y-4">
-                    {[
-                      { label: "Transporte", icon: Plane },
-                      { label: "Alojamientos", icon: Hotel },
-                      { label: "Itinerarios", icon: CalendarCheck },
-                      { label: "Experiencias", icon: MapPinned },
-                    ].map(({ label, icon: Icon }) => (
-                      <div
-                        key={label}
-                        className="flex items-center gap-2 text-base cursor-pointer hover:text-primary"
-                      >
-                        <Icon className="h-4 w-4" />
-                        {label}
-                      </div>
-                    ))}
-                  </nav>
-                </SheetContent>
-              </Sheet>
-            </div>
           </div>
 
           {/* Perfil, idioma, notificaciones */}
           <div className="flex items-center gap-4 pr-4 md:pr-5 lg:pr-16 2xl:pr-24 z-10 pointer-events-auto">
-            {/* <Button
-              size="icon"
-              variant="outline"
-              className="rounded-full hidden xl:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
-            >
-              <Globe className="h-5 w-5" />
-            </Button> */}
+            
             <SettingsDialog />
             <Button
               size="icon"
               variant="outline"
               className="rounded-full hidden lg:inline-flex border-0 shadow-sm transition-colors hover:bg-secondary cursor-pointer"
-              onClick={() => router.push("inbox/general")}
+              onClick={() => router.replace("/inbox/general")}
             >
               <Bell className="h-5 w-5 " />
             </Button>

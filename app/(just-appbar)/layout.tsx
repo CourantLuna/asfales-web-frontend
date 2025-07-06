@@ -5,6 +5,8 @@ import { ThemeProvider } from "next-themes";
 import { AppNavbar } from "@/components/shared/AppNavbar";
 import Footer from "@/components/shared/Footer";
 import { TopBarTabs } from "@/components/shared/TopBarTabs";
+import Profile from "@/components/profile/Profile";
+import ProfileSideBar from "@/components/profile/ProfileSideBar";
 // import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,7 +18,9 @@ export default function JustAppbarLayout({ children }: { children: React.ReactNo
         <AppNavbar />
         <TopBarTabs />
         <main className="flex-1 w-full pt-[64px]">
+          
           {children}
+
         </main>
         <Footer />
         {/* <ScrollToTopFAB /> */}

@@ -63,7 +63,7 @@ export function TopBarTabs() {
   };
 
   return (
-    <nav className=" md:hidden w-full fixed top-0 left-0 right-0 z-50 md:hidden bg-primary shadow-sm border-b border-primary">
+    <nav className=" lg:hidden w-full fixed top-0 left-0 right-0 z-50 bg-primary shadow-sm border-b border-primary">
       <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="w-full h-16 bg-primary p-0 rounded-none border-0 grid grid-cols-5 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary/20">
           {TABS.map(({ label, icon: Icon, href, showBadge, badgeCount }) => (

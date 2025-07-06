@@ -15,18 +15,14 @@ export const ROUTE_CONFIG = {
   
   // Profile routes
   '/profile': 'Perfil',
-  '/profile/settings': 'Configuración',
-  '/profile/personal-info': 'Información Personal',
+  '/profile/profile-info': 'Información Personal',
   '/profile/security': 'Seguridad',
-  '/profile/notifications': 'Notificaciones',
-  '/profile/preferences': 'Preferencias',
-  '/profile/payment-methods': 'Métodos de Pago',
-  '/profile/booking-history': 'Historial de Reservas',
-  '/profile/favorites': 'Favoritos',
+  '/profile/notifications': 'Comunicaciones',
+  '/profile/payments': 'Métodos de Pago',
   '/profile/reviews': 'Reseñas',
   '/profile/help': 'Ayuda',
-  '/profile/privacy': 'Privacidad',
-  '/profile/terms': 'Términos y Condiciones',
+  '/profile/coupons': 'Cupones',
+  '/profile/credits': 'Créditos',
   
   // Lodging routes
   '/lodging': 'Alojamientos',
@@ -160,6 +156,54 @@ export const RouteUtils = {
       path: '/' + segments.slice(0, index + 1).join('/'),
       title: RouteUtils.getBreadcrumbTitle(segment),
     }));
+  },
+
+  // Nuevas funciones para autenticación
+  /**
+   * Obtiene las rutas que requieren autenticación
+   */
+  getProtectedRoutes: (): string[] => {
+    return ['/profile', '/bookings', '/settings', '/admin'];
+  },
+
+  /**
+   * Verifica si una ruta requiere autenticación
+   */
+  isProtectedRoute: (pathname: string): boolean => {
+    const protectedRoutes = RouteUtils.getProtectedRoutes();
+    return protectedRoutes.some(route => 
+      pathname === route || pathname.startsWith(route + '/')
+    );
+  },
+
+  /**
+   * Obtiene la ruta padre para redirección de autenticación
+   */
+  getAuthParentRoute: (pathname: string): string => {
+    const protectedRoutes = RouteUtils.getProtectedRoutes();
+    
+    // Verificar si la ruta actual es un child de una ruta protegida
+    for (const protectedRoute of protectedRoutes) {
+      if (RouteUtils.isSubSection(pathname, protectedRoute)) {
+        return protectedRoute;
+      }
+    }
+    
+    // Si no es un child de una ruta protegida, redirigir al home con login
+    return "/?login=1";
+  },
+
+  /**
+   * Obtiene información completa de una ruta para autenticación
+   */
+  getRouteAuthInfo: (pathname: string) => {
+    return {
+      isProtected: RouteUtils.isProtectedRoute(pathname),
+      parentRoute: RouteUtils.getAuthParentRoute(pathname),
+      isChildRoute: RouteUtils.getProtectedRoutes().some(route => 
+        RouteUtils.isSubSection(pathname, route)
+      )
+    };
   },
 };
 

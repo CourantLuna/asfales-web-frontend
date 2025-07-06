@@ -28,6 +28,10 @@ export function useAuth() {
     setUser(null);
     // 1) Recarga el layout/servidor:
     router.refresh();
+     // Reconstruye la URL manteniendo la ruta actual y añadiendo ?logout=1
+    const url = `?logout=1`;
+    // Cambia la URL sin recargar la app entera
+    router.push(url);
 
     // 2) (FALLBACK) Fuerza un reload total del browser en caso de que refresh no alcance:
     // window.location.href = pathname;

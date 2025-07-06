@@ -7,48 +7,18 @@ import {
   Scale, 
   HelpCircle, 
   ChevronRight,
-  User,
-  Bell,
-  CreditCard,
-  Gift,
-  Star,
-  Shield,
-  MessageCircle,
-  DollarSign,
-  Medal,
-  LogOut
+ 
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShowIfUnauth } from "../ShowIfUnauth";
-import { ShowIfAuth } from "../ShowIfAuth";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import {  useEffect } from "react";
 
-// Importar componentes de contenido
-import ProfileInfo from "./ProfileInfo";
-import NotificationsConfig from "./NotificationsConfig";
-import PaymentMethods from "./PaymentMethods";
-import Coupons from "./Coupons";
-import Credits from "./Credits";
-import Reviews from "./Reviews";
-import SecuritySettings from "./SecuritySettings";
-import HelpFeedback from "./HelpFeedback";
 import { useAuth } from "@/lib/hooks/useAuth";
-
 
 export default function Profile() {
   const router = useRouter();
-
-const handleLogout = () => {
-    logout(); // limpia localStorage y setUser(null)
-
-    // Reconstruye la URL manteniendo la ruta actual y añadiendo ?logout=1
-    const url = `?logout=1`;
-
-    // Cambia la URL sin recargar la app entera
-    router.push(url);
-  };
 
     const { user, logout } = useAuth();
 
@@ -60,71 +30,6 @@ const handleLogout = () => {
   // Si user ya es null, no vuelve a entrar aquí
 }, [user, logout]);
 
-  const getFirstName = (name: string) => name?.split(" ")[0] ?? "";
-  const getEmail = (email: string) => email?.split(" ")[0] ?? "";
-
-  
-  const searchParams = useSearchParams();
-  const [activeSection, setActiveSection] = useState("profile");
-
-  // Leer la sección activa desde URL params
-  useEffect(() => {
-    const section = searchParams.get("section") || "profile";
-    setActiveSection(section);
-  }, [searchParams]);
-
-  
-
-  const sidebarItems = [
-    {
-      id: "profile",
-      icon: User,
-      title: "Perfil",
-      subtitle: "Proporciona tus datos personales y detalles de viaje"
-    },
-    {
-      id: "notifications",
-      icon: Bell,
-      title: "Comunicaciones",
-      subtitle: "Controla qué notificaciones recibes"
-    },
-    {
-      id: "payments",
-      icon: CreditCard,
-      title: "Métodos de pago",
-      subtitle: "Ve métodos de pago guardados"
-    },
-    {
-      id: "coupons",
-      icon: Gift,
-      title: "Cupones",
-      subtitle: "Ve tus cupones disponibles"
-    },
-    {
-      id: "credits",
-      icon: DollarSign,
-      title: "Créditos",
-      subtitle: "Ve tus créditos de aerolínea activos"
-    },
-    {
-      id: "reviews",
-      icon: Star,
-      title: "Reseñas",
-      subtitle: "Lee reseñas que has escrito"
-    },
-    {
-      id: "security",
-      icon: Shield,
-      title: "Seguridad y configuración",
-      subtitle: "Actualiza tu email o contraseña"
-    },
-    {
-      id: "help",
-      icon: MessageCircle,
-      title: "Ayuda y comentarios",
-      subtitle: "Obtén soporte al cliente"
-    }
-  ];
 
   const menuItems = [
     {
@@ -143,43 +48,6 @@ const handleLogout = () => {
       href: "/profile/help"
     }
   ];
-
-  const handleSectionChange = (sectionId: string) => {
-    // En pantallas menores a lg, navegar a página separada
-    if (window.innerWidth < 1024) { // lg breakpoint es 1024px
-      router.push(`/profile/${sectionId}`);
-      return;
-    }
-    
-    // En desktop, cambiar contenido en la misma página
-    setActiveSection(sectionId);
-    // Opcional: actualizar URL
-    const newUrl = `${window.location.pathname}?section=${sectionId}`;
-    window.history.pushState(null, "", newUrl);
-  };
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case "profile":
-        return <ProfileInfo />;
-      case "notifications":
-        return <NotificationsConfig />;
-      case "payments":
-        return <PaymentMethods />;
-      case "coupons":
-        return <Coupons />;
-      case "credits":
-        return <Credits />;
-      case "reviews":
-        return <Reviews />;
-      case "security":
-        return <SecuritySettings />;
-      case "help":
-        return <HelpFeedback />;
-      default:
-        return <ProfileInfo />;
-    }
-  };
 
   const handleMenuItemClick = (href: string) => {
     router.push(href);
@@ -288,99 +156,7 @@ const handleLogout = () => {
 
     </ShowIfUnauth>
 
-    <ShowIfAuth>
-      
-      <div className="w-full pt-1 pb-2 px-4 md:p-6">
-
-        <div className="flex flex-col md:flex-row max-w-7xl mx-auto">
-          {/* Sidebar */}
-          <div className="w-full md:w-80 bg-white">
-            {/* Header */}
-            <div className="pb-4 p-1">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-sm">HG</span>
-                </div>
-                <div>
-                  <h1 className="font-semibold text-2xl text-gray-900">Hola, {getFirstName(user?.name ?? "usuario")}</h1>
-                  <p className="text-sm text-gray-500">{getEmail(user?.email ?? "usuario@gmail.com")}</p>
-                </div>
-              </div>
-              <div className="mt-4 bg-blue-50 rounded-lg p-3 border border-gray-200 w-full">
-                <div className="flex items-center justify-center mb-2">
-                  <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded font-medium">Blue</span>
-                </div>
-                <div className="flex items-center justify-center mb-3">
-                  <div className="flex items-center space-x-1">
-                    <span className="text-sm font-medium text-gray-900">GoFarPass™</span>
-                    <div className="w-4 h-4 bg-gray-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs">?</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900 mb-3 text-center">$0.00</div>
-                <div className="flex items-center justify-center">
-                  <button className="flex items-center justify-between w-full text-sm text-gray-700 hover:text-gray-900">
-                    <Medal className="w-4 h-4 mr-2" />
-                    <span>Ver actividad de recompensas</span>
-                    <ChevronRight className={`w-4 h-4`} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Menu Items */}
-            <div className="p-1">
-              <div className="space-y-4">
-                {sidebarItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleSectionChange(item.id)}
-                    className={`w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-colors ${
-                      activeSection === item.id 
-                        ? "bg-blue-50 border border-blue-200 text-blue-600" 
-                        : "hover:bg-gray-50 text-gray-700 border border-gray-200"
-                    }`}
-                  >
-                    <item.icon className={`w-5 h-5 ${
-                      activeSection === item.id ? "text-blue-600" : "text-gray-400"
-                    }`} />
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium ${
-                        activeSection === item.id ? "text-blue-600" : "text-gray-900"
-                      }`}>
-                        {item.title}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {item.subtitle}
-                      </p>
-                    </div>
-                    <ChevronRight className={`w-4 h-4 ${
-                      activeSection === item.id ? "text-blue-600" : "text-gray-400"
-                    }`} />
-                  </button>
-                ))}
-              </div>
-
-              {/* Sign Out Button */}
-              <div className="mt-8 pt-6 border-t">
-                <Button variant="ghost" className="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
-                onClick={handleLogout}
-                >
-                  <LogOut className="w-4 h-4 mr-3" />
-                  Cerrar sesión
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content - Solo en desktop (lg+) */}
-          <div className="flex-1 p-4 md:p-8 hidden lg:block">
-            {renderContent()}
-          </div>
-        </div>
-      </div>
-    </ShowIfAuth>
+    
     </>
   );
 }
