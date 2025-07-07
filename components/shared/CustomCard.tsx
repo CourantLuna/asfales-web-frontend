@@ -30,7 +30,7 @@ type CustomCardProps = {
 
 export default function CustomCard({
   title,
-  description,
+  description="",
   content,
   footer,
   images,
@@ -108,9 +108,9 @@ export default function CustomCard({
         </div>
       )}
       <div className="flex flex-col w-full h-full">
-        <CardHeader>
+        <CardHeader className="py-3 px-6">
           <CardTitle className="text-xl font-bold">{title}</CardTitle>
-          {description && <CardDescription className="text-sm">{description}</CardDescription>}
+          {description.length>0? <CardDescription className="text-sm">{description}</CardDescription> : null}
         </CardHeader>
         {content && <CardContent>{content}</CardContent>}
         {footer && <CardFooter>{footer}</CardFooter>}

@@ -225,6 +225,8 @@ export function MultiColumnFields({
   className = "",
   width = "w-full",
   singleColumn = false, // Nueva propiedad para fusionar en una sola columna
+  columnWidths = [], // Nueva propiedad para anchos personalizados
+
 }: {
   columns: ColField[][];
   rowData: RowData;
@@ -234,33 +236,90 @@ export function MultiColumnFields({
   className?: string;
   width?: string;
   singleColumn?: boolean; // Nueva propiedad
+    columnWidths?: number[] // Nueva propiedad para anchos personalizados 
+
 }) {
   const gapClass = gap ? `gap-${gap}` : "";
 
   // Si singleColumn es true, fusionar todas las columnas en una sola
-  if (singleColumn) {
-    const allFields = columns.flat();
-    return (
-      <div className={`flex flex-col ${width} h-full ${className} `}>
-        <RenderFields 
-          fields={allFields} 
-          rowData={rowData} 
-          align={aligns[0] || "start"} 
-          yAlign={yAligns[0] || "start"} 
-          className={`flex-1 gap-1 ${gapClass}`}
-        />
-      </div>
-    );
+if (singleColumn) {
+  return (
+    <div className={`flex flex-col ${width} h-full ${className} gap-3 `}>
+      {columns.map((fields, idx) => (
+        <div key={idx} className="w-full">
+          <RenderFields 
+            fields={fields} 
+            rowData={rowData} 
+            align={aligns[idx] || "start"} 
+            yAlign={yAligns[idx] || "start"} 
+            className={`w-full ${gapClass}`}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+  // Validar que columnWidths sume 100% si se proporciona
+  const hasCustomWidths = columnWidths.length > 0;
+  const totalWidth = hasCustomWidths ? columnWidths.reduce((sum, width) => sum + width, 0) : 0;
+  
+  // Advertencia en desarrollo si no suma 100%
+  if (hasCustomWidths && totalWidth !== 100) {
+    console.warn(`MultiColumnFields: columnWidths suma ${totalWidth}%, se recomienda que sume 100%`);
   }
+
+  // Función para convertir porcentaje a clase de Tailwind
+  const getWidthClass = (percentage: number): string => {
+    // Mapeo de porcentajes comunes a clases de Tailwind
+    const widthMap: { [key: number]: string } = {
+      10: "w-1/10",
+      20: "w-1/5",
+      25: "w-1/4", 
+      30: "w-[30%]",
+      33: "w-1/3",
+      40: "w-2/5",
+      50: "w-1/2",
+      60: "w-3/5",
+      66: "w-2/3",
+      70: "w-[70%]",
+      75: "w-3/4",
+      80: "w-4/5",
+      90: "w-[90%]",
+      100: "w-full"
+    };
+
+    // Buscar el porcentaje exacto
+    if (widthMap[percentage]) {
+      return widthMap[percentage];
+    }
+
+    // Si no existe, usar estilo inline
+    return `w-[${percentage}%]`;
+  };
 
   // Comportamiento normal con múltiples columnas
   return (
-    <div className={`flex flex-row ${width} h-full ${gapClass} ${className}`}>
-      {columns.map((fields, idx) => (
-        <div key={idx} className="flex-1">
-          <RenderFields fields={fields} rowData={rowData} align={aligns[idx]} yAlign={yAligns[idx]}  />
-        </div>
-      ))}
+    <div className={`flex flex-row ${width} h-full ${gapClass} ${className} `}>
+    {columns.map((fields, idx) => {
+        // Determinar el ancho de la columna
+        let columnWidthClass = "flex-1"; // Por defecto, distribución equitativa
+        
+        if (hasCustomWidths && columnWidths[idx] !== undefined) {
+          // Usar ancho personalizado en porcentaje + flex-none para evitar interferencia
+          columnWidthClass = `${getWidthClass(columnWidths[idx])} flex-none`;
+        }
+        
+        return (
+          <div key={idx} className={columnWidthClass}>
+            <RenderFields 
+              fields={fields} 
+              rowData={rowData} 
+              align={aligns[idx]} 
+              yAlign={yAligns[idx]} 
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

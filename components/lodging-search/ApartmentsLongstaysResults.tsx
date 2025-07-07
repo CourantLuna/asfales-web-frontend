@@ -45,7 +45,7 @@ export default function ApartmentsLongstaysResults({ initialSearchParams }: Apar
   const toDate = parsedParams?.to ? new Date(parsedParams.to + 'T00:00:00') : null;
 
   return (
-    <div className="container mx-auto  py-6">
+    <div className=" py-6">
       {/* Información de búsqueda debug only */}
       {/* <div className="mb-6 p-4 bg-blue-50 rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">

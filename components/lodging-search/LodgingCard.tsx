@@ -1,30 +1,33 @@
 import { useState } from "react";
 import CustomCard from "../shared/CustomCard";
 import { OverlayCarrusel, OverlayValue } from "../shared/ImageCarouselv2";
-import { ColField, MultiColumnFields, RowData } from "../shared/RenderFields";
+import { ColField, MultiColumnFields, RenderFields, RowData } from "../shared/RenderFields";
 import { toast } from "sonner";
 import { CheckCircle, XCircle, Plus, Minus } from "lucide-react";
 import { useIsMobile } from "../ui/use-mobile";
 import { Button } from "../ui/button";
 import { tr } from "date-fns/locale";
 
-// 1. Define un array de rows
-
-const column1: ColField[] = [
+const row1: ColField[] = [
   {
     key: "feature1",
     type: "icon",
     label: "feature1",
     className: "text-base text-gray-700 flex items-center",
     fields: [
-        {key: "feature2",
+      {
+      key: "feature2",
       type: "icon",
       label: "waves",
       className: "text-base text-gray-700 flex items-center mb-3"},
     ]
   },
-  { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm" },
+  { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm items-end", },
   { field: "descSub", type: "text", key: "descSub", className: "text-sm text-gray-500 mb-3" },
+];
+
+const column1: ColField[] = [
+  
   { field: "refundable", type: "text", key: "refundable", className: "text-green-700 font-semibold" },
   { field: "reserveNow", type: "text", key: "reserveNow", className: "text-green-600" },
   // Rating bloque (puedes hacer grupo anidado si quieres, aquí se puede dejar como badge+fields)
@@ -176,7 +179,7 @@ export default function LodgingCardList({
             carouselWidth={carouselWidth}
             images={rowData.images}
             title={rowData.title}
-            description={rowData.subtitle}
+            description={rowData.location}
             overlayCarrusel={overlays}
             overlayValues={overlayFieldMap(rowData)}
             onClick={() => onCardClick?.(idx, rowData)}
@@ -186,14 +189,17 @@ export default function LodgingCardList({
             onCompareCheckedChange={checked => handleCompareChecked(idx, checked)}
             // -------------------------------------
             content={
+              <>
+              <RenderFields fields={row1} rowData={rowData} />
+              
               <MultiColumnFields
                 columns={columns}
+                columnWidths={[40, 60]} // 40%, 60%,
                 rowData={rowData}
                 singleColumn={isMobile}
                 gap={0}
                 aligns={["start", "end"]}
-                yAligns={["start", "end"]}
-              />
+                yAligns={["end", "end"]} /></>
             }
           />
         ))}

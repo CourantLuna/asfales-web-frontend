@@ -690,7 +690,7 @@ export default function LodgingResultsTemplate({
             enableShowLess={true}
           />
         )}
-        onCardClick={onCardClick || ((idx, row) => alert(`¡Click en card #${idx}: ${row.title}!`))}
+        onCardClick={onCardClick || ((idx, row) => alert(`¡Click en card #${idx}: ${row.title} ubicado en ${row.location}!`))}
         onFiltersChange={onFiltersChange || ((filters) => console.log("Filters changed:", filters))}
       />
     </div>
@@ -814,6 +814,7 @@ export function mapLodgingToRowData(lodging: Lodging): RowData {
       lodging.image3,
       lodging.image4,
     ].filter(Boolean),
+    location: lodging.location,
     feature1: lodging.feature1,
     feature2: lodging.feature1,
     descMain: lodging.descMain,
