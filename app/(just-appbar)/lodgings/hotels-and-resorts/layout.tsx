@@ -12,7 +12,7 @@ export default function HotelsAndResortsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+      < >
       <LodgingSearchBar lodgingType="hotels-and-resorts"/>
       <div className="w-full py-2 px-4">
         <BreadcrumbNav />

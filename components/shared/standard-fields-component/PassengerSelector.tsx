@@ -324,7 +324,7 @@ const PassengerSelector = React.forwardRef<HTMLButtonElement, PassengerSelectorP
       <div
         className={cn(
           // Responsive width: full on mobile, dynamic with minimum 280px on desktop
-          "w-full md:min-w-[280px] md:w-auto md:max-w-[400px] flex flex-col gap-2",
+          "w-full md:min-w-[280px] md:w-auto md:max-w-[280px] flex flex-col gap-2",
           containerClassName
         )}
       >

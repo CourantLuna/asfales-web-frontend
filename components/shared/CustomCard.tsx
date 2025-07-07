@@ -77,6 +77,7 @@ export default function CustomCard({
   ${orientationCard === "horizontal" ? "flex-row" : "flex-col"}
   ${className}
   hover:shadow-2xl hover:shadow-primary/30 transition-shadow duration-300  
+  cursor-pointer
 `}>
 
 

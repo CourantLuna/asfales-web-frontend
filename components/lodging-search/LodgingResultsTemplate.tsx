@@ -55,6 +55,15 @@ const travelAds: AdItem[] = [
     width: 160, // Solo width para layout columna
   },
   {
+    id: "viva-take-off",
+    src: "https://tpc.googlesyndication.com/simgad/3719967787830508080?",
+    alt: "Vacaciones de ensueño",
+    href: "https://tpc.googlesyndication.com/simgad/3719967787830508080?",
+    title: "Viva Take-off ",
+    height: 600, // Solo height para layout columna
+    width: 160, // Solo width para layout columna
+  },
+  {
     id: "fake-ad-1",
     src: "https://placehold.co/160x660?text=Ad+160x660",
     alt: "Fake ad",
@@ -62,12 +71,13 @@ const travelAds: AdItem[] = [
     title: "fake ad", height: 660, width: 150
   },
   {
-    id: "fake-ad-2",
-    src: "https://placehold.co/160x600?text=Ad+160x600",
+    id: "fake-ad-3",
+    src: "https://tpc.googlesyndication.com/simgad/10478692533147659811?",
     alt: "Fake ad",
     href: "https://placehold.co/160x600?text=Ad+160x600",
-    title: "fake ad", height: 600, width: 150
-  },
+    title: "Viaja por colombia", height: 600, width: 150
+  }
+
 
 ];
 

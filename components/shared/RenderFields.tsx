@@ -157,82 +157,164 @@ const yAlignClass =
   );
 }
 
+
+// Esta función la puedes importar y usar donde quieras
+export function getAmenityIcon(value: string): LucideIcon {
+  const val = value.trim().toLowerCase();
+  // Busqueda exacta primero (más rápido)
+  for (const group of iconGroups) {
+    if (group.keys.includes(val)) return group.icon;
+  }
+  // Búsqueda parcial si no hay match exacto (opcional, para cadenas largas)
+  for (const group of iconGroups) {
+    if (group.keys.some(key => val.includes(key))) return group.icon;
+  }
+  // Fallback: icono genérico
+  return Sparkles;
+}
+
 // Mapeo de nombres de string a componentes de iconos
-export const iconMap: { [key: string]: LucideIcon } = {
-  // Agua, piscinas, mar
-  "waves": Waves,
-  "pool": Waves,
-  "outdoor pool": Waves,
-  "rooftop pool": Waves,
-  "hot tub": Bath,
-  "outdoor spa tub": Bath,
-  "indoor spa tub": Bath,
-  "private spa tub": Bath,
-  "gazebo": Flower,
+// 1. Grupos de términos para cada icono (ES + EN)
+const iconGroups: Array<{ keys: string[], icon: LucideIcon }> = [
+  // Agua, piscina, jacuzzi
+  { keys: [
+    "waves", "pool", "piscina", "outdoor pool", "rooftop pool", 
+    "jacuzzi", "hot tub", "outdoor spa tub", "indoor spa tub", "private spa tub"
+  ], icon: Waves },
+
+  // Lavadora y secadora
+  { keys: [
+    "lavadora y secadora", "washing machine", "secadora", "washer", "dryer"
+  ], icon: Flower }, // O usa Sparkles, si tienes icono WashingMachine mejor
 
   // Comida y bebida
-  "restaurant": UtensilsCrossed,
-  "breakfast included": Coffee,
-  "breakfast meal": Coffee,
-  "bar (on property)": Wine,
-  "breakfast area": Coffee,
-  "coffee shop": Coffee,
-  "outdoor dining": UtensilsCrossed,
-  "kitchen": ChefHat,
+  { keys: [
+    "restaurant", "restaurante", "comida", "dining", "comedor", "outdoor dining", "comedor al aire libre"
+  ], icon: UtensilsCrossed },
+  { keys: [
+    "breakfast included", "desayuno incluido", "breakfast meal", "breakfast area", "coffee shop", "café y/o cafetera"
+  ], icon: Coffee },
+  { keys: [
+    "bar (on property)", "bar", "wine", "vino"
+  ], icon: Wine },
+  { keys: [
+    "kitchen", "cocina", "cocina privada", "private kitchen", "shared kitchen"
+  ], icon: ChefHat },
 
-  // Habitaciones y áreas comunes
-  "room": BedDouble,
-  "living area": Sofa,
-  "terrace/patio": Sun,
-  "sundeck": Sun,
-  "lobby": Home,
-  "reception": DoorOpen,
-  "front of property": Building2,
-  "front of property - evening/night": Moon,
-  "interior": Armchair,
-  "exterior": Building2,
+  // Habitaciones y áreas
+  { keys: [
+    "room", "habitación"
+  ], icon: BedDouble },
+  { keys: [
+    "living area", "área de estar"
+  ], icon: Sofa },
+  { keys: [
+    "terrace/patio", "terraza/patio"
+  ], icon: Sun },
+  { keys: [
+    "sundeck"
+  ], icon: Sun },
+  { keys: [
+    "lobby"
+  ], icon: Home },
+  { keys: [
+    "reception", "recepción"
+  ], icon: DoorOpen },
+  { keys: [
+    "front of property", "frente de la propiedad", "detalle exterior"
+  ], icon: Building2 },
+  { keys: [
+    "front of property - evening/night"
+  ], icon: Moon },
+  { keys: [
+    "interior"
+  ], icon: Armchair },
+  { keys: [
+    "exterior"
+  ], icon: Building2 },
 
   // Vistas y entorno
-  "city view": Eye,
-  "view from property": Eye,
-  "street view": MapPin,
-  "property grounds": Trees,
+  { keys: [
+    "city view", "vista ciudad"
+  ], icon: Eye },
+  { keys: [
+    "view from property", "vista desde la propiedad"
+  ], icon: Eye },
+  { keys: [
+    "street view"
+  ], icon: MapPin },
+  { keys: [
+    "property grounds", "terrenos de la propiedad"
+  ], icon: Trees },
 
-  // Entretenimiento y fitness
-  "fitness studio": Dumbbell,
-  "television": Tv,
-  "activity": Activity,
+  // Fitness/entretenimiento
+  { keys: [
+    "fitness studio", "gimnasio"
+  ], icon: Dumbbell },
+  { keys: [
+    "television", "tv"
+  ], icon: Tv },
+  { keys: [
+    "activity", "actividad"
+  ], icon: Activity },
 
-  // Cosas extra/valor
-  "things to do": Star,
-  "gift": Gift,
-  "award": Award,
-  "medal": Medal,
-  "trophy": Trophy,
-  "hearthandshake": HeartHandshake,
+  // Extras y valor
+  { keys: [
+    "things to do", "actividades"
+  ], icon: Star },
+  { keys: [
+    "gift", "regalo"
+  ], icon: Gift },
+  { keys: [
+    "award", "premio"
+  ], icon: Award },
+  { keys: [
+    "medal", "medalla"
+  ], icon: Medal },
+  { keys: [
+    "trophy", "trofeo"
+  ], icon: Trophy },
+  { keys: [
+    "hearthandshake"
+  ], icon: HeartHandshake },
 
-  // Otros
-  "open in a new tab": ExternalLink,
-  "key": Key,
-  "lock": Lock,
-  "users": Users,
-  "calendar": Calendar,
-  "bell": Bell,
-  "sparkles": Sparkles, // default/amenity premium
-};
+  // Otros/misc
+  { keys: [
+    "open in a new tab", "abrir en una nueva pestaña"
+  ], icon: ExternalLink },
+  { keys: [
+    "key", "llave"
+  ], icon: Key },
+  { keys: [
+    "lock", "cerradura"
+  ], icon: Lock },
+  { keys: [
+    "users", "usuarios"
+  ], icon: Users },
+  { keys: [
+    "calendar", "calendario"
+  ], icon: Calendar },
+  { keys: [
+    "bell", "campana"
+  ], icon: Bell },
+  { keys: [
+    "totalmente reembolsable"
+  ], icon: Sparkles }, // Fallback para ofertas
+];
 
 // Helper: renderiza un solo campo (la lógica de tu switch de antes)
 function renderSingleField(f: ColField, value: any) {
   switch (f.type) {
-   case "icon":
-  // Si value es un string, buscar el icono correspondiente
+ case "icon":
+  // Si value es un string, buscar el icono correspondiente usando getAmenityIcon
   if (typeof value === "string") {
-    const IconComponent = iconMap[value.toLowerCase()];
+    const IconComponent = getAmenityIcon(value);
+    // Si no es el fallback, muestra el icono con label
     if (IconComponent) {
       return (
         <span key={f.key} className={`flex items-center ${f.className || ""}`}>
-          <IconComponent 
-            className={`w-4 h-4 ${f.iconClassName || ""}`} 
+          <IconComponent
+            className={`w-4 h-4 ${f.iconClassName || ""}`}
             size={f.iconSize || 16}
           />
           {value && <span className="ml-1">{value}</span>}
@@ -240,8 +322,8 @@ function renderSingleField(f: ColField, value: any) {
       );
     }
     // Si no se encuentra el icono, mostrar mensaje de error en desarrollo
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`Icon "${value}" not found in iconMap`);
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`Icon "${value}" not found in iconGroups`);
     }
   }
   // Si value es un componente React (comportamiento anterior)
@@ -251,7 +333,7 @@ function renderSingleField(f: ColField, value: any) {
       {f.label && <span className="ml-1">{f.label}</span>}
     </span>
   );
-  
+
 
 
     case "text":

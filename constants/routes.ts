@@ -25,9 +25,9 @@ export const ROUTE_CONFIG = {
   '/profile/credits': 'Créditos',
   
   // Lodging routes
-  '/lodging': 'Alojamientos',
+  '/lodgings': 'Alojamientos',
   '/lodgings/hotels-and-resorts': 'Hoteles y Resorts',
-  '/lodging/hostels-and-guesthouses': 'Hostels y Guesthouses',
+  '/lodgings/hostels-and-guesthouses': 'Hostels y Guesthouses',
   '/lodging/apartments-and-longstays': 'Apartamentos y Estancias Largas',
   
   // Transport routes
@@ -86,8 +86,14 @@ export const BREADCRUMB_CONFIG = {
   'personal-info': 'Información Personal',
   'payment-methods': 'Métodos de Pago',
   'booking-history': 'Historial de Reservas',
-  'privacy': 'Privacidad',
-  'terms': 'Términos y Condiciones',
+  'hotels-and-resorts': 'Hoteles y Resorts',
+  'hostels-and-guesthouses': 'Hosteles y Casas de huéspedes',
+  'apartments-and-longstays': 'Apartamentos y Estancias Largas',
+  'lodgings': 'Alojamientos',
+  'transport': 'Transporte',
+  'experiences': 'Experiencias',
+  'itineraries': 'Itinerarios',
+
 } as const;
 
 // Utilidades para trabajar con rutas

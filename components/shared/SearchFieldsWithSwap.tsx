@@ -167,7 +167,7 @@ const SearchFieldsWithSwap = React.forwardRef<HTMLDivElement, SearchFieldsWithSw
       <div
         ref={ref}
         className={cn(
-          "flex flex-wrap w-full py-2 relative",
+          "flex flex-wrap md:flex-nowrap w-full md:w-auto",
           selectedGap,
           containerClassName
         )}
