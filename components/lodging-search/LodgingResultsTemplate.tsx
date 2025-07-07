@@ -71,6 +71,8 @@ const travelAds: AdItem[] = [
 
 ];
 
+
+
 // Opciones para calificación de huéspedes - moved outside component as regular constant
 const guestRatingOptions = [
   {
@@ -632,22 +634,23 @@ export default function LodgingResultsTemplate({
   }, [loading]);
 
   // Solo para DEMO: simula una carga lenta
-  useEffect(() => {
-           setLoading(true);
-    if (LodgingData && LodgingData.length > 0) {
-      setTimeout(() => {
-        setLoading(false);
-        setRows(LodgingData);
+useEffect(() => {
+  setLoading(true);
+  if (LodgingData && LodgingData.length > 0) {
+          setTimeout(() => {     
+    setRows(LodgingData);
+    setLoading(false);
       }, 2000);
-    }else {
-    fetchLodgings()
+  } else {
+   fetchLodgings()
       .then((apiData) => {
         setRows(apiData.map(mapLodgingToRowData));
         console.log("Lodging data fetched:", apiData);
       })
       .finally(() => setLoading(false));
-    }
-  }, []);
+  }
+}, [LodgingData]);
+
 
   if (loading)
     return <EventDrivenProgress ref={progressRef} className="w-full my-4 px-0 md:px-0" />;

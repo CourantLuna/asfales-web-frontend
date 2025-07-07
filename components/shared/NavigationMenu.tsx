@@ -109,7 +109,7 @@ const navItems: {
             backgroundImage:
               "url('https://images.unsplash.com/photo-1678913308053-316cee77afe9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           }}
-          href="#"
+          href="/lodgings"
         >
           <span className="absolute inset-0 bg-white/80 z-0" />
           <div className="relative z-10 mt-4 mb-2 text-lg font-bold text-foreground">

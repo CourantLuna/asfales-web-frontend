@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import LodgingResultsTemplate from './LodgingResultsTemplate';
+import { fetchApartmentsAndLongStays, fetchHostelsAndGuesthouses, mapLodgingToRowData } from '@/services/lodging.service';
 
 interface HostelsGuesthousesResultsProps {
   initialSearchParams?: { [key: string]: string | string[] | undefined };
@@ -10,6 +11,7 @@ interface HostelsGuesthousesResultsProps {
 export default function HostelsGuesthousesResults({ initialSearchParams }: HostelsGuesthousesResultsProps) {
   const [parsedParams, setParsedParams] = useState<any>(null);
   const [urlParams, setUrlParams] = useState<string>('');
+  const [rows, setRows] = useState<any[]>([]);
 
   useEffect(() => {
     // Obtener parámetros directamente del navegador
@@ -33,6 +35,17 @@ export default function HostelsGuesthousesResults({ initialSearchParams }: Hoste
     
     setParsedParams(params);
   }, [initialSearchParams]);
+
+     useEffect(() => {
+               
+        fetchHostelsAndGuesthouses()
+          .then((apiData) => {
+            setRows(apiData.map(mapLodgingToRowData));
+            console.log("apartments and longstays data fetched:", apiData.map(mapLodgingToRowData));
+          })
+          
+     
+      }, []);
 
   // Configurar filtros por defecto para hoteles y resorts
   const filterDefaults = {
@@ -105,6 +118,7 @@ export default function HostelsGuesthousesResults({ initialSearchParams }: Hoste
 
       {/* Componente de resultados con filtros */}
       <LodgingResultsTemplate
+        LodgingData={rows}
       LodgingType="hostels-and-guesthouses"
         filterDefaults={filterDefaults}
         onFiltersChange={(filters: Record<string, any>) => {
