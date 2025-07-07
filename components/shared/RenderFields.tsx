@@ -1,4 +1,46 @@
-import { Check, X } from "lucide-react";
+import { 
+ Waves,
+  Coffee,
+  UtensilsCrossed,
+  Sun,
+  Home,
+  BedDouble,
+  Sofa,
+  Bath,
+  Wine,
+  ChefHat,
+  Dumbbell,
+  Tv,
+  MapPin,
+  Eye,
+  Building2,
+  Armchair,
+  DoorOpen,
+  Moon,
+  ExternalLink,
+  Activity,
+  Star,
+  Mountain,
+  Trees,
+  TreePine,
+  Sparkles,
+  Flower,
+  Key,
+  Calendar,
+  Users,
+  Lock,
+  Bell,
+  Gift,
+  HeartHandshake,
+  Award,
+  Medal,
+  Trophy,
+  Utensils,
+  Check,
+  X,
+  User,
+  LucideIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -35,6 +77,9 @@ export interface ColField {
   spaceSize?: number;
    icon?: ReactNode;   // <-- Añadido
   label?: string;     // Opcional para texto al lado del icono
+   // Nuevas propiedades para iconos
+  iconClassName?: string;  // Clases CSS específicas para el icono
+  iconSize?: number;       // Tamaño del icono
 }
 
 export interface RowData {
@@ -77,13 +122,15 @@ const yAlignClass =
 
         // Si el campo requiere valor y no existe, NO lo renderices
         // Solo deja pasar si es un tipo que no depende de value:
-        const alwaysRenderTypes = ["space", "icon", "actions",];
+        const alwaysRenderTypes = ["space", "actions",];
         const isValueEmpty =
           f.field &&
           (value === undefined ||
             value === null ||
             value === "" ||
-            (Array.isArray(value) && value.length === 0));
+            (Array.isArray(value) && value.length === 0)
+            
+          );
 
         if (!alwaysRenderTypes.includes(f.type) && isValueEmpty) {
           return null;
@@ -110,17 +157,103 @@ const yAlignClass =
   );
 }
 
+// Mapeo de nombres de string a componentes de iconos
+export const iconMap: { [key: string]: LucideIcon } = {
+  // Agua, piscinas, mar
+  "waves": Waves,
+  "pool": Waves,
+  "outdoor pool": Waves,
+  "rooftop pool": Waves,
+  "hot tub": Bath,
+  "outdoor spa tub": Bath,
+  "indoor spa tub": Bath,
+  "private spa tub": Bath,
+  "gazebo": Flower,
+
+  // Comida y bebida
+  "restaurant": UtensilsCrossed,
+  "breakfast included": Coffee,
+  "breakfast meal": Coffee,
+  "bar (on property)": Wine,
+  "breakfast area": Coffee,
+  "coffee shop": Coffee,
+  "outdoor dining": UtensilsCrossed,
+  "kitchen": ChefHat,
+
+  // Habitaciones y áreas comunes
+  "room": BedDouble,
+  "living area": Sofa,
+  "terrace/patio": Sun,
+  "sundeck": Sun,
+  "lobby": Home,
+  "reception": DoorOpen,
+  "front of property": Building2,
+  "front of property - evening/night": Moon,
+  "interior": Armchair,
+  "exterior": Building2,
+
+  // Vistas y entorno
+  "city view": Eye,
+  "view from property": Eye,
+  "street view": MapPin,
+  "property grounds": Trees,
+
+  // Entretenimiento y fitness
+  "fitness studio": Dumbbell,
+  "television": Tv,
+  "activity": Activity,
+
+  // Cosas extra/valor
+  "things to do": Star,
+  "gift": Gift,
+  "award": Award,
+  "medal": Medal,
+  "trophy": Trophy,
+  "hearthandshake": HeartHandshake,
+
+  // Otros
+  "open in a new tab": ExternalLink,
+  "key": Key,
+  "lock": Lock,
+  "users": Users,
+  "calendar": Calendar,
+  "bell": Bell,
+  "sparkles": Sparkles, // default/amenity premium
+};
 
 // Helper: renderiza un solo campo (la lógica de tu switch de antes)
 function renderSingleField(f: ColField, value: any) {
   switch (f.type) {
-    case "icon":
+   case "icon":
+  // Si value es un string, buscar el icono correspondiente
+  if (typeof value === "string") {
+    const IconComponent = iconMap[value.toLowerCase()];
+    if (IconComponent) {
+      return (
+        <span key={f.key} className={`flex items-center ${f.className || ""}`}>
+          <IconComponent 
+            className={`w-4 h-4 ${f.iconClassName || ""}`} 
+            size={f.iconSize || 16}
+          />
+          {value && <span className="ml-1">{value}</span>}
+        </span>
+      );
+    }
+    // Si no se encuentra el icono, mostrar mensaje de error en desarrollo
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`Icon "${value}" not found in iconMap`);
+    }
+  }
+  // Si value es un componente React (comportamiento anterior)
   return (
     <span key={f.key} className={f.className}>
-      {f.icon}
+      {value}
       {f.label && <span className="ml-1">{f.label}</span>}
     </span>
   );
+  
+
+
     case "text":
       return (
         <span key={f.key} className={f.className}>
@@ -310,7 +443,7 @@ if (singleColumn) {
         }
         
         return (
-          <div key={idx} className={columnWidthClass}>
+          <div key={idx} className={(width !== "w-full") ? width : columnWidthClass}>
             <RenderFields 
               fields={fields} 
               rowData={rowData} 

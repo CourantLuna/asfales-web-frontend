@@ -483,7 +483,7 @@ export function mapLodgingToRowData(lodging: Lodging): RowData {
       lodging.image4,
     ].filter(Boolean),
     feature1: lodging.feature1,
-    feature2: lodging.feature1,
+    feature2: lodging.feature2,
     descMain: lodging.descMain,
     descSub: lodging.descSub,
     refundable: lodging.refundable,

@@ -8,6 +8,7 @@ import { TopBarTabs } from "@/components/shared/TopBarTabs";
 import Profile from "@/components/profile/Profile";
 import ProfileSideBar from "@/components/profile/ProfileSideBar";
 import FooterMobile from "@/components/shared/FooterMobile";
+import MobileHeader from "@/components/mobile/MobileHeader";
 // import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,8 +19,9 @@ export default function JustAppbarLayout({ children }: { children: React.ReactNo
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
         <AppNavbar showShawdowBox={true} />
         <TopBarTabs />
-        <main className="flex-1 w-full pt-[70px] lg:pt-[120px] flex flex-col max-w-8xl mx-auto  lg:px-10 px-5 bg-gray-50">
-          
+        <main className="flex-1 w-full pt-[70px] lg:pt-[120px] flex flex-col bg-gray-50">
+          <MobileHeader />
+
           {children}
 
         </main>

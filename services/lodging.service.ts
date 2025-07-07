@@ -14,6 +14,8 @@ export async function fetchLodgings(): Promise<Lodging[]> {
   if (!res.ok) throw new Error("Error al obtener datos de hoteles");
   const data = await res.json();
   const rows = Array.isArray(data) ? data : data?.data || [];
+  console.log("Lodging data fetched:", rows);
+  console.log("Lodging data mapped:", rows.map(toCamelCaseLodging));
   // Formatea a camelCase
   return rows.map(toCamelCaseLodging);
 }

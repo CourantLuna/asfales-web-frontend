@@ -26,11 +26,9 @@ export const ROUTE_CONFIG = {
   
   // Lodging routes
   '/lodging': 'Alojamientos',
-  '/lodging/search': 'Buscar Alojamiento',
-  '/lodging/filters': 'Filtros',
-  '/lodging/map': 'Mapa',
-  '/lodging/compare': 'Comparar',
-  '/lodging/details': 'Detalles del Alojamiento',
+  '/lodgings/hotels-and-resorts': 'Hoteles y Resorts',
+  '/lodging/hostels-and-guesthouses': 'Hostels y Guesthouses',
+  '/lodging/apartments-and-longstays': 'Apartamentos y Estancias Largas',
   
   // Transport routes
   '/transport': 'Transporte',

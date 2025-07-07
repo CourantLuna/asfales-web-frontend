@@ -641,7 +641,10 @@ export default function LodgingResultsTemplate({
       }, 2000);
     }else {
     fetchLodgings()
-      .then((apiData) => setRows(apiData.map(mapLodgingToRowData)))
+      .then((apiData) => {
+        setRows(apiData.map(mapLodgingToRowData));
+        console.log("Lodging data fetched:", apiData);
+      })
       .finally(() => setLoading(false));
     }
   }, []);
@@ -816,7 +819,7 @@ export function mapLodgingToRowData(lodging: Lodging): RowData {
     ].filter(Boolean),
     location: lodging.location,
     feature1: lodging.feature1,
-    feature2: lodging.feature1,
+    feature2: lodging.feature2,
     descMain: lodging.descMain,
     descSub: lodging.descSub,
     refundable: lodging.refundable,

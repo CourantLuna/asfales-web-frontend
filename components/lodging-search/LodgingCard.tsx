@@ -8,25 +8,37 @@ import { useIsMobile } from "../ui/use-mobile";
 import { Button } from "../ui/button";
 import { tr } from "date-fns/locale";
 
-const row1: ColField[] = [
+const column1row1: ColField[] = [
   {
-    key: "feature1",
+    field: "feature1",
     type: "icon",
-    label: "feature1",
-    className: "text-base text-gray-700 flex items-center",
-    fields: [
-      {
-      key: "feature2",
-      type: "icon",
-      label: "waves",
-      className: "text-base text-gray-700 flex items-center mb-3"},
-    ]
+    key: "featureone",
+    className: "inline-flex items-center py-1 rounded pr-4",
+    iconClassName: "mr-1",
+    iconSize: 16,
+  
   },
-  { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm items-end", },
+
+];
+
+const column2row1: ColField[] = [
+  {
+      field: "feature2",
+      type: "icon",
+      key: "featuretwo",
+      className: "inline-flex items-center py-1 rounded",
+      iconClassName: "mr-1",
+      iconSize: 16,
+    },
+  
+];
+
+const row2: ColField[] = [
+  { field: "descMain", type: "text", key: "descMain", className: "font-bold text-sm items-end mt-3", },
   { field: "descSub", type: "text", key: "descSub", className: "text-sm text-gray-500 mb-3" },
 ];
 
-const column1: ColField[] = [
+const column1row3: ColField[] = [
   
   { field: "refundable", type: "text", key: "refundable", className: "text-green-700 font-semibold" },
   { field: "reserveNow", type: "text", key: "reserveNow", className: "text-green-600" },
@@ -43,7 +55,7 @@ const column1: ColField[] = [
   }
 ];
 
-const column2: ColField[] = [
+const column2row3: ColField[] = [
   { field: "badge2ndColumn", type: "text", key: "badge2ndColumn", className: "text-sm bg-green-500 text-white font-semibold rounded-lg px-2 py-1" },
   {
     field: "nightlyPrice",
@@ -97,7 +109,6 @@ interface LodgingCardListProps {
 
 export default function LodgingCardList({
   rows,
-  columns = [column1, column2],
   overlays = overlaysFormat,
   overlayFieldMap = row => ({
     badge1: row.badge1,
@@ -190,16 +201,29 @@ export default function LodgingCardList({
             // -------------------------------------
             content={
               <>
-              <RenderFields fields={row1} rowData={rowData} />
               
               <MultiColumnFields
-                columns={columns}
+                columns={[column1row1, column2row1]}
+                rowData={rowData}
+                singleColumn={false}
+                gap={0}
+                aligns={["start", "start"]}
+                yAligns={["end", "end"]} 
+                width="w-auto"
+                />
+                
+              <RenderFields fields={row2} rowData={rowData} />
+              
+              <MultiColumnFields
+                columns={[column1row3, column2row3]}
                 columnWidths={[40, 60]} // 40%, 60%,
                 rowData={rowData}
                 singleColumn={isMobile}
                 gap={0}
                 aligns={["start", "end"]}
-                yAligns={["end", "end"]} /></>
+                yAligns={["end", "end"]} />
+                
+                </>
             }
           />
         ))}

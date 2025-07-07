@@ -39,7 +39,7 @@ export default function RootLayout({
         <TopBarTabs />
         
         <LandingSkeleton>
-          <main className="flex-1 w-full max-w-7xl px-5 md:px-10 xl:px-0 mx-auto">
+          <main className="flex-1 w-full max-w-7xl px-5 md:px-10 xl:px-0 mx-auto min-h-screen">
             <BreadcrumbNav />
             {children}
           </main>

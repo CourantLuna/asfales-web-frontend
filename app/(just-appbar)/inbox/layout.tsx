@@ -14,6 +14,7 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
     router.prefetch("/inbox/general");
     router.prefetch("/inbox/chats");
     router.prefetch("/inbox/alerts");
+    router.push("/inbox/general");
   }, [router]);
 
   const pathname = usePathname() ?? "";

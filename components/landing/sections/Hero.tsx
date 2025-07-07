@@ -39,9 +39,9 @@ const [hidePlane, setHidePlane] = useState(false);
     const currentScrollY = window.scrollY;
 
     if (currentScrollY > prevScrollY) {
-      console.log(`Bajando... posición actual: ${currentScrollY}`);
+      // console.log(`Bajando... posición actual: ${currentScrollY}`);
     } else {
-      console.log(`Subiendo... posición actual: ${currentScrollY}`);
+      // console.log(`Subiendo... posición actual: ${currentScrollY}`);
     }
 
     prevScrollY = currentScrollY;
