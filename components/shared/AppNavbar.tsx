@@ -11,13 +11,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge"
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -28,31 +21,27 @@ import {
   Globe,
   Bell,
   User,
-  Plane,
-  Hotel,
-  CalendarCheck,
-  MapPinned,
-  Menu,
-  Circle,
-  MessageCircleQuestion,
   HelpCircle,
   Info,
-  List,
   Heart,
   ChevronRight,
   Gift,
-  Ship,
-  Bus,
+
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Separator } from "../ui/separator";
-import { SettingsDialog } from "./SettingsDialog";
+import { SettingsDialog } from "./standard-fields-component/SettingsDialog";
 
-export function AppNavbar() {
+interface AppNavbarProps {
+  showShawdowBox?: boolean; // Añadido para manejar el shawdowBox
+  scrollThreshold?: number; // Umbral de scroll para activar la sombra
+}
+export function AppNavbar({ showShawdowBox=false, scrollThreshold = 500 }: AppNavbarProps) {
   
   const { user, logout } = useAuth();
-  const router = useRouter()
+  const router = useRouter();
+  const [isScrolled, setIsScrolled] = useState(false);
 
 const handleLogout = () => {
     logout(); // limpia localStorage y setUser(null)
@@ -90,6 +79,17 @@ const handleLogout = () => {
   // Si user ya es null, no vuelve a entrar aquí
 }, [user, logout]);
 
+  // Efecto para detectar scroll y activar sombra
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > scrollThreshold);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [scrollThreshold]);
+
   const isMobile = useIsMobile();
   if (isMobile) return null; // Solo visible en desktop/tablet
 
@@ -98,7 +98,7 @@ const handleLogout = () => {
   return (
     <header className="hidden lg:block relative w-full z-30">
       {/* Sticky nav */}
-      <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8 pr-[18px] pointer-events-none">
+      <div className="fixed left-0 right-0 top-0 z-20 px-4 md:px-8 pr-[18px] pointer-events-none ">
         {/* SVG background */}
         <div className="absolute z-[-1] top-0 right-0 left-0 h-[90px] md:h-[120px]">
           <svg
@@ -113,7 +113,9 @@ const handleLogout = () => {
             <path
               d="M1366 98.1416H944.737C937.226 96.1686 930.661 91.3237 926.584 84.4805L897.799 36.165C892.388 27.0835 882.598 21.5195 872.026 21.5195H856V21.5H0V0.200195C0.64623 0.0690155 1.31506 1.39473e-08 2 0H1366V98.1416Z"
               fill="#0057A3"
+              style={(showShawdowBox || isScrolled) ? { filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.20))" } : {}}
             />
+
           </svg>
         </div>
 

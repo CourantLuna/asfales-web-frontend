@@ -21,16 +21,16 @@ Mountain as MountainIcon,
   Search,
   Filter, } from "lucide-react"
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter"
-import { GuestSelector, Room } from "@/components/shared/GuestSelector"
+import { GuestSelector, Room } from "@/components/shared/standard-fields-component/GuestSelector"
 import { DateRange } from "react-day-picker"
 import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom"
-import { PassengerSelector, PassengerGroup } from "@/components/shared/PassengerSelector"
-import { StandardTabs, TabItem } from "@/components/shared/StandardTabs"
-import { StandardToggleGroup } from "@/components/shared/StandardToggleGroup"
+import { PassengerSelector, PassengerGroup } from "@/components/shared/standard-fields-component/PassengerSelector"
+import { StandardTabs, TabItem } from "@/components/shared/standard-fields-component/StandardTabs"
+import { StandardToggleGroup } from "@/components/shared/standard-fields-component/StandardToggleGroup"
 import { SearchFieldsWithSwap } from "@/components/shared/SearchFieldsWithSwap"
 import React from "react"
 import { set } from "date-fns";
-import { StandardSearchField } from "../shared/StandardSearchField";
+import { StandardSearchField } from "../shared/standard-fields-component/StandardSearchField";
 
 export default function TravelOptionsTabs({
   activeTab,

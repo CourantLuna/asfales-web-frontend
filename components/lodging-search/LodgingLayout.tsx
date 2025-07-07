@@ -18,22 +18,22 @@ import { Building2, Clock, MapPin, Plane, Search } from 'lucide-react';
       icon: <Clock className="h-4 w-4" />,
       type: "recent" as const,
       nameLabelField: "destination",
-      nameValueField: "searchId", 
+      nameValueField: "code", 
       nameDescriptionField: "period",
       options: [
         { 
-          destination: "Medellín (MDE - A. Internacional José...)", 
-          searchId: "MDE", 
+          destination: "Medellín (MDE - A. Internacional José María Córdova)", 
+          code: "MDE", 
           period: "3 de julio–6 de julio"
         },
         { 
-          destination: "Miami (MIA - Aeropuerto Internacional...)", 
-          searchId: "MIA", 
+          destination: "Miami (MIA - Aeropuerto Internacional de Miami)", 
+          code: "MIA", 
           period: "1 de julio–30 de agosto • 60 noches • 2..."
         },
         { 
           destination: "San Juan de la Maguana", 
-          searchId: "SJM", 
+          code: "SJM", 
           period: "2 de junio–3 de junio • 1 noche • 2..."
         },
       ]
@@ -51,6 +51,7 @@ import { Building2, Clock, MapPin, Plane, Search } from 'lucide-react';
         { name: "Barcelona (BCN - Aeropuerto El Prat)", code: "BCN", city: "Ciudad mediterránea" },
         { name: "París (CDG - Charles de Gaulle)", code: "CDG", city: "Ciudad de la luz" },
         { name: "Londres (LHR - Heathrow)", code: "LHR", city: "Capital británica" },
+        { name: "Miami (MIA - Aeropuerto Internacional de Miami)", code: "MIA", city: "Estados Unidos" },
       ]
     },
     {
@@ -89,18 +90,15 @@ interface ILodgingLayoutProps {
     searchDataSources?: StandardSearchDataSource[];
     travelingFrom?: string;
     setTravelingFrom?: (value: string) => void;
-    lodgingType?: string;
 }
 
-export default function LodgingSearchBar(
+export default function LodgingLayoutClient(
   {
     goingTo,
    setGoingTo, 
    searchDataSources = searchLodgingDataSources, 
    travelingFrom, 
-   setTravelingFrom,
-  lodgingType = "hotels-and-resorts" // Por defecto, tipo de alojamiento
-}
+   setTravelingFrom}
    : ILodgingLayoutProps
   ) {
 
@@ -126,7 +124,6 @@ export default function LodgingSearchBar(
     const currentTravelingFrom = travelingFrom !== undefined ? travelingFrom : localTravelingFrom;
     
     const handleGoingToChange = (value: string) => {
-      console.log('🔍 handleGoingToChange called with value:', value);
       if (setGoingTo) {
         setGoingTo(value);
       } else {
@@ -155,12 +152,8 @@ export default function LodgingSearchBar(
 
     function handleBuscar() {
     
-    console.log('🚀 handleBuscar called with values:', {
-      currentGoingTo,
-      currentTravelingFrom,
-      goingTo,
-      travelingFrom
-    });
+    // const y = window.scrollY || window.pageYOffset;
+    // alert(`Scroll Y actual: ${y}`);
     
     // Construir los parámetros de la URL de forma segura
     const params = new URLSearchParams();
@@ -192,14 +185,13 @@ export default function LodgingSearchBar(
     }
     
     // Navegar con la URL construida
-    const finalUrl = `/lodgings/${lodgingType}?${params.toString()}`;
-    console.log('🌐 Final URL:', finalUrl);
-    router.replace(finalUrl);
+    router.push(`/lodgings/hotels-and-resorts?${params.toString()}`);
   }
    return (
        <div>
+           <h1>LodgingLayout</h1>
            {/* Fechas y Huéspedes */}
-      <div className="flex flex-wrap gap-4 items-end">
+      <div className="flex flex-wrap gap-4 items-end w-full">
          {/* Campo Destino */}
         <StandardSearchField
           containerClassName="w-full md:w-[280px]"
@@ -209,13 +201,25 @@ export default function LodgingSearchBar(
           onValueChange={handleGoingToChange}
           dataSources={searchDataSources}
           onSelect={(option, sourceType) => {
-            // StandardSearchField ya maneja el value correctamente via onValueChange
-            // Solo necesitamos lógica adicional opcional aquí
-            console.log(`🎯 onSelect called:`, {
+            // Para destinos, usar el código/value en lugar del label completo
+            // Esto mantiene las URLs limpias y cortas
+            let destinationValue = option.value;
+            
+            // Si no hay value o está vacío, usar label como fallback
+            if (!destinationValue || destinationValue.trim() === '') {
+              destinationValue = option.label;
+            }
+            
+            handleGoingToChange(destinationValue);
+            
+            // Log para debugging
+            console.log(`Seleccionado destino: "${destinationValue}"`, {
               label: option.label,
               value: option.value,
               description: option.description,
-              sourceType
+              sourceType,
+              hasValue: !!option.value,
+              valueLength: option.value?.length || 0
             });
           }}
           showClearButton={true}
@@ -235,7 +239,10 @@ export default function LodgingSearchBar(
           initialRooms={guestRooms}
           onRoomsChange={setGuestRooms}
         />
- <div className="flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
+
+       
+      </div>
+       <div className="flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
                     <Button
                       className={
                         "bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"}
@@ -249,9 +256,6 @@ export default function LodgingSearchBar(
                       {"Buscar"}
                     </Button>
                   </div>
-       
-      </div>
-      
        </div>
    );
 }

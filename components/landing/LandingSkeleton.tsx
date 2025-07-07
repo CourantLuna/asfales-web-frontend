@@ -19,8 +19,8 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
   const [activeTab, setActiveTab] = useState("transport");
   
   // Estados compartidos para origen y destino - inicializar con valores deterministas
-  const [travelingFrom, setTravelingFrom] = useState<string>("");
-  const [goingTo, setGoingTo] = useState<string>("");
+  const [travelingFrom, setTravelingFrom] = useState<string>("sdo");
+  const [goingTo, setGoingTo] = useState<string>("mad");
   
   // Funciones wrapper para logging
   const handleTravelingFromChange = (value: string) => {
@@ -74,6 +74,7 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
         { name: "Barcelona (BCN - Aeropuerto El Prat)", code: "bcn", city: "Ciudad mediterránea" },
         { name: "París (CDG - Charles de Gaulle)", code: "par", city: "Ciudad de la luz" },
         { name: "Londres (LHR - Heathrow)", code: "lon", city: "Capital británica" },
+        { name: "Santo Domingo (SDO - Aeropuerto Internacional de las Americas)", code: "sdo", city: "Santo Domingo" },
       ]
     },
     {

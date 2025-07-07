@@ -1,6 +1,4 @@
 import React from 'react';
-import HotelsResortsResult from '@/components/lodging-search/HotelsResortsResult';
-import HotelsResortsResultClient from '@/components/lodging-search/HotelsResortsResultClient';
 import HotelsResortsResultSimple from '@/components/lodging-search/HotelsResortsResultSimple';
 
 interface PageProps {

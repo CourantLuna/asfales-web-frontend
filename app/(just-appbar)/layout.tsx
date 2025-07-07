@@ -16,9 +16,9 @@ export default function JustAppbarLayout({ children }: { children: React.ReactNo
   return (
     <div className={inter.className + " flex flex-col min-h-screen w-full"}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-        <AppNavbar />
+        <AppNavbar showShawdowBox={true} />
         <TopBarTabs />
-        <main className="flex-1 w-full pt-[70px] lg:pt-[120px] flex flex-col max-w-8xl mx-auto  lg:px-10 px-5">
+        <main className="flex-1 w-full pt-[70px] lg:pt-[120px] flex flex-col max-w-8xl mx-auto  lg:px-10 px-5 bg-gray-50">
           
           {children}
 

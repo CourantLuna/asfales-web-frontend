@@ -1,5 +1,5 @@
 import SearchBoxOverlay from '../landing/sections/SearchBoxOverlay';
-import { StandardSearchDataSource } from '@/components/shared/StandardSearchField';
+import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { MapPin, Plane, Building, Clock } from 'lucide-react';
 
 // Ejemplo de uso del SearchBoxOverlay actualizado con StandardSearchField para ambos campos

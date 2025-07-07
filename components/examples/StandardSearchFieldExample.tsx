@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StandardSearchField } from '../shared/StandardSearchField';
+import { StandardSearchField } from '../shared/standard-fields-component/StandardSearchField';
 import { MapPin } from 'lucide-react';
 
 const cityData = [

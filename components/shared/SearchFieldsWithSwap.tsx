@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { StandardSearchField, StandardSearchDataSource } from "@/components/shared/StandardSearchField";
+import { StandardSearchField, StandardSearchDataSource } from "@/components/shared/standard-fields-component/StandardSearchField";
 import { ArrowLeftRight, ArrowUpDown, Filter, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 

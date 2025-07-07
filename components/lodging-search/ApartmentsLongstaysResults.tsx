@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import LodgingResultsTemplate from './LodgingResultsTemplate';
 
-interface HotelsResortsResultSimpleProps {
+interface ApartmentsLongstaysResultsProps {
   initialSearchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default function HotelsResortsResultSimple({ initialSearchParams }: HotelsResortsResultSimpleProps) {
+export default function ApartmentsLongstaysResults({ initialSearchParams }: ApartmentsLongstaysResultsProps) {
   const [parsedParams, setParsedParams] = useState<any>(null);
   const [urlParams, setUrlParams] = useState<string>('');
 
@@ -36,10 +36,7 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
 
   // Configurar filtros por defecto para hoteles y resorts
   const filterDefaults = {
-    propertyType: ['hotel', 'resort'],
-    starRating: ['4-stars', '5-stars'],
-    priceRange: [0, 1000] as [number, number],
-    cancellationOptions: ['fully-refundable'],
+    propertyType: ['apartment', 'studio', 'one-bedroom', 'loft'],
     search: parsedParams?.goingTo || '',
   };
 
@@ -108,7 +105,7 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
 
       {/* Componente de resultados con filtros */}
       <LodgingResultsTemplate
-        LodgingType="hotels-and-resorts"
+        LodgingType="apartments-and-longstays"
         filterDefaults={filterDefaults}
         onFiltersChange={(filters: Record<string, any>) => {
           console.log('Filtros cambiados:', filters);

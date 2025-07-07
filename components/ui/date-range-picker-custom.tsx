@@ -9,7 +9,7 @@ import { Calendar, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { format, addDays, addMonths, subMonths, startOfMonth, endOfMonth, isSameMonth, isToday, isBefore, isAfter, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
-import { StandardTabs, TabItem } from "@/components/shared/StandardTabs";
+import { StandardTabs, TabItem } from "@/components/shared/standard-fields-component/StandardTabs";
 
 export interface DateRangePickerCustomProps {
   /**

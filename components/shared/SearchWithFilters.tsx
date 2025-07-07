@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useCallback, useMemo } from "react";
 import { Info, Filter, X } from "lucide-react";
-import { FilterChips, FilterChip } from "./FilterChips";
+import { FilterChips, FilterChip } from "./standard-fields-component/FilterChips";
 import ResultFilters, { FilterConfig } from "./ResultFilters";
 import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 import { RowData } from "./RenderFields";
@@ -212,32 +212,20 @@ export default function SearchWithFilters({
     });
   }, []);
 
-  // Función para resetear filtro
+ // Función para resetear filtro - MODIFICADA para limpiar completamente
   const resetFilter = useCallback((filterId: string) => {
     const filter = filters.find(f => f.id === filterId);
     if (!filter) return;
 
     let resetValue;
     if (filter.type === 'checkbox' || filter.type === 'toggle') {
-      // Resetear a defaultValue si existe, sino array vacío
-      resetValue = filter.defaultValue && Array.isArray(filter.defaultValue) 
-        ? filter.defaultValue 
-        : [];
+      resetValue = []; // Limpiar completamente
     } else if (filter.type === 'radio') {
-      // Resetear a defaultValue si existe, sino string vacío
-      resetValue = filter.defaultValue && typeof filter.defaultValue === 'string' 
-        ? filter.defaultValue 
-        : '';
+      resetValue = ''; // Limpiar completamente
     } else if (filter.type === 'range') {
-      // Resetear a defaultValue si existe, sino rango por defecto
-      resetValue = filter.defaultValue && Array.isArray(filter.defaultValue) && filter.defaultValue.length === 2
-        ? filter.defaultValue 
-        : [filter.min || 0, filter.max || 1000];
+      resetValue = [filter.min || 0, filter.max || 1000]; // Resetear a rango completo
     } else if (filter.type === 'search') {
-      // Resetear a defaultValue si existe, sino string vacío
-      resetValue = filter.defaultValue && typeof filter.defaultValue === 'string' 
-        ? filter.defaultValue 
-        : '';
+      resetValue = ''; // Limpiar completamente
     }
 
     updateFilterState(filterId, resetValue);

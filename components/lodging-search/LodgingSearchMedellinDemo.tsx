@@ -10,7 +10,7 @@ import EventDrivenProgress, {
 import React from "react";
 import { CustomSelectOption } from "../shared/CustomSelect";
 import { AirVent, Bath, Bus, Car, Dices, Dumbbell, MapPin, Mountain, Phone, Utensils, WashingMachine, Waves, Wifi, Building2, LandPlot } from "lucide-react";
-import { CheckboxOption } from "../shared/CheckboxFilter";
+import { CheckboxOption } from "../shared/standard-fields-component/CheckboxFilter";
 import SearchWithFilters from "../shared/SearchWithFilters";
 import { AdItem } from "../shared/Ads";
 

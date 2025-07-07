@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { StandardSearchDataSource, StandardSearchField } from "./StandardSearchField";
+import { StandardSearchDataSource, StandardSearchField } from "./standard-fields-component/StandardSearchField";
 import { Separator } from "@/components/ui/separator";
-import { CheckboxFilter, CheckboxOption } from "./CheckboxFilter";
-import { StandardRadioGroup } from "./StandardRadioGroup";
-import { PriceRangeFilter } from "./PriceRangeFilter";
-import { StandardToggleGroup } from "./StandardToggleGroup";
+import { CheckboxFilter, CheckboxOption } from "./standard-fields-component/CheckboxFilter";
+import { StandardRadioGroup } from "./standard-fields-component/StandardRadioGroup";
+import { PriceRangeFilter } from "./standard-fields-component/PriceRangeFilter";
+import { StandardToggleGroup } from "./standard-fields-component/StandardToggleGroup";
 
 // Tipos para cada filtro
 export interface BaseFilter {

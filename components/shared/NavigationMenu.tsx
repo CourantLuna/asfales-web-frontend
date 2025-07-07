@@ -122,21 +122,21 @@ const navItems: {
       </NavigationMenuLink>
     </li>
     <ListItem
-      href="/lodgings"
+      href="/lodgings/hotels-and-resorts"
       title="Hoteles y Resorts"
       icon={Hotel}
     >
       Comodidad y servicios premium.
     </ListItem>
     <ListItem
-      href="/lodgings"
+      href="/lodgings/hostels-and-guesthouses"
       title="Hostales y Casas de Huéspedes"
       icon={Home}
     >
       Económico, local y acogedor.
     </ListItem>
     <ListItem
-      href="/lodgings"
+      href="/lodgings/apartments-and-longstays"
       title="Apartamentos y Estadías Largas"
       icon={Building}
     >

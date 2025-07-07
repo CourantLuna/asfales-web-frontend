@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { PassengerSelector, PassengerGroup } from '../shared/PassengerSelector';
+import { PassengerSelector, PassengerGroup } from '../shared/standard-fields-component/PassengerSelector';
 
 // Example 1: Basic passenger selector
 export function BasicPassengerExample() {

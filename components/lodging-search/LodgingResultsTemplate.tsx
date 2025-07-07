@@ -12,7 +12,7 @@ import EventDrivenProgress, {
 import React from "react";
 import { CustomSelectOption } from "../shared/CustomSelect";
 import { AirVent, Bath, Bus, Car, Dices, Dumbbell, MapPin, Mountain, Phone, Utensils, WashingMachine, Waves, Wifi, Building2, LandPlot } from "lucide-react";
-import { CheckboxOption } from "../shared/CheckboxFilter";
+import { CheckboxOption } from  "../shared/standard-fields-component/CheckboxFilter";
 import SearchWithFilters from "../shared/SearchWithFilters";
 import { AdItem } from "../shared/Ads";
 
@@ -42,9 +42,33 @@ const travelAds: AdItem[] = [
     alt: "Paquetes RIU Vacacionales Todo Incluido",
     href: "https://vacation-packages.com/ofertas-caribe-riu",
     title: "Paquetes todo incluido al Caribe - 7 días desde $899",
-    height: 220, // Solo height para layout columna
+    height: 600, // Solo height para layout columna
     width: 160, // Solo width para layout columna
   },
+  {
+    id: "zemi-beach-house",
+    src: "https://tpc.googlesyndication.com/simgad/13847073648655381401?",
+    alt: "Ahorra hasta 40%",
+    href: "https://tpc.googlesyndication.com/simgad/13847073648655381401?",
+    title: "Zemi Miches - All inclusive Resort",
+    height: 600, // Solo height para layout columna
+    width: 160, // Solo width para layout columna
+  },
+  {
+    id: "fake-ad-1",
+    src: "https://placehold.co/160x660?text=Ad+160x660",
+    alt: "Fake ad",
+    href: "https://placehold.co/160x660?text=Ad+160x660",
+    title: "fake ad", height: 660, width: 150
+  },
+  {
+    id: "fake-ad-2",
+    src: "https://placehold.co/160x600?text=Ad+160x600",
+    alt: "Fake ad",
+    href: "https://placehold.co/160x600?text=Ad+160x600",
+    title: "fake ad", height: 600, width: 150
+  },
+
 ];
 
 // Opciones para calificación de huéspedes - moved outside component as regular constant
@@ -102,6 +126,10 @@ const propertyTypeOptions: CheckboxOption[] = [
   { value: "aparthotel", label: "Aparthotel", count: 5 },
   { value: "lodge", label: "Lodge", count: 2 },
   { value: "camping", label: "Camping", count: 3 },
+  { value: "youth-hostel", label: "Youth Hostel", count: 15 },
+    { value: "capsule-hotel", label: "Capsule Hotel", count: 8 },
+{value: "boutique-hotel", label: "Boutique Hotel", count: 12 },
+
 ];
 
 const amenitiesOptions = [
@@ -254,6 +282,14 @@ interface FilterDefaults {
   paymentType?: string[];
   cancellationOptions?: string[];
   propertyType?: string[];
+  // Nuevos para hostels
+  roomType?: string[];
+  dormSize?: string[];
+  hostelAtmosphere?: string;
+  // Nuevos para apartments
+  stayDuration?: string;
+  apartmentSize?: string[];
+  includedServices?: string[];
 }
 
 interface LodgingResultsTemplateProps {
@@ -264,6 +300,7 @@ interface LodgingResultsTemplateProps {
   onFiltersChange?: (filters: Record<string, any>) => void;
   onCardClick?: (idx: number, row: any) => void;
   LodgingData?: RowData[];
+  LodgingType?: "hotels-and-resorts" | "hostels-and-guesthouses" | "apartments-and-longstays"; // Tipo de alojamiento (hotels, apartments, etc.)
 }
 
 export default function LodgingResultsTemplate({
@@ -271,7 +308,8 @@ export default function LodgingResultsTemplate({
   className,
   onFiltersChange,
   onCardClick,
-  LodgingData
+  LodgingData,
+  LodgingType = "hotels-and-resorts", // Por defecto es "hotels"
 }: LodgingResultsTemplateProps) {
   const [rows, setRows] = useState<RowData[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -291,151 +329,296 @@ export default function LodgingResultsTemplate({
     }
   ], [rows]);
 
-  // Configuración genérica de filtros
-  const filters = React.useMemo(() => [
-    {
-      id: "search",
-      type: "search" as const,
-      label: "Buscar",
-      placeholder: "Buscar alojamiento...",
-      showClearButton: true,
-      minSearchLength: 2,
-      dataSources: dataSourcesLodging,
-      defaultValue: filterDefaults.search // Configurable desde el padre
-    },
-    { id: "separator-1", type: "separator" as const, className: "bg-muted" },
-    {
-      id: "popular-filters",
-      type: "checkbox" as const,
-      label: "Filtros populares",
-      showCounts: true,
-      maxSelections: 10,
-      initialVisibleCount: 5,
-      showMoreText: "Ver más filtros",
-      showLessText: "Ver menos",
-      defaultValue: filterDefaults.popularFilters // Configurable desde el padre
-    },
-    { id: "separator-2", type: "separator" as const },
-    {
-      id: "guest-rating",
-      type: "radio" as const,
-      label: "Calificación de huéspedes",
-      variant: "vertical" as const,
-      helperText: "Filtra por calificación promedio",
-      defaultValue: filterDefaults.guestRating // Configurable desde el padre
-    },
-    { id: "separator-3", type: "separator" as const },
-    {
-      id: "price-range",
-      type: "range" as const,
-      label: "Precio por noche",
-      min: 0,
-      max: 1000,
-      currency: "$",
-      step: 10,
-      defaultValue: filterDefaults.priceRange // Configurable desde el padre
-    },
-    {
-      id: "amenities",
-      type: "toggle" as const,
-      label: "Amenities",
-      type_toggle: "multiple" as const,
-      variant: "vertical" as const,
-      wrap: true,
-      gridCols: "auto" as const,
-      containerClassName: "w-full",
-      labelClassName: "text-lg font-semibold mb-4",
-      toggleGroupClassName: "gap-3",
-      toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
-      maxSelections: 10,
-      defaultValue: filterDefaults.amenities // Configurable desde el padre
-    },
-    { id: "separator-4", type: "separator" as const },
-    {
-      id: "star-rating",
-      type: "checkbox" as const,
-      label: "Calificación por estrellas",
-      showCounts: true,
-      maxSelections: 5,
-      initialVisibleCount: 5,
-      showMoreText: "Ver más",
-      showLessText: "Ver menos",
-      defaultValue: filterDefaults.starRating // Configurable desde el padre
-    },
-    { id: "separator-5", type: "separator" as const },
-    {
-      id: "payment-type",
-      type: "checkbox" as const,
-      label: "Tipo de pago",
-      showCounts: true,
-      maxSelections: 1,
-      initialVisibleCount: 1,
-      defaultValue: filterDefaults.paymentType // Configurable desde el padre
-    },
-    { id: "separator-6", type: "separator" as const },
-    {
-      id: "cancellation-options",
-      type: "checkbox" as const,
-      label: "Opciones de cancelación",
-      showCounts: true,
-      maxSelections: 1,
-      initialVisibleCount: 1,
-      defaultValue: filterDefaults.cancellationOptions // Configurable desde el padre
-    },
-    { id: "separator-7", type: "separator" as const },
-    {
-      id: "property-type",
-      type: "checkbox" as const,
-      label: "Tipo de propiedad",
-      showCounts: true,
-      maxSelections: 10,
-      initialVisibleCount: 8,
-      showMoreText: "Ver más",
-      showLessText: "Ver menos",
-      defaultValue: filterDefaults.propertyType // Configurable desde el padre
-    }
-  ], [dataSourcesLodging, filterDefaults]);
+  // Filtros específicos por tipo de lodging
+  const getFiltersForLodgingType = React.useMemo(() => {
+    const baseFilters = [
+      {
+        id: "search",
+        type: "search" as const,
+        label: "Buscar",
+        placeholder: "Buscar alojamiento...",
+        showClearButton: true,
+        minSearchLength: 2,
+        dataSources: dataSourcesLodging,
+        defaultValue: filterDefaults.search
+      },
+      { id: "separator-1", type: "separator" as const, className: "bg-muted" },
+      {
+        id: "popular-filters",
+        type: "checkbox" as const,
+        label: "Filtros populares",
+        showCounts: true,
+        maxSelections: 10,
+        initialVisibleCount: 5,
+        showMoreText: "Ver más filtros",
+        showLessText: "Ver menos",
+        defaultValue: filterDefaults.popularFilters
+      },
+      { id: "separator-2", type: "separator" as const },
+      {
+        id: "guest-rating",
+        type: "radio" as const,
+        label: "Calificación de huéspedes",
+        variant: "vertical" as const,
+        helperText: "Filtra por calificación promedio",
+        defaultValue: filterDefaults.guestRating
+      },
+      { id: "separator-3", type: "separator" as const },
+      {
+        id: "price-range",
+        type: "range" as const,
+        label: "Precio por noche",
+        min: 0,
+        max: 1000,
+        currency: "$",
+        step: 10,
+        defaultValue: filterDefaults.priceRange
+      },
+      {
+        id: "amenities",
+        type: "toggle" as const,
+        label: "Amenities",
+        type_toggle: "multiple" as const,
+        variant: "vertical" as const,
+        wrap: true,
+        gridCols: "auto" as const,
+        containerClassName: "w-full",
+        labelClassName: "text-lg font-semibold mb-4",
+        toggleGroupClassName: "gap-3",
+        toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
+        maxSelections: 10,
+        defaultValue: filterDefaults.amenities
+      },
+      { id: "separator-4", type: "separator" as const },
+      {
+        id: "property-type",
+        type: "checkbox" as const,
+        label: "Tipo de propiedad",
+        showCounts: true,
+        maxSelections: 10,
+        initialVisibleCount: 8,
+        showMoreText: "Ver más",
+        showLessText: "Ver menos",
+        defaultValue: filterDefaults.propertyType
+      }
+    ];
 
-  // Configuración de opciones para cada filtro
-  const filterOptions = React.useMemo(() => ({
-    "popular-filters": popularFiltersOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count
-    })),
-    "guest-rating": guestRatingOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count
-    })),
-    "amenities": amenitiesOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count,
-      icon: opt.icon,
-      disabled: opt.disabled
-    })),
-    "star-rating": starRatingOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count
-    })),
-    "payment-type": paymentTypeOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count
-    })),
-    "cancellation-options": cancellationOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count
-    })),
-    "property-type": propertyTypeOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count
-    }))
-  }), []);
+    // Filtros específicos por tipo de lodging
+    const typeSpecificFilters = [];
+
+    if (LodgingType === "hotels-and-resorts") {
+      typeSpecificFilters.push(
+        { id: "separator-5", type: "separator" as const },
+        {
+          id: "star-rating",
+          type: "checkbox" as const,
+          label: "Calificación por estrellas",
+          showCounts: true,
+          maxSelections: 5,
+          initialVisibleCount: 5,
+          showMoreText: "Ver más",
+          showLessText: "Ver menos",
+          defaultValue: filterDefaults.starRating
+        },
+        { id: "separator-6", type: "separator" as const },
+        {
+          id: "payment-type",
+          type: "checkbox" as const,
+          label: "Tipo de pago",
+          showCounts: true,
+          maxSelections: 1,
+          initialVisibleCount: 1,
+          defaultValue: filterDefaults.paymentType
+        },
+        { id: "separator-7", type: "separator" as const },
+        {
+          id: "cancellation-options",
+          type: "checkbox" as const,
+          label: "Opciones de cancelación",
+          showCounts: true,
+          maxSelections: 1,
+          initialVisibleCount: 1,
+          defaultValue: filterDefaults.cancellationOptions
+        }
+      );
+    } else if (LodgingType === "hostels-and-guesthouses") {
+      typeSpecificFilters.push(
+        { id: "separator-5", type: "separator" as const },
+        {
+          id: "room-type",
+          type: "checkbox" as const,
+          label: "Tipo de habitación",
+          showCounts: true,
+          maxSelections: 5,
+          initialVisibleCount: 5,
+          showMoreText: "Ver más",
+          showLessText: "Ver menos",
+          defaultValue: filterDefaults.roomType
+        },
+        { id: "separator-6", type: "separator" as const },
+        {
+          id: "dorm-size",
+          type: "checkbox" as const,
+          label: "Tamaño de dormitorio",
+          showCounts: true,
+          maxSelections: 4,
+          initialVisibleCount: 4,
+          defaultValue: filterDefaults.dormSize
+        },
+        { id: "separator-7", type: "separator" as const },
+        {
+          id: "hostel-atmosphere",
+          type: "radio" as const,
+          label: "Ambiente del hostel",
+          variant: "vertical" as const,
+          helperText: "Filtra por tipo de ambiente",
+          defaultValue: filterDefaults.hostelAtmosphere
+        }
+      );
+    } else if (LodgingType === "apartments-and-longstays") {
+      typeSpecificFilters.push(
+        { id: "separator-5", type: "separator" as const },
+        {
+          id: "stay-duration",
+          type: "radio" as const,
+          label: "Duración de estadía",
+          variant: "vertical" as const,
+          helperText: "Filtra por duración mínima",
+          defaultValue: filterDefaults.stayDuration
+        },
+        { id: "separator-6", type: "separator" as const },
+        {
+          id: "apartment-size",
+          type: "checkbox" as const,
+          label: "Tamaño del apartamento",
+          showCounts: true,
+          maxSelections: 4,
+          initialVisibleCount: 4,
+          defaultValue: filterDefaults.apartmentSize
+        },
+        { id: "separator-7", type: "separator" as const },
+        {
+          id: "included-services",
+          type: "checkbox" as const,
+          label: "Servicios incluidos",
+          showCounts: true,
+          maxSelections: 6,
+          initialVisibleCount: 5,
+          showMoreText: "Ver más",
+          showLessText: "Ver menos",
+          defaultValue: filterDefaults.includedServices
+        }
+      );
+    }
+
+    return [...baseFilters, ...typeSpecificFilters];
+  }, [dataSourcesLodging, filterDefaults, LodgingType]);
+
+  // Actualizar el precio rango según el tipo
+  const getPriceRangeForType = React.useMemo(() => {
+    if (LodgingType === "hostels-and-guesthouses") {
+      return { min: 5, max: 80, step: 5 };
+    } else if (LodgingType === "apartments-and-longstays") {
+      return { min: 50, max: 500, step: 10 };
+    }
+    return { min: 0, max: 1000, step: 10 };
+  }, [LodgingType]);
+
+  // Aplicar configuración de precio dinámico a los filtros
+  const filters = React.useMemo(() => {
+    return getFiltersForLodgingType.map(filter => {
+      if (filter.id === "price-range") {
+        const priceConfig = getPriceRangeForType;
+        return { ...filter, ...priceConfig };
+      }
+      return filter;
+    });
+  }, [getFiltersForLodgingType, getPriceRangeForType]);
+
+  // Opciones específicas por tipo de lodging
+  const getFilterOptionsForLodgingType = React.useMemo(() => {
+    const baseOptions = {
+      "popular-filters": getPopularFiltersForType(LodgingType),
+      "guest-rating": guestRatingOptions.map(opt => ({
+        value: opt.value,
+        label: opt.label,
+        count: opt.count
+      })),
+      "amenities": getAmenitiesForType(LodgingType),
+      "property-type": getPropertyTypesForType(LodgingType)
+    };
+
+    // Opciones específicas por tipo
+    if (LodgingType === "hotels-and-resorts") {
+      return {
+        ...baseOptions,
+        "star-rating": starRatingOptions.map(opt => ({
+          value: opt.value,
+          label: opt.label,
+          count: opt.count
+        })),
+        "payment-type": paymentTypeOptions.map(opt => ({
+          value: opt.value,
+          label: opt.label,
+          count: opt.count
+        })),
+        "cancellation-options": cancellationOptions.map(opt => ({
+          value: opt.value,
+          label: opt.label,
+          count: opt.count
+        }))
+      };
+    } else if (LodgingType === "hostels-and-guesthouses") {
+      return {
+        ...baseOptions,
+        "room-type": [
+          { value: "mixed-dorm", label: "Mixed Dormitory", count: 180 },
+          { value: "female-dorm", label: "Female-only Dorm", count: 85 },
+          { value: "male-dorm", label: "Male-only Dorm", count: 65 },
+          { value: "private-room", label: "Private Room", count: 95 },
+          { value: "ensuite-private", label: "Private with Ensuite", count: 45 }
+        ],
+        "dorm-size": [
+          { value: "4-bed", label: "4-bed dorm", count: 45 },
+          { value: "6-bed", label: "6-bed dorm", count: 85 },
+          { value: "8-bed", label: "8-bed dorm", count: 120 },
+          { value: "10-plus-bed", label: "10+ bed dorm", count: 75 }
+        ],
+        "hostel-atmosphere": [
+          { value: "party", label: "Party Hostel", count: 45 },
+          { value: "quiet", label: "Quiet/Chill", count: 65 },
+          { value: "social", label: "Social", count: 120 },
+          { value: "business", label: "Business Travelers", count: 35 }
+        ]
+      };
+    } else if (LodgingType === "apartments-and-longstays") {
+      return {
+        ...baseOptions,
+        "stay-duration": [
+          { value: "weekly", label: "1+ semana", count: 250 },
+          { value: "monthly", label: "1+ mes", count: 180 },
+          { value: "quarterly", label: "3+ meses", count: 120 },
+          { value: "long-term", label: "6+ meses", count: 85 }
+        ],
+        "apartment-size": [
+          { value: "studio", label: "Studio (< 500 sq ft)", count: 95 },
+          { value: "small", label: "Small (500-800 sq ft)", count: 120 },
+          { value: "medium", label: "Medium (800-1200 sq ft)", count: 150 },
+          { value: "large", label: "Large (1200+ sq ft)", count: 85 }
+        ],
+        "included-services": [
+          { value: "utilities", label: "Utilities", count: 180 },
+          { value: "internet", label: "Internet", count: 320 },
+          { value: "housekeeping", label: "Housekeeping", count: 120 },
+          { value: "maintenance", label: "Maintenance", count: 200 },
+          { value: "linen-change", label: "Linen Change", count: 95 },
+          { value: "concierge", label: "Concierge Service", count: 80 }
+        ]
+      };
+    }
+
+    return baseOptions;
+  }, [LodgingType]);
 
   // Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
@@ -470,9 +653,9 @@ export default function LodgingResultsTemplate({
     <div className={className}>
       <SearchWithFilters
         rows={rows}
-        // Nueva API genérica
+        // Nueva API genérica - usando filtros dinámicos
         filters={filters}
-        filterOptions={filterOptions}
+        filterOptions={getFilterOptionsForLodgingType}
         // Configuración
         sortOptions={sortOptions}
         enableCompareMode={true}
@@ -512,6 +695,113 @@ export default function LodgingResultsTemplate({
       />
     </div>
   );
+}
+
+// Funciones auxiliares para obtener opciones específicas por tipo
+function getPopularFiltersForType(lodgingType: string): CheckboxOption[] {
+  if (lodgingType === "hostels-and-guesthouses") {
+    return [
+      { value: "budget-friendly", label: "Budget Friendly", count: 380 },
+      { value: "central-location", label: "Central Location", count: 245 },
+      { value: "free-wifi", label: "Free WiFi", count: 407 },
+      { value: "shared-kitchen", label: "Shared Kitchen", count: 229 },
+      { value: "female-dorms", label: "Female-only Dorms", count: 85 },
+      { value: "party-hostel", label: "Party Hostel", count: 45 },
+      { value: "quiet-hostel", label: "Quiet Hostel", count: 65 },
+      { value: "backpacker-friendly", label: "Backpacker Friendly", count: 201 },
+      { value: "luggage-storage", label: "Luggage Storage", count: 350 },
+      { value: "24-hour-reception", label: "24-hour Reception", count: 180 }
+    ];
+  } else if (lodgingType === "apartments-and-longstays") {
+    return [
+      { value: "monthly-discounts", label: "Monthly Discounts", count: 180 },
+      { value: "weekly-discounts", label: "Weekly Discounts", count: 220 },
+      { value: "flexible-cancellation", label: "Flexible Cancellation", count: 150 },
+      { value: "furnished", label: "Fully Furnished", count: 290 },
+      { value: "full-kitchen", label: "Full Kitchen", count: 320 },
+      { value: "washer-dryer", label: "Washer/Dryer", count: 285 },
+      { value: "workspace", label: "Workspace", count: 250 },
+      { value: "parking", label: "Parking Included", count: 220 },
+      { value: "pet-friendly", label: "Pet Friendly", count: 160 },
+      { value: "utilities-included", label: "Utilities Included", count: 180 }
+    ];
+  }
+  
+  // Default para hotels-and-resorts
+  return popularFiltersOptions;
+}
+
+function getAmenitiesForType(lodgingType: string): any[] {
+  if (lodgingType === "hostels-and-guesthouses") {
+    return [
+      { value: "wifi", label: "Free WiFi", icon: <Wifi className="w-full h-full" />, count: 407 },
+      { value: "shared-kitchen", label: "Shared Kitchen", icon: <Utensils className="w-full h-full" />, count: 229 },
+      { value: "shared-bathroom", label: "Shared Bathroom", icon: <Bath className="w-full h-full" />, count: 180 },
+      { value: "private-bathroom", label: "Private Bathroom", icon: <Bath className="w-full h-full" />, count: 95 },
+      { value: "luggage-storage", label: "Luggage Storage", icon: <MapPin className="w-full h-full" />, count: 350 },
+      { value: "laundry-facilities", label: "Laundry Facilities", icon: <WashingMachine className="w-full h-full" />, count: 285 },
+      { value: "common-area", label: "Common Area/Lounge", icon: <MapPin className="w-full h-full" />, count: 320 },
+      { value: "24-hour-reception", label: "24-hour Reception", icon: <Phone className="w-full h-full" />, count: 180 },
+      { value: "lockers", label: "Lockers", icon: <Phone className="w-full h-full" />, count: 290 },
+      { value: "air-conditioned", label: "Air Conditioning", icon: <AirVent className="w-full h-full" />, count: 120 },
+      { value: "female-dorms", label: "Female-only Dorms", icon: <Building2 className="w-full h-full" />, count: 85 },
+      { value: "breakfast-included", label: "Breakfast Included", icon: <Utensils className="w-full h-full" />, count: 150 }
+    ];
+  } else if (lodgingType === "apartments-and-longstays") {
+    return [
+      { value: "full-kitchen", label: "Full Kitchen", icon: <Utensils className="w-full h-full" />, count: 320 },
+      { value: "washer-dryer", label: "Washer/Dryer in Unit", icon: <WashingMachine className="w-full h-full" />, count: 285 },
+      { value: "wifi", label: "Free WiFi", icon: <Wifi className="w-full h-full" />, count: 407 },
+      { value: "air-conditioned", label: "Air Conditioning", icon: <AirVent className="w-full h-full" />, count: 337 },
+      { value: "workspace", label: "Workspace/Office Area", icon: <MapPin className="w-full h-full" />, count: 250 },
+      { value: "parking", label: "Parking Included", icon: <Car className="w-full h-full" />, count: 220 },
+      { value: "balcony-terrace", label: "Balcony/Terrace", icon: <Mountain className="w-full h-full" />, count: 180 },
+      { value: "dishwasher", label: "Dishwasher", icon: <Utensils className="w-full h-full" />, count: 200 },
+      { value: "elevator", label: "Elevator", icon: <Building2 className="w-full h-full" />, count: 150 },
+      { value: "building-gym", label: "Building Gym", icon: <Dumbbell className="w-full h-full" />, count: 120 },
+      { value: "building-pool", label: "Building Pool", icon: <Waves className="w-full h-full" />, count: 95 },
+      { value: "furnished", label: "Fully Furnished", icon: <Building2 className="w-full h-full" />, count: 290 },
+      { value: "pets-allowed", label: "Pets Allowed", icon: <Building2 className="w-full h-full" />, count: 160 }
+    ];
+  }
+  
+  // Default para hotels-and-resorts
+  return amenitiesOptions.map(opt => ({
+    value: opt.value,
+    label: opt.label,
+    count: opt.count,
+    icon: opt.icon,
+    disabled: opt.disabled
+  }));
+}
+
+function getPropertyTypesForType(lodgingType: string): CheckboxOption[] {
+  if (lodgingType === "hostels-and-guesthouses") {
+    return [
+      { value: "hostel-backpacker", label: "Hostel/Backpacker accommodation", count: 45 },
+      { value: "guesthouse", label: "Guesthouse", count: 32 },
+      { value: "bed-breakfast", label: "Bed & breakfast", count: 18 },
+      { value: "budget-hotel", label: "Budget Hotel", count: 25 },
+      { value: "capsule-hotel", label: "Capsule Hotel", count: 8 },
+      { value: "youth-hostel", label: "Youth Hostel", count: 15 }
+    ];
+  } else if (lodgingType === "apartments-and-longstays") {
+    return [
+      { value: "apartment", label: "Apartment", count: 180 },
+      { value: "studio", label: "Studio", count: 95 },
+      { value: "one-bedroom", label: "1 Bedroom", count: 150 },
+      { value: "two-bedroom", label: "2 Bedroom", count: 120 },
+      { value: "three-bedroom", label: "3+ Bedroom", count: 85 },
+      { value: "serviced-apartment", label: "Serviced Apartment", count: 75 },
+      { value: "extended-stay", label: "Extended Stay", count: 65 },
+      { value: "corporate-housing", label: "Corporate Housing", count: 35 },
+      { value: "loft", label: "Loft", count: 40 },
+      { value: "penthouse", label: "Penthouse", count: 25 }
+    ];
+  }
+  
+  // Default para hotels-and-resorts
+  return propertyTypeOptions;
 }
 
 // ...resto del código permanece igual

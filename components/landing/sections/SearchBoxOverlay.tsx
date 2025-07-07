@@ -1,10 +1,9 @@
 "use client"
-import { FormMessage } from "@/components/ui/form";
 import "../../../styles/landingStyles.css";
 import { Button } from "@/components/ui/button"
 import { Search, ArrowLeftRight, ArrowUpDown, MapPin  } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { StandardSearchField, StandardSearchDataSource } from "@/components/shared/StandardSearchField";
+import { StandardSearchField, StandardSearchDataSource } from "@/components/shared/standard-fields-component/StandardSearchField";
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -191,7 +190,7 @@ useEffect(() => {
               <div className={`transition-all duration-300 ${swapAnimating ? "animate-swap" : ""}`}>
                 <StandardSearchField
                                   variant="compact"
-                         containerClassName="w-full md:w-[280px]"
+                         containerClassName="w-[280px]"
                          label={"Destino"}
                          placeholder={"¿Hacia donde?"}
                          value={destination}
@@ -240,6 +239,7 @@ useEffect(() => {
         <Button
           type="submit"
           onClick={handleBuscar}
+          disabled={!origin || !destination}
           className="z-[19] rounded-full pointer-events-auto rounded-lg bg-[#FFA500] text-white px-6 py-3 w-[280px] h-[48px] lg:ml-[624px] mt-[30px]"
         >
           <Search className="mr-2 h-4 w-4" />
