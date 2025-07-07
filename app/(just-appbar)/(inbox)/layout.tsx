@@ -11,10 +11,10 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
     const router = useRouter();
 
     useEffect(() => {
-    router.prefetch("/inbox/general");
-    router.prefetch("/inbox/chats");
-    router.prefetch("/inbox/alerts");
-    router.push("/inbox/general");
+    router.prefetch("/notifications");
+    router.prefetch("/chats");
+    router.prefetch("/alerts");
+    router.push("/notifications"); // Redirige a la página de notificaciones por defecto
   }, [router]);
 
   const pathname = usePathname() ?? "";
@@ -22,7 +22,7 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
     ? "chats"
     : pathname.endsWith("/alerts")
     ? "alerts"
-    : "general";
+    : "notifications";
 
   const classNameTab = `
     flex-1 justify-center border-b-2 border-transparent bg-transparent
@@ -34,28 +34,25 @@ export default function InboxLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="w-full mx-auto pt-5 flex-1 flex-col flex">
-      <div className="md:hidden mb-4  w-full">
-              <h1 className="text-2xl font-semibold mx-4 text-secondary ">Notificaciones</h1>
-
-      </div>
+     
       <Tabs value={activeTab} className=" flex justify-center border-b-2">
         <TabsList className="bg-transparent grid  grid-cols-3">
-          <TabsTrigger value="general" asChild className={classNameTab}>
-            <Link href="/inbox/general" className="flex items-center justify-center gap-2">
+          <TabsTrigger value="notifications" asChild className={classNameTab}>
+            <Link href="/notifications" className="flex items-center justify-center gap-2">
               <Bell className="w-4 h-4" />
-              General
+              Avisos
             </Link>
           </TabsTrigger>
 
           <TabsTrigger value="chats" asChild className={classNameTab}>
-            <Link href="/inbox/chats" className="flex items-center justify-center gap-2">
+            <Link href="/chats" className="flex items-center justify-center gap-2">
               <MessageCircle className="w-4 h-4" />
               Mensajes
             </Link>
           </TabsTrigger>
 
           <TabsTrigger value="alerts" asChild className={classNameTab}>
-            <Link href="/inbox/alerts" className="flex items-center justify-center gap-2">
+            <Link href="/alerts" className="flex items-center justify-center gap-2">
               <BellRing className="w-4 h-4" />
               Alertas
             </Link>

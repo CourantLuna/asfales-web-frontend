@@ -47,7 +47,7 @@ export default function ChatsClient() {
                   </p>
                   <div className="mt-2 text-right">
                     <Button variant="link" asChild>
-                      <Link href={`/inbox/chats/${chat.id}`} className="text-primary hover:underline">
+                      <Link href={`/chats/${chat.id}`} className="text-primary hover:underline">
                         Abrir chat
                       </Link>
                     </Button>
@@ -58,7 +58,7 @@ export default function ChatsClient() {
             <Separator className="my-4" />
             <div className="text-right">
               <Button variant="outline" asChild>
-                <Link href="/inbox/chats">Ver todos los mensajes</Link>
+                <Link href="/chats">Ver todos los mensajes</Link>
               </Button>
             </div>
           </div>

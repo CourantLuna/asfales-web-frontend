@@ -26,7 +26,7 @@ export default function AlertsClient() {
               <p className="text-sm text-muted-foreground">
                 Aún no tienes alertas configuradas.
               </p>
-              <Link href="/inbox/alerts/new">
+              <Link href="/alerts/new">
                 <Button>Crear mi primera alerta</Button>
               </Link>
             </div>
@@ -42,7 +42,7 @@ export default function AlertsClient() {
                         size="icon"
                         asChild
                       >
-                        <Link href={`/inbox/alerts/${alert.id}/edit`}>
+                        <Link href={`/alerts/${alert.id}/edit`}>
                           <Edit2 className="w-4 h-4 text-muted-foreground hover:text-foreground" />
                         </Link>
                       </Button>
@@ -59,7 +59,7 @@ export default function AlertsClient() {
               <Separator />
 
               <div className="text-right">
-                <Link href="/inbox/alerts/new">
+                <Link href="/alerts/new">
                   <Button variant="outline">Crear nueva alerta</Button>
                 </Link>
               </div>

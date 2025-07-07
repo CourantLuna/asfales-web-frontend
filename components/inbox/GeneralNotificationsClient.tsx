@@ -69,7 +69,7 @@ export default function NotificationsClient() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    <Link href={`/inbox/general/${notif.id}`} className="text-primary hover:underline">
+                    <Link href={`/notifications/${notif.id}`} className="text-primary hover:underline">
                       Ver detalles
                     </Link>
                   </p>
@@ -79,7 +79,7 @@ export default function NotificationsClient() {
             <Separator className="my-4" />
             <div className="text-right">
               <Button variant="outline" asChild>
-                <Link href="/inbox/general">Ver todas</Link>
+                <Link href="/notifications">Ver todas</Link>
               </Button>
             </div>
           </div>

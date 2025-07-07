@@ -10,7 +10,7 @@ export function ScrollbarControl() {
     const html = document.documentElement
 
     // Rutas donde NO quieres aplicar scrollbar-gutter: stable
-    const disableGutterRoutes = ["/login", "/register", "/inbox/alerts", "/inbox/chats", "/inbox/general"]
+    const disableGutterRoutes = ["/login", "/register", "/alerts", "/chats", "/notifications"]
 
     if (disableGutterRoutes.includes(pathname)) {
       html.classList.add("disable-scrollbar-gutter")

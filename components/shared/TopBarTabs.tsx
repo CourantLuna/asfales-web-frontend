@@ -40,8 +40,8 @@ export function TopBarTabs() {
     {
       label: "Notificaciones",
       icon: Bell,
-      href: "/inbox/general",
-      match: ["/inbox"],
+      href: "/notifications",
+      match: ["/notifications", "/chats", "/alerts"],
       showBadge: true,
       badgeCount: 3, // Ejemplo de contador
     },
