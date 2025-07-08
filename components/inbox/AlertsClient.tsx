@@ -18,9 +18,9 @@ const mockAlerts = [
 
 export default function AlertsClient() {
   return (
-    <div>
+    <div className="w-full flex-1 flex flex-col h-full">
       <ShowIfAuth>
-        <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <div className="max-w-7xl mx-auto px-4 space-y-6">
           {mockAlerts.length === 0 ? (
             <div className="flex flex-col items-center py-20 space-y-4">
               <p className="text-sm text-muted-foreground">
@@ -69,7 +69,7 @@ export default function AlertsClient() {
       </ShowIfAuth>
 
       <ShowIfUnauth>
-        <div className="flex flex-col items-center justify-center text-center">
+        <div className="w-full flex-1 flex flex-col h-full text-center items-center mt-20">
           <Image
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/AlertsNoAuthIcon-vVX6vXUoLuaODu6m3e8sDcW2j6ts49.svg"
             alt="Lock Icon"

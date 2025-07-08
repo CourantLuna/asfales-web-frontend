@@ -11,7 +11,7 @@ export default function TransportLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={inter.className + " flex flex-col min-h-screen w-full"}>
+    <div className={inter.className + " flex flex-col w-full"}>
       <ThemeProvider
         attribute="class"
         defaultTheme="light"

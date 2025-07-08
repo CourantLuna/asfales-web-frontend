@@ -65,7 +65,7 @@ export default function ChatsClient() {
         )}
       </ShowIfAuth>
       <ShowIfUnauth>
-        <div className="flex flex-col items-center justify-center text-center">
+        <div className="w-full flex-1 flex flex-col h-full text-center items-center mt-20">
           <Image
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/ChatsNoAuthIcon-MOcuXqMiznUOYyhUhXIzNq2JDIvhg9.svg"
             alt="Lock Icon"

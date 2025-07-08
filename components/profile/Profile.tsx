@@ -33,7 +33,7 @@ export default function Profile() {
 
 
   return (
-          <>
+          <div className="w-full flex-1 flex flex-col h-full justify-content-center">
                 <ShowIfUnauth>
 
     {/* Unauth Profile */}
@@ -68,6 +68,6 @@ export default function Profile() {
     </ShowIfUnauth>
 
     
-    </>
+    </div>
   );
 }

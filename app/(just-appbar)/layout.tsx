@@ -21,7 +21,7 @@ export default function JustAppbarLayout({ children }: { children: React.ReactNo
         <TopBarTabs />
         <MobileHeader />
 
-        <main className="flex-1 w-full pt-[60px] lg:pt-[120px] flex flex-col bg-gray-50">
+        <main className="flex-1 w-full pt-[70px] lg:pt-[120px] flex flex-col bg-gray-50  w-full">
 
           {children}
 

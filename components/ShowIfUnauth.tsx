@@ -17,7 +17,7 @@ function ShowIfUnauthInner({ children }: { children: ReactNode }) {
 
 export function ShowIfUnauth({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={null} >
       <ShowIfUnauthInner>{children}</ShowIfUnauthInner>
     </Suspense>
   );

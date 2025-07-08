@@ -21,7 +21,7 @@ export default function NotificationsClient() {
   return (
     <div >
       <ShowIfUnauth>
-        <div className="flex flex-col items-center justify-center text-center">
+        <div className="w-full flex-1 flex flex-col h-full text-center items-center mt-20">
           <Image
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/NotificationNoAuthIcon-UwuOMtm7SHX3ClXBxLTIu9fw7SV5oM.svg"
             alt="Lock Icon"

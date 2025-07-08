@@ -74,7 +74,7 @@ export default function MobileHeader({
   return (
     <div className={`
       ${showOnDesktop ? 'block' : 'lg:hidden'} 
-      fixed top-16 left-0 right-0 z-20 
+      relative fixed top-16 left-0 right-0 z-20 
       bg-white/95 backdrop-blur-sm border-b w-full 
       ${className || ''}
     `}>
