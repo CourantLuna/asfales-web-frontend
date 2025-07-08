@@ -26,7 +26,13 @@ export interface DateRangePickerCustomProps {
   /**
    * Change handler for date range
    */
-  onChange?: (range: { from?: Date; to?: Date }) => void;
+  onChange?: (range: { 
+    from?: Date; 
+    to?: Date;
+    isFlexible?: boolean;
+    flexibleDuration?: string;
+    flexibleMonths?: string[];
+  }) => void;
   /**
    * Placeholder text
    */
@@ -87,6 +93,7 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
     const [includeWeekend, setIncludeWeekend] = React.useState(false);
     const [flexibleMonths, setFlexibleMonths] = React.useState<string[]>(["july"]);
     const [activeTrigger, setActiveTrigger] = React.useState<'from' | 'to' | null>(null);
+    const [isFlexibleActive, setIsFlexibleActive] = React.useState(defaultActiveTab === "flexible");
 
     // Sync with external value
     React.useEffect(() => {
@@ -94,6 +101,13 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
         setSelectedRange(value);
       }
     }, [value]);
+
+    // Reset flexible active state when switching to calendar tab
+    React.useEffect(() => {
+      if (activeTab === "calendar") {
+        setIsFlexibleActive(false);
+      }
+    }, [activeTab]);
 
     // Calendar helpers
     const nextMonth = addMonths(currentMonth, 1);
@@ -133,7 +147,10 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
         }
         
         setSelectedRange(newRange);
-        onChange?.(newRange);
+        onChange?.({ 
+          ...newRange,
+          isFlexible: false 
+        });
         setOpen(false);
       } else {
         // Modo normal - selección de rango
@@ -153,13 +170,21 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
 
     const handleDone = () => {
       if (activeTab === "calendar") {
-        onChange?.(selectedRange);
+        setIsFlexibleActive(false);
+        onChange?.({ 
+          ...selectedRange,
+          isFlexible: false 
+        });
       } else {
         // Handle flexible dates logic here
+        setIsFlexibleActive(true);
         const today = new Date();
         const fakeDates = {
           from: today,
-          to: addDays(today, 7)
+          to: addDays(today, 7),
+          isFlexible: true,
+          flexibleDuration,
+          flexibleMonths
         };
         onChange?.(fakeDates);
       }
@@ -244,14 +269,54 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
       );
     };
 
+    const getFlexibleDisplayText = () => {
+      if (!isFlexibleActive || flexibleMonths.length === 0) {
+        return null;
+      }
+
+      // Mapeo de claves de meses a abreviaciones en español (3 letras + punto)
+      const monthNames: Record<string, string> = {
+        "june": "Jun.",
+        "july": "Jul.", 
+        "august": "Ago.",
+        "september": "Sep.",
+        "october": "Oct.",
+        "november": "Nov."
+      };
+
+      // Convertir duración a texto legible
+      const getDurationText = (duration: string) => {
+        switch (duration) {
+          case "1": return "1 noche";
+          case "2-3": return "2-3 noches";
+          case "4-5": return "4-5 noches";
+          case "6-7": return "6-7 noches";
+          default: return duration;
+        }
+      };
+
+      const monthsText = flexibleMonths
+        .map(key => monthNames[key] || key)
+        .join(" ");
+
+      return `${getDurationText(flexibleDuration)} in ${monthsText}`;
+    };
+
     const displayText = React.useMemo(() => {
+      // Si fechas flexibles está activa y tiene datos, mostrar el texto flexible
+      const flexibleText = getFlexibleDisplayText();
+      if (flexibleText) {
+        return flexibleText;
+      }
+
+      // Lógica original para fechas del calendario
       if (selectedRange.from && selectedRange.to) {
         return `${format(selectedRange.from, "MMM d", { locale: es })} - ${format(selectedRange.to, "MMM d", { locale: es })}`;
       } else if (selectedRange.from) {
         return format(selectedRange.from, "MMM d", { locale: es });
       }
       return placeholder;
-    }, [selectedRange, placeholder]);
+    }, [selectedRange, placeholder, isFlexibleActive, flexibleDuration, flexibleMonths]);
 
     // Contenido del tab de calendario
     const getCalendarContent = () => (
@@ -356,7 +421,15 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
           <ToggleGroup
             type="single"
             value={flexibleDuration}
-            onValueChange={(value) => value && setFlexibleDuration(value)}
+            onValueChange={(value) => {
+              if (value) {
+                setFlexibleDuration(value);
+                // Si estamos en modo fechas flexibles, activar immediatamente para mostrar el cambio
+                if (activeTab === "flexible") {
+                  setIsFlexibleActive(true);
+                }
+              }
+            }}
             className="justify-center flex-wrap gap-2"
           >
             <ToggleGroupItem value="1" className="text-sm">
@@ -408,6 +481,10 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                     ? flexibleMonths.filter(m => m !== month.key)
                     : [...flexibleMonths, month.key];
                   setFlexibleMonths(newMonths);
+                  // Si estamos en modo fechas flexibles, activar immediatamente para mostrar el cambio
+                  if (activeTab === "flexible" && newMonths.length > 0) {
+                    setIsFlexibleActive(true);
+                  }
                 }}
                 className={cn(
                   "p-3 rounded-lg border text-center transition-all text-sm hover:scale-105",
@@ -475,8 +552,10 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                       activeTrigger === 'from' && open && "ring-2 ring-primary"
                     )}
                   >
-                    <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                    {selectedRange.from ? format(selectedRange.from, "MMM d", { locale: es }) : "Seleccionar fecha"}
+                    <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <span className="truncate">
+                      {selectedRange.from ? format(selectedRange.from, "MMM d", { locale: es }) : "Seleccionar fecha"}
+                    </span>
                   </Button>
                 </div>
                 
@@ -497,8 +576,10 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                         activeTrigger === 'to' && open && "ring-2 ring-primary"
                       )}
                     >
-                      <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                      {selectedRange.to ? format(selectedRange.to, "MMM d", { locale: es }) : "Seleccionar fecha"}
+                      <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <span className="truncate">
+                        {selectedRange.to ? format(selectedRange.to, "MMM d", { locale: es }) : "Seleccionar fecha"}
+                      </span>
                     </Button>
                   </div>
                 )}
@@ -515,8 +596,8 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                     !selectedRange.from && "text-muted-foreground"
                   )}
                 >
-                  <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                  {displayText}
+                  <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="truncate">{displayText}</span>
                 </Button>
               </div>
             )

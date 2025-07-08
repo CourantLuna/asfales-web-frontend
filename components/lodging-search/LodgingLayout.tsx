@@ -118,6 +118,11 @@ export default function LodgingLayoutClient(
       from: new Date(),
       to: new Date()
     })
+  const [flexibleInfo, setFlexibleInfo] = useState<{
+    isFlexible?: boolean;
+    flexibleDuration?: string;
+    flexibleMonths?: string[];
+  }>({});
 
     // Funciones para manejar los valores - usar props si están disponibles, sino usar estado local
     const currentGoingTo = goingTo !== undefined ? goingTo : localGoingTo;
@@ -140,7 +145,14 @@ export default function LodgingLayoutClient(
     };
 
     // Handler para convertir tipos de fecha
-  const handleRangeChange = (newRange: { from?: Date; to?: Date }) => {
+  const handleRangeChange = (newRange: { 
+    from?: Date; 
+    to?: Date;
+    isFlexible?: boolean;
+    flexibleDuration?: string;
+    flexibleMonths?: string[];
+  }) => {
+    // Actualizar el rango de fechas
     if (newRange.from && newRange.to) {
       setRange({ from: newRange.from, to: newRange.to });
     } else if (newRange.from) {
@@ -148,7 +160,14 @@ export default function LodgingLayoutClient(
     } else {
       setRange(undefined);
     }
-  }
+
+    // Actualizar información de fechas flexibles
+    setFlexibleInfo({
+      isFlexible: newRange.isFlexible,
+      flexibleDuration: newRange.flexibleDuration,
+      flexibleMonths: newRange.flexibleMonths
+    });
+  };
 
     function handleBuscar() {
     
@@ -172,6 +191,17 @@ export default function LodgingLayoutClient(
     }
     if (range?.to) {
       params.append('to', range.to.toISOString().split('T')[0]);
+    }
+
+    // Agregar parámetros de fechas flexibles si aplica
+    if (flexibleInfo.isFlexible) {
+      params.append('isFlexible', 'true');
+      if (flexibleInfo.flexibleDuration) {
+        params.append('flexibleDuration', flexibleInfo.flexibleDuration);
+      }
+      if (flexibleInfo.flexibleMonths && flexibleInfo.flexibleMonths.length > 0) {
+        params.append('flexibleMonths', flexibleInfo.flexibleMonths.join(','));
+      }
     }
     
     // Simplificar la información de habitaciones

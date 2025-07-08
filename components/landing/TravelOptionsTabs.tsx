@@ -530,25 +530,25 @@ export default function TravelOptionsTabs({
     {
       value: "transport",
       label: "Transporte",
-      icon: <Plane className="w-4 h-4" />,
+      // icon: <Plane className="w-4 h-4" />,
       content: getTransportContent(),
     },
     {
       value: "lodging",
       label: "Alojamientos", 
-      icon: <Hotel className="w-4 h-4" />,
+      // icon: <Hotel className="w-4 h-4" />,
       content: getLodgingContent(),
     },
     {
       value: "experiences",
       label: "Experiencias",
-      icon: <Mountain className="w-4 h-4" />,
+      // icon: <Mountain className="w-4 h-4" />,
       content: getExperiencesContent(),
     },
     {
       value: "itineraries",
       label: "Itinerarios",
-      icon: <Route className="w-4 h-4" />,
+      // icon: <Route className="w-4 h-4" />,
       content: getItinerariesContent(),
     },
   ];

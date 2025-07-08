@@ -380,10 +380,18 @@ function handleEntrySelect(index: number) {
 export default function ComparisonDemo() {
   const [tab, setTab] = useState("transporte");
   const tabOptions: Option[] = [
-    { label: "Cómo llegar", value: "transporte", icon: <Plane className="w-4 h-4" /> },
-    { label: "Dónde dormir", value: "alojamientos", icon: <Hotel className="w-4 h-4" /> },
-    { label: "Qué hacer", value: "experiencias", icon: <Mountain className="w-4 h-4" /> },
-    { label: "Planes completos", value: "itinerarios", icon: <Route className="w-4 h-4" /> },
+    { label: "Cómo llegar", value: "transporte", 
+      // icon: <Plane className="w-4 h-4" /> 
+    },
+    { label: "Dónde dormir", value: "alojamientos",
+      // icon: <Hotel className="w-4 h-4" /> 
+    },
+    { label: "Qué hacer", value: "experiencias",
+      // icon: <Mountain className="w-4 h-4" /> 
+    },
+    { label: "Planes completos", value: "itinerarios", 
+      // icon: <Route className="w-4 h-4" /> 
+    },
   ];
 
   const classNameTabs = `flex-1 justify-center border-b-2 border-transparent  bg-transparent

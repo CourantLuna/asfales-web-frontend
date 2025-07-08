@@ -11,6 +11,30 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
   const [parsedParams, setParsedParams] = useState<any>(null);
   const [urlParams, setUrlParams] = useState<string>('');
 
+  // Helper para mapear claves de meses a nombres abreviados
+  const getMonthNames = (monthKeys: string[]) => {
+    const monthNames: Record<string, string> = {
+      "june": "Jun.",
+      "july": "Jul.", 
+      "august": "Ago.",
+      "september": "Sep.",
+      "october": "Oct.",
+      "november": "Nov."
+    };
+    return monthKeys.map(key => monthNames[key] || key);
+  };
+
+  // Helper para convertir duración a texto legible
+  const getDurationText = (duration: string) => {
+    switch (duration) {
+      case "1": return "1 noche";
+      case "2-3": return "2-3 noches";
+      case "4-5": return "4-5 noches";
+      case "6-7": return "6-7 noches";
+      default: return duration;
+    }
+  };
+
   useEffect(() => {
     // Obtener parámetros directamente del navegador
     const urlSearchParams = new URLSearchParams(window.location.search);
@@ -24,6 +48,9 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
       adults: parseInt(urlSearchParams.get('adults') || '0'),
       children: parseInt(urlSearchParams.get('children') || '0'),
       rooms: parseInt(urlSearchParams.get('rooms') || '1'),
+      isFlexible: urlSearchParams.get('isFlexible') === 'true',
+      flexibleDuration: urlSearchParams.get('flexibleDuration') || '',
+      flexibleMonths: urlSearchParams.get('flexibleMonths')?.split(',') || [],
     };
 
     console.log('URL completa:', window.location.href);
@@ -50,7 +77,7 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
   return (
     <div className="py-6">
       {/* Información de búsqueda debug only */}
-      {/* <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+      <div className="mb-6 p-4 bg-blue-50 rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">
           Hoteles y Resorts - Versión Simple
         </h1>
@@ -63,25 +90,39 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="font-semibold text-gray-600">Destino:</span>
-            <p className="text-gray-800">{getDestinationName(parsedParams?.goingTo) || 'No especificado'}</p>
+            <p className="text-gray-800">{parsedParams?.goingTo || 'No especificado'}</p>
             <p className="text-xs text-gray-500">Código: {parsedParams?.goingTo}</p>
-            <p className="text-xs text-gray-400">{getDestinationFullName(parsedParams?.goingTo)}</p>
           </div>
           
           <div>
             <span className="font-semibold text-gray-600">Desde:</span>
-            <p className="text-gray-800">{getDestinationName(parsedParams?.travelingFrom) || 'No especificado'}</p>
+            <p className="text-gray-800">{parsedParams?.travelingFrom || 'No especificado'}</p>
             <p className="text-xs text-gray-500">Código: {parsedParams?.travelingFrom}</p>
           </div>
           
           <div>
             <span className="font-semibold text-gray-600">Fechas:</span>
-            <p className="text-gray-800">
-              {fromDate && toDate 
-                ? `${fromDate.toLocaleDateString()} - ${toDate.toLocaleDateString()}`
-                : 'Fechas no especificadas'
-              }
-            </p>
+            {parsedParams?.isFlexible ? (
+              <div>
+                <p className="text-gray-800">
+                  <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs mr-2 font-semibold">FLEXIBLES</span>
+                  {getDurationText(parsedParams.flexibleDuration)} in {getMonthNames(parsedParams.flexibleMonths || []).join(' ')}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Fechas estimadas: {fromDate && toDate 
+                    ? `${fromDate.toLocaleDateString('es-ES')} - ${toDate.toLocaleDateString('es-ES')}`
+                    : 'Por determinar'
+                  }
+                </p>
+              </div>
+            ) : (
+              <p className="text-gray-800">
+                {fromDate && toDate 
+                  ? `${fromDate.toLocaleDateString('es-ES')} - ${toDate.toLocaleDateString('es-ES')}`
+                  : 'Fechas no especificadas'
+                }
+              </p>
+            )}
           </div>
           
           <div>
@@ -104,7 +145,7 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
             </p>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Componente de resultados con filtros */}
       <LodgingResultsTemplate
