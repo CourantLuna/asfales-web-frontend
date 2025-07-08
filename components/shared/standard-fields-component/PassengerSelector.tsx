@@ -352,49 +352,41 @@ const PassengerSelector = React.forwardRef<HTMLButtonElement, PassengerSelectorP
           open={open}
           onOpenChange={setOpen}
           mobileTitle="Seleccionar pasajeros"
-          popoverContentProps={{
-            className: "w-80 p-0",
-            align: "start"
+         popoverContentProps={{
+            className: "w-full md:w-[380px] p-0 max-h-[500px] overflow-hidden",
+            align: "start",
+            side: "bottom",
+            sideOffset: -48,
+            alignOffset: 0
           }}
           trigger={
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    id={selectorId}
-                    ref={ref}
-                    variant="outline"
-                    className={cn(
-                      // Standard button height and spacing with flexible width
-                      "w-full justify-start h-12 text-left font-normal",
-                      // Text sizes: base on mobile, sm on desktop
-                      "text-base md:text-sm",
-                      // Prevent text overflow
-                      "overflow-hidden",
-                      // Error state styling
-                      error && "border-destructive focus-visible:ring-destructive",
-                      buttonClassName
-                    )}
-                    aria-invalid={error ? "true" : "false"}
-                    aria-describedby={
-                      error
-                        ? `${selectorId}-error`
-                        : helperText
-                        ? `${selectorId}-description`
-                        : undefined
-                    }
-                  >
-                    <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <span className="truncate">{getDisplayText()}</span>
-                  </Button>
-                </TooltipTrigger>
-                {getDisplayText() !== getFullDisplayText() && (
-                  <TooltipContent>
-                    <p>{getFullDisplayText()}</p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+            <Button
+              id={selectorId}
+              ref={ref}
+              variant="outline"
+              className={cn(
+                // Standard button height and spacing with flexible width
+                "w-full justify-start h-12 text-left font-normal",
+                // Text sizes: base on mobile, sm on desktop
+                "text-base md:text-sm",
+                // Prevent text overflow
+                "overflow-hidden",
+                // Error state styling
+                error && "border-destructive focus-visible:ring-destructive",
+                buttonClassName
+              )}
+              aria-invalid={error ? "true" : "false"}
+              aria-describedby={
+                error
+                  ? `${selectorId}-error`
+                  : helperText
+                  ? `${selectorId}-description`
+                  : undefined
+              }
+            >
+              <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="truncate">{getDisplayText()}</span>
+            </Button>
           }
         >
           <div className="p-4 space-y-4">

@@ -58,9 +58,11 @@ export function MobileFullscreenPopover({
   contentClassName
 }: MobileFullscreenPopoverProps) {
   const [isMobile, setIsMobile] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
   // Detectar si es mobile
   React.useEffect(() => {
+    setMounted(true);
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
@@ -89,6 +91,27 @@ export function MobileFullscreenPopover({
     onClose?.();
     onOpenChange(false);
   };
+
+  // Prevenir hidratación mismatch - renderizar popover por defecto hasta determinar el tamaño
+  if (!mounted) {
+    return (
+      <Popover open={open} onOpenChange={onOpenChange}>
+        <PopoverTrigger asChild disabled={disabled}>
+          {trigger}
+        </PopoverTrigger>
+        
+        <PopoverContent 
+          {...popoverContentProps}
+          className={cn(
+            "shadow-lg",
+            popoverContentProps?.className
+          )}
+        >
+          {children}
+        </PopoverContent>
+      </Popover>
+    );
+  }
 
   if (isMobile) {
     // Modo mobile - usar Dialog en pantalla completa
