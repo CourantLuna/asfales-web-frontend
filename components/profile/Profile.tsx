@@ -31,37 +31,10 @@ export default function Profile() {
 }, [user, logout]);
 
 
-  const menuItems = [
-    {
-      icon: Settings,
-      title: "Configuración",
-      href: "/profile/settings"
-    },
-    {
-      icon: Scale,
-      title: "Información legal",
-      href: "/profile/legal"
-    },
-    {
-      icon: HelpCircle,
-      title: "Ayuda y comentarios",
-      href: "/profile/help"
-    }
-  ];
-
-  const handleMenuItemClick = (href: string) => {
-    router.push(href);
-  };
-
-  const handleLoginClick = () => {
-    router.push("/login");
-  };
 
   return (
           <>
                 <ShowIfUnauth>
-    
-  
 
     {/* Unauth Profile */}
     

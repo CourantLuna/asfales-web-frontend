@@ -21,6 +21,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { ShowIfAuth } from "../ShowIfAuth";
 import { set } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function ProfileSideBar() {
   const router = useRouter();
@@ -44,6 +45,7 @@ const handleLogout = () => {
   // Si user ya es null, no vuelve a entrar aquí
 }, [user, logout]);
 
+
   const getFirstName = (name: string) => name?.split(" ")[0] ?? "";
   const getEmail = (email: string) => email?.split(" ")[0] ?? "";
 
@@ -55,7 +57,7 @@ const handleLogout = () => {
     const isLargeScreen = window.innerWidth >= 1024; // lg breakpoint
     
     if (pathname === '/profile') {
-      if (isLargeScreen && user) {
+      if (isLargeScreen) {
         // En pantallas grandes, activar profile-info por defecto
         setActiveSection('profile-info');
         handleSectionChange('profile-info');
@@ -144,15 +146,24 @@ const handleLogout = () => {
    return (
        <ShowIfAuth>
           {/* Sidebar - Oculto en mobile cuando está en una sección específica */}
-          <div className={`w-full lg:w-80 bg-white ${
+          <div className={`w-full lg:w-80 ${
             isInSpecificSection ? 'hidden lg:block' : 'block'
           }`}>
             {/* Header */}
             <div className="pb-4 p-1">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                 { user? (
+                  <Avatar className="h-12 w-12">
+                      <AvatarImage src={user.avatar || ""} />
+                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                 ):(
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-semibold text-sm">HG</span>
                 </div>
+                 )
+                 }
+                
                 <div>
                   <h1 className="font-semibold text-2xl  text-primary">Hola, {getFirstName(user?.name ?? "usuario")}</h1>
                   <p className="text-sm text-gray-500">{getEmail(user?.email ?? "usuario@gmail.com")}</p>

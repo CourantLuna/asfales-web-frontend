@@ -82,7 +82,7 @@ export default function NotificationsConfig() {
 
   return (
     <ShowIfAuth>
-    <div className=" rounded-lg lg:border lg:p-6">
+    <div className=" rounded-lg lg:border lg:p-6 bg-white">
       {/* Header */}
       <div className="px-6">
         <h1 className=" hidden lg:block text-xl font-semibold text-secondary mb-2 ">

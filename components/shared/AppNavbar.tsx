@@ -290,7 +290,7 @@ const handleLogout = () => {
                     <Separator className=" flex xl:hidden my-2 px-4" />
 
 
-                    <DropdownMenuItem onClick={() => router.push("/profile")}>
+                    <DropdownMenuItem onClick={() => router.push("/profile/profile-info")}>
                       <User className="mr-2 h-4 w-4" />
                       Perfil
                     </DropdownMenuItem>
