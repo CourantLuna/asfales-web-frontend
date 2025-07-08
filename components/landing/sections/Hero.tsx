@@ -187,7 +187,7 @@ fill="hsl(var(--primary))"
       </section>
 
       {/* SVG decorativo inferior */}
-      <div className="absolute -bottom-[40px] left-[-11%] w-[120%] md:w-full h-[370px] lg:h-[170px] lg:w-full md:left-[0px] z-1 pointer-events-none block md:block">
+      <div className="absolute -bottom-[40px] left-[-11%] w-[120%] md:w-full h-[370px] 2xl:h-[170px] 2xl:w-full md:left-[0px] z-1 pointer-events-none block md:block">
         <svg
           width="100%"
           height="100%"
