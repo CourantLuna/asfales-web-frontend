@@ -13,10 +13,7 @@ export default function HotelsAndResortsLayout({
 }) {
   return (
       < >
-      <LodgingSearchBar lodgingType="hotels-and-resorts"/>
-      <div className="w-full py-2 px-4">
-        <BreadcrumbNav />
-      </div>
+      
       {children}
     </>
   );

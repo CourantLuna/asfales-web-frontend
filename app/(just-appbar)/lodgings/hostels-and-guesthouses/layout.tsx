@@ -15,10 +15,7 @@ export default function HostelsGueshousesLayout({
 }) {
   return (
       <>
-        <LodgingSearchBar lodgingType="hostels-and-guesthouses"/>
-        <div className="w-full py-2 px-4">
-          <BreadcrumbNav />
-        </div>
+       
         {children}
       </>
     );

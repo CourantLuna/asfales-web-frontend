@@ -151,7 +151,7 @@ const GuestSelector = React.forwardRef<HTMLButtonElement, GuestSelectorProps>(
         if (room.id === roomId && room.children.length < maxChildrenPerRoom) {
           const newChild: Child = {
             id: `child-${Date.now()}`,
-            age: 0,
+            age: 2, // Default age for new child
           };
           return { ...room, children: [...room.children, newChild] };
         }

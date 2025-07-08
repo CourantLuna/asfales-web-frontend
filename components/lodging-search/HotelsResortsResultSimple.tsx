@@ -75,9 +75,9 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
   const toDate = parsedParams?.to ? new Date(parsedParams.to + 'T00:00:00') : null;
 
   return (
-    <div className="py-6">
-      {/* Información de búsqueda debug only */}
-      <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+    <div className="py-2">
+      {/* Información de búsqueda DEBUG only  NO BORRAR! SOLO COMENTAR*/}
+      {/* <div className="mb-6 p-4 bg-blue-50 rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">
           Hoteles y Resorts - Versión Simple
         </h1>
@@ -144,8 +144,40 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
               ${filterDefaults.priceRange[0]} - ${filterDefaults.priceRange[1]}
             </p>
           </div>
+
+          <div className="col-span-full">
+            <span className="font-semibold text-gray-600">Flexible Date Values (Raw):</span>
+            <div className="bg-gray-100 p-2 rounded mt-1">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                <div>
+                  <span className="font-medium">isFlexible:</span>
+                  <span className={`ml-1 px-1 rounded ${parsedParams?.isFlexible ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+                    {String(parsedParams?.isFlexible || false)}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium">flexibleDuration:</span>
+                  <span className="ml-1 font-mono bg-yellow-100 px-1 rounded">
+                    "{parsedParams?.flexibleDuration || 'null'}"
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium">flexibleMonths:</span>
+                  <span className="ml-1 font-mono bg-blue-100 px-1 rounded">
+                    [{parsedParams?.flexibleMonths?.map((m: string) => `"${m}"`).join(', ') || 'empty'}]
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium">Static Dates:</span>
+                  <span className="ml-1 font-mono bg-gray-200 px-1 rounded">
+                    from: "{parsedParams?.from || 'null'}", to: "{parsedParams?.to || 'null'}"
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Componente de resultados con filtros */}
       <LodgingResultsTemplate

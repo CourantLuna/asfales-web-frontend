@@ -15,10 +15,7 @@ export default function ApartmentsAndLongstaysLayout({
 }) {
   return (
       <>
-        <LodgingSearchBar lodgingType="apartments-and-longstays"/>
-        <div className="w-full py-2 px-4">
-          <BreadcrumbNav />
-        </div>
+       
         {children}
       </>
     );

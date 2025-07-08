@@ -53,7 +53,7 @@ const navItems: {
                 backgroundImage:
                   "url('https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/Firefly_automovil%20frente%20a%20crucero%20en%20el%20mar%20y%20en%20el%20cielo%20un%20avion%20que%20cruza%20a%20lo%20lejos%2C%20luj%20576259-TOGTWkdKXwNdIgETamioPWA1gia6dj.jpg')",
               }}
-              href="#"
+              href="/transports"
             >
               {/* Capa de desenfoque y opacidad */}
               <span className="absolute inset-0 bg-white/80 z-0" />
@@ -73,21 +73,21 @@ const navItems: {
           </NavigationMenuLink>
         </li>
         <ListItem
-          href="/transporte/vuelos"
+          href="/transports/flights"
           title="Vuelos y Aerolíneas"
           icon={Plane}
         >
           Rutas rápidas y directas para llegar lejos, al mejor precio.
         </ListItem>
         <ListItem
-          href="/transporte/cruceros"
+          href="/transports/cruises"
           title="Cruceros y Ferris"
           icon={Ship}
         >
           Conectividad marítima para explorar destinos por agua.
         </ListItem>
         <ListItem
-          href="/transporte/autobuses"
+          href="/transports/buses"
           title="Autobuses y Minibuses"
           icon={BusFront}
         >
