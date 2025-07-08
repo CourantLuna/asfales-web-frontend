@@ -3,11 +3,11 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UsersIcon, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MobileFullscreenPopover } from "@/components/shared/MobileFullscreenPopover";
 
 export interface Child {
   id: string;
@@ -348,11 +348,18 @@ const PassengerSelector = React.forwardRef<HTMLButtonElement, PassengerSelectorP
         )}
 
         {/* Passenger Selector */}
-        <Popover open={open} onOpenChange={setOpen}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
+        <MobileFullscreenPopover
+          open={open}
+          onOpenChange={setOpen}
+          mobileTitle="Seleccionar pasajeros"
+          popoverContentProps={{
+            className: "w-80 p-0",
+            align: "start"
+          }}
+          trigger={
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Button
                     id={selectorId}
                     ref={ref}
@@ -380,266 +387,264 @@ const PassengerSelector = React.forwardRef<HTMLButtonElement, PassengerSelectorP
                     <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
                     <span className="truncate">{getDisplayText()}</span>
                   </Button>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              {getDisplayText() !== getFullDisplayText() && (
-                <TooltipContent>
-                  <p>{getFullDisplayText()}</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+                </TooltipTrigger>
+                {getDisplayText() !== getFullDisplayText() && (
+                  <TooltipContent>
+                    <p>{getFullDisplayText()}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          }
+        >
+          <div className="p-4 space-y-4">
+            <div className="space-y-4">
+              {/* Adults */}
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="text-sm font-medium">Adultos</div>
+                  <div className="text-xs text-muted-foreground">Mayores de 17 años</div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateAdults(-1)}
+                    disabled={passengers.adults <= 1}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-8 text-center text-sm">{passengers.adults}</span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateAdults(1)}
+                    disabled={passengers.adults >= maxAdults}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
 
-          <PopoverContent className="w-80 p-0" align="start">
-            <div className="p-4 space-y-4">
-              <div className="space-y-4">
-                {/* Adults */}
+              {/* Children */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <div className="text-sm font-medium">Adultos</div>
-                    <div className="text-xs text-muted-foreground">Mayores de 17 años</div>
+                    <div className="text-sm font-medium">Niños</div>
+                    <div className="text-xs text-muted-foreground">Edades 2 a 17 años</div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Button
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => updateAdults(-1)}
-                      disabled={passengers.adults <= 1}
+                      onClick={() => removeChild(passengers.children[passengers.children.length - 1]?.id)}
+                      disabled={passengers.children.length === 0}
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="w-8 text-center text-sm">{passengers.adults}</span>
+                    <span className="w-8 text-center text-sm">{passengers.children.length}</span>
                     <Button
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => updateAdults(1)}
-                      disabled={passengers.adults >= maxAdults}
+                      onClick={addChild}
+                      disabled={passengers.children.length >= maxChildren}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
-                {/* Children */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="text-sm font-medium">Niños</div>
-                      <div className="text-xs text-muted-foreground">Edades 2 a 17 años</div>
+                {/* Children Details */}
+                {passengers.children.map((child, index) => (
+                  <div key={child.id} className="pl-4 space-y-2 border-l-2 border-muted">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Niño {index + 1}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs">Edad</Label>
+                        <Select
+                          value={child.age.toString()}
+                          onValueChange={(value) => updateChild(child.id, { age: parseInt(value) })}
+                        >
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 16 }, (_, i) => i + 2).map((age) => (
+                              <SelectItem key={age} value={age.toString()}>
+                                {age} años
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => removeChild(passengers.children[passengers.children.length - 1]?.id)}
-                        disabled={passengers.children.length === 0}
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs text-destructive hover:text-destructive"
+                        onClick={() => removeChild(child.id)}
                       >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="w-8 text-center text-sm">{passengers.children.length}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={addChild}
-                        disabled={passengers.children.length >= maxChildren}
-                      >
-                        <Plus className="h-4 w-4" />
+                        Eliminar
                       </Button>
                     </div>
                   </div>
-
-                  {/* Children Details */}
-                  {passengers.children.map((child, index) => (
-                    <div key={child.id} className="pl-4 space-y-2 border-l-2 border-muted">
-                      <div className="text-xs font-medium text-muted-foreground">
-                        Niño {index + 1}
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <Label className="text-xs">Edad</Label>
-                          <Select
-                            value={child.age.toString()}
-                            onValueChange={(value) => updateChild(child.id, { age: parseInt(value) })}
-                          >
-                            <SelectTrigger className="h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Array.from({ length: 16 }, (_, i) => i + 2).map((age) => (
-                                <SelectItem key={age} value={age.toString()}>
-                                  {age} años
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 text-xs text-destructive hover:text-destructive"
-                          onClick={() => removeChild(child.id)}
-                        >
-                          Eliminar
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Infants on Lap */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="text-sm font-medium">Bebés en regazo</div>
-                      <div className="text-xs text-muted-foreground">Menores de 2 años</div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => removeInfantOnLap(passengers.infantsOnLap[passengers.infantsOnLap.length - 1]?.id)}
-                        disabled={passengers.infantsOnLap.length === 0}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="w-8 text-center text-sm">{passengers.infantsOnLap.length}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={addInfantOnLap}
-                        disabled={!canAddInfantOnLap()}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  {!canAddInfantOnLap() && passengers.infantsOnLap.length < maxInfantsOnLap && (
-                    <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
-                      Máximo 1 bebé en regazo por adulto
-                    </div>
-                  )}
-
-                  {/* Infants on Lap Details */}
-                  {passengers.infantsOnLap.map((infant, index) => (
-                    <div key={infant.id} className="pl-4 space-y-2 border-l-2 border-muted">
-                      <div className="text-xs font-medium text-muted-foreground">
-                        Bebé en regazo {index + 1}
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <Label className="text-xs">Edad</Label>
-                          <Select
-                            value={infant.age.toString()}
-                            onValueChange={(value) => updateInfantOnLap(infant.id, { age: parseInt(value) })}
-                          >
-                            <SelectTrigger className="h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">0 años</SelectItem>
-                              <SelectItem value="1">1 año</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 text-xs text-destructive hover:text-destructive"
-                          onClick={() => removeInfantOnLap(infant.id)}
-                        >
-                          Eliminar
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Infants in Seat */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="text-sm font-medium">Bebés con asiento</div>
-                      <div className="text-xs text-muted-foreground">Menores de 2 años</div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => removeInfantInSeat(passengers.infantsInSeat[passengers.infantsInSeat.length - 1]?.id)}
-                        disabled={passengers.infantsInSeat.length === 0}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="w-8 text-center text-sm">{passengers.infantsInSeat.length}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={addInfantInSeat}
-                        disabled={passengers.infantsInSeat.length >= maxInfantsInSeat}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Infants in Seat Details */}
-                  {passengers.infantsInSeat.map((infant, index) => (
-                    <div key={infant.id} className="pl-4 space-y-2 border-l-2 border-muted">
-                      <div className="text-xs font-medium text-muted-foreground">
-                        Bebé con asiento {index + 1}
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <Label className="text-xs">Edad</Label>
-                          <Select
-                            value={infant.age.toString()}
-                            onValueChange={(value) => updateInfantInSeat(infant.id, { age: parseInt(value) })}
-                          >
-                            <SelectTrigger className="h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">0 años</SelectItem>
-                              <SelectItem value="1">1 año</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 text-xs text-destructive hover:text-destructive"
-                          onClick={() => removeInfantInSeat(infant.id)}
-                        >
-                          Eliminar
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
 
-              {/* Done Button */}
-              <div className="pt-3 border-t">
-                <Button
-                  onClick={() => setOpen(false)}
-                  className="w-full"
-                  size="sm"
-                >
-                  Listo
-                </Button>
+              {/* Infants on Lap */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">Bebés en regazo</div>
+                    <div className="text-xs text-muted-foreground">Menores de 2 años</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => removeInfantOnLap(passengers.infantsOnLap[passengers.infantsOnLap.length - 1]?.id)}
+                      disabled={passengers.infantsOnLap.length === 0}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-8 text-center text-sm">{passengers.infantsOnLap.length}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={addInfantOnLap}
+                      disabled={!canAddInfantOnLap()}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {!canAddInfantOnLap() && passengers.infantsOnLap.length < maxInfantsOnLap && (
+                  <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                    Máximo 1 bebé en regazo por adulto
+                  </div>
+                )}
+
+                {/* Infants on Lap Details */}
+                {passengers.infantsOnLap.map((infant, index) => (
+                  <div key={infant.id} className="pl-4 space-y-2 border-l-2 border-muted">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Bebé en regazo {index + 1}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs">Edad</Label>
+                        <Select
+                          value={infant.age.toString()}
+                          onValueChange={(value) => updateInfantOnLap(infant.id, { age: parseInt(value) })}
+                        >
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="0">0 años</SelectItem>
+                            <SelectItem value="1">1 año</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs text-destructive hover:text-destructive"
+                        onClick={() => removeInfantOnLap(infant.id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Infants in Seat */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">Bebés con asiento</div>
+                    <div className="text-xs text-muted-foreground">Menores de 2 años</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => removeInfantInSeat(passengers.infantsInSeat[passengers.infantsInSeat.length - 1]?.id)}
+                      disabled={passengers.infantsInSeat.length === 0}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-8 text-center text-sm">{passengers.infantsInSeat.length}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={addInfantInSeat}
+                      disabled={passengers.infantsInSeat.length >= maxInfantsInSeat}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Infants in Seat Details */}
+                {passengers.infantsInSeat.map((infant, index) => (
+                  <div key={infant.id} className="pl-4 space-y-2 border-l-2 border-muted">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Bebé con asiento {index + 1}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs">Edad</Label>
+                        <Select
+                          value={infant.age.toString()}
+                          onValueChange={(value) => updateInfantInSeat(infant.id, { age: parseInt(value) })}
+                        >
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="0">0 años</SelectItem>
+                            <SelectItem value="1">1 año</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs text-destructive hover:text-destructive"
+                        onClick={() => removeInfantInSeat(infant.id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </PopoverContent>
-        </Popover>
+
+            {/* Done Button - Solo en desktop, en mobile se usa el header */}
+            <div className="pt-3 border-t md:block hidden">
+              <Button
+                onClick={() => setOpen(false)}
+                className="w-full"
+                size="sm"
+              >
+                Listo
+              </Button>
+            </div>
+          </div>
+        </MobileFullscreenPopover>
 
         {/* Error Message */}
         {error && (

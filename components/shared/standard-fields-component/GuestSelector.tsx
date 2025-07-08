@@ -3,10 +3,10 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UsersIcon, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MobileFullscreenPopover } from "@/components/shared/MobileFullscreenPopover";
 
 interface Child {
   id: string;
@@ -229,8 +229,18 @@ const GuestSelector = React.forwardRef<HTMLButtonElement, GuestSelectorProps>(
         )}
 
         {/* Guest Selector */}
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
+        <MobileFullscreenPopover
+          open={open}
+          onOpenChange={setOpen}
+          mobileTitle="Seleccionar huéspedes"
+          popoverContentProps={{
+            className: "w-full md:w-[380px] p-0 max-h-[500px] overflow-hidden",
+            align: "start",
+            side: "bottom",
+            sideOffset: -48,
+            alignOffset: 0
+          }}
+          trigger={
             <Button
               id={selectorId}
               ref={ref}
@@ -256,55 +266,78 @@ const GuestSelector = React.forwardRef<HTMLButtonElement, GuestSelectorProps>(
               <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
               <span className="truncate">{getDisplayText()}</span>
             </Button>
-          </PopoverTrigger>
+          }
+        >
+          {/* Scrollable content area */}
+          <div className="space-y-4 p-4 max-h-[400px] overflow-y-auto">
+            {rooms.map((room, roomIndex) => (
+              <div key={room.id} className="space-y-4 border-b pb-4 last:border-b-0 last:pb-0">
+                {/* Room header */}
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Habitación {roomIndex + 1}</h4>
+                  {rooms.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeRoom(room.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      Eliminar
+                    </Button>
+                  )}
+                </div>
 
-          <PopoverContent 
-            className="w-full md:w-[380px] p-0 max-h-[500px] overflow-hidden" 
-            align="start"
-            side="bottom"
-            sideOffset={-48}
-            alignOffset={0}
-          >
-            {/* Scrollable content area */}
-            <div className="space-y-4 p-4 max-h-[400px] overflow-y-auto">
-              {rooms.map((room, roomIndex) => (
-                <div key={room.id} className="space-y-4 border-b pb-4 last:border-b-0 last:pb-0">
-                  {/* ...existing room content... */}
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-medium">Habitación {roomIndex + 1}</h4>
-                    {rooms.length > 1 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeRoom(room.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        Eliminar
-                      </Button>
-                    )}
+                {/* Adults */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">Adultos</div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateAdults(room.id, -1)}
+                      disabled={room.adults <= 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-8 text-center">{room.adults}</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateAdults(room.id, 1)}
+                      disabled={room.adults >= maxAdultsPerRoom}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
 
-                  {/* Adults */}
+                {/* Children */}
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium">Adultos</div>
+                      <div className="font-medium">Niños</div>
+                      <div className="text-xs text-muted-foreground">Edad 0 a 17</div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateAdults(room.id, -1)}
-                        disabled={room.adults <= 1}
+                        onClick={() => removeChild(room.id, room.children[room.children.length - 1]?.id)}
+                        disabled={room.children.length === 0}
                         className="h-8 w-8 p-0"
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <span className="w-8 text-center">{room.adults}</span>
+                      <span className="w-8 text-center">{room.children.length}</span>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateAdults(room.id, 1)}
-                        disabled={room.adults >= maxAdultsPerRoom}
+                        onClick={() => addChild(room.id)}
+                        disabled={room.children.length >= maxChildrenPerRoom}
                         className="h-8 w-8 p-0"
                       >
                         <Plus className="h-4 w-4" />
@@ -312,99 +345,68 @@ const GuestSelector = React.forwardRef<HTMLButtonElement, GuestSelectorProps>(
                     </div>
                   </div>
 
-                  {/* Children */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium">Niños</div>
-                        <div className="text-xs text-muted-foreground">Edad 0 a 17</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeChild(room.id, room.children[room.children.length - 1]?.id)}
-                          disabled={room.children.length === 0}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-8 text-center">{room.children.length}</span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => addChild(room.id)}
-                          disabled={room.children.length >= maxChildrenPerRoom}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
+                  {/* Children ages */}
+                  {room.children.map((child, childIndex) => (
+                    <div key={child.id} className="flex items-center justify-between ml-4">
+                      <span className="text-sm">Niño {childIndex + 1}</span>
+                      <Select
+                        value={child.age.toString()}
+                        onValueChange={(value) => updateChildAge(room.id, child.id, parseInt(value))}
+                      >
+                        <SelectTrigger className="w-20 h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 18 }, (_, i) => (
+                            <SelectItem key={i} value={i.toString()}>
+                              {i}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-
-                    {/* Children ages */}
-                    {room.children.map((child, childIndex) => (
-                      <div key={child.id} className="flex items-center justify-between ml-4">
-                        <span className="text-sm">Niño {childIndex + 1}</span>
-                        <Select
-                          value={child.age.toString()}
-                          onValueChange={(value) => updateChildAge(room.id, child.id, parseInt(value))}
-                        >
-                          <SelectTrigger className="w-20 h-8">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Array.from({ length: 18 }, (_, i) => (
-                              <SelectItem key={i} value={i.toString()}>
-                                {i}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              ))}
-
-              {/* Add another room - dentro del área de scroll */}
-              {rooms.length < maxRooms && (
-                <Button
-                  variant="link"
-                  onClick={addRoom}
-                  className="w-full text-primary p-0 h-auto"
-                >
-                  + Agregar otra habitación
-                </Button>
-              )}
-            </div>
-
-            {/* Fixed footer area - fuera del scroll */}
-            <div className="border-t bg-background p-4 space-y-2">
-              {/* Need more rooms link */}
-              <div className="text-center">
-                <Button
-                  variant="link"
-                  className="text-sm text-primary p-0 h-auto"
-                  onClick={() => {
-                    // Handle booking 9+ rooms
-                    console.log("Need to book 9+ rooms");
-                  }}
-                >
-                  ¿Necesitas reservar 9 o más habitaciones?
-                </Button>
               </div>
+            ))}
 
-              {/* Done button */}
+            {/* Add another room - dentro del área de scroll */}
+            {rooms.length < maxRooms && (
               <Button
-                onClick={() => setOpen(false)}
-                className="w-full"
+                variant="link"
+                onClick={addRoom}
+                className="w-full text-primary p-0 h-auto"
               >
-                Listo
+                + Agregar otra habitación
+              </Button>
+            )}
+          </div>
+
+          {/* Fixed footer area - fuera del scroll - Solo en desktop */}
+          <div className="border-t bg-background p-4 space-y-2 md:block hidden">
+            {/* Need more rooms link */}
+            <div className="text-center">
+              <Button
+                variant="link"
+                className="text-sm text-primary p-0 h-auto"
+                onClick={() => {
+                  // Handle booking 9+ rooms
+                  console.log("Need to book 9+ rooms");
+                }}
+              >
+                ¿Necesitas reservar 9 o más habitaciones?
               </Button>
             </div>
-          </PopoverContent>
-        </Popover>
+
+            {/* Done button */}
+            <Button
+              onClick={() => setOpen(false)}
+              className="w-full"
+            >
+              Listo
+            </Button>
+          </div>
+        </MobileFullscreenPopover>
 
         {/* Error Message */}
         {error && (

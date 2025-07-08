@@ -4,10 +4,10 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandGroup, CommandItem, CommandInput, CommandSeparator } from "@/components/ui/command";
 import { Search, X, Clock, MapPin, Plane, Building } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MobileFullscreenPopover } from "@/components/shared/MobileFullscreenPopover";
 
 export type StandardSearchOption = {
   label: string;
@@ -419,100 +419,99 @@ const StandardSearchField = React.forwardRef<HTMLButtonElement, StandardSearchFi
         )}
 
         {/* Search Button */}
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            {renderTriggerButton()}
-          </PopoverTrigger>
-
-          {/* Large Search Dialog-like Popover */}
-          <PopoverContent 
-            className="w-[400px] max-w-[95vw] p-0 max-h-[400px] overflow-hidden" 
-            align="start"
-            side="bottom"
-            sideOffset={-48}
-            alignOffset={0}
-            onOpenAutoFocus={(e) => e.preventDefault()}
-            onCloseAutoFocus={(e) => e.preventDefault()}
-          >
-            <div className="flex flex-col max-h-[400px]">
-              {/* Search Header */}
-              <div className="p-4 border-b flex-shrink-0">
-                <div className="relative">
-                  <Input
-                    type="text"
-                    value={internalValue}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder={searchPlaceholder}
-                    className="h-12 w-full pl-10 pr-10 text-base"
-                    autoFocus
-                  />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  
-                  {/* Clear Button */}
-                  {showClearButton && internalValue && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleClear}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              {/* Results Content with Scroll */}
-              <div className="flex-1 overflow-y-auto min-h-0">
-                {isLoading ? (
-                  <div className="py-12 text-center text-sm text-muted-foreground">
-                    Buscando...
-                  </div>
-                ) : filteredOptions.length === 0 ? (
-                  <div className="py-12 text-center text-sm text-muted-foreground">
-                    {emptyMessage}
-                  </div>
-                ) : (
-                  <div className="p-2">
-                    {/* Flat List of Options - No Section Headers */}
-                    <div className="space-y-1">
-                      {filteredOptions.map((option, index) => (
-                        <button
-                          key={`${option.sourceId}-${option.value}-${index}`}
-                          onClick={() => handleSelect(option)}
-                          disabled={option.disabled}
-                          className={cn(
-                            "w-full flex items-start gap-3 p-3 rounded-lg text-left transition-colors",
-                            "hover:bg-muted focus:bg-muted focus:outline-none",
-                            option.disabled && "opacity-50 cursor-not-allowed"
-                          )}
-                        >
-                          {/* Option Icon (prefer option icon, fallback to source icon) */}
-                          {(option.icon || option.sourceIcon) && (
-                            <div className="flex-shrink-0 mt-0.5">
-                              {option.icon || option.sourceIcon}
-                            </div>
-                          )}
-                          
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate text-sm">{option.label}</div>
-                            {option.description && (
-                              <div className="text-xs text-muted-foreground truncate mt-1">
-                                {option.description}
-                              </div>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+        <MobileFullscreenPopover
+          open={open}
+          onOpenChange={setOpen}
+          mobileTitle={`Buscar ${label || 'opciones'}`}
+          popoverContentProps={{
+            className: "w-[400px] max-w-[95vw] p-0 max-h-[400px] overflow-hidden",
+            align: "start",
+            side: "bottom",
+            sideOffset: -48,
+            alignOffset: 0,
+            onOpenAutoFocus: (e) => e.preventDefault(),
+            onCloseAutoFocus: (e) => e.preventDefault()
+          }}
+          trigger={renderTriggerButton()}
+        >
+          <div className="flex flex-col max-h-[400px]">
+            {/* Search Header */}
+            <div className="p-4 border-b flex-shrink-0">
+              <div className="relative">
+                <Input
+                  type="text"
+                  value={internalValue}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  placeholder={searchPlaceholder}
+                  className="h-12 w-full pl-10 pr-10 text-base"
+                  autoFocus
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                
+                {/* Clear Button */}
+                {showClearButton && internalValue && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClear}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 )}
               </div>
             </div>
-          </PopoverContent>
-        </Popover>
+
+            {/* Results Content with Scroll */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {isLoading ? (
+                <div className="py-12 text-center text-sm text-muted-foreground">
+                  Buscando...
+                </div>
+              ) : filteredOptions.length === 0 ? (
+                <div className="py-12 text-center text-sm text-muted-foreground">
+                  {emptyMessage}
+                </div>
+              ) : (
+                <div className="p-2">
+                  {/* Flat List of Options - No Section Headers */}
+                  <div className="space-y-1">
+                    {filteredOptions.map((option, index) => (
+                      <button
+                        key={`${option.sourceId}-${option.value}-${index}`}
+                        onClick={() => handleSelect(option)}
+                        disabled={option.disabled}
+                        className={cn(
+                          "w-full flex items-start gap-3 p-3 rounded-lg text-left transition-colors",
+                          "hover:bg-muted focus:bg-muted focus:outline-none",
+                          option.disabled && "opacity-50 cursor-not-allowed"
+                        )}
+                      >
+                        {/* Option Icon (prefer option icon, fallback to source icon) */}
+                        {(option.icon || option.sourceIcon) && (
+                          <div className="flex-shrink-0 mt-0.5">
+                            {option.icon || option.sourceIcon}
+                          </div>
+                        )}
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate text-sm">{option.label}</div>
+                          {option.description && (
+                            <div className="text-xs text-muted-foreground truncate mt-1">
+                              {option.description}
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </MobileFullscreenPopover>
 
         {/* Error Message */}
         {error && (

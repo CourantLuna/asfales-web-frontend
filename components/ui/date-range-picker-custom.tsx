@@ -3,13 +3,13 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Calendar, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, addDays, addMonths, subMonths, startOfMonth, endOfMonth, isSameMonth, isToday, isBefore, isAfter, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
 import { StandardTabs, TabItem } from "@/components/shared/standard-fields-component/StandardTabs";
+import { MobileFullscreenPopover } from "@/components/shared/MobileFullscreenPopover";
 
 export interface DateRangePickerCustomProps {
   /**
@@ -434,21 +434,36 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
           </Label>
         )}
         
-        <Popover open={open} onOpenChange={(newOpen) => {
-          setOpen(newOpen);
-          if (!newOpen) {
-            setActiveTrigger(null);
+        <MobileFullscreenPopover
+          open={open}
+          onOpenChange={(newOpen) => {
+            setOpen(newOpen);
+            if (!newOpen) {
+              setActiveTrigger(null);
+            }
+          }}
+          mobileTitle={dualTrigger ? 
+            (activeTrigger === 'from' ? dualTriggerLabels.from : 
+             activeTrigger === 'to' ? dualTriggerLabels.to : 
+             "Seleccionar fechas") : 
+            "Seleccionar fechas"
           }
-        }}>
-          {dualTrigger ? (
-            // Dual trigger mode - two separate buttons with individual labels
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Fecha de ida */}
-              <div className="relative w-full md:w-[280px]">
-                <Label className="text-sm font-medium text-foreground mb-2 block text-start">
-                  {dualTriggerLabels.from}
-                </Label>
-                <PopoverTrigger asChild>
+          popoverContentProps={{
+            className: "w-auto p-0 shadow-lg",
+            align: "start",
+            side: "bottom",
+            sideOffset: -48,
+            alignOffset: 0
+          }}
+          trigger={
+            dualTrigger ? (
+              // Dual trigger mode - two separate buttons with individual labels
+              <div className="flex flex-col md:flex-row gap-4">
+                {/* Fecha de ida */}
+                <div className="relative w-full md:w-[280px]">
+                  <Label className="text-sm font-medium text-foreground mb-2 block text-start">
+                    {dualTriggerLabels.from}
+                  </Label>
                   <Button
                     variant="outline"
                     disabled={disabled}
@@ -463,16 +478,14 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                     <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
                     {selectedRange.from ? format(selectedRange.from, "MMM d", { locale: es }) : "Seleccionar fecha"}
                   </Button>
-                </PopoverTrigger>
-              </div>
-              
-              {/* Fecha de regreso - solo mostrar si hasReturnDate es true */}
-              {hasReturnDate && (
-                <div className="relative w-full md:w-[280px]">
-                  <Label className="text-sm font-medium text-foreground mb-2 block text-start">
-                    {dualTriggerLabels.to}
-                  </Label>
-                  <PopoverTrigger asChild>
+                </div>
+                
+                {/* Fecha de regreso - solo mostrar si hasReturnDate es true */}
+                {hasReturnDate && (
+                  <div className="relative w-full md:w-[280px]">
+                    <Label className="text-sm font-medium text-foreground mb-2 block text-start">
+                      {dualTriggerLabels.to}
+                    </Label>
                     <Button
                       variant="outline"
                       disabled={disabled}
@@ -487,76 +500,65 @@ const DateRangePickerCustom = React.forwardRef<HTMLButtonElement, DateRangePicke
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
                       {selectedRange.to ? format(selectedRange.to, "MMM d", { locale: es }) : "Seleccionar fecha"}
                     </Button>
-                  </PopoverTrigger>
-                </div>
-              )}
-            </div>
-          ) : (
-                            <div className="relative w-full md:w-[280px]">
-
-            <PopoverTrigger asChild>
-              <Button
-                ref={ref}
-                variant="outline"
-                disabled={disabled}
-                className={cn(
-                  "w-full justify-start h-12 text-left font-normal px-4 gap-4",
-                  "text-base md:text-sm",
-                  !selectedRange.from && "text-muted-foreground"
+                  </div>
                 )}
-              >
-                <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                {displayText}
-              </Button>
-            </PopoverTrigger>
-          </div>
-          )}
-          
-          <PopoverContent 
-            className="w-auto p-0 shadow-lg" 
-            align="start" 
-            side="bottom"
-            sideOffset={-48}
-            alignOffset={0}
-          >
-            <div className="w-[600px] max-w-[95vw]">
-              {showFlexibleDates ? (
-                // Si flexible dates está habilitado, usar StandardTabs
-                <StandardTabs
-                  items={[
-                    {
-                      value: "calendar",
-                      label: "Calendario",
-                      icon: <Calendar className="w-4 h-4" />,
-                      content: getCalendarContent(),
-                    },
-                    {
-                      value: "flexible",
-                      label: "Fechas flexibles",
-                      icon: <Calendar className="w-4 h-4" />,
-                      content: getFlexibleContent(),
-                    },
-                  ]}
-                  activeTab={activeTab}
-                  onTabChange={(tab) => setActiveTab(tab as 'calendar' | 'flexible')}
-                  mobilePlaceholder="Selecciona tipo de fecha"
-                />
-              ) : (
-                // Si no hay flexible dates, mostrar solo el contenido del calendario
-                getCalendarContent()
-              )}
+              </div>
+            ) : (
+              <div className="relative w-full md:w-[280px]">
+                <Button
+                  ref={ref}
+                  variant="outline"
+                  disabled={disabled}
+                  className={cn(
+                    "w-full justify-start h-12 text-left font-normal px-4 gap-4",
+                    "text-base md:text-sm",
+                    !selectedRange.from && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+                  {displayText}
+                </Button>
+              </div>
+            )
+          }
+        >
+          <div className="w-[600px] max-w-[95vw]">
+            {showFlexibleDates ? (
+              // Si flexible dates está habilitado, usar StandardTabs
+              <StandardTabs
+                items={[
+                  {
+                    value: "calendar",
+                    label: "Calendario",
+                    icon: <Calendar className="w-4 h-4" />,
+                    content: getCalendarContent(),
+                  },
+                  {
+                    value: "flexible",
+                    label: "Fechas flexibles",
+                    icon: <Calendar className="w-4 h-4" />,
+                    content: getFlexibleContent(),
+                  },
+                ]}
+                activeTab={activeTab}
+                onTabChange={(tab) => setActiveTab(tab as 'calendar' | 'flexible')}
+                mobilePlaceholder="Selecciona tipo de fecha"
+              />
+            ) : (
+              // Si no hay flexible dates, mostrar solo el contenido del calendario
+              getCalendarContent()
+            )}
 
-              {/* Footer */}
-              <div className="p-4 border-t bg-muted/30">
-                <div className="flex justify-end">
-                  <Button onClick={handleDone} className="px-6">
-                    Listo
-                  </Button>
-                </div>
+            {/* Footer - Solo en desktop, en mobile se usa el header */}
+            <div className="p-4 border-t bg-muted/30 md:block hidden">
+              <div className="flex justify-end">
+                <Button onClick={handleDone} className="px-6">
+                  Listo
+                </Button>
               </div>
             </div>
-          </PopoverContent>
-        </Popover>
+          </div>
+        </MobileFullscreenPopover>
       </div>
     );
   }
