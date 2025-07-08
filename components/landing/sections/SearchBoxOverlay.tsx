@@ -121,7 +121,7 @@ useEffect(() => {
         ref={stickyRef}
         className={`sticky 
       top-[calc(66vh+((100vh-900px)*0.316))]  
-      2xl:top-[calc(86vh+((100vh-1000px)*0.1))]
+      2xl:top-[calc(84vh+((100vh-1000px)*0.1))]
       w-full flex flex-col items-center justify-end transition-all duration-300 ${
         isStickyAtBottom ? 'sticky-at-bottom opacity-0 pointer-events-none' : 'opacity-100'
       }`}
@@ -230,7 +230,7 @@ useEffect(() => {
       <div
         className={`relative z-[19] h-[76px] mt-0 
   top-[calc(60vh+((100vh-876px)*0.38))] 
-  2xl:top-[calc(68vh+((100vh-900px)*0.283))] 
+  2xl:top-[calc(66vh+((100vh-900px)*0.283))] 
   flex items-end justify-center 2xl:gap-x-6 transition-opacity duration-300 ${
     isStickyAtBottom ? 'opacity-0 pointer-events-none' : 'opacity-100'
   }`}
