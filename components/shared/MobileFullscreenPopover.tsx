@@ -145,24 +145,23 @@ export function MobileFullscreenPopover({
                     <kbd className="font-mono">Enter</kbd>
                     <span>para cerrar</span>
                   </div>
-                  
-                  {/* Botón cerrar */}
-                  {/* <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleClose}
-                    className="h-8 w-8"
-                  >
-                    <X className="h-4 w-4" />
-                    <span className="sr-only">Cerrar</span>
-                  </Button> */}
                 </div>
               </div>
             </DialogHeader>
 
             {/* Contenido scrolleable */}
-            <div className={cn("flex-1 overflow-y-auto", contentClassName)}>
+            <div className={cn("flex-1 overflow-y-auto p-4", contentClassName)}>
               {children}
+            </div>
+
+            {/* Botón fijo en la parte inferior */}
+            <div className="flex-shrink-0 p-4 border-t bg-background">
+              <Button
+                onClick={handleClose}
+                className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium"
+              >
+                Listo
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
