@@ -207,19 +207,19 @@ const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
             )}
           </div>
 
-          {/* Tab Content */}
+          {/* Tab Content - Using hide/show instead of conditional rendering */}
           <div className="relative w-full">
             {items.map((item) => (
-              <TabsContent
+              <div
                 key={item.value}
-                value={item.value}
                 className={cn(
                   "mt-0 focus-visible:outline-none focus-visible:ring-0",
+                  activeTab === item.value ? "block" : "hidden",
                   tabContentClassName
                 )}
               >
                 {item.content}
-              </TabsContent>
+              </div>
             ))}
           </div>
         </Tabs>
