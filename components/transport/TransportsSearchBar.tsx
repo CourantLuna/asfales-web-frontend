@@ -29,13 +29,7 @@ interface TransportsSearchBarProps {
   passengers?: PassengerGroup;
   setPassengers?: (passengers: PassengerGroup) => void;
   
-  // Props para sincronización de campos de origen/destino
-  travelingFrom?: string;
-  setTravelingFrom?: (value: string) => void;
-  goingTo?: string;
-  setGoingTo?: (value: string) => void;
-  onSwapLocations?: () => void;
-  searchDataSources?: StandardSearchDataSource[];
+  
 }
 
 export default function TransportsSearchBar({ 
@@ -44,13 +38,7 @@ export default function TransportsSearchBar({
   centerTabsTransportType = true,
   useToggleGroupTabsTransportType = false,
   passengers: externalPassengers,
-  setPassengers: externalSetPassengers,
-  travelingFrom: externalTravelingFrom,
-  setTravelingFrom: externalSetTravelingFrom,
-  goingTo: externalGoingTo,
-  setGoingTo: externalSetGoingTo,
-  onSwapLocations: externalOnSwapLocations,
-  searchDataSources: externalSearchDataSources
+  setPassengers: externalSetPassengers
 }: TransportsSearchBarProps) {
   const [activeTab, setActiveTab] = useState('flights');
 
@@ -68,15 +56,7 @@ export default function TransportsSearchBar({
       icon: <Plane className="w-4 h-4" />,
       content: <FlightsSearchBar 
                 showSearchButton={showSearchButton} 
-                onPassengersGlobalChange={setPassengers} 
-                initialGlobalPassengers={passengers}
-                travelingFrom={externalTravelingFrom}
-                setTravelingFrom={externalSetTravelingFrom}
-                goingTo={externalGoingTo}
-                setGoingTo={externalSetGoingTo}
-                onSwapLocations={externalOnSwapLocations}
-                searchDataSources={externalSearchDataSources}
-              />,
+                onPassengersGlobalChange={setPassengers} initialGlobalPassengers={passengers}/>,
     },
     {
       value: 'cruises',
@@ -88,17 +68,8 @@ export default function TransportsSearchBar({
       value: 'buses',
       label: 'Buses',
       icon: <Bus className="w-4 h-4" />,
-      content: <BusesSearchBar 
-                showSearchButton={showSearchButton}
-                onPassengersGlobalChange={setPassengers} 
-                initialGlobalPassengers={passengers}
-                travelingFrom={externalTravelingFrom}
-                setTravelingFrom={externalSetTravelingFrom}
-                goingTo={externalGoingTo}
-                setGoingTo={externalSetGoingTo}
-                onSwapLocations={externalOnSwapLocations}
-                searchDataSources={externalSearchDataSources}
-              />,
+      content: <BusesSearchBar showSearchButton={showSearchButton}
+               onPassengersGlobalChange={setPassengers} initialGlobalPassengers={passengers} />,
     },
   ];
 

@@ -35,14 +35,12 @@ import { Room } from "../shared/standard-fields-component/GuestSelector";
 import { StandardSearchDataSource } from "../shared/standard-fields-component/StandardSearchField";
 import { 
   searchDataSources,
-  lodgingOptions,
-  experiencesOptions,
-  defaultGuestRooms,
   defaultDateRange,
-  defaultSelectedLodgingTypes,
-  defaultSelectedTransportTypes,
-  defaultSelectedExperiences
+  defaultPassengers,
 } from "@/lib/data/mock-datavf";
+import { FlightsData } from "../transport/FlightsSearchBar";
+
+
 
 export default function TravelOptionsTabs({
   activeTab,
@@ -94,16 +92,26 @@ export default function TravelOptionsTabs({
     }
   }, [pathname]);
 
-  // Estados globales con valores por defecto del archivo mock-data
-  const [selectedTransportTypes, setSelectedTransportTypes] = useState<string[]>(defaultSelectedTransportTypes);
-  const [selectedLodgingTypes, setSelectedLodgingTypes] = useState<string[]>(defaultSelectedLodgingTypes);
-  const [selectedExperiences, setSelectedExperiences] = useState<string[]>(defaultSelectedExperiences);
-  const [guestRooms, setGuestRooms] = useState<Room[]>(defaultGuestRooms);
-  const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
+    const [flightsData, setFlightsData] = useState<FlightsData>({
+      activeTab: 'roundtrip',
+      cabinClass: 'economy',
+      passengers: defaultPassengers,
+      travelingFrom: '',
+      goingTo: '',
+      roundtripDates: {},
+      onewayDate: {},
+      flights: [
+        { id: '1', origin: '', destination: '', date: undefined },
+        { id: '2', origin: '', destination: '', date: undefined },
+      ],
+    });
 
-  // Estados para fechas de transporte
-  const [fechaIda, setFechaIda] = useState<Date | undefined>(new Date())
-  const [fechaVuelta, setFechaVuelta] = useState<Date | undefined>(new Date())
+  const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
+  
+ 
+
+ 
+
 
   // Estado para pasajeros de transporte
   const [passengers, setPassengers] = useState<PassengerGroup>({
@@ -117,6 +125,8 @@ export default function TravelOptionsTabs({
   // Esto elimina la necesidad de sincronización y previene bucles infinitos
   const travelingFrom = externalTravelingFrom || "";
   const goingTo = externalGoingTo || "";
+
+
 
   // Funciones wrapper que notifican al padre cuando el usuario cambia algo
   const handleTravelingFromChange = (value: string) => {
@@ -150,20 +160,15 @@ export default function TravelOptionsTabs({
     }
   }
 
+  
+
   // Contenido de cada tab
   const getTransportContent = () => (
     <div className="w-full">
       <TransportsSearchBar 
         showSearchButton={false} 
         useToggleGroupTabsTransportType={true}
-        passengers={passengers}
-        setPassengers={setPassengers}
-        travelingFrom={travelingFrom}
-        setTravelingFrom={handleTravelingFromChange}
-        goingTo={goingTo}
-        setGoingTo={handleGoingToChange}
-        onSwapLocations={handleSwapLocations}
-        searchDataSources={searchDataSourcesTravelOptions}
+
       />
     </div>
   );
