@@ -7,6 +7,12 @@ import { QuickFilter, FilterOption } from "@/components/ui/quick-filter";
 import { StandardSearchField, StandardSearchDataSource } from "@/components/shared/standard-fields-component/StandardSearchField";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { 
+  experiencesOptions,
+  getExperiencesDataSources,
+  defaultDateRange,
+  defaultSelectedExperiences 
+} from '@/lib/data/mock-datavf';
 
 interface IExperiencesSearchBarProps {
   /**
@@ -16,40 +22,12 @@ interface IExperiencesSearchBarProps {
 }
 
 export default function ExperiencesSearchBar({ showSearchButton = true }: IExperiencesSearchBarProps) {
-  const [range, setRange] = useState<DateRange | undefined>({ from: new Date(), to: new Date() });
-  const [selectedExperiences, setSelectedExperiences] = useState<string[]>(['aventura', 'camping']);
+  const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
+  const [selectedExperiences, setSelectedExperiences] = useState<string[]>(defaultSelectedExperiences);
   const [goingTo, setGoingTo] = useState("");
 
-  // Opciones de experiencias de ejemplo
-  const experiencesOptions: FilterOption[] = [
-    { label: "Aventura", value: "aventura" },
-    { label: "Camping", value: "camping" },
-    { label: "Senderismo", value: "senderismo" },
-    { label: "Cultural", value: "cultural" },
-    { label: "Playa", value: "playa" },
-    { label: "Gastronómica", value: "gastronomica" },
-    { label: "Conciertos", value: "conciertos" },
-    { label: "Eventos de Comedia", value: "comedia" },
-  ];
-
-  // Opciones de destinos de ejemplo
-  const searchDataSources: StandardSearchDataSource[] = [
-    {
-      id: "cities",
-      label: "Ciudades",
-      icon: null,
-      type: "city",
-      nameLabelField: "cityName",
-      nameValueField: "cityCode",
-      nameDescriptionField: "description",
-      options: [
-        { cityName: "Roma, Italia", cityCode: "rom", description: "Ciudad eterna" },
-        { cityName: "Nueva York, EE.UU.", cityCode: "nyc", description: "La gran manzana" },
-        { cityName: "Tokyo, Japón", cityCode: "tyo", description: "Metrópolis moderna" },
-        { cityName: "Buenos Aires, Argentina", cityCode: "bue", description: "París de Sudamérica" },
-      ]
-    }
-  ];
+  // Obtener fuentes de datos para experiencias
+  const searchDataSources = getExperiencesDataSources();
 
   const handleRangeChange = (newRange: { from?: Date; to?: Date }) => {
     if (newRange.from && newRange.to) {

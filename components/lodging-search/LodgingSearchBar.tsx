@@ -14,119 +14,7 @@ import { DateRange } from "react-day-picker";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { Building2, Clock, MapPin, Plane, Search } from "lucide-react";
-
-// Fuentes de datos para el buscador - usar externas si están disponibles
-const searchLodgingDataSources: StandardSearchDataSource[] = [
-  {
-    id: "recent",
-    label: "Búsquedas recientes",
-    icon: <Clock className="h-4 w-4" />,
-    type: "recent" as const,
-    nameLabelField: "destination",
-    nameValueField: "searchId",
-    nameDescriptionField: "period",
-    options: [
-      {
-        destination: "Medellín (MDE - A. Internacional José...)",
-        searchId: "MDE",
-        period: "3 de julio–6 de julio",
-      },
-      {
-        destination: "Miami (MIA - Aeropuerto Internacional...)",
-        searchId: "MIA",
-        period: "1 de julio–30 de agosto • 60 noches • 2...",
-      },
-      {
-        destination: "San Juan de la Maguana",
-        searchId: "SJM",
-        period: "2 de junio–3 de junio • 1 noche • 2...",
-      },
-    ],
-  },
-  {
-    id: "airports",
-    label: "Aeropuertos",
-    icon: <Plane className="h-4 w-4" />,
-    type: "airport" as const,
-    nameLabelField: "name",
-    nameValueField: "code",
-    nameDescriptionField: "city",
-    options: [
-      {
-        name: "Madrid (MAD - Aeropuerto Barajas)",
-        code: "MAD",
-        city: "Capital de España",
-      },
-      {
-        name: "Barcelona (BCN - Aeropuerto El Prat)",
-        code: "BCN",
-        city: "Ciudad mediterránea",
-      },
-      {
-        name: "París (CDG - Charles de Gaulle)",
-        code: "CDG",
-        city: "Ciudad de la luz",
-      },
-      {
-        name: "Londres (LHR - Heathrow)",
-        code: "LHR",
-        city: "Capital británica",
-      },
-    ],
-  },
-  {
-    id: "cities",
-    label: "Ciudades",
-    icon: <MapPin className="h-4 w-4" />,
-    type: "city" as const,
-    nameLabelField: "cityName",
-    nameValueField: "cityCode",
-    nameDescriptionField: "description",
-    options: [
-      {
-        cityName: "Roma, Italia",
-        cityCode: "ROM",
-        description: "Ciudad eterna",
-      },
-      {
-        cityName: "Nueva York, EE.UU.",
-        cityCode: "NYC",
-        description: "La gran manzana",
-      },
-      {
-        cityName: "Tokyo, Japón",
-        cityCode: "TYO",
-        description: "Metrópolis moderna",
-      },
-      {
-        cityName: "Buenos Aires, Argentina",
-        cityCode: "BUE",
-        description: "París de Sudamérica",
-      },
-    ],
-  },
-  {
-    id: "hotels",
-    label: "Hoteles",
-    icon: <Building2 className="h-4 w-4" />,
-    type: "hotel" as const,
-    nameLabelField: "hotelName",
-    nameValueField: "hotelId",
-    nameDescriptionField: "location",
-    options: [
-      {
-        hotelName: "Hotel Ritz Madrid",
-        hotelId: "ritz-mad",
-        location: "Lujo en el centro de Madrid",
-      },
-      {
-        hotelName: "Hotel Majestic Barcelona",
-        hotelId: "maj-bcn",
-        location: "Elegancia en Passeig de Gràcia",
-      },
-    ],
-  },
-];
+import { getLodgingDataSources, defaultGuestRooms, defaultDateRange } from '@/lib/data/mock-datavf';
 
 interface ILodgingLayoutProps {
   goingTo?: string;
@@ -144,7 +32,7 @@ interface ILodgingLayoutProps {
 export default function LodgingSearchBar({
   goingTo,
   setGoingTo,
-  searchDataSources = searchLodgingDataSources,
+  searchDataSources = getLodgingDataSources(),
   travelingFrom,
   setTravelingFrom,
   lodgingType = "hotels-and-resorts", // Por defecto, tipo de alojamiento
@@ -157,17 +45,8 @@ export default function LodgingSearchBar({
   const [localGoingTo, setLocalGoingTo] = useState<string>("MAD");
   const [localTravelingFrom, setLocalTravelingFrom] = useState<string>("NYC");
 
-  const [guestRooms, setGuestRooms] = useState<Room[]>([
-    {
-      id: "room-1",
-      adults: 2,
-      children: [],
-    },
-  ]);
-  const [range, setRange] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date(),
-  });
+  const [guestRooms, setGuestRooms] = useState<Room[]>(defaultGuestRooms);
+  const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
   const [flexibleInfo, setFlexibleInfo] = useState<{
     isFlexible?: boolean;
     flexibleDuration?: string;

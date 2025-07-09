@@ -7,58 +7,65 @@ import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom'
 import { PassengerSelector, type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Bus } from 'lucide-react';
+import { getTransportDataSources, defaultPassengers } from '@/lib/data/mock-datavf';
 
 interface BusesSearchBarProps {
   /**
    * Whether to show search button (default: true)
    */
   showSearchButton?: boolean;
+
+  //sincronización de pasajeros
+  onPassengersGlobalChange?: (passengers: PassengerGroup) => void;
+  initialGlobalPassengers?: PassengerGroup;
+
+  // Props para sincronización de campos de origen/destino
+  travelingFrom?: string;
+  setTravelingFrom?: (value: string) => void;
+  goingTo?: string;
+  setGoingTo?: (value: string) => void;
+  onSwapLocations?: () => void;
+  searchDataSources?: StandardSearchDataSource[];
 }
 
-const BUS_DATA_SOURCES: StandardSearchDataSource[] = [
-  {
-    id: 'bus-stations',
-    label: 'Bus Stations',
-    icon: <Bus className="w-4 h-4" />,
-    type: 'custom',
-    options: [],
-    nameValueField: 'code',
-    nameLabelField: 'name',
-    nameDescriptionField: 'city',
-  },
-  {
-    id: 'cities',
-    label: 'Cities',
-    icon: <MapPin className="w-4 h-4" />,
-    type: 'city',
-    options: [],
-    nameValueField: 'code',
-    nameLabelField: 'name',
-    nameDescriptionField: 'country',
-  },
-];
-
-export default function BusesSearchBar({ showSearchButton = true }: BusesSearchBarProps) {
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+export default function BusesSearchBar(
+  { 
+    showSearchButton = true,
+    onPassengersGlobalChange,
+    initialGlobalPassengers,
+    travelingFrom,
+    setTravelingFrom,
+    goingTo,
+    setGoingTo,
+    onSwapLocations,
+    searchDataSources,
+  }:
+   BusesSearchBarProps) {
+  // Estados locales para origin/destination (fallback si no se pasan como props)
+  const [localOrigin, setLocalOrigin] = useState('');
+  const [localDestination, setLocalDestination] = useState('');
   const [dates, setDates] = useState<{ from?: Date; to?: Date }>({});
-  const [passengers, setPassengers] = useState<PassengerGroup>({
-    adults: 1,
-    children: [],
-    infantsOnLap: [],
-    infantsInSeat: [],
-  });
+  const [passengers, setPassengers] = useState<PassengerGroup>(defaultPassengers);
 
-  const handleSwap = () => {
-    const tempOrigin = origin;
-    setOrigin(destination);
-    setDestination(tempOrigin);
-  };
+  // Obtener fuentes de datos para buses
+  const BUS_DATA_SOURCES = searchDataSources || getTransportDataSources('bus');
+
+  // Usar props sincronizados o estado local
+  const currentOrigin = travelingFrom !== undefined ? travelingFrom : localOrigin;
+  const currentDestination = goingTo !== undefined ? goingTo : localDestination;
+  const handleOriginChange = setTravelingFrom || setLocalOrigin;
+  const handleDestinationChange = setGoingTo || setLocalDestination;
+
+  const handleSwap = onSwapLocations || (() => {
+    const tempOrigin = currentOrigin;
+    handleOriginChange(currentDestination);
+    handleDestinationChange(tempOrigin);
+  });
 
   const handleSearch = () => {
     console.log('Searching buses with:', {
-      origin,
-      destination,
+      origin: currentOrigin,
+      destination: currentDestination,
       dates,
       passengers,
     });
@@ -73,12 +80,12 @@ export default function BusesSearchBar({ showSearchButton = true }: BusesSearchB
             <SearchFieldsWithSwap
               originLabel="Saliendo de"
               originPlaceholder="Terminal Central"
-              originValue={origin}
-              onOriginValueChange={setOrigin}
+              originValue={currentOrigin}
+              onOriginValueChange={handleOriginChange}
               destinationLabel="Ir a"
               destinationPlaceholder="Destino"
-              destinationValue={destination}
-              onDestinationValueChange={setDestination}
+              destinationValue={currentDestination}
+              onDestinationValueChange={handleDestinationChange}
               dataSources={BUS_DATA_SOURCES}
               onSwap={handleSwap}
               showSearchButton={false}
@@ -100,8 +107,8 @@ export default function BusesSearchBar({ showSearchButton = true }: BusesSearchB
           {/* Passenger Selector */}
           <PassengerSelector
             label="Pasajeros"
-            initialPassengers={passengers}
-            onPassengersChange={setPassengers}
+            initialPassengers={initialGlobalPassengers || passengers}
+            onPassengersChange={onPassengersGlobalChange || setPassengers}
             containerClassName="w-full lg:w-auto"
           />
         </div>

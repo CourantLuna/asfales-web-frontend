@@ -22,7 +22,7 @@ export type StandardSearchDataSource = {
   id: string;
   label: string;
   icon: React.ReactNode;
-  type: 'recent' | 'airport' | 'hotel' | 'city' | 'custom';
+  type: 'recent' | 'airport' | 'hotel' | 'city' | 'custom' | 'bus' | 'cruise';
   options: any[]; // Datos sin formatear
   nameLabelField: string; // Nombre del campo para el label (ej: "name", "title", "label")
   nameValueField: string; // Nombre del campo para el value (ej: "id", "code", "value")

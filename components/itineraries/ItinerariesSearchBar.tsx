@@ -10,6 +10,14 @@ import { SearchFieldsWithSwap } from "@/components/shared/SearchFieldsWithSwap";
 import { StandardSearchDataSource } from "@/components/shared/standard-fields-component/StandardSearchField";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { 
+  searchDataSources,
+  lodgingOptions,
+  experiencesOptions,
+  transportTypes,
+  defaultGuestRooms,
+  defaultDateRange 
+} from '@/lib/data/mock-datavf';
 
 interface IitinerariesSearchBarProps {
   /**
@@ -21,50 +29,11 @@ interface IitinerariesSearchBarProps {
 export default function ItinerariesSearchBar({ showSearchButton = true }: IitinerariesSearchBarProps) {
   const [travelingFrom, setTravelingFrom] = useState("");
   const [goingTo, setGoingTo] = useState("");
-  const [range, setRange] = useState<DateRange | undefined>({ from: new Date(), to: new Date() });
-  const [guestRooms, setGuestRooms] = useState<Room[]>([{
-    id: "room-1",
-    adults: 2,
-    children: []
-  }]);
+  const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
+  const [guestRooms, setGuestRooms] = useState<Room[]>(defaultGuestRooms);
   const [selectedLodgingTypes, setSelectedLodgingTypes] = useState<string[]>([]);
   const [selectedTransportTypes, setSelectedTransportTypes] = useState<string[]>([]);
   const [selectedExperiences, setSelectedExperiences] = useState<string[]>([]);
-
-  // Opciones de ejemplo
-  const lodgingOptions: FilterOption[] = [
-    { label: "Hoteles", value: "hotel" },
-    { label: "Casas", value: "house" },
-    { label: "Apartamentos", value: "apartment" },
-    { label: "Casa de huéspedes", value: "guest" },
-  ];
-  const experiencesOptions: FilterOption[] = [
-    { label: "Aventura", value: "aventura" },
-    { label: "Camping", value: "camping" },
-    { label: "Senderismo", value: "senderismo" },
-    { label: "Cultural", value: "cultural" },
-    { label: "Playa", value: "playa" },
-    { label: "Gastronómica", value: "gastronomica" },
-    { label: "Conciertos", value: "conciertos" },
-    { label: "Eventos de Comedia", value: "comedia" },
-  ];
-  const searchDataSources: StandardSearchDataSource[] = [
-    {
-      id: "cities",
-      label: "Ciudades",
-      icon: null,
-      type: "city",
-      nameLabelField: "cityName",
-      nameValueField: "cityCode",
-      nameDescriptionField: "description",
-      options: [
-        { cityName: "Roma, Italia", cityCode: "rom", description: "Ciudad eterna" },
-        { cityName: "Nueva York, EE.UU.", cityCode: "nyc", description: "La gran manzana" },
-        { cityName: "Tokyo, Japón", cityCode: "tyo", description: "Metrópolis moderna" },
-        { cityName: "Buenos Aires, Argentina", cityCode: "bue", description: "París de Sudamérica" },
-      ]
-    }
-  ];
 
   const handleTravelingFromChange = (value: string) => setTravelingFrom(value);
   const handleGoingToChange = (value: string) => setGoingTo(value);

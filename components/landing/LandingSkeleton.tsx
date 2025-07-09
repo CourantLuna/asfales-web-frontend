@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import Hero from "@/components/landing/sections/Hero";
 import TravelOptionsSection from "@/components/landing/sections/TravelOptionsSection";
 import SearchBoxOverlay from "@/components/landing/sections/SearchBoxOverlay";
-import { Clock, Plane, MapPin, Building2 } from "lucide-react";
+import { searchDataSources } from '@/lib/data/mock-datavf';
 
 
 interface LandingPageProps {
@@ -19,8 +19,8 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
   const [activeTab, setActiveTab] = useState("transport");
   
   // Estados compartidos para origen y destino - inicializar con valores deterministas
-  const [travelingFrom, setTravelingFrom] = useState<string>("sdo");
-  const [goingTo, setGoingTo] = useState<string>("mad");
+  const [travelingFrom, setTravelingFrom] = useState<string>('SDQ');
+  const [goingTo, setGoingTo] = useState<string>('MAD');
   
   // Funciones wrapper para logging
   const handleTravelingFromChange = (value: string) => {
@@ -32,80 +32,6 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
     console.log('🔄 goingTo changed to:', value);
     setGoingTo(value);
   };
-  
-  // Fuentes de datos compartidas
-  const searchDataSources = [
-    {
-      id: "recent",
-      label: "Búsquedas recientes", 
-      icon: <Clock className="h-4 w-4" />,
-      type: "recent" as const,
-      nameLabelField: "destination",
-      nameValueField: "searchId", 
-      nameDescriptionField: "period",
-      options: [
-        { 
-          destination: "Medellín (MDE - A. Internacional José...)", 
-          searchId: "med1", 
-          period: "3 de julio–6 de julio"
-        },
-        { 
-          destination: "Miami (MIA - Aeropuerto Internacional...)", 
-          searchId: "mia1", 
-          period: "1 de julio–30 de agosto • 60 noches • 2..."
-        },
-        { 
-          destination: "San Juan de la Maguana", 
-          searchId: "sj1", 
-          period: "2 de junio–3 de junio • 1 noche • 2..."
-        },
-      ]
-    },
-    {
-      id: "airports",
-      label: "Aeropuertos",
-      icon: <Plane className="h-4 w-4" />,
-      type: "airport" as const,
-      nameLabelField: "name",
-      nameValueField: "code",
-      nameDescriptionField: "city",
-      options: [
-        { name: "Madrid (MAD - Aeropuerto Barajas)", code: "mad", city: "Capital de España" },
-        { name: "Barcelona (BCN - Aeropuerto El Prat)", code: "bcn", city: "Ciudad mediterránea" },
-        { name: "París (CDG - Charles de Gaulle)", code: "par", city: "Ciudad de la luz" },
-        { name: "Londres (LHR - Heathrow)", code: "lon", city: "Capital británica" },
-        { name: "Santo Domingo (SDO - Aeropuerto Internacional de las Americas)", code: "sdo", city: "Santo Domingo" },
-      ]
-    },
-    {
-      id: "cities",
-      label: "Ciudades",
-      icon: <MapPin className="h-4 w-4" />,
-      type: "city" as const,
-      nameLabelField: "cityName",
-      nameValueField: "cityCode",
-      nameDescriptionField: "description",
-      options: [
-        { cityName: "Roma, Italia", cityCode: "rom", description: "Ciudad eterna" },
-        { cityName: "Nueva York, EE.UU.", cityCode: "nyc", description: "La gran manzana" },
-        { cityName: "Tokyo, Japón", cityCode: "tyo", description: "Metrópolis moderna" },
-        { cityName: "Buenos Aires, Argentina", cityCode: "bue", description: "París de Sudamérica" },
-      ]
-    },
-    {
-      id: "hotels",
-      label: "Hoteles",
-      icon: <Building2 className="h-4 w-4" />,
-      type: "hotel" as const,
-      nameLabelField: "hotelName",
-      nameValueField: "hotelId",
-      nameDescriptionField: "location",
-      options: [
-        { hotelName: "Hotel Ritz Madrid", hotelId: "ritz-mad", location: "Lujo en el centro de Madrid" },
-        { hotelName: "Hotel Majestic Barcelona", hotelId: "maj-bcn", location: "Elegancia en Passeig de Gràcia" },
-      ]
-    }
-  ];
 
   function scrollToResults() {
     smoothScrollTo(resultsRef.current?.offsetTop ?? 0, 1000);
@@ -167,7 +93,7 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
             setTravelingFrom={handleTravelingFromChange}
             goingTo={goingTo}
             setGoingTo={handleGoingToChange}
-            searchDataSources={searchDataSources}
+            searchDataSrc={searchDataSources}
           />
 
           {children}

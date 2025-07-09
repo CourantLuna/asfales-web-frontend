@@ -6,41 +6,24 @@ import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom'
 import { DurationSelector, type DurationRange } from '@/components/shared/standard-fields-component/DurationSelector';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Anchor } from 'lucide-react';
+import { getTransportDataSources } from '@/lib/data/mock-datavf';
+import { PassengerGroup } from '../shared/standard-fields-component/PassengerSelector';
 
 interface CruisesSearchBarProps {
   /**
    * Whether to show search button (default: true)
    */
   showSearchButton?: boolean;
-}
 
-const CRUISE_DATA_SOURCES: StandardSearchDataSource[] = [
-  {
-    id: 'cruise-ports',
-    label: 'Cruise Ports',
-    icon: <Anchor className="w-4 h-4" />,
-    type: 'custom',
-    options: [],
-    nameValueField: 'code',
-    nameLabelField: 'name',
-    nameDescriptionField: 'city',
-  },
-  {
-    id: 'cities',
-    label: 'Cities',
-    icon: <MapPin className="w-4 h-4" />,
-    type: 'city',
-    options: [],
-    nameValueField: 'code',
-    nameLabelField: 'name',
-    nameDescriptionField: 'country',
-  },
-];
+}
 
 export default function CruisesSearchBar({ showSearchButton = true }: CruisesSearchBarProps) {
   const [destination, setDestination] = useState('');
   const [departureDate, setDepartureDate] = useState<{ from?: Date; to?: Date }>({});
   const [duration, setDuration] = useState<DurationRange>({ minNights: 3, maxNights: 9 });
+
+  // Obtener fuentes de datos para cruceros
+  const CRUISE_DATA_SOURCES = getTransportDataSources('cruise');
 
   const handleSearch = () => {
     console.log('Searching cruises with:', {

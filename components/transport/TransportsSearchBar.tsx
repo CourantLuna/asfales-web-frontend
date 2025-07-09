@@ -7,6 +7,11 @@ import CruisesSearchBar from './CruisesSearchBar';
 import BusesSearchBar from './BusesSearchBar';
 import { Plane, Ship, Bus } from 'lucide-react';
 
+import {  type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
+import { defaultPassengers } from '@/lib/data/mock-datavf';
+import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
+
+
 interface TransportsSearchBarProps {
   /**
    * Whether to show search buttons in child components (default: true)
@@ -19,34 +24,81 @@ interface TransportsSearchBarProps {
 
   centerTabsTransportType?: boolean
   useToggleGroupTabsTransportType?: boolean;
+  
+  // Props para sincronización de pasajeros
+  passengers?: PassengerGroup;
+  setPassengers?: (passengers: PassengerGroup) => void;
+  
+  // Props para sincronización de campos de origen/destino
+  travelingFrom?: string;
+  setTravelingFrom?: (value: string) => void;
+  goingTo?: string;
+  setGoingTo?: (value: string) => void;
+  onSwapLocations?: () => void;
+  searchDataSources?: StandardSearchDataSource[];
 }
 
 export default function TransportsSearchBar({ 
   showSearchButton = true, 
   showMobileSelect = true,
   centerTabsTransportType = true,
-  useToggleGroupTabsTransportType = false
+  useToggleGroupTabsTransportType = false,
+  passengers: externalPassengers,
+  setPassengers: externalSetPassengers,
+  travelingFrom: externalTravelingFrom,
+  setTravelingFrom: externalSetTravelingFrom,
+  goingTo: externalGoingTo,
+  setGoingTo: externalSetGoingTo,
+  onSwapLocations: externalOnSwapLocations,
+  searchDataSources: externalSearchDataSources
 }: TransportsSearchBarProps) {
   const [activeTab, setActiveTab] = useState('flights');
+
+  // Usar pasajeros externos si están disponibles, sino usar estado local
+  const [localPassengers, setLocalPassengers] = useState<PassengerGroup>(defaultPassengers);
+  
+  const passengers = externalPassengers || localPassengers;
+  const setPassengers = externalSetPassengers || setLocalPassengers;
+  
 
   const tabItems: TabItem[] = [
     {
       value: 'flights',
       label: 'Vuelos',
       icon: <Plane className="w-4 h-4" />,
-      content: <FlightsSearchBar showSearchButton={showSearchButton} />,
+      content: <FlightsSearchBar 
+                showSearchButton={showSearchButton} 
+                onPassengersGlobalChange={setPassengers} 
+                initialGlobalPassengers={passengers}
+                travelingFrom={externalTravelingFrom}
+                setTravelingFrom={externalSetTravelingFrom}
+                goingTo={externalGoingTo}
+                setGoingTo={externalSetGoingTo}
+                onSwapLocations={externalOnSwapLocations}
+                searchDataSources={externalSearchDataSources}
+              />,
     },
     {
       value: 'cruises',
       label: 'Cruceros',
       icon: <Ship className="w-4 h-4" />,
-      content: <CruisesSearchBar showSearchButton={showSearchButton} />,
+      content: <CruisesSearchBar showSearchButton={showSearchButton}/>,
     },
     {
       value: 'buses',
       label: 'Buses',
       icon: <Bus className="w-4 h-4" />,
-      content: <BusesSearchBar showSearchButton={showSearchButton} />,
+      content: <BusesSearchBar 
+                showSearchButton={showSearchButton}
+                onPassengersGlobalChange={setPassengers} 
+                initialGlobalPassengers={passengers}
+                travelingFrom={externalTravelingFrom}
+                setTravelingFrom={externalSetTravelingFrom}
+                goingTo={externalGoingTo}
+                setGoingTo={externalSetGoingTo}
+                onSwapLocations={externalOnSwapLocations}
+                searchDataSources={externalSearchDataSources}
+              />,
     },
   ];
 

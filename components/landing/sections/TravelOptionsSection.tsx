@@ -1,7 +1,13 @@
 import TravelOptionsTabs from "@/components/landing/TravelOptionsTabs";
+import { StandardSearchDataSource } from "@/components/shared/standard-fields-component/StandardSearchField";
 import * as React from "react";
 
+import { 
+  searchDataSources,
+} from "@/lib/data/mock-datavf";
+
 export default function TravelOptionsSection({
+  searchDataSrc = searchDataSources,
   activeTab,
   setActiveTab,
   onScrollToResults,
@@ -9,8 +15,8 @@ export default function TravelOptionsSection({
   setTravelingFrom,
   goingTo,
   setGoingTo,
-  searchDataSources,
 }: {
+  searchDataSrc?: StandardSearchDataSource[];
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onScrollToResults: () => void;
@@ -18,7 +24,6 @@ export default function TravelOptionsSection({
   setTravelingFrom: (value: string) => void;
   goingTo: string;
   setGoingTo: (value: string) => void;
-  searchDataSources: any[];
 }) {
   return (
     <section className="relative w-full flex justify-center py-4">
@@ -50,7 +55,7 @@ export default function TravelOptionsSection({
           setTravelingFrom={setTravelingFrom}
           goingTo={goingTo}
           setGoingTo={setGoingTo}
-          searchDataSources={searchDataSources}
+          searchDataSourcesTravelOptions={searchDataSrc}
         />
       </div>
     </section>

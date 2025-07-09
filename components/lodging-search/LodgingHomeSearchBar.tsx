@@ -68,9 +68,7 @@ export default function LodgingHomeSearchBar({ showSearchButtonLodging = true }:
 
       {/* Search Bar con el tipo seleccionado */}
       <LodgingSearchBar lodgingType={selectedLodgingType} showSearchButton={showSearchButtonLodging} />
-        <div className="w-full py-2">
-          <BreadcrumbNav />
-        </div>
+        
     </div>
 
   </div>
