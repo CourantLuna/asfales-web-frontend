@@ -137,7 +137,7 @@ const StandardSelect = React.forwardRef<HTMLButtonElement, StandardSelectProps>(
             ref={ref}
             className={cn(
               // Standard select height and spacing
-              "h-12 w-full px-4 text-start",
+              "h-12 w-full px-4 text-start w-full",
               // Text sizes: base on mobile, sm on desktop
               "text-base md:text-sm",
               // Error state styling

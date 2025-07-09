@@ -1,4 +1,4 @@
-import TransportSearchBar from "@/components/transport/TransportSearchBar";
+import TransportSearchBar from "@/components/transport/TransportsSearchBar";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
 
@@ -20,7 +20,7 @@ export default function TransportLayout({
       ></ThemeProvider>
       <div className="w-full pt-1 pb-2 p-4 lg:p-6 flex-1 flex flex-col h-full max-w-7xl mx-auto">
             <div className="w-full flex-1 flex flex-col mt-[40px] ">
-                       <TransportSearchBar />
+        <TransportSearchBar />
                     {children}
 
             </div>

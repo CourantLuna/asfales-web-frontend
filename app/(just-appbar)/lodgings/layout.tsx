@@ -20,8 +20,8 @@ export default function LodgingLayout({
         disableTransitionOnChange
       >
         <div className = "">
-        <h1 className="hidden lg:block text-4xl text-secondary mx-auto max-w-7xl w-full lg:px-8 lg:mb-4 ">
-          ¡TE ALOJAMOS!
+        <h1 className="hidden lg:block text-4xl text-secondary mx-auto max-w-7xl w-full px-8 mb-8 ">
+          ¡Te hospedamos!
         </h1>
         </div>
 

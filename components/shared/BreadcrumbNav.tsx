@@ -29,7 +29,7 @@ export default function BreadcrumbNav() {
   });
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="hidden lg:block">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>

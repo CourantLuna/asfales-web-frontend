@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import { StandardTabs, type TabItem } from '@/components/shared/standard-fields-component/StandardTabs';
 import { SearchFieldsWithSwap } from '@/components/shared/SearchFieldsWithSwap';
 import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
+import { StandardSelect, type StandardSelectOption } from '@/components/shared/standard-fields-component/StandardSelect';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { PassengerSelector, type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Plane, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface ITransportSearchBarProps {}
 
 interface FlightData {
   id: string;
@@ -42,8 +41,16 @@ const TRANSPORT_DATA_SOURCES: StandardSearchDataSource[] = [
   },
 ];
 
-export default function TransportSearchBar() {
+const CABIN_CLASS_OPTIONS: StandardSelectOption[] = [
+  { value: 'economy', label: 'Económica' },
+  { value: 'premium-economy', label: 'Premium Economy' },
+  { value: 'business', label: 'Business' },
+  { value: 'first', label: 'Primera Clase' },
+];
+
+export default function FlightsSearchBar() {
   const [activeTab, setActiveTab] = useState('roundtrip');
+  const [cabinClass, setCabinClass] = useState('economy');
   const [passengers, setPassengers] = useState<PassengerGroup>({
     adults: 1,
     children: [],
@@ -114,6 +121,7 @@ export default function TransportSearchBar() {
   const handleSearch = () => {
     console.log('Searching transport with:', {
       activeTab,
+      cabinClass,
       passengers,
       roundtrip: { origin: roundtripOrigin, destination: roundtripDestination, dates: roundtripDates },
       oneway: { origin: onewayOrigin, destination: onewayDestination, date: onewayDate },
@@ -125,6 +133,8 @@ export default function TransportSearchBar() {
   const roundtripContent = (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 md:gap-4">
+    
+{        /* Search Fields with Swap for Roundtrip */}
         <div className='w-full md:w-auto' >
           <SearchFieldsWithSwap
             originLabel="Saliendo de"
@@ -149,15 +159,25 @@ export default function TransportSearchBar() {
             onChange={setRoundtripDates}
             hasReturnDate={true}
             dualTrigger={false}
-            className="w-full lg:w-auto"
+            className="w-full md:w-[280px]"
           />
           
           <PassengerSelector
             label="Viajeros"
             initialPassengers={passengers}
             onPassengersChange={setPassengers}
-            containerClassName="w-full lg:w-auto"
+            containerClassName="w-full md:w-[280px]"
           />
+
+           {/* Clase de cabina: Económica, Premium, Business, Primera */}
+        <StandardSelect
+          label="Clase de cabina"
+          placeholder="Seleccionar clase"
+          options={CABIN_CLASS_OPTIONS}
+          value={cabinClass}
+          onValueChange={setCabinClass}
+          containerClassName="w-full md:w-[280px]"
+        />
       </div>
 
       <div className="flex justify-end">
@@ -176,7 +196,9 @@ export default function TransportSearchBar() {
   const onewayContent = (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 md:gap-4">
-        <div className="">
+        
+        
+        <div className='w-full md:w-auto' >
           <SearchFieldsWithSwap
             originLabel="Leaving from"
             originPlaceholder="Santo Domingo (SDQ-Las Americas Intl.)"
@@ -198,13 +220,12 @@ export default function TransportSearchBar() {
         </div>
         
           <DateRangePickerCustom
-            label="Date"
             placeholder="Jul 11"
             showFlexibleDates={false}
             value={onewayDate}
             onChange={setOnewayDate}
             hasReturnDate={false}
-            dualTrigger={false}
+            dualTrigger={true}
           />
           
           <PassengerSelector
@@ -212,6 +233,16 @@ export default function TransportSearchBar() {
             initialPassengers={passengers}
             onPassengersChange={setPassengers}
           />
+
+          {/* Clase de cabina */}
+        <StandardSelect
+          label="Clase de cabina"
+          placeholder="Seleccionar clase"
+          options={CABIN_CLASS_OPTIONS}
+          value={cabinClass}
+          onValueChange={setCabinClass}
+          containerClassName="w-full md:w-[280px]"
+        />
       </div>
 
       <div className="flex justify-end">
@@ -229,8 +260,17 @@ export default function TransportSearchBar() {
   // Multi-city Tab Content
   const multicittyContent = (
     <div className="space-y-6">
-      {/* Passenger Selector First */}
-      <div className="flex justify-start">
+      {/* Cabin Class and Passenger Selector */}
+      <div className="flex flex-wrap gap-2 md:gap-4">
+        <StandardSelect
+          label="Clase de cabina"
+          placeholder="Seleccionar clase"
+          options={CABIN_CLASS_OPTIONS}
+          value={cabinClass}
+          onValueChange={setCabinClass}
+          containerClassName="w-full md:w-[280px]"
+        />
+        
         <PassengerSelector
           label="Travelers"
           initialPassengers={passengers}
@@ -338,13 +378,14 @@ export default function TransportSearchBar() {
   ];
 
   return (
-    <div className="w-full p-4 lg:p-0">
+    <div className=" p-4 lg:p-0">
         <StandardTabs
           items={tabItems}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          containerClassName="w-full"
-          showMobileSelector={true}
+          containerClassName="w-auto"
+          centerTabs={false}
+          useMobileSelect={false} // Tabs normales siempre
           mobilePlaceholder="Select trip type"
         />
     </div>

@@ -25,7 +25,7 @@ export const ROUTE_CONFIG = {
   '/profile/credits': 'Créditos',
   
   // Lodging routes
-  '/lodgings': 'Alojamientos',
+  '/lodgings': '¡Te hospedamos!',
   '/lodgings/hotels-and-resorts': 'Hoteles y Resorts',
   '/lodgings/hostels-and-guesthouses': 'Hostels y Guesthouses',
   '/lodging/apartments-and-longstays': 'Apartamentos y Estancias Largas',

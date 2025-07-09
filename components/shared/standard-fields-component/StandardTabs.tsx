@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Combobox, Option } from "@/components/ui/combobox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 export interface TabItem {
@@ -58,11 +58,7 @@ export interface StandardTabsProps {
    */
   tabContentClassName?: string;
   /**
-   * Whether to show the mobile combobox selector
-   */
-  showMobileSelector?: boolean;
-  /**
-   * Placeholder text for mobile combobox
+   * Placeholder text for mobile select
    */
   mobilePlaceholder?: string;
   /**
@@ -73,6 +69,10 @@ export interface StandardTabsProps {
    * Whether to center the tabs list
    */
   centerTabs?: boolean;
+  /**
+   * Whether to use select dropdown in mobile instead of tabs (default: true)
+   */
+  useMobileSelect?: boolean;
 }
 
 const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
@@ -85,28 +85,21 @@ const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
       tabsListClassName,
       tabTriggerClassName,
       tabContentClassName,
-      showMobileSelector = true,
       mobilePlaceholder = "Selecciona una opción",
       customTabClassName,
       centerTabs = true,
+      useMobileSelect = true,
     },
     ref
   ) => {
     // Default tab trigger styling (same as TravelOptionsTabs)
-    const defaultTabClassName = `flex-1 justify-center border-b-2 border-transparent bg-transparent
+    const defaultTabClassName = ` ${centerTabs? "flex-1" : ""} 
+            justify-center border-b-2 bg-transparent
              data-[state=active]:border-primary 
-             data-[state=active]:text-primary 
+             data-[state=active]:text-primary
              text-muted-foreground font-medium px-4 py-2 transition-colors`;
 
     const finalTabClassName = customTabClassName || defaultTabClassName;
-
-    // Convert items to combobox options for mobile
-    const comboboxOptions = items.map(item => ({
-      label: item.label,
-      value: item.value,
-      icon: item.icon,
-      disabled: item.disabled,
-    }));
 
     return (
       <div
@@ -124,22 +117,43 @@ const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
             centerTabs && "items-center"
           )}
         >
-          {/* Mobile Combobox Selector */}
-          {showMobileSelector && (
+          {/* Mobile Select Selector */}
+          {useMobileSelect && (
             <div className="block w-full md:hidden mb-4">
-              <Combobox
-                options={comboboxOptions}
+              <Select
                 value={activeTab}
-                onChange={onTabChange}
-                placeholder={mobilePlaceholder}
-              />
+                onValueChange={onTabChange}
+              >
+                <SelectTrigger className="w-full h-12 text-base">
+                  <SelectValue placeholder={mobilePlaceholder} />
+                </SelectTrigger>
+                <SelectContent>
+                  {items.map((item) => (
+                    <SelectItem
+                      key={item.value}
+                      value={item.value}
+                      disabled={item.disabled}
+                    >
+                      <div className="flex items-center">
+                        {item.icon && (
+                          <span className="mr-2 flex items-center">
+                            {item.icon}
+                          </span>
+                        )}
+                        {item.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
 
           {/* Desktop Tabs List */}
           <TabsList 
             className={cn(
-              "hidden md:flex w-full mb-6 py-4 bg-transparent border-b-2",
+              useMobileSelect ? "hidden md:flex" : "flex",
+              " w-full  mb-6 py-4 bg-transparent",
               centerTabs ? "justify-center" : "justify-start",
               tabsListClassName
             )}
