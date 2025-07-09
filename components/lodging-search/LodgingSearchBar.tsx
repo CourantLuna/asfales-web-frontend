@@ -135,6 +135,10 @@ interface ILodgingLayoutProps {
   travelingFrom?: string;
   setTravelingFrom?: (value: string) => void;
   lodgingType?: string;
+  /**
+   * Si es true, muestra el botón de buscar. Por defecto: true
+   */
+  showSearchButton?: boolean;
 }
 
 export default function LodgingSearchBar({
@@ -144,6 +148,7 @@ export default function LodgingSearchBar({
   travelingFrom,
   setTravelingFrom,
   lodgingType = "hotels-and-resorts", // Por defecto, tipo de alojamiento
+  showSearchButton = true,
 }: ILodgingLayoutProps) {
   // Hook para navegación
   const router = useRouter();
@@ -318,20 +323,21 @@ export default function LodgingSearchBar({
           maxAdultsPerRoom={4}
           maxChildrenPerRoom={2}
         />
-        <div className="flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
-          <Button
-            className={
-              "bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"
-            }
-            variant="default"
-            onClick={handleBuscar}
-            disabled={!currentGoingTo || !currentTravelingFrom}
-          >
-            <Search className="mr-2 h-4 w-4" />
-
-            {"Buscar"}
-          </Button>
-        </div>
+        {showSearchButton && (
+          <div className="flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
+            <Button
+              className={
+                "bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"
+              }
+              variant="default"
+              onClick={handleBuscar}
+              disabled={!currentGoingTo || !currentTravelingFrom}
+            >
+              <Search className="mr-2 h-4 w-4" />
+              {"Buscar"}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

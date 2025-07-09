@@ -4,6 +4,7 @@ import * as React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { StandardToggleGroup } from "@/components/shared/standard-fields-component/StandardToggleGroup";
 
 export interface TabItem {
   /**
@@ -73,6 +74,10 @@ export interface StandardTabsProps {
    * Whether to use select dropdown in mobile instead of tabs (default: true)
    */
   useMobileSelect?: boolean;
+  /**
+   * Si es true, usa StandardToggleGroup en vez de TabsTrigger para desktop
+   */
+  useToggleGroupTabs?: boolean;
 }
 
 const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
@@ -89,11 +94,12 @@ const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
       customTabClassName,
       centerTabs = true,
       useMobileSelect = true,
+      useToggleGroupTabs = false,
     },
     ref
   ) => {
     // Default tab trigger styling (same as TravelOptionsTabs)
-    const defaultTabClassName = ` ${centerTabs? "flex-1" : ""} 
+    const defaultTabClassName = ` ${centerTabs? "flex-1" : "flex-1 md:flex-none"} 
             justify-center border-b-2 bg-transparent
              data-[state=active]:border-primary 
              data-[state=active]:text-primary
@@ -149,34 +155,57 @@ const StandardTabs = React.forwardRef<HTMLDivElement, StandardTabsProps>(
             </div>
           )}
 
-          {/* Desktop Tabs List */}
-          <TabsList 
-            className={cn(
-              useMobileSelect ? "hidden md:flex" : "flex",
-              " w-full  mb-6 py-4 bg-transparent",
-              centerTabs ? "justify-center" : "justify-start",
-              tabsListClassName
-            )}
-          >
-            {items.map((item) => (
-              <TabsTrigger
-                key={item.value}
-                value={item.value}
-                disabled={item.disabled}
+          {/* Desktop Tabs List o ToggleGroup */}
+          <div className={cn(
+            useMobileSelect ? "hidden md:flex" : "flex",
+            "w-full bg-transparent",
+            centerTabs ? "justify-center" : "md:justify-start justify-center",
+            tabsListClassName
+          )}>
+            {useToggleGroupTabs ? (
+              <StandardToggleGroup
+                type="single"
+                enforceSingleSelection={true}
+                options={items.map(item => ({
+                  value: item.value,
+                  label: item.label,
+                  icon: item.icon,
+                  disabled: item.disabled,
+                }))}
+                value={activeTab}
+                onValueChange={val => typeof val === 'string' && onTabChange(val)}
+                containerClassName={cn("w-full flex mb-2", centerTabs ? "justify-center" : "justify-start")}
+              />
+            ) : (
+              <TabsList 
                 className={cn(
-                  finalTabClassName,
-                  tabTriggerClassName
+                  useMobileSelect ? "hidden md:flex" : "flex",
+                  " w-full  mb-6 py-4 bg-transparent",
+                  centerTabs ? "justify-center" : "md:justify-start justify-center",
+                  tabsListClassName
                 )}
               >
-                {item.icon && (
-                  <span className="mr-2 flex items-center">
-                    {item.icon}
-                  </span>
-                )}
-                {item.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+                {items.map((item) => (
+                  <TabsTrigger
+                    key={item.value}
+                    value={item.value}
+                    disabled={item.disabled}
+                    className={cn(
+                      finalTabClassName,
+                      tabTriggerClassName
+                    )}
+                  >
+                    {item.icon && (
+                      <span className="mr-2 flex items-center">
+                        {item.icon}
+                      </span>
+                    )}
+                    {item.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            )}
+          </div>
 
           {/* Tab Content */}
           <div className="relative w-full">

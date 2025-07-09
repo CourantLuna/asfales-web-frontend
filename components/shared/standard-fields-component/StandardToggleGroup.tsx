@@ -109,6 +109,12 @@ export interface StandardToggleGroupProps {
    * Maximum number of selections allowed
    */
   maxSelections?: number;
+
+  /**
+   * Si es true y type="single", siempre habrá una opción seleccionada (no se puede deseleccionar manualmente)
+   * Esto se conoce como "enforced selection" o "mandatory selection" en toggles/radios
+   */
+  enforceSingleSelection?: boolean;
 }
 
 const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroupProps>(
@@ -137,6 +143,7 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
       onOutputStringChange,
       onIndividualChipsChange,
       maxSelections,
+      enforceSingleSelection = false,
     },
     ref
   ) => {
@@ -217,6 +224,12 @@ const StandardToggleGroup = React.forwardRef<HTMLDivElement, StandardToggleGroup
         if (newValues.length > maxSelections) {
           return; // No permitir más selecciones
         }
+      }
+
+      // Enforced single selection: no permitir deseleccionar manualmente
+      if (type === "single" && enforceSingleSelection) {
+        // Si el usuario intenta deseleccionar (newValue es "" o undefined), ignorar
+        if (!newValue) return;
       }
 
       // Ensure the value type matches the selection type

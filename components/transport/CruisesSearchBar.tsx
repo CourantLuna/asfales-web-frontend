@@ -7,7 +7,12 @@ import { DurationSelector, type DurationRange } from '@/components/shared/standa
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Anchor } from 'lucide-react';
 
-interface CruisesSearchBarProps {}
+interface CruisesSearchBarProps {
+  /**
+   * Whether to show search button (default: true)
+   */
+  showSearchButton?: boolean;
+}
 
 const CRUISE_DATA_SOURCES: StandardSearchDataSource[] = [
   {
@@ -32,7 +37,7 @@ const CRUISE_DATA_SOURCES: StandardSearchDataSource[] = [
   },
 ];
 
-export default function CruisesSearchBar({}: CruisesSearchBarProps) {
+export default function CruisesSearchBar({ showSearchButton = true }: CruisesSearchBarProps) {
   const [destination, setDestination] = useState('');
   const [departureDate, setDepartureDate] = useState<{ from?: Date; to?: Date }>({});
   const [duration, setDuration] = useState<DurationRange>({ minNights: 3, maxNights: 9 });
@@ -77,20 +82,22 @@ export default function CruisesSearchBar({}: CruisesSearchBarProps) {
             placeholder="3 - 9 noches"
             value={duration}
             onChange={setDuration}
-            containerClassName="w-full lg:w-auto"
+            containerClassName="w-full lg:w-[280px]"
           />
         </div>
 
         {/* Search Button */}
-        <div className="flex justify-end">
-          <Button
-            onClick={handleSearch}
-            className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Buscar cruceros
-          </Button>
-        </div>
+        {showSearchButton && (
+          <div className="flex justify-end">
+            <Button
+              onClick={handleSearch}
+              className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Buscar cruceros
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

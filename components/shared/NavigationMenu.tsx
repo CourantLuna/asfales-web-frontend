@@ -23,6 +23,9 @@ import {
   Landmark,
   Footprints,
   Tent,
+  Route,
+  Tickets,
+  BedDouble,
 } from "lucide-react";
 
 import {
@@ -98,7 +101,7 @@ const navItems: {
   },
   {
     title: "Alojamientos",
-    icon: Hotel,
+    icon: BedDouble,
     content: (
   <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
     <li className="row-span-3">
@@ -145,60 +148,9 @@ const navItems: {
   </ul>
 ),
   },
-  {
-    title: "Itinerarios",
-    icon: CalendarCheck,
-    content: (
-  <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-    <li className="row-span-3">
-      <NavigationMenuLink asChild>
-        <a
-          className="group relative flex h-full w-full flex-col justify-end rounded-md bg-cover bg-center bg-no-repeat p-6 no-underline outline-none select-none focus:shadow-md overflow-hidden"
-          style={{
-            backgroundImage:
-              "url('https://blog.centraldereservas.com/wp-content/uploads/2017/06/post2.jpg')",
-          }}
-          href="#"
-        >
-          <span className="absolute inset-0 bg-white/80 z-0" />
-          <div className="relative z-10 mt-4 mb-2 text-lg font-bold text-foreground">
-            Organiza tu viaje perfecto
-          </div>
-          <p className="relative z-10 text-sm text-muted-foreground leading-tight">
-            Crea, guarda y comparte planes de viaje completos con transporte,
-            alojamiento y experiencias.
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-    <ListItem
-      href="/itinerarios/predisenados"
-      title="Viajes prediseñados y paquetes"
-      icon={Map}
-    >
-      Itinerarios listos para disfrutar.
-    </ListItem>
-    <ListItem
-      href="/itinerarios/personales"
-      title="Mis itinerarios"
-      icon={FilePlus}
-    >
-      Crea y gestiona los tuyos, personales o compartidos.
-    </ListItem>
-    <ListItem
-      href="/itinerarios/colaborativos"
-      title="Itinerarios colaborativos"
-      icon={Users}
-    >
-      Donde te dejas guiar por otros.
-    </ListItem>
-  </ul>
-),
-
-  },
-  {
+    {
     title: "Experiencias",
-    icon: MapPinned,
+    icon: Tickets,
     content: (
   <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
     {/* Banner superior como cabecera horizontal */}
@@ -273,6 +225,58 @@ const navItems: {
 ),
 
   },
+  {
+    title: "Itinerarios",
+    icon: Route,
+    content: (
+  <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+    <li className="row-span-3">
+      <NavigationMenuLink asChild>
+        <a
+          className="group relative flex h-full w-full flex-col justify-end rounded-md bg-cover bg-center bg-no-repeat p-6 no-underline outline-none select-none focus:shadow-md overflow-hidden"
+          style={{
+            backgroundImage:
+              "url('https://blog.centraldereservas.com/wp-content/uploads/2017/06/post2.jpg')",
+          }}
+          href="#"
+        >
+          <span className="absolute inset-0 bg-white/80 z-0" />
+          <div className="relative z-10 mt-4 mb-2 text-lg font-bold text-foreground">
+            Organiza tu viaje perfecto
+          </div>
+          <p className="relative z-10 text-sm text-muted-foreground leading-tight">
+            Crea, guarda y comparte planes de viaje completos con transporte,
+            alojamiento y experiencias.
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+    <ListItem
+      href="/itinerarios/predisenados"
+      title="Viajes prediseñados y paquetes"
+      icon={Map}
+    >
+      Itinerarios listos para disfrutar.
+    </ListItem>
+    <ListItem
+      href="/itinerarios/personales"
+      title="Mis itinerarios"
+      icon={FilePlus}
+    >
+      Crea y gestiona los tuyos, personales o compartidos.
+    </ListItem>
+    <ListItem
+      href="/itinerarios/colaborativos"
+      title="Itinerarios colaborativos"
+      icon={Users}
+    >
+      Donde te dejas guiar por otros.
+    </ListItem>
+  </ul>
+),
+
+  },
+
 ];
 
 export function NavigationMenuDemo() {

@@ -7,9 +7,11 @@ import { Building2, Hotel } from 'lucide-react';
 import LodgingSearchBar from './LodgingSearchBar';
 import BreadcrumbNav from '../shared/BreadcrumbNav';
 
-interface ILodgingHomeSearchBarProps {}
+interface ILodgingHomeSearchBarProps {
+  showSearchButtonLodging?: boolean
+}
 
-export default function LodgingHomeSearchBar() {
+export default function LodgingHomeSearchBar({ showSearchButtonLodging = true }: ILodgingHomeSearchBarProps) {
   const pathname = usePathname();
   const [selectedLodgingType, setSelectedLodgingType] = useState<string>("hotels-and-resorts");
 
@@ -36,7 +38,7 @@ export default function LodgingHomeSearchBar() {
   }, [pathname]);
 
   return (
-           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="w-full max-w-7xl mx-auto">
 
     <div className="w-full space-y-6">
       {/* Toggle Group para seleccionar tipo de alojamiento */}
@@ -65,7 +67,7 @@ export default function LodgingHomeSearchBar() {
       />
 
       {/* Search Bar con el tipo seleccionado */}
-      <LodgingSearchBar lodgingType={selectedLodgingType} />
+      <LodgingSearchBar lodgingType={selectedLodgingType} showSearchButton={showSearchButtonLodging} />
         <div className="w-full py-2">
           <BreadcrumbNav />
         </div>

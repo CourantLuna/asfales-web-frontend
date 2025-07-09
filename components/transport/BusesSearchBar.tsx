@@ -8,7 +8,12 @@ import { PassengerSelector, type PassengerGroup } from '@/components/shared/stan
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Bus } from 'lucide-react';
 
-interface BusesSearchBarProps {}
+interface BusesSearchBarProps {
+  /**
+   * Whether to show search button (default: true)
+   */
+  showSearchButton?: boolean;
+}
 
 const BUS_DATA_SOURCES: StandardSearchDataSource[] = [
   {
@@ -33,7 +38,7 @@ const BUS_DATA_SOURCES: StandardSearchDataSource[] = [
   },
 ];
 
-export default function BusesSearchBar({}: BusesSearchBarProps) {
+export default function BusesSearchBar({ showSearchButton = true }: BusesSearchBarProps) {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [dates, setDates] = useState<{ from?: Date; to?: Date }>({});
@@ -102,15 +107,17 @@ export default function BusesSearchBar({}: BusesSearchBarProps) {
         </div>
 
         {/* Search Button */}
-        <div className="flex justify-end">
-          <Button
-            onClick={handleSearch}
-            className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Buscar autobuses
-          </Button>
-        </div>
+        {showSearchButton && (
+          <div className="flex justify-end">
+            <Button
+              onClick={handleSearch}
+              className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Buscar autobuses
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

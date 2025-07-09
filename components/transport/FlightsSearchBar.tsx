@@ -11,6 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Plus, Search, Plane, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+interface FlightsSearchBarProps {
+  /**
+   * Whether to show search buttons (default: true)
+   */
+  showSearchButton?: boolean;
+}
+
 interface FlightData {
   id: string;
   origin: string;
@@ -48,7 +55,7 @@ const CABIN_CLASS_OPTIONS: StandardSelectOption[] = [
   { value: 'first', label: 'Primera Clase' },
 ];
 
-export default function FlightsSearchBar() {
+export default function FlightsSearchBar({ showSearchButton = true }: FlightsSearchBarProps) {
   const [activeTab, setActiveTab] = useState('roundtrip');
   const [cabinClass, setCabinClass] = useState('economy');
   const [passengers, setPassengers] = useState<PassengerGroup>({
@@ -180,15 +187,17 @@ export default function FlightsSearchBar() {
         />
       </div>
 
-      <div className="flex justify-end">
-        <Button
-          onClick={handleSearch}
-          className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-        >
-          <Search className="w-4 h-4 mr-2" />
-                    Buscar
-        </Button>
-      </div>
+      {showSearchButton && (
+        <div className="flex justify-end">
+          <Button
+            onClick={handleSearch}
+            className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            Buscar
+          </Button>
+        </div>
+      )}
     </div>
   );
 
@@ -245,15 +254,17 @@ export default function FlightsSearchBar() {
         />
       </div>
 
-      <div className="flex justify-end">
-        <Button
-          onClick={handleSearch}
-          className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-        >
-          <Search className="w-4 h-4 mr-2" />
-          Buscar
-        </Button>
-      </div>
+      {showSearchButton && (
+        <div className="flex justify-end">
+          <Button
+            onClick={handleSearch}
+            className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            Buscar
+          </Button>
+        </div>
+      )}
     </div>
   );
 
@@ -343,13 +354,15 @@ export default function FlightsSearchBar() {
           Añadir otro vuelo
         </Button>
 
-         <Button
-          onClick={handleSearch}
-          className="bg-primary hover:bg-primary text-white px-8 py-3 h-12 w-full md:w-[280px] rounded-lg font-medium"
-        >
-          <Search className="w-4 h-4 mr-2" />
-          Search
-        </Button>
+        {showSearchButton && (
+          <Button
+            onClick={handleSearch}
+            className="bg-primary hover:bg-primary text-white px-8 py-3 h-12 w-full md:w-[280px] rounded-lg font-medium"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            Search
+          </Button>
+        )}
       </div>
 
       {/* Search Button */}
@@ -378,7 +391,7 @@ export default function FlightsSearchBar() {
   ];
 
   return (
-    <div className=" p-4 lg:p-0">
+    <div className=" py-4 lg:p-0">
         <StandardTabs
           items={tabItems}
           activeTab={activeTab}
