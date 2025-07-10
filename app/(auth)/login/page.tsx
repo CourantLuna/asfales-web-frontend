@@ -182,7 +182,7 @@ export default function LoginPage() {
                   <Button
                     type="submit"
                     disabled={!isValid}
-                    className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full disabled:opacity-50 disabled:cursor-not-allowed h-[48px]"
                   >
                     Iniciar sesión
                   </Button>
