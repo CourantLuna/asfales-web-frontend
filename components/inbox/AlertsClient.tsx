@@ -18,7 +18,7 @@ const mockAlerts = [
 
 export default function AlertsClient() {
   return (
-    <div className="w-full flex-1 flex flex-col h-full">
+    <div>
       <ShowIfAuth>
         <div className="max-w-7xl mx-auto px-4 space-y-6">
           {mockAlerts.length === 0 ? (
