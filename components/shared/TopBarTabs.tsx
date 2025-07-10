@@ -28,14 +28,14 @@ export function TopBarTabs() {
     {
       label: "Buscar",
       icon: Search,
-      href: "/Search",
-      match: ["/explorar", "/buscar"],
+      href: "/search",
+      match: ["/search"],
     },
     {
       label: "Itinerarios",
       icon: CalendarCheck,
-      href: "/itinerarios",
-      match: ["/itinerarios", "/itinerario", "/grupos"],
+      href: "/itineraries",
+      match: ["/itineraries", "/itineraries/[id]", "/itineraries/[id]/edit"],
     },
     {
       label: "Notificaciones",

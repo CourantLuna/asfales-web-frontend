@@ -41,7 +41,7 @@ export default function Profile() {
  <div className="items-center justify-center flex-1 flex flex-col space-y-4 text-center">
           <div className="flex flex-col items-center space-y-4">
             <Image
-            src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/ChatsNoAuthIcon-MOcuXqMiznUOYyhUhXIzNq2JDIvhg9.svg"
+            src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/profile-unauth-FErUU7QQAv7opa1vJJdUuoLaNuqfP3.png"
             alt="Lock Icon"
             width={150}
             height={150}

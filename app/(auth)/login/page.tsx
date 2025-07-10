@@ -10,6 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 
 import Link from "next/link";
@@ -97,6 +107,7 @@ export default function LoginPage() {
       <div className="hidden lg:flex w-1/2 p-2">
         <SlidesShow slides={slides} aspectRatio="filled" />
       </div>
+
 
       {/* Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8">

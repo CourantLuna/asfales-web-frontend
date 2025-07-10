@@ -42,6 +42,9 @@ export const ROUTE_CONFIG = {
   '/experiences/search': 'Buscar Experiencias',
   '/experiences/categories': 'Categorías',
   '/experiences/details': 'Detalles de Experiencia',
+
+  // Itineraries routes
+  '/itineraries': 'Itinerarios',
   
   // Booking routes
   '/booking': 'Reserva',

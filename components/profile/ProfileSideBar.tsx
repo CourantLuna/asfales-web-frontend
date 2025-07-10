@@ -57,7 +57,7 @@ const handleLogout = () => {
     const isLargeScreen = window.innerWidth >= 1024; // lg breakpoint
     
     if (pathname === '/profile') {
-      if (isLargeScreen) {
+      if (isLargeScreen && user) {
         // En pantallas grandes, activar profile-info por defecto
         setActiveSection('profile-info');
         handleSectionChange('profile-info');
