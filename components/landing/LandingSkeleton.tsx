@@ -1,11 +1,12 @@
 "use client";
 
 import { useAuth } from "@/lib/hooks/useAuth";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Hero from "@/components/landing/sections/Hero";
 import TravelOptionsSection from "@/components/landing/sections/TravelOptionsSection";
 import SearchBoxOverlay from "@/components/landing/sections/SearchBoxOverlay";
 import { searchDataSources } from '@/lib/data/mock-datavf';
+import { is } from "date-fns/locale";
 
 
 interface LandingPageProps {
@@ -33,8 +34,29 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
     setGoingTo(value);
   };
 
+     // Detectar si es LG hacia abajo
+    const [isLgDown, setIsLgDown] = useState(false);
+    useEffect(() => {
+      const handleResize = () => {
+        setIsLgDown(window.innerWidth <= 1024);
+      };
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
+    }, []);
+
   function scrollToResults() {
+    if(isLgDown) 
+      {
+    smoothScrollTo(900, 1000);
+      }
+    
+    else {
     smoothScrollTo(resultsRef.current?.offsetTop ?? 0, 1000);
+
+    }
   }
 
   function smoothScrollTo(targetY: number, duration = 800) {

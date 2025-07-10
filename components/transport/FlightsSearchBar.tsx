@@ -17,11 +17,6 @@ interface FlightsSearchBarProps {
    * Whether to show search buttons (default: true)
    */
   showSearchButton?: boolean;
-
-  //sincronizacion de pasajeros
-  onPassengersGlobalChange?: (passengers: PassengerGroup) => void;
-  initialGlobalPassengers?: PassengerGroup;
-
   // Props para sincronización de campos de origen/destino
   travelingFrom?: string;
   setTravelingFrom?: (value: string) => void;
@@ -38,17 +33,6 @@ interface FlightData {
   date?: Date;
 }
 
-export interface FlightsData {
-  activeTab: string;
-  cabinClass: string;
-  passengers: PassengerGroup;
-  travelingFrom: string;
-  goingTo: string;
-  roundtripDates: { from?: Date; to?: Date };
-  onewayDate: { from?: Date; to?: Date };
-  flights: FlightData[];
-}
-
 const CABIN_CLASS_OPTIONS: StandardSelectOption[] = [
   { value: 'economy', label: 'Económica' },
   { value: 'premium-economy', label: 'Premium Economy' },
@@ -58,8 +42,6 @@ const CABIN_CLASS_OPTIONS: StandardSelectOption[] = [
 
 export default function FlightsSearchBar({ 
   showSearchButton = true,
-  onPassengersGlobalChange,
-  initialGlobalPassengers,
   travelingFrom,
   setTravelingFrom,
   goingTo,
@@ -69,32 +51,53 @@ export default function FlightsSearchBar({
 }: FlightsSearchBarProps) {
 
 
-  const [flightsData, setFlightsData] = useState<FlightsData>({
-    activeTab: 'roundtrip',
-    cabinClass: 'economy',
-    passengers: defaultPassengers,
-    travelingFrom: '',
-    goingTo: '',
-    roundtripDates: {},
-    onewayDate: {},
-    flights: [
-      { id: '1', origin: '', destination: '', date: undefined },
-      { id: '2', origin: '', destination: '', date: undefined },
-    ],
+  const [activeTab, setActiveTab] = useState('roundtrip');
+  const [cabinClass, setCabinClass] = useState('economy');
+  const [passengers, setPassengers] = useState<PassengerGroup>(defaultPassengers);
+
+  // Obtener fuentes de datos para vuelos
+  const TRANSPORT_DATA_SOURCES = searchDataSources || getTransportDataSources('air');
+
+  // Estados locales para origin/destination (fallback si no se pasan como props)
+  const [localTravelingFrom, setLocalTravelingFrom] = useState('');
+  const [localGoingTo, setLocalGoingTo] = useState('');
+
+  // Usar props sincronizados o estado local
+  const currentTravelingFrom = travelingFrom !== undefined ? travelingFrom : localTravelingFrom;
+  const currentGoingTo = goingTo !== undefined ? goingTo : localGoingTo;
+  const handleTravelingFromChange = setTravelingFrom || setLocalTravelingFrom;
+  const handleGoingToChange = setGoingTo || setLocalGoingTo;
+  
+  const handleSwapLocations = onSwapLocations || (() => {
+    const temp = currentTravelingFrom;
+    handleTravelingFromChange(currentGoingTo);
+    handleGoingToChange(temp);
   });
 
-  // Helper functions para actualizar partes específicas del estado
-  const updateFlightsData = (updates: Partial<FlightsData>) => {
-    setFlightsData(prev => ({ ...prev, ...updates }));
+  // Estados para fechas específicos de cada tab
+  const [roundtripDates, setRoundtripDates] = useState<{ from?: Date; to?: Date }>({});
+  const [onewayDate, setOnewayDate] = useState<{ from?: Date; to?: Date }>({});
+
+  // Multi-city states
+  const [flights, setFlights] = useState<FlightData[]>(
+    [
+      { id: '1', origin: '', destination: '', date: undefined },
+      { id: '2', origin: '', destination: '', date: undefined },
+    ]
+  );
+
+  const handleFlightSwap = (flightId: string) => {
+    setFlights(prev => prev.map(flight => 
+      flight.id === flightId 
+        ? { ...flight, origin: flight.destination, destination: flight.origin }
+        : flight
+    ));
   };
 
   const updateFlight = (flightId: string, updates: Partial<FlightData>) => {
-    setFlightsData(prev => ({
-      ...prev,
-      flights: prev.flights.map(flight => 
-        flight.id === flightId ? { ...flight, ...updates } : flight
-      )
-    }));
+    setFlights(prev => prev.map(flight => 
+      flight.id === flightId ? { ...flight, ...updates } : flight
+    ));
   };
 
   const addFlight = () => {
@@ -104,61 +107,23 @@ export default function FlightsSearchBar({
       destination: '',
       date: undefined,
     };
-    setFlightsData(prev => ({
-      ...prev,
-      flights: [...prev.flights, newFlight]
-    }));
+    setFlights(prev => [...prev, newFlight]);
   };
 
   const removeFlight = (flightId: string) => {
-    if (flightsData.flights.length > 2) {
-      setFlightsData(prev => ({
-        ...prev,
-        flights: prev.flights.filter(flight => flight.id !== flightId)
-      }));
+    if (flights.length > 2) {
+      setFlights(prev => prev.filter(flight => flight.id !== flightId));
     }
   };
 
-  const handleFlightSwap = (flightId: string) => {
-    setFlightsData(prev => ({
-      ...prev,
-      flights: prev.flights.map(flight => 
-        flight.id === flightId 
-          ? { ...flight, origin: flight.destination, destination: flight.origin }
-          : flight
-      )
-    }));
-  };
-
-  // Obtener fuentes de datos para vuelos
-  const TRANSPORT_DATA_SOURCES = searchDataSources || getTransportDataSources('air');
-
-  // Usar props sincronizados o estado local
-  const currentTravelingFrom = travelingFrom !== undefined ? travelingFrom : flightsData.travelingFrom;
-  const currentGoingTo = goingTo !== undefined ? goingTo : flightsData.goingTo;
-  
-  const handleTravelingFromChange = setTravelingFrom || ((value: string) => {
-    updateFlightsData({ travelingFrom: value });
-  });
-  
-  const handleGoingToChange = setGoingTo || ((value: string) => {
-    updateFlightsData({ goingTo: value });
-  });
-  
-  const handleSwapLocations = onSwapLocations || (() => {
-    const temp = currentTravelingFrom;
-    handleTravelingFromChange(currentGoingTo);
-    handleGoingToChange(temp);
-  });
-
   const handleSearch = () => {
     console.log('Searching transport with:', {
-      activeTab: flightsData.activeTab,
-      cabinClass: flightsData.cabinClass,
-      passengers: flightsData.passengers,
-      roundtrip: { origin: currentTravelingFrom, destination: currentGoingTo, dates: flightsData.roundtripDates },
-      oneway: { origin: currentTravelingFrom, destination: currentGoingTo, date: flightsData.onewayDate },
-      multicity: flightsData.flights,
+      activeTab,
+      cabinClass,
+      passengers,
+      roundtrip: { origin: currentTravelingFrom, destination: currentGoingTo, dates: roundtripDates },
+      oneway: { origin: currentTravelingFrom, destination: currentGoingTo, date: onewayDate },
+      multicity: flights,
     });
   };
 
@@ -188,8 +153,8 @@ export default function FlightsSearchBar({
           <DateRangePickerCustom
             label="Fechas de viaje"
             placeholder="Jul 11"
-            value={flightsData.roundtripDates}
-            onChange={(dates) => updateFlightsData({ roundtripDates: dates })}
+            value={roundtripDates}
+            onChange={setRoundtripDates}
             hasReturnDate={true}
             dualTrigger={false}
             className="w-full md:w-[280px]"
@@ -197,8 +162,8 @@ export default function FlightsSearchBar({
           
           <PassengerSelector
             label="Viajeros"
-            initialPassengers={initialGlobalPassengers || flightsData.passengers}
-            onPassengersChange={onPassengersGlobalChange || ((passengers) => updateFlightsData({ passengers }))}
+            initialPassengers={ passengers }
+            onPassengersChange={ setPassengers }
             containerClassName="w-full md:w-[280px]"
           />
 
@@ -207,8 +172,8 @@ export default function FlightsSearchBar({
           label="Clase de cabina"
           placeholder="Seleccionar clase"
           options={CABIN_CLASS_OPTIONS}
-          value={flightsData.cabinClass}
-          onValueChange={(cabinClass) => updateFlightsData({ cabinClass })}
+          value={cabinClass}
+          onValueChange={setCabinClass}
           containerClassName="w-full md:w-[280px]"
         />
       </div>
@@ -257,16 +222,16 @@ export default function FlightsSearchBar({
           <DateRangePickerCustom
             placeholder="Jul 11"
             showFlexibleDates={false}
-            value={flightsData.onewayDate}
-            onChange={(onewayDate) => updateFlightsData({ onewayDate })}
+            value={onewayDate}
+            onChange={setOnewayDate}
             hasReturnDate={false}
             dualTrigger={true}
           />
           
           <PassengerSelector
             label="Viajeros"
-            initialPassengers={initialGlobalPassengers || flightsData.passengers}
-            onPassengersChange={onPassengersGlobalChange || ((passengers) => updateFlightsData({ passengers }))}
+            initialPassengers={ passengers}
+            onPassengersChange={ setPassengers}
           />
 
           {/* Clase de cabina */}
@@ -274,8 +239,8 @@ export default function FlightsSearchBar({
           label="Clase de cabina"
           placeholder="Seleccionar clase"
           options={CABIN_CLASS_OPTIONS}
-          value={flightsData.cabinClass}
-          onValueChange={(cabinClass) => updateFlightsData({ cabinClass })}
+          value={cabinClass}
+          onValueChange={setCabinClass}
           containerClassName="w-full md:w-[280px]"
         />
       </div>
@@ -303,28 +268,28 @@ export default function FlightsSearchBar({
           label="Clase de cabina"
           placeholder="Seleccionar clase"
           options={CABIN_CLASS_OPTIONS}
-          value={flightsData.cabinClass}
-          onValueChange={(cabinClass) => updateFlightsData({ cabinClass })}
+          value={cabinClass}
+          onValueChange={setCabinClass}
           containerClassName="w-full md:w-[280px]"
         />
         
         <PassengerSelector
           label="Viajeros"
-          initialPassengers={initialGlobalPassengers || flightsData.passengers}
-          onPassengersChange={onPassengersGlobalChange || ((passengers) => updateFlightsData({ passengers }))}
+          initialPassengers={  passengers}
+          onPassengersChange={ setPassengers}
           containerClassName="w-full lg:w-auto"
         />
       </div>
 
       {/* Flights */}
       <div className="space-y-4">
-        {flightsData.flights.map((flight, index) => (
+        {flights.map((flight, index) => (
           <div key={flight.id} className="space-y-2">
             <div className="flex items-center justify-start gap-4">
               <h3 className="text-sm font-medium text-gray-700">
                 Vuelo {index + 1}
               </h3>
-              {flightsData.flights.length > 2 && (
+              {flights.length > 2 && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -373,7 +338,7 @@ export default function FlightsSearchBar({
         <Button
           variant="outline"
           onClick={addFlight}
-          disabled={flightsData.flights.length >= 5} // Limit to 5 flights
+          disabled={flights.length >= 5} // Limit to 5 flights
           className="text-primary border-primary hover:bg-blue-50 h-12 w-full md:w-[280px] rounded-lg font-medium"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -420,8 +385,8 @@ export default function FlightsSearchBar({
     <div className=" py-4 lg:p-0">
         <StandardTabs
           items={tabItems}
-          activeTab={flightsData.activeTab}
-          onTabChange={(activeTab) => updateFlightsData({ activeTab })}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
           containerClassName="w-auto"
           centerTabs={false}
           useMobileSelect={false} // Tabs normales siempre

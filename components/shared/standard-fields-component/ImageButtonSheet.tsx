@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { ChevronLeft } from "lucide-react";
 
 export interface ImageButtonSheetItem {
   /**
@@ -96,6 +97,11 @@ export interface ImageButtonSheetProps {
    */
   showRequiredAsterisk?: boolean;
   /**
+   * Grid columns layout class name (using tailwind grid-cols classes)
+   * Example: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+   */
+  gridColsClassName?: string;
+  /**
    * ID for the component
    */
   id?: string;
@@ -116,6 +122,7 @@ const ImageButtonSheet = React.forwardRef<HTMLDivElement, ImageButtonSheetProps>
       helperText,
       required = false,
       showRequiredAsterisk = true,
+      gridColsClassName,
       id,
     },
     ref
@@ -157,10 +164,11 @@ const ImageButtonSheet = React.forwardRef<HTMLDivElement, ImageButtonSheetProps>
           </Label>
         )}
 
-        {/* Buttons Container */}
+        {/* Buttons Container - Using Grid Layout */}
         <div
           className={cn(
-            "w-full flex flex-wrap gap-4",
+            "w-full grid gap-4",
+            gridColsClassName || "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6",
             buttonsContainerClassName
           )}
         >
@@ -172,10 +180,11 @@ const ImageButtonSheet = React.forwardRef<HTMLDivElement, ImageButtonSheetProps>
             return (
               <Sheet
                 key={itemKey}
+                
                 open={isOpen}
                 onOpenChange={(open) => handleSheetOpen(itemKey, open)}
               >
-                <SheetTrigger asChild>
+                <SheetTrigger  asChild>
                   <div
                     className={cn(
                       "flex flex-col items-center gap-2 cursor-pointer",
@@ -221,15 +230,23 @@ const ImageButtonSheet = React.forwardRef<HTMLDivElement, ImageButtonSheetProps>
 
                 {/* Sheet Content */}
                 <SheetContent
-                  side="bottom"
-                  className="h-full w-full max-w-none m-0 p-0 rounded-none flex flex-col"
+                  side="right"
+                  className="h-full w-full max-w-none m-0 p-0 rounded-t-xl flex flex-col [&>button]:hidden" // Ocultar el botón de cierre con CSS y hacer que aparezca desde abajo
                 >
-                  {/* Header */}
-                  <SheetHeader className="flex-shrink-0 p-4 border-b bg-background">
-                    <SheetTitle className="text-lg font-semibold text-left">
-                      {item.sheetTitle}
-                    </SheetTitle>
-                  </SheetHeader>
+                  {/* Header con botón personalizado */}
+                  <div className="flex-shrink-0 px-4 py-3 border-b bg-background flex items-center relative">
+                    <SheetClose asChild>
+                      <Button variant="ghost" size="icon" className="absolute left-2 h-8 w-8 p-0">
+                        <ChevronLeft className="h-5 w-5" />
+                        <span className="sr-only">Cerrar</span>
+                      </Button>
+                    </SheetClose>
+                    <div className="w-full">
+                      <SheetTitle className="text-lg font-semibold text-center">
+                        {item.sheetTitle}
+                      </SheetTitle>
+                    </div>
+                  </div>
 
                   {/* Content */}
                   <div className="flex-1 overflow-y-auto p-4">

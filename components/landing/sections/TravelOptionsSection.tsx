@@ -25,6 +25,7 @@ export default function TravelOptionsSection({
   goingTo: string;
   setGoingTo: (value: string) => void;
 }) {
+  
   return (
     <section className="relative w-full flex justify-center py-4">
       {/* Fondo SVG decorativo */}
@@ -46,7 +47,7 @@ export default function TravelOptionsSection({
       </div>
 
       {/* Tabs interactivos */}
-      <div className="w-full px-4 mt-[110px] lg:mt-[120px] md:px-8 flex flex-col items-center text-center">
+      <div className="w-full px-4 mt-[40px] lg:mt-[120px] md:px-8 flex flex-col items-center text-center">
         <TravelOptionsTabs 
           activeTab={activeTab} 
           setActiveTab={setActiveTab}
@@ -57,6 +58,7 @@ export default function TravelOptionsSection({
           setGoingTo={setGoingTo}
           searchDataSourcesTravelOptions={searchDataSrc}
         />
+        
       </div>
     </section>
   );

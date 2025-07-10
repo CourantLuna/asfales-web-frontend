@@ -38,7 +38,7 @@ import {
   defaultDateRange,
   defaultPassengers,
 } from "@/lib/data/mock-datavf";
-import { FlightsData } from "../transport/FlightsSearchBar";
+import TravelSearchBarMobile from "../shared/TravelSearchBarMobile";
 
 
 
@@ -92,75 +92,6 @@ export default function TravelOptionsTabs({
     }
   }, [pathname]);
 
-    const [flightsData, setFlightsData] = useState<FlightsData>({
-      activeTab: 'roundtrip',
-      cabinClass: 'economy',
-      passengers: defaultPassengers,
-      travelingFrom: '',
-      goingTo: '',
-      roundtripDates: {},
-      onewayDate: {},
-      flights: [
-        { id: '1', origin: '', destination: '', date: undefined },
-        { id: '2', origin: '', destination: '', date: undefined },
-      ],
-    });
-
-  const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
-  
- 
-
- 
-
-
-  // Estado para pasajeros de transporte
-  const [passengers, setPassengers] = useState<PassengerGroup>({
-    adults: 1,
-    children: [],
-    infantsOnLap: [],
-    infantsInSeat: [],
-  })
-
-  // No necesitamos estado local, usamos directamente los valores del padre
-  // Esto elimina la necesidad de sincronización y previene bucles infinitos
-  const travelingFrom = externalTravelingFrom || "";
-  const goingTo = externalGoingTo || "";
-
-
-
-  // Funciones wrapper que notifican al padre cuando el usuario cambia algo
-  const handleTravelingFromChange = (value: string) => {
-    if (externalSetTravelingFrom) {
-      externalSetTravelingFrom(value);
-    }
-  };
-
-  const handleGoingToChange = (value: string) => {
-    if (externalSetGoingTo) {
-      externalSetGoingTo(value);
-    }
-  };
-
-  // Función para intercambiar origen y destino
-  const handleSwapLocations = () => {
-    const temp = travelingFrom;
-    handleTravelingFromChange(goingTo);
-    handleGoingToChange(temp);
-  };
-  
-
-  // Handler para convertir tipos de fecha
-  const handleRangeChange = (newRange: { from?: Date; to?: Date }) => {
-    if (newRange.from && newRange.to) {
-      setRange({ from: newRange.from, to: newRange.to });
-    } else if (newRange.from) {
-      setRange({ from: newRange.from, to: undefined });
-    } else {
-      setRange(undefined);
-    }
-  }
-
-  
 
   // Contenido de cada tab
   const getTransportContent = () => (
@@ -220,26 +151,30 @@ export default function TravelOptionsTabs({
         activeTab={activeTab}
         onTabChange={handleTabChange}
         mobilePlaceholder="Selecciona una categoría"
+        containerClassName="hidden lg:flex"
       />
 
-    <div className="flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
-                    <Button
-                      className={
-                        "bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"}
-                      variant="default"
-                      onClick={handleBuscar}
-                      // disabled={!goingTo || !travelingFrom}
-                    >
-                      {searchButtonLabel === "Buscar Opciones de Viaje" ? (
-                        <Search className="mr-2 h-4 w-4" />
-                      ) : (
-                        <Filter className="mr-2 h-4 w-4" />
-                      )}
-                      {searchButtonLabel}
-                    </Button>
-                  </div>
-    
-  
+      <div className="hidden lg:flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
+        <Button
+          className={
+            "bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"
+          }
+          variant="default"
+          onClick={handleBuscar}
+          // disabled={!goingTo || !travelingFrom}
+        >
+          {searchButtonLabel === "Buscar Opciones de Viaje" ? (
+            <Search className="mr-2 h-4 w-4" />
+          ) : (
+            <Filter className="mr-2 h-4 w-4" />
+          )}
+          {searchButtonLabel}
+        </Button>
+      </div>
+
+      <div className="w-full lg:hidden">
+      <TravelSearchBarMobile/>
+      </div>
     </div>
   );
 }

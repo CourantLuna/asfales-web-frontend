@@ -38,6 +38,19 @@ export default function SearchBoxOverlay({
     debug: process.env.NODE_ENV === 'development' // Solo debug en desarrollo
   });
 
+   // Detectar si es LG hacia abajo
+  const [isLgDown, setIsLgDown] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLgDown(window.innerWidth <= 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const [swapAnimating, setSwapAnimating] = useState(false);
 
   function handleSwap() {
@@ -57,16 +70,23 @@ export default function SearchBoxOverlay({
     setTimeout(() => setSwapAnimating(false), 200);
   }
 
-  function handleBuscar() {
-    // Primero ejecutar la función de búsqueda personalizada si existe
+function handleBuscar() {
+    // Acción para LG hacia abajo
+    if (isLgDown) {
+      if (onScrollToResults) {
+      onScrollToResults();
+    }
+      // Aquí tu acción especial para mobile/tablet
+      // alert("Acción especial para LG hacia abajo");
+      return;
+    }
+    // Acción normal para LG hacia arriba
     if (onSearch) {
       onSearch(origin, destination);
     }
-    // Luego hacer scroll a resultados si está disponible
     if (onScrollToResults) {
       onScrollToResults();
     }
-    // Finalmente navegar a la página de búsqueda según el tab activo
     router.push(`/global-${activeTab}-search`);
   }
 
@@ -109,8 +129,8 @@ useEffect(() => {
     <div
       ref={containerRef}
       className="relative
-    min-h-[calc(100vh+150px)] 
-    md:min-h-[calc(100vh+250px)] 
+    min-h-[calc(100vh+90px)] 
+    md:min-h-[calc(100vh+120px)] 
     2xl:min-h-[calc(100vh+190px)] w-full z-20 pointer-events-none "
     >
       {/* BLOQUE STICKY: solo los campos */}

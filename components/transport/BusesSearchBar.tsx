@@ -15,10 +15,6 @@ interface BusesSearchBarProps {
    */
   showSearchButton?: boolean;
 
-  //sincronización de pasajeros
-  onPassengersGlobalChange?: (passengers: PassengerGroup) => void;
-  initialGlobalPassengers?: PassengerGroup;
-
   // Props para sincronización de campos de origen/destino
   travelingFrom?: string;
   setTravelingFrom?: (value: string) => void;
@@ -31,8 +27,6 @@ interface BusesSearchBarProps {
 export default function BusesSearchBar(
   { 
     showSearchButton = true,
-    onPassengersGlobalChange,
-    initialGlobalPassengers,
     travelingFrom,
     setTravelingFrom,
     goingTo,
@@ -107,8 +101,8 @@ export default function BusesSearchBar(
           {/* Passenger Selector */}
           <PassengerSelector
             label="Pasajeros"
-            initialPassengers={initialGlobalPassengers || passengers}
-            onPassengersChange={onPassengersGlobalChange || setPassengers}
+            initialPassengers={ passengers}
+            onPassengersChange={setPassengers}
             containerClassName="w-full lg:w-auto"
           />
         </div>

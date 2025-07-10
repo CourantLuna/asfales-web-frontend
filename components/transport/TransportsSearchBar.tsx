@@ -56,7 +56,7 @@ export default function TransportsSearchBar({
       icon: <Plane className="w-4 h-4" />,
       content: <FlightsSearchBar 
                 showSearchButton={showSearchButton} 
-                onPassengersGlobalChange={setPassengers} initialGlobalPassengers={passengers}/>,
+               />,
     },
     {
       value: 'cruises',
@@ -69,7 +69,7 @@ export default function TransportsSearchBar({
       label: 'Buses',
       icon: <Bus className="w-4 h-4" />,
       content: <BusesSearchBar showSearchButton={showSearchButton}
-               onPassengersGlobalChange={setPassengers} initialGlobalPassengers={passengers} />,
+                />,
     },
   ];
 

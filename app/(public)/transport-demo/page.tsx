@@ -6,6 +6,7 @@ import { GuestSelector, type Room } from '@/components/shared/standard-fields-co
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { StandardSearchField } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { Plane, MapPin } from 'lucide-react';
+import TravelSearchBarMobile from '@/components/shared/TravelSearchBarMobile';
 
 export default function TransportExamplePage() {
   const [passengers, setPassengers] = useState<PassengerGroup>({
@@ -226,6 +227,7 @@ export default function TransportExamplePage() {
           </div>
         </div>
       </div>
+      <TravelSearchBarMobile/>
     </div>
   );
 }
