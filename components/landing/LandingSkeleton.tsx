@@ -34,23 +34,12 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
     setGoingTo(value);
   };
 
-     // Detectar si es LG hacia abajo
-    const [isLgDown, setIsLgDown] = useState(false);
-    useEffect(() => {
-      const handleResize = () => {
-        setIsLgDown(window.innerWidth <= 1024);
-      };
-      handleResize();
-      window.addEventListener("resize", handleResize);
-      return () => {
-        window.removeEventListener("resize", handleResize);
-      };
-    }, []);
+
 
   function scrollToResults() {
-    if(isLgDown) 
+    if(window.innerWidth < 768) 
       {
-    smoothScrollTo(900, 1000);
+    smoothScrollTo(window.innerHeight-40, 1000);
       }
     
     else {
