@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ImageButtonSheet, ImageButtonSheetItem } from '@/components/shared/standard-fields-component/ImageButtonSheet';
 import FlightsSearchBar from '@/components/transport/FlightsSearchBar';
 import LodgingHomeSearchBar from '@/components/lodging-search/LodgingHomeSearchBar';
@@ -8,6 +8,7 @@ import BusesSearchBar from '@/components/transport/BusesSearchBar';
 import ItinerariesSearchBar from '@/components/itineraries/ItinerariesSearchBar';
 import ExperiencesSearchBar from '@/components/experiences/ExperiencesSearchBar';
 import CruisesSearchBar from '@/components/transport/CruisesSearchBar';
+import { MobileLodgingResultsTemplate } from '@/components/lodging-search/MobileLodgingResultsTemplate';
 import { defaultPassengers } from '@/lib/data/mock-datavf';
 
 interface TravelSearchBarMobileProps {
@@ -56,7 +57,8 @@ export default function TravelSearchBarMobile({
   onCruisesSearch = () => console.log('Búsqueda de cruceros ejecutada'),
   className,
 }: TravelSearchBarMobileProps) {
-  
+  const [showLodgingResults, setShowLodgingResults] = useState(false);
+
   // Configuración de los items para ImageButtonSheet
   const sheetItems: ImageButtonSheetItem[] = [
     // 1. Vuelos
@@ -71,7 +73,7 @@ export default function TravelSearchBarMobile({
       key: "flights"
     },
     
-    // 2. Alojamiento
+    // 2. Alojamiento - Actualizado
     {
       label: "Alojamiento",
       src: '/menu-icons/lodging-icon.svg',
@@ -79,7 +81,10 @@ export default function TravelSearchBarMobile({
       sheetContent: <LodgingHomeSearchBar showSearchButtonLodging={false} />,
       sheetTitle: "Búsqueda de Alojamiento",
       btnLabel: "Buscar Alojamiento",
-      btnAction: onLodgingSearch,
+      btnAction: () => {
+        onLodgingSearch();
+        setShowLodgingResults(true);
+      },
       key: "lodging"
     },
     
@@ -133,18 +138,24 @@ export default function TravelSearchBarMobile({
   ];
 
   return (
-    <div className={className}>
-      <ImageButtonSheet
-        items={sheetItems}
-        labelClassName="text-lg mx-auto mb-4"
-        
-        label="¿Qué deseas buscar?"
-        containerClassName="w-full"
-        gridColsClassName="grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-6"
-        buttonsContainerClassName="w-full justify-center gap-6" 
-        buttonClassName="w-full flex items-center justify-center"
-        buttonLabelClassName="text-xs font-medium mt-1"
+    <>
+      <div className={className}>
+        <ImageButtonSheet
+          items={sheetItems}
+          labelClassName="text-lg mx-auto mb-4"
+          label="¿Qué deseas buscar?"
+          containerClassName="w-full"
+          gridColsClassName="grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-6"
+          buttonsContainerClassName="w-full justify-center gap-6" 
+          buttonClassName="w-full flex items-center justify-center"
+          buttonLabelClassName="text-xs font-medium mt-1"
+        />
+      </div>
+
+      <MobileLodgingResultsTemplate
+        open={showLodgingResults}
+        onOpenChange={setShowLodgingResults}
       />
-    </div>
+    </>
   );
 }

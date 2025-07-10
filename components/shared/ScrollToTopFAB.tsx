@@ -62,37 +62,44 @@ export function ScrollToTopFAB({
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, [threshold, isMounted, isVisible]);
 
-  const scrollToTop = () => {
-    if (typeof window === "undefined") return;
+ const scrollToTop = () => {
+  if (typeof window === "undefined") return;
 
-    const currentY = window.scrollY;
-    const start = currentY;
-    const target = targetPosition;
-    const distance = start - target;
-    const startTime = performance.now();
+  // Detectar mobile (puedes ajustar el breakpoint)
+  // const isMobile = window.innerWidth < 768;
 
-    // Si ya estamos en la posición objetivo o muy cerca, no hacer nada
-    if (Math.abs(distance) < 10) return;
+  // if (isMobile) {
+  //   window.scrollTo({ top: 0, behavior: "smooth" });
+  //   return;
+  // }
 
-    const animate = (time: number) => {
-      const elapsed = time - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      // Easing function para un efecto más suave
-      const easeInOut = progress < 0.5 
-        ? 2 * progress * progress 
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-      
-      const currentPosition = start - (distance * easeInOut);
-      window.scrollTo(0, currentPosition);
-      
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
+  // ...existing code for animated scroll...
+  const currentY = window.scrollY;
+  const start = currentY;
+  const target = 0;
+  const distance = start - target;
+  const startTime = performance.now();
 
-    requestAnimationFrame(animate);
+  if (Math.abs(distance) < 10) return;
+
+  const animate = (time: number) => {
+    const elapsed = time - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const easeInOut = progress < 0.5 
+      ? 2 * progress * progress 
+      : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+    const currentPosition = start - (distance * easeInOut);
+    window.scrollTo(0, currentPosition);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    }
   };
+
+  requestAnimationFrame(animate);
+};
 
   // Don't render anything until mounted to prevent hydration issues
   if (!isMounted) {

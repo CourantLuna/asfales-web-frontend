@@ -231,7 +231,7 @@ const ImageButtonSheet = React.forwardRef<HTMLDivElement, ImageButtonSheetProps>
                 {/* Sheet Content */}
                 <SheetContent
                   side="right"
-                  className="h-full w-full max-w-none m-0 p-0 rounded-t-xl flex flex-col [&>button]:hidden" // Ocultar el botón de cierre con CSS y hacer que aparezca desde abajo
+                  className="h-full w-full max-w-none m-0 p-0 rounded-t-xl flex flex-col [&>button]:hidden lg:w-[480px]" // Ocultar el botón de cierre con CSS y hacer que aparezca desde abajo
                 >
                   {/* Header con botón personalizado */}
                   <div className="flex-shrink-0 px-4 py-3 border-b bg-background flex items-center relative">
