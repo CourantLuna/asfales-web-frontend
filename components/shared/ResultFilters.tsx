@@ -78,6 +78,8 @@ export interface RangeFilterConfig extends BaseFilter {
   onChange: (newRange: [number, number]) => void;
   onOutputStringChange?: (outputString: string) => void;
   currency?: string;
+  unitSuffix?: string; // Para unidades como "h", "min", etc.
+  mode?: 'range' | 'single'; // Modo del control
   step?: number;
 }
 
@@ -192,6 +194,8 @@ export default function ResultFilters({ filters, className = "" }: ResultFilters
             onOutputStringChange={filter.onOutputStringChange}
             label={filter.label}
             currency={filter.currency}
+            unitSuffix={filter.unitSuffix}
+            mode={filter.mode}
             step={filter.step}
           />
         );

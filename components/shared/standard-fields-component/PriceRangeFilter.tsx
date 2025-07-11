@@ -15,13 +15,17 @@ export interface PriceRangeFilterProps {
    */
   max: number;
   /**
-   * Valor mínimo actual seleccionado
+   * Valor actual seleccionado - puede ser [min, max] para rango o [value, value] para valor único
    */
   value: [number, number];
   /**
-   * Función que se ejecuta cuando cambia el rango
+   * Función que se ejecuta cuando cambia el rango o valor
    */
   onChange: (value: [number, number]) => void;
+  /**
+   * Modo del control - 'range' para rango dual, 'single' para valor único
+   */
+  mode?: 'range' | 'single';
   /**
    * Función que se ejecuta cuando cambia el output string
    */
@@ -38,6 +42,10 @@ export interface PriceRangeFilterProps {
    * Símbolo de moneda
    */
   currency?: string;
+  /**
+   * Sufijo de unidad (ej: "h" para "2h", "min" para "30min")
+   */
+  unitSuffix?: string;
   /**
    * Formato para mostrar valores grandes (ej: "1K+", "1M+")
    */
@@ -64,9 +72,11 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
       value,
       onChange,
       onOutputStringChange,
+      mode = 'range',
       step = 1,
       label = "Precio",
       currency = "$",
+      unitSuffix,
       formatValue,
       disabled = false,
       containerClassName,
@@ -75,18 +85,37 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
     ref
   ) => {
     const [minValue, maxValue] = value;
-    const [isDragging, setIsDragging] = useState<"min" | "max" | null>(null);
+    const [isDragging, setIsDragging] = useState<"min" | "max" | "single" | null>(null);
+    
+    // Para modo single, solo usamos el primer valor
+    const singleValue = mode === 'single' ? minValue : minValue;
 
     // Formatear valor para mostrar
     const defaultFormatValue = useCallback((val: number) => {
       if (formatValue) return formatValue(val);
-      if (val >= 1000000) return `${currency}${(val / 1000000).toFixed(1)}M+`;
-      if (val >= 1000) return `${currency}${(val / 1000).toFixed(0)}K+`;
-      return `${currency}${val}`;
-    }, [currency, formatValue]);
+      
+      // Si hay unitSuffix, usar ese formato (ej: "2h", "30min")
+      if (unitSuffix) {
+        return `${val}${unitSuffix}`;
+      }
+      
+      // Formato para currency (ej: "$100", "$1K+")
+      if (val >= 1000000) return `${currency} ${(val / 1000000).toFixed(1)}M+`;
+      if (val >= 1000) return `${currency} ${(val / 1000).toFixed(0)}K+`;
+      return `${currency} ${val}`;
+    }, [currency, unitSuffix, formatValue]);
 
     // Generar output string dinámico
     const getOutputString = useCallback((currentMin: number, currentMax: number) => {
+      // Para modo single, solo mostrar el valor único si es diferente al mínimo por defecto
+      // if (mode === 'single') {
+      //   if (currentMin === min) {
+      //     return "";
+      //   }
+      //   return defaultFormatValue(currentMin);
+      // }
+      
+      // Modo range - lógica original
       // Si ambos están en los valores por defecto, output vacío
       if (currentMin === min && currentMax === max) {
         return "";
@@ -108,7 +137,7 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
       }
       
       return "";
-    }, [min, max, defaultFormatValue]);
+    }, [min, max, mode, defaultFormatValue]);
 
     // Efecto para notificar cambios en el output string
     React.useEffect(() => {
@@ -137,23 +166,29 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
       const percentage = ((e.clientX - rect.left) / rect.width) * 100;
       const newValue = Math.max(min, Math.min(max, getValueFromPercentage(percentage)));
       
-      // Determinar qué thumb está más cerca
-      const distToMin = Math.abs(newValue - minValue);
-      const distToMax = Math.abs(newValue - maxValue);
-      
-      if (distToMin <= distToMax) {
-        // Mover el mínimo, pero no puede superar el máximo
-        const newMin = Math.min(newValue, maxValue);
-        onChange([newMin, maxValue]);
+      if (mode === 'single') {
+        // Para modo single, solo actualizar el valor único
+        onChange([newValue, newValue]);
       } else {
-        // Mover el máximo, pero no puede ser menor que el mínimo
-        const newMax = Math.max(newValue, minValue);
-        onChange([minValue, newMax]);
+        // Modo range - lógica original
+        // Determinar qué thumb está más cerca
+        const distToMin = Math.abs(newValue - minValue);
+        const distToMax = Math.abs(newValue - maxValue);
+        
+        if (distToMin <= distToMax) {
+          // Mover el mínimo, pero no puede superar el máximo
+          const newMin = Math.min(newValue, maxValue);
+          onChange([newMin, maxValue]);
+        } else {
+          // Mover el máximo, pero no puede ser menor que el mínimo
+          const newMax = Math.max(newValue, minValue);
+          onChange([minValue, newMax]);
+        }
       }
-    }, [disabled, min, max, minValue, maxValue, onChange, getValueFromPercentage]);
+    }, [disabled, min, max, minValue, maxValue, mode, onChange, getValueFromPercentage]);
 
     // Manejar drag de thumbs
-    const handleMouseDown = useCallback((thumb: "min" | "max") => (e: React.MouseEvent) => {
+    const handleMouseDown = useCallback((thumb: "min" | "max" | "single") => (e: React.MouseEvent) => {
       if (disabled) return;
       e.preventDefault();
       setIsDragging(thumb);
@@ -170,14 +205,17 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
       const percentage = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
       const newValue = getValueFromPercentage(percentage);
       
-      if (isDragging === "min") {
+      if (mode === 'single' || isDragging === "single") {
+        // Para modo single, actualizar ambos valores al mismo valor
+        onChange([newValue, newValue]);
+      } else if (isDragging === "min") {
         const newMin = Math.min(newValue, maxValue);
         onChange([newMin, maxValue]);
       } else {
         const newMax = Math.max(newValue, minValue);
         onChange([minValue, newMax]);
       }
-    }, [isDragging, disabled, minValue, maxValue, onChange, getValueFromPercentage]);
+    }, [isDragging, disabled, minValue, maxValue, mode, onChange, getValueFromPercentage]);
 
     // Finalizar drag
     const handleMouseUp = useCallback(() => {
@@ -197,18 +235,22 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
     }, [isDragging, handleMouseMove, handleMouseUp]);
 
     // Manejar cambio en inputs manuales
-    const handleInputChange = useCallback((type: "min" | "max", inputValue: string) => {
+    const handleInputChange = useCallback((type: "min" | "max" | "single", inputValue: string) => {
       const numValue = parseFloat(inputValue.replace(/[^\d.]/g, ''));
       if (isNaN(numValue)) return;
       
-      if (type === "min") {
+      if (mode === 'single' || type === "single") {
+        // Para modo single, ambos valores son iguales
+        const clampedValue = Math.max(min, Math.min(max, numValue));
+        onChange([clampedValue, clampedValue]);
+      } else if (type === "min") {
         const newMin = Math.max(min, Math.min(numValue, maxValue));
         onChange([newMin, maxValue]);
       } else {
         const newMax = Math.min(max, Math.max(numValue, minValue));
         onChange([minValue, newMax]);
       }
-    }, [min, max, minValue, maxValue, onChange]);
+    }, [min, max, minValue, maxValue, mode, onChange]);
 
     const minPercentage = getPercentage(minValue);
     const maxPercentage = getPercentage(maxValue);
@@ -240,35 +282,61 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
             onClick={handleSliderChange}
           >
             {/* Active Range */}
-            <div
-              className="absolute h-2 bg-primary rounded-full"
-              style={{
-                left: `${minPercentage}%`,
-                width: `${maxPercentage - minPercentage}%`,
-              }}
-            />
+            {mode === 'range' ? (
+              <div
+                className="absolute h-2 bg-primary rounded-full"
+                style={{
+                  left: `${minPercentage}%`,
+                  width: `${maxPercentage - minPercentage}%`,
+                }}
+              />
+            ) : (
+              <div
+                className="absolute h-2 bg-primary rounded-full"
+                style={{
+                  left: `0%`,
+                  width: `${minPercentage}%`,
+                }}
+              />
+            )}
             
-            {/* Min Thumb */}
-            <div
-              className={cn(
-                "absolute w-5 h-5 bg-white border-2 border-primary rounded-full cursor-grab transform -translate-x-1/2 -translate-y-1/2 top-1/2 transition-all",
-                isDragging === "min" && "cursor-grabbing scale-110 shadow-lg",
-                disabled && "cursor-not-allowed opacity-50"
-              )}
-              style={{ left: `${minPercentage}%` }}
-              onMouseDown={handleMouseDown("min")}
-            />
-            
-            {/* Max Thumb */}
-            <div
-              className={cn(
-                "absolute w-5 h-5 bg-white border-2 border-primary rounded-full cursor-grab transform -translate-x-1/2 -translate-y-1/2 top-1/2 transition-all",
-                isDragging === "max" && "cursor-grabbing scale-110 shadow-lg",
-                disabled && "cursor-not-allowed opacity-50"
-              )}
-              style={{ left: `${maxPercentage}%` }}
-              onMouseDown={handleMouseDown("max")}
-            />
+            {/* Thumbs - solo mostrar según el modo */}
+            {mode === 'range' ? (
+              <>
+                {/* Min Thumb */}
+                <div
+                  className={cn(
+                    "absolute w-5 h-5 bg-white border-2 border-primary rounded-full cursor-grab transform -translate-x-1/2 -translate-y-1/2 top-1/2 transition-all",
+                    isDragging === "min" && "cursor-grabbing scale-110 shadow-lg",
+                    disabled && "cursor-not-allowed opacity-50"
+                  )}
+                  style={{ left: `${minPercentage}%` }}
+                  onMouseDown={handleMouseDown("min")}
+                />
+                
+                {/* Max Thumb */}
+                <div
+                  className={cn(
+                    "absolute w-5 h-5 bg-white border-2 border-primary rounded-full cursor-grab transform -translate-x-1/2 -translate-y-1/2 top-1/2 transition-all",
+                    isDragging === "max" && "cursor-grabbing scale-110 shadow-lg",
+                    disabled && "cursor-not-allowed opacity-50"
+                  )}
+                  style={{ left: `${maxPercentage}%` }}
+                  onMouseDown={handleMouseDown("max")}
+                />
+              </>
+            ) : (
+              /* Single Thumb */
+              <div
+                className={cn(
+                  "absolute w-5 h-5 bg-white border-2 border-primary rounded-full cursor-grab transform -translate-x-1/2 -translate-y-1/2 top-1/2 transition-all",
+                  isDragging === "single" && "cursor-grabbing scale-110 shadow-lg",
+                  disabled && "cursor-not-allowed opacity-50"
+                )}
+                style={{ left: `${minPercentage}%` }}
+                onMouseDown={handleMouseDown("single")}
+              />
+            )}
           </div>
 
           {/* Value Labels */}
@@ -281,32 +349,52 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
         {/* Manual Inputs */}
         {showInputs && (
           <div className="flex items-center gap-2">
-            <div className="flex-1">
-              <Label htmlFor="price-min" className="text-xs text-muted-foreground mb-1 block">
-                Mínimo
-              </Label>
-              <Input
-                id="price-min"
-                type="text"
-                value={defaultFormatValue(minValue)}
-                onChange={(e) => handleInputChange("min", e.target.value)}
-                disabled={disabled}
-                className="h-10 text-center"
-              />
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="price-max" className="text-xs text-muted-foreground mb-1 block">
-                Máximo
-              </Label>
-              <Input
-                id="price-max"
-                type="text"
-                value={defaultFormatValue(maxValue)}
-                onChange={(e) => handleInputChange("max", e.target.value)}
-                disabled={disabled}
-                className="h-10 text-center"
-              />
-            </div>
+            {mode === 'range' ? (
+              <>
+                <div className="flex-1">
+                  <Label htmlFor="price-min" className="text-xs text-muted-foreground mb-1 block">
+                    Mínimo
+                  </Label>
+                  <Input
+                    id="price-min"
+                    type="text"
+                    value={defaultFormatValue(minValue)}
+                    onChange={(e) => handleInputChange("min", e.target.value)}
+                    disabled={disabled}
+                    className="h-10 text-center"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="price-max" className="text-xs text-muted-foreground mb-1 block">
+                    Máximo
+                  </Label>
+                  <Input
+                    id="price-max"
+                    type="text"
+                    value={defaultFormatValue(maxValue)}
+                    onChange={(e) => handleInputChange("max", e.target.value)}
+                    disabled={disabled}
+                    className="h-10 text-center"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="flex-1">
+                <Label htmlFor="price-single" className="text-xs text-muted-foreground mb-1 block">
+                  
+                 Menos de {defaultFormatValue(singleValue)}
+                </Label>
+                {/* <Input
+                  id="price-single"
+                  type="text"
+                  value={defaultFormatValue(singleValue)}
+                  onChange={(e) => handleInputChange("single", e.target.value)}
+                  disabled={disabled}
+                  className="h-10 text-center"
+                /> */}
+              </div>
+              
+            )}
           </div>
         )}
 

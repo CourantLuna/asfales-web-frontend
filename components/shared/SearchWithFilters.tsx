@@ -39,6 +39,8 @@ interface GenericFilterConfig {
   max?: number;
   step?: number;
   currency?: string;
+  unitSuffix?: string; // Para rangos con unidades (ej: "h" para "2h", "min" para "30min")
+  mode?: 'range' | 'single'; // Para rangos: modo dual o valor único
   showCounts?: boolean;
   maxSelections?: number;
   initialVisibleCount?: number;
@@ -270,16 +272,46 @@ export default function SearchWithFilters({
         const [min, max] = values;
         const defaultMin = filter.min || 0;
         const defaultMax = filter.max || 1000;
+        const mode = filter.mode || 'range';
         
         // Solo mostrar chip si los valores son diferentes a los defaults
-        if (min !== defaultMin || max !== defaultMax) {
-          const currency = filter.currency || "$";
-          const label = `${currency}${min} - ${currency}${max}`;
-          newChips.push({
-            id: `${filter.id}-range`,
-            label: label,
-            onRemove: () => resetFilter(filter.id)
-          });
+        if (mode === 'single') {
+          // Para modo single, solo mostrar si el valor es diferente al mínimo default
+          if (min !== defaultMin) {
+            let label: string;
+            if (filter.unitSuffix) {
+              label = `${min}${filter.unitSuffix}`;
+            } else {
+              const currency = filter.currency || "$";
+              label = `${currency}${min}`;
+            }
+            
+            newChips.push({
+              id: `${filter.id}-single`,
+              label: label,
+              onRemove: () => resetFilter(filter.id)
+            });
+          }
+        } else {
+          // Para modo range, mostrar si cualquiera de los valores es diferente
+          if (min !== defaultMin || max !== defaultMax) {
+            let label: string;
+            
+            if (filter.unitSuffix) {
+              // Para unidades como "h", usar formato "2h - 24h"
+              label = `${min}${filter.unitSuffix} - ${max}${filter.unitSuffix}`;
+            } else {
+              // Para currency, usar formato "$100 - $500"
+              const currency = filter.currency || "$";
+              label = `${currency}${min} - ${currency}${max}`;
+            }
+            
+            newChips.push({
+              id: `${filter.id}-range`,
+              label: label,
+              onRemove: () => resetFilter(filter.id)
+            });
+          }
         }
       }
     });
@@ -441,6 +473,8 @@ export default function SearchWithFilters({
             updateFilterState(filter.id, value);
           },
           currency: filter.currency || "$",
+          unitSuffix: filter.unitSuffix, // Pasar unitSuffix al componente
+          mode: filter.mode || 'range', // Pasar modo al componente
           step: filter.step || 1
         });
       } else if (filter.type === 'toggle' && options.length > 0) {

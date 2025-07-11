@@ -54,6 +54,8 @@ interface FilterDefaults {
   airports?: string[];
   flightClass?: string;
   baggage?: string[];
+  travelTimeRange?: [number, number]; // Rango de tiempo total de viaje en horas
+  layoverTimeRange?: [number, number]; // Rango de tiempo de escala en horas
 }
 
 interface FlightResultsTemplateProps {
@@ -331,13 +333,30 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         type: "separator"
       },
       {
+        id: "travelTimeRange",
+        type: "range",
+        label: "Tiempo total de viaje",
+        min: 2,
+        max: 24,
+        step: 1,
+         mode: "single", // Modo single - solo un valor
+        unitSuffix: "h", // Usar unitSuffix en lugar de currency para que aparezca como "2h"
+        defaultValue: filterDefaults.travelTimeRange || [24, 24]
+      },
+    
+
+      {
+        id: "separator-9",
+        type: "separator"
+      },
+      {
         id: "flightClass",
         type: "radio",
         label: "Clase de vuelo",
         defaultValue: filterDefaults.flightClass || ""
       },
       {
-        id: "separator-8",
+        id: "separator-10",
         type: "separator"
       },
       {
