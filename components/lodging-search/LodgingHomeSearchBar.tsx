@@ -8,10 +8,16 @@ import LodgingSearchBar from './LodgingSearchBar';
 import BreadcrumbNav from '../shared/BreadcrumbNav';
 
 interface ILodgingHomeSearchBarProps {
-  showSearchButtonLodging?: boolean
+  showSearchButtonLodging?: boolean,
+  onLodgingTypeChange?: (type: string) => void; // Nueva prop
+  initialLodgingType?: string; // Nueva prop opcional
 }
 
-export default function LodgingHomeSearchBar({ showSearchButtonLodging = true }: ILodgingHomeSearchBarProps) {
+export default function LodgingHomeSearchBar({ 
+  showSearchButtonLodging = true,
+onLodgingTypeChange,
+  initialLodgingType
+}: ILodgingHomeSearchBarProps) {
   const pathname = usePathname();
   const [selectedLodgingType, setSelectedLodgingType] = useState<string>("hotels-and-resorts");
 
@@ -37,6 +43,13 @@ export default function LodgingHomeSearchBar({ showSearchButtonLodging = true }:
     }
   }, [pathname]);
 
+  
+  // Función para manejar cambios y notificar al padre
+  const handleLodgingTypeChange = (value: string) => {
+    setSelectedLodgingType(value);
+    onLodgingTypeChange?.(value); // Notificar al padre
+  };
+
   return (
            <div className="w-full max-w-7xl mx-auto">
 
@@ -46,7 +59,7 @@ export default function LodgingHomeSearchBar({ showSearchButtonLodging = true }:
         label="Tipo de Alojamiento"
         type="single"
         value={selectedLodgingType}
-        onValueChange={(value) => setSelectedLodgingType(value as string)}
+        onValueChange={(value) => handleLodgingTypeChange(value as string)}
         options={[
           {
             value: "hotels-and-resorts",

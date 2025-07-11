@@ -58,6 +58,8 @@ export default function TravelSearchBarMobile({
   className,
 }: TravelSearchBarMobileProps) {
   const [showLodgingResults, setShowLodgingResults] = useState(false);
+    const [selectedLodgingType, setSelectedLodgingType] = useState<string>("hotels-and-resorts");
+
 
   // Configuración de los items para ImageButtonSheet
   const sheetItems: ImageButtonSheetItem[] = [
@@ -78,7 +80,11 @@ export default function TravelSearchBarMobile({
       label: "Alojamiento",
       src: '/menu-icons/lodging-icon.svg',
       size: 64,
-      sheetContent: <LodgingHomeSearchBar showSearchButtonLodging={false} />,
+      sheetContent: 
+      <LodgingHomeSearchBar 
+      showSearchButtonLodging={false}  
+      onLodgingTypeChange={setSelectedLodgingType}
+         />,
       sheetTitle: "Búsqueda de Alojamiento",
       btnLabel: "Buscar Alojamiento",
       btnAction: () => {
@@ -153,6 +159,7 @@ export default function TravelSearchBarMobile({
       </div>
 
       <MobileLodgingResultsTemplate
+        LodgingType={selectedLodgingType}
         open={showLodgingResults}
         onOpenChange={setShowLodgingResults}
       />

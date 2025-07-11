@@ -659,6 +659,17 @@ useEffect(() => {
       })
       .finally(() => setLoading(false));
   }
+}, []);
+
+// Efecto separado para manejar cambios en LodgingData
+useEffect(() => {
+  if (LodgingData && LodgingData.length > 0) {
+    setLoading(true);
+    setTimeout(() => {     
+      setRows(LodgingData);
+      setLoading(false);
+    }, 2000);
+  }
 }, [LodgingData]);
 
 
