@@ -1,10 +1,16 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import CustomFlightCard from './CustomFlightCard';
 import { Breadcrumb, useFlightBreadcrumbSteps } from '../shared/Breadcrumb';
 import { Button } from '../ui/button';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Plane, Clock, MapPin, DollarSign, Users, Briefcase, Star, Building2, Clock4, Clock7, Clock9, Clock6, Clock5, Clock8 } from 'lucide-react';
+import SearchWithFilters, { GenericFilterConfig, GenericFilterOption } from '../shared/SearchWithFilters';
+import { CustomSelectOption } from '../shared/CustomSelect';
+import { CheckboxOption } from '../shared/standard-fields-component/CheckboxFilter';
+import { RowData } from '../shared/RenderFields';
+import { AdItem } from '../shared/Ads';
+import EventDrivenProgress, { EventDrivenProgressRef } from '../shared/EventDrivenProgress';
 
 // Interfaces
 interface FlightData {
@@ -36,31 +42,358 @@ interface SelectedFlight {
   flight: FlightData;
 }
 
-const FlightResultsTemplate: React.FC = () => {
+// Configuración de valores por defecto para filtros
+interface FilterDefaults {
+  search?: string;
+  popularFilters?: string[];
+  priceRange?: [number, number];
+  airlines?: string[];
+  departureTime?: string[];
+  stops?: string[];
+  duration?: string[];
+  airports?: string[];
+  flightClass?: string;
+  baggage?: string[];
+}
+
+interface FlightResultsTemplateProps {
+  filterDefaults?: FilterDefaults;
+  className?: string;
+  onFiltersChange?: (filters: Record<string, any>) => void;
+  onCardClick?: (idx: number, row: any) => void;
+  flightData?: RowData[];
+  flightType?: 'round-trip' | 'one-way' | 'multi-destination';
+  destinations?: string[];
+}
+
+// Datos de ejemplo para anuncios de vuelos
+const flightAds: AdItem[] = [
+  {
+    id: "cheap-flights",
+    src: "https://tpc.googlesyndication.com/simgad/7006773931942455307?",
+    alt: "Vuelos Baratos - Reserva Ahora",
+    href: "https://cheapflights.com/ofertas-especiales",
+    title: "Vuelos nacionales e internacionales desde $99",
+    height: 600,
+    width: 160,
+  },
+  {
+    id: "last-minute",
+    src: "https://tpc.googlesyndication.com/simgad/12562425310683427121?",
+    alt: "Ofertas de Último Minuto",
+    href: "https://lastminute.com/vuelos",
+    title: "Ofertas de último minuto - Hasta 60% OFF",
+    height: 600,
+    width: 160,
+  },
+  {
+    id: "premium-airlines",
+    src: "https://tpc.googlesyndication.com/simgad/8989349070575090120?",
+    alt: "Aerolíneas Premium",
+    href: "https://premium-airlines.com/business-class",
+    title: "Vuela en Business Class por menos",
+    height: 600,
+    width: 160,
+  }
+];
+
+// Opciones de filtros constantes (fuera del componente)
+const popularFiltersOptions: CheckboxOption[] = [
+  { value: "non-stop", label: "Vuelos sin escalas", count: 145 },
+  { value: "flexible-dates", label: "Fechas flexibles", count: 89 },
+  { value: "baggage-included", label: "Equipaje incluido", count: 203 },
+  { value: "morning-departure", label: "Salida matutina", count: 167 },
+  { value: "evening-departure", label: "Salida nocturna", count: 134 },
+  { value: "refundable", label: "Reembolsable", count: 78 },
+  { value: "same-airline", label: "Misma aerolínea", count: 156 },
+  { value: "short-layover", label: "Escala corta", count: 98 },
+];
+
+const airlinesOptions: CheckboxOption[] = [
+  { value: "arajet", label: "Arajet", count: 45 },
+  { value: "copa", label: "Copa Airlines", count: 38 },
+  { value: "avianca", label: "Avianca", count: 52 },
+  { value: "latam", label: "LATAM", count: 41 },
+  { value: "jetblue", label: "JetBlue", count: 29 },
+  { value: "spirit", label: "Spirit", count: 33 },
+  { value: "american", label: "American Airlines", count: 28 },
+  { value: "delta", label: "Delta", count: 24 },
+  { value: "iberia", label: "Iberia", count: 18 },
+  { value: "air-europa", label: "Air Europa", count: 15 },
+];
+
+const departureTimeOptions = [
+  { value: "early-morning", label: "Madrugada (00:00 - 06:00)", icon: <Clock4 className="w-full h-full" />, count: 42 },
+  { value: "morning", label: "Mañana (06:00 - 12:00)", icon: <Clock9 className="w-full h-full" />, count: 89 },
+  { value: "afternoon", label: "Tarde (12:00 - 18:00)", icon: <Clock5 className="w-full h-full" />, count: 76 },
+  { value: "evening", label: "Noche (18:00 - 24:00)", icon: <Clock8 className="w-full h-full" />, count: 65 },
+];
+
+const stopsOptions: CheckboxOption[] = [
+  { value: "non-stop", label: "Sin escalas", count: 98 },
+  { value: "1-stop", label: "1 escala", count: 145 },
+  { value: "2-stops", label: "2+ escalas", count: 29 },
+];
+
+const durationOptions = [
+  { value: "short", label: "Corto (menos de 4h)", icon: <Plane className="w-full h-full" />, count: 67 },
+  { value: "medium", label: "Medio (4h - 8h)", icon: <Plane className="w-full h-full" />, count: 123 },
+  { value: "long", label: "Largo (8h - 12h)", icon: <Plane className="w-full h-full" />, count: 89 },
+  { value: "very-long", label: "Muy largo (más de 12h)", icon: <Plane className="w-full h-full" />, count: 43 },
+];
+
+const flightClassOptions: CheckboxOption[] = [
+  { value: "economy", label: "Económica", count: 245 },
+  { value: "premium-economy", label: "Económica Premium", count: 89 },
+  { value: "business", label: "Business", count: 34 },
+  { value: "first", label: "Primera Clase", count: 12 },
+];
+
+const baggageOptions: CheckboxOption[] = [
+  { value: "carry-on-included", label: "Equipaje de mano incluido", count: 198 },
+  { value: "checked-bag-included", label: "Maleta facturada incluida", count: 87 },
+  { value: "extra-baggage", label: "Equipaje adicional disponible", count: 156 },
+];
+
+// Opciones de ordenamiento
+const sortOptions: CustomSelectOption[] = [
+  { key: "recommended", label: "Recomendado" },
+  { key: "price_low", label: "Precio: menor a mayor" },
+  { key: "price_high", label: "Precio: mayor a menor" },
+  { key: "duration_short", label: "Duración: más corto" },
+  { key: "departure_early", label: "Salida: más temprano" },
+  { key: "departure_late", label: "Salida: más tarde" },
+  { key: "airline", label: "Aerolínea A-Z" },
+];
+
+const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
+  filterDefaults = {},
+  className,
+  onFiltersChange,
+  onCardClick,
+  flightData,
+  flightType: propFlightType,
+  destinations: propDestinations
+}) => {
   // Estados principales
-  const [flightType, setFlightType] = useState<'round-trip' | 'one-way' | 'multi-destination'>('round-trip');
+  const [flightType, setFlightType] = useState<'round-trip' | 'one-way' | 'multi-destination'>(propFlightType || 'round-trip');
   const [currentStep, setCurrentStep] = useState('choose-departure');
   const [selectedFlights, setSelectedFlights] = useState<SelectedFlight[]>([]);
+  const [rows, setRows] = useState<RowData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Estados para paginación
   const [visibleFlights, setVisibleFlights] = useState(3);
   const initialVisibleFlights = 3;
   const flightsPerStep = 3;
 
+  // Referencias
+  const progressRef = useRef<EventDrivenProgressRef>(null);
+
   // Para multi-destino
-  const multiDestinations = ['Medellín', 'Madrid'];
+  const multiDestinations = propDestinations || ['Medellín', 'Madrid'];
   
   // Generar steps del breadcrumb
   const breadcrumbSteps = useFlightBreadcrumbSteps(flightType, currentStep, multiDestinations);
 
   // Efecto para ajustar el step cuando cambia el tipo de vuelo
-  React.useEffect(() => {
+  useEffect(() => {
     if (flightType === 'multi-destination' && currentStep === 'choose-departure') {
       setCurrentStep('choose-flight-0');
     } else if (flightType !== 'multi-destination' && currentStep.startsWith('choose-flight-')) {
       setCurrentStep('choose-departure');
     }
   }, [flightType, currentStep]);
+
+  // Configuración del data source para búsqueda de vuelos
+  const dataSourcesFlights = useMemo(() => [
+    {
+      id: "flights",
+      label: "Vuelos",
+      icon: <Plane className="h-4 w-4" />,
+      type: "custom" as const,
+      nameLabelField: "title",
+      nameValueField: "title",
+      nameDescriptionField: "descMain",
+      options: rows
+    }
+  ], [rows]);
+
+  // Configuración de filtros para vuelos
+  const getFiltersForFlights = useMemo(() => {
+    const baseFilters: GenericFilterConfig[] = [
+      {
+        id: "search",
+        type: "search",
+        label: "Buscar vuelos",
+        placeholder: filterDefaults.search || "Buscar por aerolínea, aeropuerto...",
+        dataSources: dataSourcesFlights,
+        defaultValue: filterDefaults.search || "",
+        showClearButton: true,
+        minSearchLength: 2,
+        emptyMessage: "No se encontraron vuelos",
+        searchPlaceholder: "Escribe para buscar vuelos..."
+      },
+      {
+        id: "separator-1",
+        type: "separator"
+      },
+      {
+        id: "popularFilters",
+        type: "checkbox",
+        label: "Filtros populares",
+        showCounts: true,
+        maxSelections: 5,
+        initialVisibleCount: 6,
+        showMoreText: "Ver más filtros",
+        showLessText: "Ver menos",
+        defaultValue: filterDefaults.popularFilters || []
+      },
+      {
+        id: "separator-2",
+        type: "separator"
+      },
+      {
+        id: "priceRange",
+        type: "range",
+        label: "Rango de precio",
+        min: 50,
+        max: 2000,
+        step: 25,
+        currency: "USD",
+        defaultValue: filterDefaults.priceRange || [50, 2000]
+      },
+      {
+        id: "separator-3",
+        type: "separator"
+      },
+      {
+        id: "airlines",
+        type: "checkbox",
+        label: "Aerolíneas",
+        showCounts: true,
+        maxSelections: 5,
+        initialVisibleCount: 5,
+        showMoreText: "Ver más aerolíneas",
+        showLessText: "Ver menos",
+        defaultValue: filterDefaults.airlines || []
+      },
+      {
+        id: "separator-4",
+        type: "separator"
+      },
+      {
+        id: "departureTime",
+        type: "toggle" as const,
+        label: "Horario de salida",
+        type_toggle: "multiple" as const,
+        variant: "vertical" as const,
+        wrap: true,
+        gridCols: "auto" as const,
+        containerClassName: "w-full",
+        labelClassName: "text-lg font-semibold mb-4",
+        toggleGroupClassName: "gap-3",
+        toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
+        maxSelections: 4,
+        defaultValue: filterDefaults.departureTime || []
+      },
+      {
+        id: "separator-5",
+        type: "separator"
+      },
+      {
+        id: "stops",
+        type: "radio",
+        label: "Escalas",
+        defaultValue: filterDefaults.stops?.[0] || ""
+      },
+      {
+        id: "separator-6",
+        type: "separator"
+      },
+      {
+        id: "duration",
+        type: "toggle" as const,
+        label: "Duración del vuelo",
+        type_toggle: "multiple" as const,
+        variant: "vertical" as const,
+        wrap: true,
+        gridCols: "auto" as const,
+        containerClassName: "w-full",
+        labelClassName: "text-lg font-semibold mb-4",
+        toggleGroupClassName: "gap-3",
+        toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
+        maxSelections: 4,
+        defaultValue: filterDefaults.duration || []
+      },
+      {
+        id: "separator-7",
+        type: "separator"
+      },
+      {
+        id: "flightClass",
+        type: "radio",
+        label: "Clase de vuelo",
+        defaultValue: filterDefaults.flightClass || ""
+      },
+      {
+        id: "separator-8",
+        type: "separator"
+      },
+      {
+        id: "baggage",
+        type: "checkbox",
+        label: "Equipaje",
+        showCounts: true,
+        defaultValue: filterDefaults.baggage || []
+      }
+    ];
+
+    return baseFilters;
+  }, [dataSourcesFlights, filterDefaults]);
+
+  // Opciones de filtros
+  const getFilterOptionsForFlights = useMemo(() => ({
+    popularFilters: popularFiltersOptions,
+    airlines: airlinesOptions,
+    departureTime: departureTimeOptions,
+    stops: stopsOptions,
+    duration: durationOptions,
+    flightClass: flightClassOptions,
+    baggage: baggageOptions
+  }), []);
+
+  // Dispara la barra de progreso cuando loading cambia
+  useEffect(() => {
+    if (loading && progressRef.current) {
+      progressRef.current.start();
+    }
+  }, [loading]);
+
+  // Simular carga de datos (para demo)
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      if (flightData && flightData.length > 0) {
+        setRows(flightData);
+      } else {
+        // Generar datos simulados de vuelos
+        const simulatedFlights = mapFlightsToRowData(currentResultSet?.flights || []);
+        setRows(simulatedFlights);
+      }
+      setLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [flightData, flightType]);
+
+  // Handler para cambios en flightData
+  useEffect(() => {
+    if (flightData && flightData.length > 0) {
+      setRows(flightData);
+      setLoading(false);
+    }
+  }, [flightData]);
 
   // Datos simulados - diferentes conjuntos según el tipo de viaje
   const flightResultSets: FlightResultSet[] = useMemo(() => {
@@ -380,6 +713,15 @@ const FlightResultsTemplate: React.FC = () => {
   // Obtener el conjunto de resultados actual
   const currentResultSet = flightResultSets.find(set => set.stepId === currentStep);
 
+  // Actualizar rows cuando cambie currentResultSet
+  useEffect(() => {
+    if (currentResultSet && !flightData) {
+      const flightRows = mapFlightsToRowData(currentResultSet.flights);
+      setRows(flightRows);
+      setLoading(false);
+    }
+  }, [currentResultSet, flightData]);
+
   // Handler para navegación de breadcrumb (solo hacia atrás)
   const handleBreadcrumbClick = (stepId: string) => {
     setCurrentStep(stepId);
@@ -430,8 +772,55 @@ const FlightResultsTemplate: React.FC = () => {
     setVisibleFlights(initialVisibleFlights);
   };
 
-  // Renderizar contenido según el paso actual
-  const renderStepContent = () => {
+  // Handler para click en card de SearchWithFilters
+  const handleCardClick = (idx: number, row: RowData) => {
+    // Convertir RowData de vuelta a FlightData para la selección
+    const flight: FlightData = {
+      id: row.title || `flight-${idx}`,
+      airline: row.descMain || 'Aerolínea',
+      departureTime: row.feature1 || '',
+      arrivalTime: row.feature2 || '',
+      departureAirport: row.location || '',
+      arrivalAirport: '',
+      duration: '',
+      stops: row.descSub || '',
+      price: row.afterPrice?.value || 0,
+      currency: row.afterPrice?.currency || 'USD',
+      priceLabel: 'Por pasajero',
+      logo: row.images?.[0] || '/placeholder-logo.svg',
+      badge: row.badge1 || ''
+    };
+
+    handleFlightSelect(flight);
+    
+    if (onCardClick) {
+      onCardClick(idx, row);
+    }
+  };
+
+  // Función para mapear FlightData a RowData
+  const mapFlightsToRowData = (flights: FlightData[]): RowData[] => {
+    return flights.map((flight, index) => ({
+      title: flight.airline,
+      images: [flight.logo || '/placeholder-logo.svg'],
+      location: `${flight.departureAirport} → ${flight.arrivalAirport}`,
+      feature1: flight.departureTime,
+      feature2: flight.arrivalTime,
+      descMain: flight.duration,
+      descSub: flight.stops,
+      beforePrice: flight.price > 300 ? { currency: flight.currency, value: flight.price + 50 } : undefined,
+      afterPrice: { currency: flight.currency, value: flight.price },
+      badge1: flight.badge || '',
+      badge2: flight.savings || '',
+      isFavorite: false,
+      rating: Math.random() > 0.5 ? (8.5 + Math.random() * 1.5) : undefined,
+      ratingLabel: Math.random() > 0.5 ? 'Excelente' : undefined,
+      ratingCount: Math.random() > 0.5 ? Math.floor(Math.random() * 500 + 100) : undefined,
+    }));
+  };
+
+  // Renderizar contenido de vuelos con SearchWithFilters o resumen
+  const renderFlightContent = () => {
     // Si estamos en el paso de revisión, mostrar vuelos seleccionados
     if (currentStep === 'review-details') {
       return (
@@ -471,88 +860,113 @@ const FlightResultsTemplate: React.FC = () => {
       );
     }
 
-    // Mostrar lista de vuelos para seleccionar
+    // Mostrar SearchWithFilters para selección de vuelos
     if (currentResultSet) {
-      const visibleFlightsList = currentResultSet.flights.slice(0, visibleFlights);
-      const hasMoreFlights = visibleFlights < currentResultSet.flights.length;
-      const canShowLess = visibleFlights > initialVisibleFlights;
-      const remainingFlights = currentResultSet.flights.length - visibleFlights;
-      const nextStepFlights = Math.min(flightsPerStep, remainingFlights);
-
       return (
-        <div className="space-y-6">
-          {/* Lista de vuelos visible */}
-          <div className="space-y-4">
-            {visibleFlightsList.map((flight) => (
-              <CustomFlightCard
-                key={flight.id}
-                flight={flight}
-                onDetailsClick={handleDetailsClick}
-                onClick={() => handleFlightSelect(flight)}
-                className="hover:bg-blue-50 transition-colors cursor-pointer"
-              />
-            ))}
-          </div>
+        <SearchWithFilters
+          rows={rows}
+          filters={getFiltersForFlights}
+          filterOptions={getFilterOptionsForFlights}
+          sortOptions={sortOptions}
+          ads={flightAds}
+          adsDirection="col"
+          showAds={true}
+          enableCompareMode={false}
+          onCardClick={handleCardClick}
+          onFiltersChange={onFiltersChange}
+          searchPlaceholder="Buscar vuelos por aerolínea, aeropuerto..."
+          noResultsMessage="No se encontraron vuelos que coincidan con tu búsqueda"
+          clearFiltersText="Limpiar filtros"
+          sortByText="Ordenar por"
+          resultsCountText={(count) => `${count}+ vuelos encontrados`}
+          renderResults={({ filteredRows, compareMode, onCardClick: cardClickHandler }) => (
+            <div className="space-y-4">
+              {filteredRows.slice(0, visibleFlights).map((row, index) => {
+                // Convertir RowData de vuelta a FlightData para mostrar
+                const flight: FlightData = {
+                  id: row.title || `flight-${index}`,
+                  airline: row.title || 'Aerolínea',
+                  departureTime: row.feature1 || '',
+                  arrivalTime: row.feature2 || '',
+                  departureAirport: row.location?.split(' → ')[0] || '',
+                  arrivalAirport: row.location?.split(' → ')[1] || '',
+                  duration: row.descMain || '',
+                  stops: row.descSub || '',
+                  price: row.afterPrice?.value || 0,
+                  currency: row.afterPrice?.currency || 'USD',
+                  priceLabel: 'Por pasajero',
+                  logo: row.images?.[0] || '/placeholder-logo.svg',
+                  badge: row.badge1 || ''
+                };
 
-          {/* Controles de paginación */}
-          {(hasMoreFlights || canShowLess) && (
-            <div className="flex flex-col items-center space-y-3 py-6 md:w-auto w-full">
-              <div className="text-sm text-gray-600 text-center">
-                Mostrando {visibleFlights} de {currentResultSet.flights.length} vuelos
-              </div>
+                return (
+                  <CustomFlightCard
+                    key={flight.id}
+                    flight={flight}
+                    onDetailsClick={handleDetailsClick}
+                    onClick={() => cardClickHandler(index, row)}
+                    className="hover:bg-blue-50 transition-colors cursor-pointer"
+                  />
+                );
+              })}
 
-              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                {hasMoreFlights && (
-                  <Button
-                    onClick={handleShowMore}
-                    variant="outline"
-                    className="w-full md:w-80 flex items-center space-x-2 px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>
-                      Mostrar más vuelos ({nextStepFlights} más)
-                    </span>
-                  </Button>
-                )}
-
-                {canShowLess && (
-                  <Button
-                    onClick={handleShowLess}
-                    variant="ghost"
-                    className="w-full md:w-80 text-gray-600 hover:text-gray-800 flex items-center space-x-2 px-6 py-2 border-2"
-                  >
-                    <Minus className="h-4 w-4" />
-                    <span>
-                      Mostrar menos vuelos
-                    </span>
-                  </Button>
-                )}
-              </div>
-
-              {currentResultSet.flights.length > initialVisibleFlights && (
-                <div className="w-full max-w-xs">
-                  <div className="bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${(visibleFlights / currentResultSet.flights.length) * 100}%` }}
-                    />
+              {/* Controles de paginación */}
+              {filteredRows.length > visibleFlights && (
+                <div className="flex flex-col items-center space-y-3 py-6">
+                  <div className="text-sm text-gray-600 text-center">
+                    Mostrando {visibleFlights} de {filteredRows.length} vuelos
                   </div>
-                  <div className="text-xs text-gray-500 mt-1 text-center">
-                    {Math.round((visibleFlights / currentResultSet.flights.length) * 100)}% cargado
+
+                  <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <Button
+                      onClick={handleShowMore}
+                      variant="outline"
+                      className="w-full md:w-80 flex items-center space-x-2 px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>
+                        Mostrar más vuelos ({Math.min(flightsPerStep, filteredRows.length - visibleFlights)} más)
+                      </span>
+                    </Button>
+
+                    {visibleFlights > initialVisibleFlights && (
+                      <Button
+                        onClick={handleShowLess}
+                        variant="ghost"
+                        className="w-full md:w-80 text-gray-600 hover:text-gray-800 flex items-center space-x-2 px-6 py-2 border-2"
+                      >
+                        <Minus className="h-4 w-4" />
+                        <span>Mostrar menos vuelos</span>
+                      </Button>
+                    )}
                   </div>
+
+                  {filteredRows.length > initialVisibleFlights && (
+                    <div className="w-full max-w-xs">
+                      <div className="bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${(visibleFlights / filteredRows.length) * 100}%` }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1 text-center">
+                        {Math.round((visibleFlights / filteredRows.length) * 100)}% cargado
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {visibleFlights >= filteredRows.length && filteredRows.length > initialVisibleFlights && (
+                <div className="text-center py-4">
+                  <p className="text-gray-600 text-sm">
+                    ✈️ Has visto todos los vuelos disponibles
+                  </p>
                 </div>
               )}
             </div>
           )}
-
-          {!hasMoreFlights && currentResultSet.flights.length > initialVisibleFlights && (
-            <div className="text-center py-4">
-              <p className="text-gray-600 text-sm">
-                ✈️ Has visto todos los vuelos disponibles
-              </p>
-            </div>
-          )}
-        </div>
+        />
       );
     }
 
@@ -563,8 +977,20 @@ const FlightResultsTemplate: React.FC = () => {
     );
   };
 
+  // Mostrar loading si está cargando
+  if (loading) {
+    return (
+      <div className="container py-6 max-w-7xl">
+        <div className="text-center py-12">
+          <EventDrivenProgress ref={progressRef} />
+          <p className="text-gray-600 mt-4">Buscando los mejores vuelos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container py-6 max-w-7xl">
+    <div className={`container py-6 max-w-7xl ${className || ''}`}>
       {/* Controles de demo */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
         <h3 className="text-sm font-medium text-gray-700 mb-3">Demo: Tipos de vuelo</h3>
@@ -603,13 +1029,13 @@ const FlightResultsTemplate: React.FC = () => {
       </div>
 
       {/* Breadcrumb */}
-        <Breadcrumb
-          steps={breadcrumbSteps}
-          onStepClick={handleBreadcrumbClick}
-          allowBackNavigation={true}
-          allowForwardNavigation={false}
-          className="w-full mb-4"
-        />
+      <Breadcrumb
+        steps={breadcrumbSteps}
+        onStepClick={handleBreadcrumbClick}
+        allowBackNavigation={true}
+        allowForwardNavigation={false}
+        className="w-full mb-4"
+      />
 
       {/* Título y subtítulo */}
       <div className="mb-6">
@@ -629,7 +1055,7 @@ const FlightResultsTemplate: React.FC = () => {
       </div>
 
       {/* Contenido principal */}
-      {renderStepContent()}
+      {renderFlightContent()}
     </div>
   );
 };

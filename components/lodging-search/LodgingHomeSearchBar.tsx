@@ -19,7 +19,7 @@ onLodgingTypeChange,
   initialLodgingType
 }: ILodgingHomeSearchBarProps) {
   const pathname = usePathname();
-  const [selectedLodgingType, setSelectedLodgingType] = useState<string>("hotels-and-resorts");
+  const [selectedLodgingType, setSelectedLodgingType] = useState<string>("");
 
   // Efecto para sincronizar el toggle con la URL actual
   useEffect(() => {
