@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import { StandardTabs, type TabItem } from '@/components/shared/standard-fields-component/StandardTabs';
+import { ImageButtonSheet, ImageButtonSheetItem } from '@/components/shared/standard-fields-component/ImageButtonSheet';
 import FlightsSearchBar from './FlightsSearchBar';
 import CruisesSearchBar from './CruisesSearchBar';
 import BusesSearchBar from './BusesSearchBar';
 import { Plane, Ship, Bus } from 'lucide-react';
 
-import {  type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
+import { type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { defaultPassengers } from '@/lib/data/mock-datavf';
-import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 
 
 interface TransportsSearchBarProps {
@@ -41,6 +41,7 @@ export default function TransportsSearchBar({
   setPassengers: externalSetPassengers
 }: TransportsSearchBarProps) {
   const [activeTab, setActiveTab] = useState('flights');
+  
 
   // Usar pasajeros externos si están disponibles, sino usar estado local
   const [localPassengers, setLocalPassengers] = useState<PassengerGroup>(defaultPassengers);
@@ -48,7 +49,41 @@ export default function TransportsSearchBar({
   const passengers = externalPassengers || localPassengers;
   const setPassengers = externalSetPassengers || setLocalPassengers;
   
+  // Items para ImageButtonSheet (mobile/tablet)
+  const sheetItems: ImageButtonSheetItem[] = [
+    {
+      label: "Vuelos",
+      src: '/menu-icons/plane-icon.svg',
+      size: 64,
+      sheetContent: <FlightsSearchBar showSearchButton={false} />,
+      sheetTitle: "Búsqueda de Vuelos",
+      btnLabel: "Buscar Vuelos",
+      btnAction: () => console.log('Búsqueda de vuelos ejecutada'),
+      key: "flights"
+    },
+    {
+      label: "Cruceros",
+      src: '/menu-icons/cruise-icon.svg',
+      size: 64,
+      sheetContent: <CruisesSearchBar showSearchButton={false} />,
+      sheetTitle: "Búsqueda de Cruceros",
+      btnLabel: "Buscar Cruceros",
+      btnAction: () => console.log('Búsqueda de cruceros ejecutada'),
+      key: "cruises"
+    },
+    {
+      label: "Buses",
+      src: '/menu-icons/bus-icon.svg',
+      size: 64,
+      sheetContent: <BusesSearchBar showSearchButton={false} />,
+      sheetTitle: "Búsqueda de Buses",
+      btnLabel: "Buscar Buses",
+      btnAction: () => console.log('Búsqueda de buses ejecutada'),
+      key: "buses"
+    }
+  ];
 
+  // Items para StandardTabs (desktop)
   const tabItems: TabItem[] = [
     {
       value: 'flights',
@@ -75,17 +110,34 @@ export default function TransportsSearchBar({
 
   return (
     <div className="w-full">
-      <StandardTabs
-        useToggleGroupTabs={useToggleGroupTabsTransportType}
-        centerTabs={centerTabsTransportType}
-        tabTriggerClassName=''
-        items={tabItems}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        containerClassName="w-full"
-        useMobileSelect={showMobileSelect}
-        mobilePlaceholder="Selecciona tipo de transporte"
-      />
+      {/* Mobile/Tablet: ImageButtonSheet (lg hacia abajo) */}
+      <div className="lg:hidden">
+        <ImageButtonSheet
+          items={sheetItems}
+          label="Selecciona tu tipo de transporte"
+          labelClassName="text-lg font-semibold mb-4"
+          containerClassName="w-full"
+          gridColsClassName="grid-cols-3 gap-6"
+          buttonsContainerClassName="w-full justify-center" 
+          buttonClassName="w-full flex items-center justify-center"
+          buttonLabelClassName="text-sm font-medium mt-2"
+        />
+      </div>
+
+      {/* Desktop: StandardTabs (lg hacia arriba) */}
+      <div className="hidden lg:block">
+        <StandardTabs
+          useToggleGroupTabs={useToggleGroupTabsTransportType}
+          centerTabs={centerTabsTransportType}
+          tabTriggerClassName=''
+          items={tabItems}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          containerClassName="w-full"
+          useMobileSelect={showMobileSelect}
+          mobilePlaceholder="Selecciona tipo de transporte"
+        />
+      </div>
     </div>
   );
 }

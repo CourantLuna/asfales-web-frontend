@@ -52,7 +52,7 @@ export default function SearchMobileHome() {
   return (
     <div className="flex flex-col gap-6 p-4 pb-32">
       {/* Ofertas Especiales */}
-      <Card className="bg-blue-50 p-6 rounded-xl border-0 shadow-sm">
+      <Card className="bg-blue-50 p-4 rounded-xl border-0 shadow-sm">
         <div className="flex items-start gap-4">
           <div className="bg-blue-100 rounded-full p-3">
             <BadgePercent className="h-8 w-8 text-primary" />
@@ -86,7 +86,7 @@ export default function SearchMobileHome() {
               className="p-4 hover:bg-slate-50 transition-colors cursor-pointer"
             >
               <div className="flex gap-3">
-                <div className="bg-blue-50 rounded-full p-2">
+                <div className="bg-blue-50 rounded-full justify-center flex-col flex p-2 w-auto h-10 w-10 items-center">
                   {search.icon}
                 </div>
                 <div className="flex-1">
