@@ -107,13 +107,13 @@ const PriceRangeFilter = React.forwardRef<HTMLDivElement, PriceRangeFilterProps>
 
     // Generar output string dinámico
     const getOutputString = useCallback((currentMin: number, currentMax: number) => {
-      // Para modo single, solo mostrar el valor único si es diferente al mínimo por defecto
-      // if (mode === 'single') {
-      //   if (currentMin === min) {
-      //     return "";
-      //   }
-      //   return defaultFormatValue(currentMin);
-      // }
+      // Para modo single, solo mostrar el valor único si es diferente al máximo por defecto
+      if (mode === 'single') {
+        if (currentMin === max) {
+          return "";
+        }
+        return `menor a ${defaultFormatValue(currentMin)}`;
+      }
       
       // Modo range - lógica original
       // Si ambos están en los valores por defecto, output vacío
@@ -413,44 +413,56 @@ PriceRangeFilter.displayName = "PriceRangeFilter";
  * Hook para obtener el output string de un rango de precios
  */
 export const usePriceRangeOutputString = (
-  minValue: number,
-  maxValue: number,
+  currentMin: number,
+  currentMax: number,
   min: number,
   max: number,
-  currency: string = "$",
-  formatValue?: (value: number) => string
-) => {
-  // Formatear valor para mostrar
-  const defaultFormatValue = useCallback((val: number) => {
-    if (formatValue) return formatValue(val);
-    if (val >= 1000000) return `${currency}${(val / 1000000).toFixed(1)}M+`;
-    if (val >= 1000) return `${currency}${(val / 1000).toFixed(0)}K+`;
-    return `${currency}${val}`;
-  }, [currency, formatValue]);
-
-  return useCallback((currentMin: number = minValue, currentMax: number = maxValue) => {
-    // Si ambos están en los valores por defecto, output vacío
+  currency?: string,
+  unitSuffix?: string,
+  mode: 'range' | 'single' = 'range'
+): string => {
+      // Si ambos están en los valores por defecto, output vacío
     if (currentMin === min && currentMax === max) {
       return "";
     }
-    
+
     // Si min=0 y max < max, output es "menor a $max"
     if (currentMin === min && currentMax < max) {
-      return `menor a ${defaultFormatValue(currentMax)}`;
+      return `menor a ${defaultFormatValue(currentMax, currency, unitSuffix)}`;
     }
     
-    // Si min > 0 y max está en el valor por defecto, output es "mayor a $min"
+        // Si min > 0 y max está en el valor por defecto, output es "mayor a $min"
     if (currentMin > min && currentMax === max) {
-      return `mayor a ${defaultFormatValue(currentMin)}`;
+      return `mayor a ${defaultFormatValue(currentMin, currency, unitSuffix)}`;
     }
     
     // Si ambos min > 0 y max < max, output es "$min a $max"
     if (currentMin > min && currentMax < max) {
-      return `${defaultFormatValue(currentMin)} a ${defaultFormatValue(currentMax)}`;
+      return `${defaultFormatValue(currentMin, currency, unitSuffix)} a ${defaultFormatValue(currentMax, currency, unitSuffix)}`;
     }
+      
     
     return "";
-  }, [minValue, maxValue, min, max, defaultFormatValue]);
+
+  // Si min=0 y max
+   
+  
+  
+
 };
+
+const defaultFormatValue = (val: number, currency?: string, unitSuffix?: string): string => {
+  // Si hay unitSuffix, usar ese formato (ej: "2h", "30min")
+  if (unitSuffix) {
+    return `${val}${unitSuffix}`;
+  }
+  
+  // Formato para currency (ej: "$100", "$1K+")
+  if (val >= 1000000) return `${currency} ${(val / 1000000).toFixed(1)}M+`;
+  if (val >= 1000) return `${currency} ${(val / 1000).toFixed(0)}K+`;
+  return `${currency} ${val}`;
+}
+
+
 
 export { PriceRangeFilter };

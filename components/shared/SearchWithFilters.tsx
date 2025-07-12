@@ -17,6 +17,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { usePriceRangeOutputString } from "./standard-fields-component/PriceRangeFilter";
+import { de } from "date-fns/locale";
 
 interface DataSource {
   id: string;
@@ -225,7 +227,7 @@ export default function SearchWithFilters({
     } else if (filter.type === 'radio') {
       resetValue = ''; // Limpiar completamente
     } else if (filter.type === 'range') {
-      resetValue = [filter.min || 0, filter.max || 1000]; // Resetear a rango completo
+      resetValue = [filter.defaultValue[0] || 0, filter.defaultValue[1] || 1000]; // Resetear a rango completo
     } else if (filter.type === 'search') {
       resetValue = ''; // Limpiar completamente
     }
@@ -267,23 +269,23 @@ export default function SearchWithFilters({
         }
       }
       
-      // Chips para range (valores mínimo y máximo)
+      // Chips para range (usando output strings automáticos)
       else if (filter.type === 'range' && values && Array.isArray(values)) {
         const [min, max] = values;
         const defaultMin = filter.min || 0;
         const defaultMax = filter.max || 1000;
         const mode = filter.mode || 'range';
-        
+
         // Solo mostrar chip si los valores son diferentes a los defaults
         if (mode === 'single') {
           // Para modo single, solo mostrar si el valor es diferente al mínimo default
-          if (min !== defaultMin) {
+          if (max !== defaultMax) {
             let label: string;
             if (filter.unitSuffix) {
-              label = `${min}${filter.unitSuffix}`;
+              label = `menor a ${min}${filter.unitSuffix}`;
             } else {
               const currency = filter.currency || "$";
-              label = `${currency}${min}`;
+              label = `menor a ${currency}${min}`;
             }
             
             newChips.push({
@@ -295,16 +297,7 @@ export default function SearchWithFilters({
         } else {
           // Para modo range, mostrar si cualquiera de los valores es diferente
           if (min !== defaultMin || max !== defaultMax) {
-            let label: string;
-            
-            if (filter.unitSuffix) {
-              // Para unidades como "h", usar formato "2h - 24h"
-              label = `${min}${filter.unitSuffix} - ${max}${filter.unitSuffix}`;
-            } else {
-              // Para currency, usar formato "$100 - $500"
-              const currency = filter.currency || "$";
-              label = `${currency}${min} - ${currency}${max}`;
-            }
+           let label: string = usePriceRangeOutputString(min, max, defaultMin, defaultMax, filter.currency || "$", filter.unitSuffix, mode);
             
             newChips.push({
               id: `${filter.id}-range`,
@@ -313,6 +306,14 @@ export default function SearchWithFilters({
             });
           }
         }
+
+        //  let label: string = usePriceRangeOutputString(min, max, defaultMin, defaultMax, filter.currency );
+
+        //   newChips.push({
+        //       id: `${filter.id}-${mode}`,
+        //       label: label,
+        //       onRemove: () => resetFilter(filter.id)
+        //     });
       }
     });
     
@@ -432,22 +433,22 @@ export default function SearchWithFilters({
           type: "separator",
           className: filter.className
         });
-      }  else if (filter.type === 'checkbox' && options.length > 0) {
-      configFilters.push({
-        id: filter.id,
-        type: "checkbox",
-        label: filter.label || "",
-        options: options,
-        selectedValues: filterStates[filter.id] || [],
-        onChange: (value: any) => {
-          updateFilterState(filter.id, value);
-        },
-        showCounts: filter.showCounts !== false,
-        maxSelections: filter.maxSelections || 10,
-        initialVisibleCount: filter.initialVisibleCount || 5,
-        showMoreText: filter.showMoreText || "Ver más",
-        showLessText: filter.showLessText || "Ver menos"
-      });
+      } else if (filter.type === 'checkbox' && options.length > 0) {
+        configFilters.push({
+          id: filter.id,
+          type: "checkbox",
+          label: filter.label || "",
+          options: options,
+          selectedValues: filterStates[filter.id] || [],
+          onChange: (value: any) => {
+            updateFilterState(filter.id, value);
+          },
+          showCounts: filter.showCounts !== false,
+          maxSelections: filter.maxSelections || 10,
+          initialVisibleCount: filter.initialVisibleCount || 5,
+          showMoreText: filter.showMoreText || "Ver más",
+          showLessText: filter.showLessText || "Ver menos"
+        });
       } else if (filter.type === 'radio' && options.length > 0) {
         configFilters.push({
           id: filter.id,
@@ -478,27 +479,27 @@ export default function SearchWithFilters({
           step: filter.step || 1
         });
       } else if (filter.type === 'toggle' && options.length > 0) {
-      configFilters.push({
-        id: filter.id,
-        type: "toggle",
-        label: filter.label || "",
-        options: options,
-        value: filterStates[filter.id] || [],
-        onValueChange: (value: any) => {
-          updateFilterState(filter.id, value);
-        },
-        type_toggle: filter.type_toggle || "multiple",
-        variant: filter.variant || "vertical",
-        wrap: filter.wrap,
-        gridCols: filter.gridCols as any,
-        containerClassName: filter.containerClassName,
-        labelClassName: filter.labelClassName,
-        toggleGroupClassName: filter.toggleGroupClassName,
-        toggleItemClassName: filter.toggleItemClassName,
-        maxSelections: filter.maxSelections || 10
-      });
-    }
-  });
+        configFilters.push({
+          id: filter.id,
+          type: "toggle",
+          label: filter.label || "",
+          options: options,
+          value: filterStates[filter.id] || [],
+          onValueChange: (value: any) => {
+            updateFilterState(filter.id, value);
+          },
+          type_toggle: filter.type_toggle || "multiple",
+          variant: filter.variant || "vertical",
+          wrap: filter.wrap,
+          gridCols: filter.gridCols as any,
+          containerClassName: filter.containerClassName,
+          labelClassName: filter.labelClassName,
+          toggleGroupClassName: filter.toggleGroupClassName,
+          toggleItemClassName: filter.toggleItemClassName,
+          maxSelections: filter.maxSelections || 10
+        });
+      }
+    });
 
     return configFilters;
   }, [
