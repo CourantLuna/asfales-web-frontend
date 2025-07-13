@@ -21,7 +21,8 @@ import {
   UtensilsCrossed,
   Music2,
   Ship,
-  Bus
+  Bus,
+  Route
 } from 'lucide-react';
 import SearchWithFilters, { GenericFilterConfig } from '@/components/shared/SearchWithFilters';
 import { CheckboxOption } from '@/components/shared/standard-fields-component/CheckboxFilter';
@@ -332,6 +333,64 @@ export function ItinerariesResultsTemplate({
     }
   };
 
+  // Función para formatear nombres de ciudades
+  const formatCityName = (cityName: string) => {
+    if (!cityName) return "";
+    
+    // Primero verificar si es un código de aeropuerto (con o sin números)
+    const cleanInput = cityName.toLowerCase().replace(/\d+/g, ''); // Remover números
+    
+    // Casos especiales para códigos de aeropuerto (expandidos)
+    const airportCodes = {
+      'mde': 'Medellín',
+      'med': 'Medellín',
+      'bog': 'Bogotá',
+      'ctg': 'Cartagena',
+      'clo': 'Cali',
+      'smr': 'Santa Marta',
+      'puj': 'Punta Cana',
+      'sdq': 'Santo Domingo',
+      'sjj': 'San Juan de la Maguana',
+      'bcn': 'Barcelona',
+      'mad': 'Madrid',
+      'lis': 'Lisboa',
+      'cdg': 'París',
+      'lhr': 'Londres',
+      'fco': 'Roma',
+      'jfk': 'Nueva York',
+      'lax': 'Los Ángeles',
+      'mia': 'Miami',
+      'can': 'Cancún',
+      'gru': 'São Paulo',
+      'eze': 'Buenos Aires',
+      'scl': 'Santiago',
+      'lim': 'Lima',
+      'uio': 'Quito',
+      'gye': 'Guayaquil'
+    };
+    
+    // Verificar si el input limpio coincide con algún código de aeropuerto
+    if (cleanInput in airportCodes) {
+      return airportCodes[cleanInput as keyof typeof airportCodes];
+    }
+    
+    // Si no es un código de aeropuerto, aplicar formateo normal
+    const formatted = cityName
+      .toLowerCase()
+      .split(' ')
+      .map(word => {
+        // Casos especiales para preposiciones y artículos
+        const exceptions = ['de', 'del', 'la', 'el', 'los', 'las', 'y', 'e'];
+        if (exceptions.includes(word)) {
+          return word;
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(' ');
+    
+    return formatted;
+  };
+
   const formatDateRange = (start?: Date, end?: Date) => {
     if (!start || !end) return "Fechas flexibles";
     
@@ -355,41 +414,27 @@ export function ItinerariesResultsTemplate({
     <div className={`space-y-6 ${className}`}>
       {/* Header con información de búsqueda */}
       <div className="bg-white rounded-xl p-6 shadow-sm border">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">
-              Itinerarios de {origin} a {destination}
-            </h1>
+            <h2 className="text-xl font-semibold text-foreground">
+              Itinerarios de {formatCityName(origin)} a {formatCityName(destination)}
+            </h2>
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                <span>{origin} → {destination}</span>
+                <span>{formatCityName(origin)} → {formatCityName(destination)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span>{formatDateRange(startDate, endDate)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
+                <Route className="w-4 h-4" />
                 <span>{colombiaItineraries.length} itinerarios encontrados</span>
               </div>
             </div>
           </div>
           
-          {/* Badges de resumen */}
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="text-xs">
-              Desde $980 USD
-            </Badge>
-            <Badge variant="outline" className="text-xs">
-              9-32 días
-            </Badge>
-            <Badge variant="outline" className="text-xs">
-              <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" />
-              4.4+ rating
-            </Badge>
-          </div>
-        </div>
+         
       </div>
 
       {/* SearchWithFilters */}

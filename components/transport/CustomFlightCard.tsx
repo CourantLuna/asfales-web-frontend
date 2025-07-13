@@ -3,6 +3,9 @@
 import React, { Suspense } from 'react';
 import { Button } from '../ui/button';
 import { useIsMobile } from '../ui/use-mobile';
+import { Checkbox } from '../ui/checkbox';
+import { CheckCircle, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface FlightCardData {
   id: string;
@@ -26,6 +29,9 @@ interface CustomFlightCardProps {
   flight: FlightCardData;
   onDetailsClick?: (flight: FlightCardData) => void;
   onClick?: (flight: FlightCardData) => void;
+  onCompareChecked?: (id: string, checked: boolean) => void;
+  showCompareCheckbox?: boolean;
+  isCompareChecked?: boolean;
   className?: string;
 }
 
@@ -33,6 +39,9 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
   flight,
   onDetailsClick,
   onClick,
+  onCompareChecked,
+  showCompareCheckbox = false,
+  isCompareChecked = false,
   className = "",
 }) => {
   const handleDetailsClick = (e: React.MouseEvent) => {
@@ -44,21 +53,65 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
     onClick?.(flight);
   };
 
+  const handleCompareChange = (e: React.MouseEvent, checked: boolean) => {
+    e.stopPropagation();
+    onCompareChecked?.(flight.id, checked);
+     toast(checked ? "Añadido a comparar" : "Removido de comparar", {
+      description: flight?.airline,
+      duration: 1800,
+      icon: (
+        <span className="flex items-center justify-center">
+          {checked
+            ? <CheckCircle className="text-green-500 w-6 h-6" />
+            : <XCircle className="text-red-500 w-6 h-6" />}
+        </span>
+      ),
+      style: {
+        backgroundColor: checked ? "#D1FADF" : "#FEE2E2",
+        color: "#232323",
+        fontWeight: 500,
+        gap: "20px",
+        width: "300px",
+      },
+  });
+  };
+
   return (
     <Suspense
                 fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
               >
     <div
  className={`bg-white border border-gray-200 rounded-lg p-4  transition-shadow 
-  shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group ${className}`}
+  shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group relative ${className}`}
         onClick={handleCardClick}
     >
-      {/* Badge de ahorro si existe */}
+      <div className="flex items-center justify-between mb-3">
+
+        {/* Badge de ahorro si existe */}
       {flight.badge && (
         <div className="bg-yellow-400 text-black text-xs font-medium px-3 py-1 rounded-full inline-block mb-3">
           💰 {flight.badge}
         </div>
       )}
+
+
+        {/* Checkbox overlay para comparar */}
+      {showCompareCheckbox && (
+         <div 
+            className="backdrop-blur-sm shadow-sm transition-colors justify-end ml-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Checkbox
+            id={flight.id}
+              // checked={isCompareChecked}
+              onCheckedChange={(checked) => handleCompareChange(event as any, checked as boolean)}
+              className="w-4 h-4 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 "
+            />
+          </div>
+      )}
+
+      
+      </div>
 
       <div className='flex flex-row justify-content-between'>
       {/* Layout responsive: vertical en mobile, horizontal en desktop */}

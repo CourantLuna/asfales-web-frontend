@@ -58,7 +58,7 @@ const getDaysUntilTrip = (startDate: Date) => {
   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
   
   if (daysDiff < 0) {
-    return 'Finalizado';
+    return 'Completado';
   } else if (daysDiff === 0) {
     return 'Hoy';
   } else if (daysDiff === 1) {

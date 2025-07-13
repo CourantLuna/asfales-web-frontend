@@ -271,7 +271,7 @@ const navItems: {
       title="Itinerarios colaborativos"
       icon={Users}
     >
-      Donde te dejas guiar por otros.
+     Porque en equipo es mejor.
     </ListItem>
   </ul>
 ),

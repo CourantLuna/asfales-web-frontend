@@ -892,7 +892,13 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
           ads={flightAds}
           adsDirection="col"
           showAds={true}
-          enableCompareMode={false}
+          enableCompareMode={true}
+        compareConfig={{
+          titleOff: "Comparar vuelos",
+          subtitleOff: "Selecciona vuelos para comparar lado a lado",
+          titleOn: "Comparando vuelos",
+          subtitleOn: "Selecciona vuelos para comparar lado a lado"
+        }}
           onCardClick={handleCardClick}
           onFiltersChange={onFiltersChange}
           searchPlaceholder="Buscar vuelos por aerolínea, aeropuerto..."
@@ -926,6 +932,8 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
                     flight={flight}
                     onDetailsClick={handleDetailsClick}
                     onClick={() => cardClickHandler(index, row)}
+                      showCompareCheckbox={compareMode} // para mostrar el checkbox
+
                     className="hover:bg-blue-50 transition-colors cursor-pointer"
                   />
                 );
@@ -948,6 +956,8 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
                 progressColor="bg-primary"
               />
             </div>
+
+
           )}
         />
       );

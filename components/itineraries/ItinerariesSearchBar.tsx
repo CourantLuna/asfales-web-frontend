@@ -205,8 +205,9 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
 
     // Navegar con la URL construida
     const finalUrl = `/itineraries?${params.toString()}`;
+    
     console.log("🌐 Final itineraries URL:", finalUrl);
-    router.replace(finalUrl);
+    router.push(finalUrl);
   };
 
   return (
