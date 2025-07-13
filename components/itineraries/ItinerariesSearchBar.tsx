@@ -292,7 +292,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
 
 <ItinerarySharedCard
   id="mediterraneo-2025"
-  title="Ruta Mediterránea: Roma, Marsella, Palma, "
+  title="Ruta Mediterránea"
   coverImage="https://images.unsplash.com/photo-1482912308370-955c8b0c3b27?q=80&w=1578&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   startDate="5 Ago"
   endDate="14 Ago"

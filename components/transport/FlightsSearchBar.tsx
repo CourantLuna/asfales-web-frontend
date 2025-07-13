@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 
 import { StandardTabs, type TabItem } from '@/components/shared/standard-fields-component/StandardTabs';
@@ -54,6 +54,8 @@ export default function FlightsSearchBar({
 }: FlightsSearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+const basePath = pathname.endsWith('/transports') ? pathname : '/transports';
 
   const [activeTab, setActiveTab] = useState('roundtrip');
   const [cabinClass, setCabinClass] = useState('economy');
@@ -278,7 +280,7 @@ export default function FlightsSearchBar({
     }
 
     // Navegar con la URL construida
-    const finalUrl = `flights?${params.toString()}`;
+const finalUrl = `${basePath}/flights?${params.toString()}`;
     console.log("🌐 Final URL:", finalUrl);
     router.push(finalUrl);
   };
