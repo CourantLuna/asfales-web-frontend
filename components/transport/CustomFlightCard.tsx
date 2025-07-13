@@ -49,8 +49,9 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
                 fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
               >
     <div
-      className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer ${className}`}
-      onClick={handleCardClick}
+ className={`bg-white border border-gray-200 rounded-lg p-4  transition-shadow 
+  shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group ${className}`}
+        onClick={handleCardClick}
     >
       {/* Badge de ahorro si existe */}
       {flight.badge && (

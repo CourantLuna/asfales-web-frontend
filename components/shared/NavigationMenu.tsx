@@ -252,21 +252,21 @@ const navItems: {
       </NavigationMenuLink>
     </li>
     <ListItem
-      href="/itinerarios/predisenados"
+      href="/itineraries"
       title="Viajes prediseñados y paquetes"
       icon={Map}
     >
       Itinerarios listos para disfrutar.
     </ListItem>
     <ListItem
-      href="/itinerarios/personales"
+      href="/my-itineraries"
       title="Mis itinerarios"
       icon={FilePlus}
     >
       Crea y gestiona los tuyos, personales o compartidos.
     </ListItem>
     <ListItem
-      href="/itinerarios/colaborativos"
+     href="/collaborative-itineraries"
       title="Itinerarios colaborativos"
       icon={Users}
     >

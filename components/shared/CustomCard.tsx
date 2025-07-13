@@ -76,8 +76,8 @@ export default function CustomCard({
   flex rounded-2xl shadow-xl overflow-hidden bg-background
   ${orientationCard === "horizontal" ? "flex-row" : "flex-col"}
   ${className}
-  hover:shadow-2xl hover:shadow-primary/30 transition-shadow duration-300  
-  cursor-pointer
+   transition-shadow 
+  shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group
 `}>
 
 

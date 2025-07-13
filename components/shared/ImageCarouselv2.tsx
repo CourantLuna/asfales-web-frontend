@@ -157,7 +157,7 @@ export function ImageCarouselv2({
                       src={imgUrl}
                       fill
                       alt={`Imagen ${idx + 1}`}
-                      className={`w-full h-full ${heightClass}`}
+                      className={`w-full h-full transition-transform duration-300 group-hover:scale-110 ${heightClass}`}
                       style={{ objectFit: "cover" }}
                     />
                   </CardContent>

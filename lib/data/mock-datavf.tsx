@@ -348,7 +348,664 @@ export const getExperiencesDataSources = (): StandardSearchDataSource[] => {
 };
 
 // ========================================
-// TIPOS AUXILIARES
+// ITINERARIOS DE VIAJE - SANTO DOMINGO A COLOMBIA
+// ========================================
+
+export interface ItineraryPackage {
+  id: string;
+  title: string;
+  coverImage: string;
+  startDate: string;
+  endDate: string;
+  price: string;
+  originalPrice?: string;
+  discount?: number;
+  creator: {
+    id: string;
+    name: string;
+    username: string;
+    avatarUrl: string;
+  };
+  participants: Array<{
+    id: string;
+    name: string;
+    avatarUrl: string;
+  }>;
+  cities: string[];
+  lodgingCount: number;
+  experienceCount: number;
+  transportSummary: Array<{
+    mode: "flight" | "bus" | "cruise";
+    count: number;
+  }>;
+  isPriceEstimated?: boolean;
+  duration: string;
+  highlights: string[];
+  rating: number;
+  reviewCount: number;
+  availableSpots: number;
+  totalSpots: number;
+}
+
+export const colombiaItineraries: ItineraryPackage[] = [
+  {
+    id: "colombia-explorer-2025",
+    title: "Colombia Explorer: Bogotá, Medellín y Cartagena",
+    coverImage: "https://images.unsplash.com/photo-1605391833963-4ad669be6e94?w=800&q=80",
+    startDate: "15 Ago",
+    endDate: "28 Ago",
+    price: "$1,850 USD",
+    originalPrice: "$2,100 USD",
+    discount: 12,
+    duration: "14 días",
+    creator: {
+      id: "u-carlosviajes",
+      name: "Carlos Rodríguez",
+      username: "carlosviajes",
+      avatarUrl: "https://i.pravatar.cc/150?img=12"
+    },
+    participants: [
+      { id: "p1", name: "María", avatarUrl: "https://i.pravatar.cc/150?img=25" },
+      { id: "p2", name: "José", avatarUrl: "https://i.pravatar.cc/150?img=32" },
+      { id: "p3", name: "Ana", avatarUrl: "https://i.pravatar.cc/150?img=47" },
+      { id: "p4", name: "Pedro", avatarUrl: "https://i.pravatar.cc/150?img=18" },
+      { id: "p5", name: "Carmen", avatarUrl: "https://i.pravatar.cc/150?img=29" }
+    ],
+    cities: ["Bogotá", "Medellín", "Cartagena"],
+    lodgingCount: 4,
+    experienceCount: 12,
+    transportSummary: [
+      { mode: "flight", count: 2 },
+      { mode: "bus", count: 3 }
+    ],
+    highlights: ["Museo del Oro", "Comuna 13", "Ciudad Amurallada", "Café colombiano"],
+    rating: 4.8,
+    reviewCount: 34,
+    availableSpots: 3,
+    totalSpots: 12
+  },
+  {
+    id: "caribe-colombia-2025",
+    title: "Caribe Colombiano: Cartagena y Santa Marta",
+    coverImage: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    startDate: "22 Ago",
+    endDate: "31 Ago",
+    price: "$1,290 USD",
+    duration: "10 días",
+    creator: {
+      id: "u-luzcaribe",
+      name: "Luz Marina",
+      username: "luzcaribe",
+      avatarUrl: "https://i.pravatar.cc/150?img=44"
+    },
+    participants: [
+      { id: "p6", name: "Roberto", avatarUrl: "https://i.pravatar.cc/150?img=51" },
+      { id: "p7", name: "Elena", avatarUrl: "https://i.pravatar.cc/150?img=16" },
+      { id: "p8", name: "Miguel", avatarUrl: "https://i.pravatar.cc/150?img=22" }
+    ],
+    cities: ["Cartagena", "Santa Marta", "Tayrona"],
+    lodgingCount: 3,
+    experienceCount: 8,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 2 }
+    ],
+    highlights: ["Playa Tayrona", "Ciudad Walled", "Castillo San Felipe", "Gastronomía costeña"],
+    rating: 4.9,
+    reviewCount: 28,
+    availableSpots: 5,
+    totalSpots: 10
+  },
+  {
+    id: "aventura-colombia-2025",
+    title: "Aventura en los Andes: Bogotá y San Gil",
+    coverImage: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80",
+    startDate: "5 Sep",
+    endDate: "16 Sep",
+    price: "$1,650 USD",
+    duration: "12 días",
+    creator: {
+      id: "u-aventuracol",
+      name: "Diego Morales",
+      username: "aventuracol",
+      avatarUrl: "https://i.pravatar.cc/150?img=33"
+    },
+    participants: [
+      { id: "p9", name: "Sofia", avatarUrl: "https://i.pravatar.cc/150?img=19" },
+      { id: "p10", name: "Andrés", avatarUrl: "https://i.pravatar.cc/150?img=27" },
+      { id: "p11", name: "Valeria", avatarUrl: "https://i.pravatar.cc/150?img=38" },
+      { id: "p12", name: "Luis", avatarUrl: "https://i.pravatar.cc/150?img=14" }
+    ],
+    cities: ["Bogotá", "San Gil", "Villa de Leyva"],
+    lodgingCount: 4,
+    experienceCount: 15,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 4 }
+    ],
+    highlights: ["Rafting", "Parapente", "Rappel", "Arquitectura colonial"],
+    rating: 4.7,
+    reviewCount: 19,
+    availableSpots: 2,
+    totalSpots: 8
+  },
+  {
+    id: "cultural-colombia-2025",
+    title: "Ruta Cultural: Bogotá, Armenia y Manizales",
+    coverImage: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80",
+    startDate: "18 Sep",
+    endDate: "30 Sep",
+    price: "$1,750 USD",
+    isPriceEstimated: true,
+    duration: "13 días",
+    creator: {
+      id: "u-culturacol",
+      name: "Patricia Vega",
+      username: "culturacol",
+      avatarUrl: "https://i.pravatar.cc/150?img=26"
+    },
+    participants: [
+      { id: "p13", name: "Fernando", avatarUrl: "https://i.pravatar.cc/150?img=41" },
+      { id: "p14", name: "Isabella", avatarUrl: "https://i.pravatar.cc/150?img=35" },
+      { id: "p15", name: "Rodrigo", avatarUrl: "https://i.pravatar.cc/150?img=28" }
+    ],
+    cities: ["Bogotá", "Armenia", "Manizales", "Salento"],
+    lodgingCount: 5,
+    experienceCount: 11,
+    transportSummary: [
+      { mode: "flight", count: 2 },
+      { mode: "bus", count: 3 }
+    ],
+    highlights: ["Eje Cafetero", "Cocora Valley", "Termales", "Museos"],
+    rating: 4.6,
+    reviewCount: 15,
+    availableSpots: 4,
+    totalSpots: 10
+  },
+  {
+    id: "relax-colombia-2025",
+    title: "Relax Total: Cartagena y San Andrés",
+    coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+    startDate: "8 Oct",
+    endDate: "18 Oct",
+    price: "$2,150 USD",
+    duration: "11 días",
+    creator: {
+      id: "u-relaxcol",
+      name: "Sandra López",
+      username: "relaxcol",
+      avatarUrl: "https://i.pravatar.cc/150?img=49"
+    },
+    participants: [
+      { id: "p16", name: "Julio", avatarUrl: "https://i.pravatar.cc/150?img=31" },
+      { id: "p17", name: "Claudia", avatarUrl: "https://i.pravatar.cc/150?img=42" },
+      { id: "p18", name: "Gustavo", avatarUrl: "https://i.pravatar.cc/150?img=23" },
+      { id: "p19", name: "Mónica", avatarUrl: "https://i.pravatar.cc/150?img=36" },
+      { id: "p20", name: "Raúl", avatarUrl: "https://i.pravatar.cc/150?img=15" },
+      { id: "p21", name: "Teresa", avatarUrl: "https://i.pravatar.cc/150?img=48" }
+    ],
+    cities: ["Cartagena", "San Andrés"],
+    lodgingCount: 2,
+    experienceCount: 6,
+    transportSummary: [
+      { mode: "flight", count: 2 },
+      { mode: "cruise", count: 1 }
+    ],
+    highlights: ["Playas paradisíacas", "Hoyo Soplador", "Acuario", "Spa resorts"],
+    rating: 4.9,
+    reviewCount: 42,
+    availableSpots: 1,
+    totalSpots: 8
+  },
+  {
+    id: "economico-colombia-2025",
+    title: "Colombia Económico: Bogotá y Medellín",
+    coverImage: "https://images.unsplash.com/photo-1610028117011-f07eb7f99c0e?w=800&q=80",
+    startDate: "25 Oct",
+    endDate: "2 Nov",
+    price: "$980 USD",
+    duration: "9 días",
+    creator: {
+      id: "u-economicocol",
+      name: "Javier Ruiz",
+      username: "economicocol",
+      avatarUrl: "https://i.pravatar.cc/150?img=17"
+    },
+    participants: [
+      { id: "p22", name: "David", avatarUrl: "https://i.pravatar.cc/150?img=39" },
+      { id: "p23", name: "Laura", avatarUrl: "https://i.pravatar.cc/150?img=24" }
+    ],
+    cities: ["Bogotá", "Medellín"],
+    lodgingCount: 2,
+    experienceCount: 7,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 2 }
+    ],
+    highlights: ["Free walking tours", "Hostales céntricos", "Comida local", "Transporte público"],
+    rating: 4.4,
+    reviewCount: 8,
+    availableSpots: 6,
+    totalSpots: 15
+  },
+  {
+    id: "llanos-orientales-2025",
+    title: "Llanos Orientales: Villavicencio y Meta",
+    coverImage: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80",
+    startDate: "12 Nov",
+    endDate: "20 Nov",
+    price: "$1,200 USD",
+    duration: "9 días",
+    creator: {
+      id: "u-llanero",
+      name: "Ricardo Vargas",
+      username: "llanero",
+      avatarUrl: "https://i.pravatar.cc/150?img=52"
+    },
+    participants: [
+      { id: "p24", name: "Camila", avatarUrl: "https://i.pravatar.cc/150?img=45" },
+      { id: "p25", name: "Santiago", avatarUrl: "https://i.pravatar.cc/150?img=13" }
+    ],
+    cities: ["Villavicencio", "Puerto López", "Yopal"],
+    lodgingCount: 3,
+    experienceCount: 9,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 3 }
+    ],
+    highlights: ["Joropo", "Ganadería", "Río Meta", "Cultura llanera"],
+    rating: 4.5,
+    reviewCount: 12,
+    availableSpots: 4,
+    totalSpots: 8
+  },
+  {
+    id: "amazonas-aventura-2025",
+    title: "Amazonas Profundo: Leticia y Puerto Nariño",
+    coverImage: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    startDate: "5 Dic",
+    endDate: "15 Dic",
+    price: "$2,300 USD",
+    duration: "11 días",
+    creator: {
+      id: "u-amazonico",
+      name: "Elena Moreno",
+      username: "amazonico",
+      avatarUrl: "https://i.pravatar.cc/150?img=37"
+    },
+    participants: [
+      { id: "p26", name: "Mateo", avatarUrl: "https://i.pravatar.cc/150?img=21" },
+      { id: "p27", name: "Daniela", avatarUrl: "https://i.pravatar.cc/150?img=43" },
+      { id: "p28", name: "Sebastián", avatarUrl: "https://i.pravatar.cc/150?img=11" }
+    ],
+    cities: ["Leticia", "Puerto Nariño", "Isla de los Micos"],
+    lodgingCount: 2,
+    experienceCount: 14,
+    transportSummary: [
+      { mode: "flight", count: 2 },
+      { mode: "cruise", count: 2 }
+    ],
+    highlights: ["Selva amazónica", "Delfines rosados", "Comunidades indígenas", "Canopy"],
+    rating: 4.9,
+    reviewCount: 18,
+    availableSpots: 2,
+    totalSpots: 6
+  },
+  {
+    id: "pacifico-colombiano-2025",
+    title: "Pacífico Colombiano: Nuquí y Bahía Solano",
+    coverImage: "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&q=80",
+    startDate: "18 Dic",
+    endDate: "28 Dic",
+    price: "$1,950 USD",
+    duration: "11 días",
+    creator: {
+      id: "u-pacifico",
+      name: "Alejandra Costa",
+      username: "pacifico",
+      avatarUrl: "https://i.pravatar.cc/150?img=46"
+    },
+    participants: [
+      { id: "p29", name: "Felipe", avatarUrl: "https://i.pravatar.cc/150?img=20" },
+      { id: "p30", name: "Valentina", avatarUrl: "https://i.pravatar.cc/150?img=34" },
+      { id: "p31", name: "Nicolás", avatarUrl: "https://i.pravatar.cc/150?img=50" }
+    ],
+    cities: ["Nuquí", "Bahía Solano", "El Valle"],
+    lodgingCount: 3,
+    experienceCount: 10,
+    transportSummary: [
+      { mode: "flight", count: 2 },
+      { mode: "bus", count: 1 }
+    ],
+    highlights: ["Avistamiento ballenas", "Playas vírgenes", "Selva tropical", "Pesca deportiva"],
+    rating: 4.7,
+    reviewCount: 25,
+    availableSpots: 3,
+    totalSpots: 10
+  },
+  {
+    id: "boyaca-colonial-2025",
+    title: "Boyacá Colonial: Villa de Leyva y Tunja",
+    coverImage: "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=800&q=80",
+    startDate: "8 Ene",
+    endDate: "16 Ene",
+    price: "$1,350 USD",
+    duration: "9 días",
+    creator: {
+      id: "u-colonial",
+      name: "Andrés Molina",
+      username: "colonial",
+      avatarUrl: "https://i.pravatar.cc/150?img=40"
+    },
+    participants: [
+      { id: "p32", name: "Lucía", avatarUrl: "https://i.pravatar.cc/150?img=48" },
+      { id: "p33", name: "Gabriel", avatarUrl: "https://i.pravatar.cc/150?img=19" }
+    ],
+    cities: ["Villa de Leyva", "Tunja", "Ráquira", "Chiquinquirá"],
+    lodgingCount: 3,
+    experienceCount: 8,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 3 }
+    ],
+    highlights: ["Arquitectura colonial", "Artesanías", "Paleontología", "Pueblos patrimonio"],
+    rating: 4.6,
+    reviewCount: 16,
+    availableSpots: 5,
+    totalSpots: 12
+  },
+  {
+    id: "santander-extremo-2025",
+    title: "Santander Extremo: San Gil y Barichara",
+    coverImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    startDate: "22 Ene",
+    endDate: "2 Feb",
+    price: "$1,580 USD",
+    duration: "12 días",
+    creator: {
+      id: "u-extremo",
+      name: "Carolina Ruiz",
+      username: "extremo",
+      avatarUrl: "https://i.pravatar.cc/150?img=33"
+    },
+    participants: [
+      { id: "p34", name: "Martín", avatarUrl: "https://i.pravatar.cc/150?img=15" },
+      { id: "p35", name: "Paola", avatarUrl: "https://i.pravatar.cc/150?img=41" },
+      { id: "p36", name: "Esteban", avatarUrl: "https://i.pravatar.cc/150?img=27" }
+    ],
+    cities: ["San Gil", "Barichara", "Socorro", "Curití"],
+    lodgingCount: 4,
+    experienceCount: 16,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 4 }
+    ],
+    highlights: ["Deportes extremos", "Pueblo más bello", "Cañón del Chicamocha", "Espeleología"],
+    rating: 4.8,
+    reviewCount: 31,
+    availableSpots: 2,
+    totalSpots: 8
+  },
+  {
+    id: "tolima-nevados-2025",
+    title: "Tolima y Nevados: Ibagué y Parque Nacional",
+    coverImage: "https://images.unsplash.com/photo-1464822759844-d150baec93d5?w=800&q=80",
+    startDate: "15 Feb",
+    endDate: "25 Feb",
+    price: "$1,750 USD",
+    duration: "11 días",
+    creator: {
+      id: "u-nevados",
+      name: "Miguel Torres",
+      username: "nevados",
+      avatarUrl: "https://i.pravatar.cc/150?img=12"
+    },
+    participants: [
+      { id: "p37", name: "Andrea", avatarUrl: "https://i.pravatar.cc/150?img=29" },
+      { id: "p38", name: "Julián", avatarUrl: "https://i.pravatar.cc/150?img=16" }
+    ],
+    cities: ["Ibagué", "Salento", "Santa Isabel", "Nevado del Ruiz"],
+    lodgingCount: 4,
+    experienceCount: 13,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 5 }
+    ],
+    highlights: ["Nevado del Ruiz", "Aguas termales", "Café especial", "Trekking alta montaña"],
+    rating: 4.7,
+    reviewCount: 22,
+    availableSpots: 4,
+    totalSpots: 10
+  },
+  {
+    id: "huila-arqueologico-2025",
+    title: "Huila Arqueológico: San Agustín y Tierradentro",
+    coverImage: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6b?w=800&q=80",
+    startDate: "10 Mar",
+    endDate: "20 Mar",
+    price: "$1,450 USD",
+    duration: "11 días",
+    creator: {
+      id: "u-arqueologico",
+      name: "Patricia Sánchez",
+      username: "arqueologico",
+      avatarUrl: "https://i.pravatar.cc/150?img=44"
+    },
+    participants: [
+      { id: "p39", name: "Carlos", avatarUrl: "https://i.pravatar.cc/150?img=23" },
+      { id: "p40", name: "María José", avatarUrl: "https://i.pravatar.cc/150?img=32" },
+      { id: "p41", name: "Ricardo", avatarUrl: "https://i.pravatar.cc/150?img=18" }
+    ],
+    cities: ["San Agustín", "Tierradentro", "Pitalito", "Isnos"],
+    lodgingCount: 4,
+    experienceCount: 12,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 4 }
+    ],
+    highlights: ["Parque Arqueológico", "Estatuas precolombinas", "Tumbas ancestrales", "Desierto de la Tatacoa"],
+    rating: 4.6,
+    reviewCount: 19,
+    availableSpots: 3,
+    totalSpots: 9
+  },
+  {
+    id: "nariño-frontera-2025",
+    title: "Nariño Frontera: Pasto y Las Lajas",
+    coverImage: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80",
+    startDate: "5 Abr",
+    endDate: "14 Abr",
+    price: "$1,320 USD",
+    duration: "10 días",
+    creator: {
+      id: "u-frontera",
+      name: "Jorge Delgado",
+      username: "frontera",
+      avatarUrl: "https://i.pravatar.cc/150?img=51"
+    },
+    participants: [
+      { id: "p42", name: "Sofía", avatarUrl: "https://i.pravatar.cc/150?img=25" },
+      { id: "p43", name: "Alejandro", avatarUrl: "https://i.pravatar.cc/150?img=14" }
+    ],
+    cities: ["Pasto", "Ipiales", "Las Lajas", "Túquerres"],
+    lodgingCount: 3,
+    experienceCount: 9,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 3 }
+    ],
+    highlights: ["Santuario Las Lajas", "Carnaval de Negros y Blancos", "Volcán Galeras", "Cultura andina"],
+    rating: 4.5,
+    reviewCount: 14,
+    availableSpots: 6,
+    totalSpots: 12
+  },
+  {
+    id: "cesar-vallenato-2025",
+    title: "Cesar Vallenato: Valledupar y Provincia",
+    coverImage: "https://images.unsplash.com/photo-1493225457124-e506b85b6dd0?w=800&q=80",
+    startDate: "28 Abr",
+    endDate: "6 May",
+    price: "$1,180 USD",
+    duration: "9 días",
+    creator: {
+      id: "u-vallenato",
+      name: "Camilo Zabaleta",
+      username: "vallenato",
+      avatarUrl: "https://i.pravatar.cc/150?img=30"
+    },
+    participants: [
+      { id: "p44", name: "Isabella", avatarUrl: "https://i.pravatar.cc/150?img=47" },
+      { id: "p45", name: "Diego", avatarUrl: "https://i.pravatar.cc/150?img=26" },
+      { id: "p46", name: "Natalia", avatarUrl: "https://i.pravatar.cc/150?img=38" }
+    ],
+    cities: ["Valledupar", "La Paz", "Pueblo Bello", "Manaure"],
+    lodgingCount: 3,
+    experienceCount: 8,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 2 }
+    ],
+    highlights: ["Festival Vallenato", "Casa de Rafael Escalona", "Sierra Nevada", "Música tradicional"],
+    rating: 4.7,
+    reviewCount: 20,
+    availableSpots: 4,
+    totalSpots: 10
+  },
+  {
+    id: "choco-biodiversidad-2025",
+    title: "Chocó Biodiversidad: Quibdó y Atrato",
+    coverImage: "https://images.unsplash.com/photo-1502780402662-acc01917424e?w=800&q=80",
+    startDate: "15 May",
+    endDate: "26 May",
+    price: "$2,100 USD",
+    duration: "12 días",
+    creator: {
+      id: "u-biodiversidad",
+      name: "Ana Lucía Perea",
+      username: "biodiversidad",
+      avatarUrl: "https://i.pravatar.cc/150?img=49"
+    },
+    participants: [
+      { id: "p47", name: "Manuel", avatarUrl: "https://i.pravatar.cc/150?img=22" },
+      { id: "p48", name: "Cristina", avatarUrl: "https://i.pravatar.cc/150?img=35" }
+    ],
+    cities: ["Quibdó", "Acandí", "Capurganá", "Río Atrato"],
+    lodgingCount: 4,
+    experienceCount: 15,
+    transportSummary: [
+      { mode: "flight", count: 2 },
+      { mode: "cruise", count: 2 }
+    ],
+    highlights: ["Hotspot biodiversidad", "Cultura afrocolombiana", "Selva tropical", "Ballenas jorobadas"],
+    rating: 4.8,
+    reviewCount: 17,
+    availableSpots: 2,
+    totalSpots: 6
+  },
+  {
+    id: "guajira-desierto-2025",
+    title: "Guajira Mágica: Cabo de la Vela y Punta Gallinas",
+    coverImage: "https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=800&q=80",
+    startDate: "8 Jun",
+    endDate: "18 Jun",
+    price: "$1,850 USD",
+    duration: "11 días",
+    creator: {
+      id: "u-guajira",
+      name: "Rafael Pushaina",
+      username: "guajira",
+      avatarUrl: "https://i.pravatar.cc/150?img=28"
+    },
+    participants: [
+      { id: "p49", name: "Laura", avatarUrl: "https://i.pravatar.cc/150?img=42" },
+      { id: "p50", name: "Tomás", avatarUrl: "https://i.pravatar.cc/150?img=31" },
+      { id: "p51", name: "Camila", avatarUrl: "https://i.pravatar.cc/150?img=24" }
+    ],
+    cities: ["Riohacha", "Cabo de la Vela", "Punta Gallinas", "Uribia"],
+    lodgingCount: 3,
+    experienceCount: 11,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 4 }
+    ],
+    highlights: ["Punto más norte de Sudamérica", "Cultura Wayuu", "Desierto y mar", "Atardeceres únicos"],
+    rating: 4.9,
+    reviewCount: 35,
+    availableSpots: 1,
+    totalSpots: 8
+  },
+  {
+    id: "caldas-paisaje-2025",
+    title: "Caldas Paisaje Cafetero: Manizales y Chinchiná",
+    coverImage: "https://images.unsplash.com/photo-1497888329096-51c27beff665?w=800&q=80",
+    startDate: "25 Jun",
+    endDate: "5 Jul",
+    price: "$1,680 USD",
+    duration: "11 días",
+    creator: {
+      id: "u-paisaje",
+      name: "Gloria Henao",
+      username: "paisaje",
+      avatarUrl: "https://i.pravatar.cc/150?img=36"
+    },
+    participants: [
+      { id: "p52", name: "Juan Pablo", avatarUrl: "https://i.pravatar.cc/150?img=17" },
+      { id: "p53", name: "Mariana", avatarUrl: "https://i.pravatar.cc/150?img=45" }
+    ],
+    cities: ["Manizales", "Chinchiná", "Neira", "Villamaría"],
+    lodgingCount: 4,
+    experienceCount: 12,
+    transportSummary: [
+      { mode: "flight", count: 1 },
+      { mode: "bus", count: 3 }
+    ],
+    highlights: ["Paisaje Cultural Cafetero", "Recorrido fincas", "Nevado del Ruiz", "Teleférico"],
+    rating: 4.6,
+    reviewCount: 27,
+    availableSpots: 5,
+    totalSpots: 12
+  },
+  {
+    id: "completo-colombia-2025",
+    title: "Colombia Completa: Gran Tour Nacional",
+    coverImage: "https://images.unsplash.com/photo-1605391833963-4ad669be6e94?w=800&q=80",
+    startDate: "15 Jul",
+    endDate: "15 Ago",
+    price: "$4,200 USD",
+    originalPrice: "$4,800 USD",
+    discount: 15,
+    duration: "32 días",
+    creator: {
+      id: "u-completo",
+      name: "Fernando Gutiérrez",
+      username: "completo",
+      avatarUrl: "https://i.pravatar.cc/150?img=39"
+    },
+    participants: [
+      { id: "p54", name: "Adriana", avatarUrl: "https://i.pravatar.cc/150?img=50" },
+      { id: "p55", name: "Pablo", avatarUrl: "https://i.pravatar.cc/150?img=13" },
+      { id: "p56", name: "Verónica", avatarUrl: "https://i.pravatar.cc/150?img=21" },
+      { id: "p57", name: "Álvaro", avatarUrl: "https://i.pravatar.cc/150?img=43" }
+    ],
+    cities: ["Bogotá", "Medellín", "Cartagena", "Cali", "Bucaramanga", "Pereira", "Manizales", "Santa Marta"],
+    lodgingCount: 12,
+    experienceCount: 45,
+    transportSummary: [
+      { mode: "flight", count: 8 },
+      { mode: "bus", count: 12 },
+      { mode: "cruise", count: 2 }
+    ],
+    highlights: ["Todas las regiones", "Completa inmersión cultural", "Diversidad gastronómica", "Paisajes únicos"],
+    rating: 4.9,
+    reviewCount: 52,
+    availableSpots: 1,
+    totalSpots: 6
+  }
+];
+
+// ========================================
+// FUNCIONES HELPER PARA ITINERARIOS
 // ========================================
 
 export type MockDataType = {
@@ -367,7 +1024,7 @@ export type MockDataType = {
 /**
  * Exporta todos los datos mock en un solo objeto
  */
-export const mockData: MockDataType = {
+export const mockData = {
   searchDataSources,
   lodgingOptions,
   experiencesOptions,
@@ -377,5 +1034,6 @@ export const mockData: MockDataType = {
   defaultPassengers,
   defaultSelectedLodgingTypes,
   defaultSelectedTransportTypes,
-  defaultSelectedExperiences
+  defaultSelectedExperiences,
+  colombiaItineraries
 };

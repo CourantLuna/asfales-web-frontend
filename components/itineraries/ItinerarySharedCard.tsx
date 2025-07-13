@@ -74,11 +74,13 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
 
   return (
     <Suspense fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}>
-<Card className="w-full max-w-sm overflow-hidden border shadow-sm hover:shadow-md transition rounded-2xl">
-      {/* Imagen más grande con overlay */}
-      <div className="relative h-64 w-full">
+  <Card className="w-full rounded-2xl overflow-hidden border shadow-sm hover:shadow-xl transition-all duration-300 transform hover:scale-[1.015] bg-white cursor-pointer group">
+          {/* Imagen más grande con overlay */}
+      <div className="relative h-64 w-full overflow-hidden">
+
         <div
-          className="h-full w-full bg-cover bg-center"
+          className="h-full w-full bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+
           style={{ backgroundImage: `url(${coverImage})` }}
         />
         
@@ -210,7 +212,7 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
         </div>
 
         <Link href={`/viajes/${id}`}>
-          <Button size="sm">Solicitar unirme</Button>
+          <Button size="sm">Unirme</Button>
         </Link>
       </CardFooter>
     </Card>

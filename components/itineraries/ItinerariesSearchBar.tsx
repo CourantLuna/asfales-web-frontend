@@ -290,56 +290,6 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
       )}
       </div>
 
-<ItinerarySharedCard
-  id="mediterraneo-2025"
-  title="Ruta Mediterránea"
-  coverImage="https://images.unsplash.com/photo-1482912308370-955c8b0c3b27?q=80&w=1578&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  startDate="5 Ago"
-  endDate="14 Ago"
-  price="$1,780 USD"
-  creator={{
-    id: "u-heyditravel",
-    name: "Heydi",
-    username: "heyditravel",
-    avatarUrl: "https://i.pravatar.cc/150?img=47"
-  }}
-  participants={[
-    { id: "u1", name: "Alex", avatarUrl: "https://i.pravatar.cc/150?img=18" },
-    { id: "u2", name: "Lucía", avatarUrl: "https://i.pravatar.cc/150?img=30" },
-    { id: "u3", name: "Tomás", avatarUrl: "https://i.pravatar.cc/150?img=23" },
-    { id: "u4", name: "Isabel", avatarUrl: "https://i.pravatar.cc/150?img=9" },
-    { id: "u5", name: "Leo", avatarUrl: "https://i.pravatar.cc/150?img=66" }
-  ]}
-  cities={["Roma", "Marsella", "Palma de Mallorca", "Barcelona", "Valencia"]}
-  transportSummary={[
-    { mode: 'flight', count: 1 },
-    { mode: 'bus', count: 1 },
-  ]}
-  lodgingCount={2}
-  experienceCount={5}
-  isPriceEstimated={true}
-/>
-
-
-<ItinerariesPrivateCard
-  id="1"
-  title="Aventura Europea Completa"
-  imageUrl="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&q=80"
-  startDate={new Date('2025-08-15')}
-  endDate={new Date('2025-08-30')}
-  accommodations={[
-    { type: 'hotel', typeName: 'Hotel', count: 1 },
-    { type: 'apartment', typeName: 'Apartamento', count: 1 }
-  ]}
-  transports={[
-    { type: 'flight', typeName: 'Vuelo', count: 2 },
-  ]}
-  experiences={{ count: 8 }}
-  estimatedBudgetPerPerson={2450}
-  currency="USD"
-  onInvitePeople={(id) => console.log('Invitar al itinerario:', id)}
-  onClick={(id) => console.log('Ver detalles del itinerario:', id)}
-/>
 
 
       
