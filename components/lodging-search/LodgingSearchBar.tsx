@@ -140,7 +140,7 @@ export default function LodgingSearchBar({
         0
       );
       const totalChildren = guestRooms.reduce(
-        (sum, room) => sum + room.children?.length || 0,
+        (sum, room) => sum + (room.children?.length || 0),
         0
       );
 

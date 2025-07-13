@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import TransportSearchBar from "@/components/transport/TransportsSearchBar";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
@@ -20,7 +21,9 @@ export default function TransportLayout({
       ></ThemeProvider>
       <div className="w-full pt-1 pb-2 p-4 lg:p-6 flex-1 flex flex-col h-full max-w-7xl mx-auto">
             <div className="w-full flex-1 flex flex-col ">
-        <TransportSearchBar />
+        <Suspense fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}>
+          <TransportSearchBar />
+        </Suspense>
                     {children}
 
             </div>

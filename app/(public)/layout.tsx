@@ -9,20 +9,15 @@ import Footer from "@/components/shared/Footer";
 import ChatWidget from "@/components/shared/ChatWidget";
 import LandingSkeleton from "@/components/landing/LandingSkeleton";
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { TopBarTabs } from "@/components/shared/TopBarTabs";
 import FooterMobile from "@/components/shared/FooterMobile";
 import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
-// import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function LayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -48,8 +43,19 @@ export default function RootLayout({
         <Footer />
         <ChatWidget />
         <ScrollToTopFAB threshold={2500} scrollToPosition={1000} duration={1200} />
-        {/* <ScrollToTopFAB /> */}
       </ThemeProvider>
     </div>
+  );
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LayoutContent>{children}</LayoutContent>
+    </Suspense>
   );
 }
