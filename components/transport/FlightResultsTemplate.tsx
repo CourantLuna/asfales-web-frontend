@@ -5,6 +5,8 @@ import CustomFlightCard from './CustomFlightCard';
 import { Breadcrumb, useFlightBreadcrumbSteps } from '../shared/Breadcrumb';
 import { Button } from '../ui/button';
 import { Plus, Minus, Plane, Clock, MapPin, DollarSign, Users, Briefcase, Star, Building2, Clock4, Clock7, Clock9, Clock6, Clock5, Clock8 } from 'lucide-react';
+import PaginationCard from '../shared/PaginationCard';
+import { usePagination } from '../../hooks/usePagination';
 import SearchWithFilters, { GenericFilterConfig, GenericFilterOption } from '../shared/SearchWithFilters';
 import { CustomSelectOption } from '../shared/CustomSelect';
 import { CheckboxOption } from '../shared/standard-fields-component/CheckboxFilter';
@@ -184,8 +186,19 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   const [rows, setRows] = useState<RowData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados para paginación
-  const [visibleFlights, setVisibleFlights] = useState(3);
+  // Hook de paginación
+  const {
+    visibleItems: visibleFlights,
+    showMore: handleShowMore,
+    showLess: handleShowLess,
+    reset: resetPagination
+  } = usePagination({
+    initialVisibleItems: 3,
+    itemsPerStep: 3,
+    totalItems: rows.length
+  });
+
+  // Constantes de paginación
   const initialVisibleFlights = 3;
   const flightsPerStep = 3;
 
@@ -744,7 +757,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   // Handler para navegación de breadcrumb (solo hacia atrás)
   const handleBreadcrumbClick = (stepId: string) => {
     setCurrentStep(stepId);
-    setVisibleFlights(initialVisibleFlights); // Reset paginación al cambiar step
+    resetPagination(); // Reset paginación al cambiar step
   };
 
   // Handler para seleccionar vuelo (avanza automáticamente)
@@ -761,7 +774,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     const currentIndex = breadcrumbSteps.findIndex(step => step.isActive);
     if (currentIndex < breadcrumbSteps.length - 1) {
       setCurrentStep(breadcrumbSteps[currentIndex + 1].id);
-      setVisibleFlights(initialVisibleFlights); // Reset paginación al avanzar step
+      resetPagination(); // Reset paginación al avanzar step
     }
   };
 
@@ -777,18 +790,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     const initialStep = type === 'multi-destination' ? 'choose-flight-0' : 'choose-departure';
     setCurrentStep(initialStep);
     setSelectedFlights([]);
-    setVisibleFlights(initialVisibleFlights); // Reset paginación
-  };
-
-  // Handlers para paginación
-  const handleShowMore = () => {
-    if (currentResultSet) {
-      setVisibleFlights(prev => Math.min(prev + flightsPerStep, currentResultSet.flights.length));
-    }
-  };
-
-  const handleShowLess = () => {
-    setVisibleFlights(initialVisibleFlights);
+    resetPagination(); // Reset paginación
   };
 
   // Handler para click en card de SearchWithFilters
@@ -929,60 +931,22 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
                 );
               })}
 
-              {/* Controles de paginación */}
-              {filteredRows.length > visibleFlights && (
-                <div className="flex flex-col items-center space-y-3 py-6">
-                  <div className="text-sm text-gray-600 text-center">
-                    Mostrando {visibleFlights} de {filteredRows.length} vuelos
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <Button
-                      onClick={handleShowMore}
-                      variant="outline"
-                      className="w-full md:w-80 flex items-center space-x-2 px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span>
-                        Mostrar más vuelos ({Math.min(flightsPerStep, filteredRows.length - visibleFlights)} más)
-                      </span>
-                    </Button>
-
-                    {visibleFlights > initialVisibleFlights && (
-                      <Button
-                        onClick={handleShowLess}
-                        variant="ghost"
-                        className="w-full md:w-80 text-gray-600 hover:text-gray-800 flex items-center space-x-2 px-6 py-2 border-2"
-                      >
-                        <Minus className="h-4 w-4" />
-                        <span>Mostrar menos vuelos</span>
-                      </Button>
-                    )}
-                  </div>
-
-                  {filteredRows.length > initialVisibleFlights && (
-                    <div className="w-full max-w-xs">
-                      <div className="bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(visibleFlights / filteredRows.length) * 100}%` }}
-                        />
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1 text-center">
-                        {Math.round((visibleFlights / filteredRows.length) * 100)}% cargado
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {visibleFlights >= filteredRows.length && filteredRows.length > initialVisibleFlights && (
-                <div className="text-center py-4">
-                  <p className="text-gray-600 text-sm">
-                    ✈️ Has visto todos los vuelos disponibles
-                  </p>
-                </div>
-              )}
+              {/* Controles de paginación con componente reutilizable */}
+              <PaginationCard
+                totalItems={filteredRows.length}
+                visibleItems={visibleFlights}
+                initialVisibleItems={initialVisibleFlights}
+                itemsPerStep={flightsPerStep}
+                onShowMore={handleShowMore}
+                onShowLess={handleShowLess}
+                itemLabel="vuelos"
+                showMoreText="Mostrar más vuelos"
+                showLessText="Mostrar menos vuelos"
+                allItemsMessage="✈️ Has visto todos los vuelos disponibles"
+                className=""
+                showProgressBar={true}
+                progressColor="bg-primary"
+              />
             </div>
           )}
         />

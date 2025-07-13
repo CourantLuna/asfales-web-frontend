@@ -5,6 +5,8 @@ import { ItinerarySharedCard } from './ItinerarySharedCard';
 import { colombiaItineraries, type ItineraryPackage } from '@/lib/data/mock-datavf';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import PaginationCard from '@/components/shared/PaginationCard';
+import { usePagination } from '@/hooks/usePagination';
 import { 
   MapPin, 
   Calendar, 
@@ -59,9 +61,24 @@ export function ItinerariesResultsTemplate({
   // Estados para filtros y paginación
   const [rows, setRows] = useState<ItineraryRowData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [visibleResults, setVisibleResults] = useState(9);
-  const initialVisibleResults = 9;
-  const resultsPerStep = 2;
+
+    // Constantes de paginación
+  const initialVisibleResults = 6;
+  const resultsPerStep = 3;
+
+  // Hook de paginación - usando filteredRowsLength dinámico
+  const {
+    visibleItems: visibleResults,
+    showMore: handleShowMore,
+    showLess: handleShowLess,
+    reset: resetPagination
+  } = usePagination({
+    initialVisibleItems: initialVisibleResults,
+    itemsPerStep: resultsPerStep,
+    totalItems: rows.length
+  });
+
+
 
   // Opciones de filtros mock
   const popularFiltersOptions: CheckboxOption[] = [
@@ -299,7 +316,7 @@ export function ItinerariesResultsTemplate({
 
   // Handler para cambios en filtros
   const handleFiltersChange = (filters: Record<string, any>) => {
-    setVisibleResults(initialVisibleResults);
+    // resetPagination();
     
     if (onFiltersChange) {
       onFiltersChange(filters);
@@ -384,19 +401,13 @@ export function ItinerariesResultsTemplate({
         onFiltersChange={handleFiltersChange}
         onCardClick={handleCardClick}
         renderResults={({ filteredRows, compareMode, onCardClick: onCardClickFromRender }) => {
-          // Handlers para paginación dentro del scope donde tenemos acceso a filteredRows
-          const handleShowMoreLocal = () => {
-            setVisibleResults(prev => Math.min(prev + resultsPerStep, filteredRows.length));
-          };
-
-          const handleShowLessLocal = () => {
-            setVisibleResults(initialVisibleResults);
-          };
+        
 
           return (
             <div className="space-y-6">
               {/* Grid de resultados - usando slice directamente en filteredRows */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
                 {filteredRows.slice(0, visibleResults).map((row, index) => {
                   const itineraryRow = row as ItineraryRowData;
                   const itinerary = itineraryRow.originalData;
@@ -449,58 +460,22 @@ export function ItinerariesResultsTemplate({
                 })}
               </div>
 
-              {/* Controles de paginación igual que FlightResultsTemplate */}
-              {filteredRows.length > visibleResults && (
-                <div className="flex flex-col items-center space-y-3 py-6">
-                  <div className="text-sm text-gray-600 text-center">
-                    Mostrando {visibleResults} de {filteredRows.length} itinerarios
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <Button
-                      onClick={handleShowMoreLocal}
-                      variant="outline"
-                      className="w-full md:w-80 flex items-center space-x-2 px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
-                    >
-                      <span>
-                        Mostrar más itinerarios ({Math.min(resultsPerStep, filteredRows.length - visibleResults)} más)
-                      </span>
-                    </Button>
-
-                    {visibleResults > initialVisibleResults && (
-                      <Button
-                        onClick={handleShowLessLocal}
-                        variant="ghost"
-                        className="w-full md:w-80 text-gray-600 hover:text-gray-800 flex items-center space-x-2 px-6 py-2 border-2"
-                      >
-                        <span>Mostrar menos itinerarios</span>
-                      </Button>
-                    )}
-                  </div>
-
-                  {filteredRows.length > initialVisibleResults && (
-                    <div className="w-full max-w-xs">
-                      <div className="bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(visibleResults / filteredRows.length) * 100}%` }}
-                        />
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1 text-center">
-                        {Math.round((visibleResults / filteredRows.length) * 100)}% cargado
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {visibleResults >= filteredRows.length && filteredRows.length > initialVisibleResults && (
-                <div className="text-center py-4">
-                  <p className="text-gray-600 text-sm">
-                    🗺️ Has visto todos los itinerarios disponibles
-                  </p>
-                </div>
-              )}
+              {/* Componente de paginación reutilizable */}
+              <PaginationCard
+                totalItems={filteredRows.length}
+                visibleItems={visibleResults}
+                initialVisibleItems={initialVisibleResults}
+                itemsPerStep={resultsPerStep}
+                onShowMore={handleShowMore}
+                onShowLess={handleShowLess}
+                itemLabel="itinerarios"
+                showMoreText="Mostrar más itinerarios"
+                showLessText="Mostrar menos itinerarios"
+                allItemsMessage="🗺️ Has visto todos los itinerarios disponibles"
+                className=""
+                showProgressBar={true}
+                progressColor="bg-primary"
+              />
 
               {/* Mensaje si no hay resultados */}
               {filteredRows.length === 0 && !loading && (
