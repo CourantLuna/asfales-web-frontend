@@ -21,6 +21,7 @@ import {
 } from '@/lib/data/mock-datavf';
 import { ItinerarySharedCard } from './ItinerarySharedCard';
 import { ItinerariesPrivateCard } from './ItinerariesPrivateCard';
+import { ItinerariesResultsTemplate } from './ItinerariesResultsTemplate';
 
 interface IitinerariesSearchBarProps {
   /**
@@ -289,6 +290,15 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
         </div>
       )}
       </div>
+
+{/* Resultados de itinerarios */}
+      <ItinerariesResultsTemplate
+        origin={travelingFrom}
+        destination={goingTo}
+        startDate={range?.from}
+        endDate={range?.to}
+        className="w-full"
+      />
 
 
 
