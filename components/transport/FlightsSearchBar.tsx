@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 
@@ -550,6 +550,9 @@ export default function FlightsSearchBar({
   ];
 
   return (
+    <Suspense
+                fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+              >
     <div className=" py-4 lg:p-0">
         <StandardTabs
           items={tabItems}
@@ -561,5 +564,7 @@ export default function FlightsSearchBar({
           mobilePlaceholder="Select trip type"
         />
     </div>
+        </Suspense>
+    
   );
 }

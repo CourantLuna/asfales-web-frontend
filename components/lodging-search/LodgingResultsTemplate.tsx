@@ -552,18 +552,18 @@ export default function LodgingResultsTemplate({
   // Opciones específicas por tipo de lodging
   const getFilterOptionsForLodgingType = React.useMemo(() => {
 
-    if (LodgingType !== "hotels-and-resorts" && LodgingType !== "hostels-and-guesthouses" && LodgingType !== "apartments-and-longstays") {
+       if (LodgingType !== "hotels-and-resorts" && LodgingType !== "hostels-and-guesthouses" && LodgingType !== "apartments-and-longstays") {
      return {};
     }
 
     const baseOptions = {
-      "popular-filters": getPopularFiltersForType(LodgingType ),
+      "popular-filters": getPopularFiltersForType(LodgingType),
       "guest-rating": guestRatingOptions.map(opt => ({
         value: opt.value,
         label: opt.label,
         count: opt.count
       })),
-      "amenities": getAmenitiesForType(LodgingType ),
+      "amenities": getAmenitiesForType(LodgingType),
       "property-type": getPropertyTypesForType(LodgingType )
     };
 
@@ -639,7 +639,7 @@ export default function LodgingResultsTemplate({
     return baseOptions;
   }, [LodgingType]);
 
-  // Dispara la barra de progreso siempre que loading sea distinto de false
+// Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
     if (loading !== false) {
       setTimeout(() => {
@@ -652,7 +652,7 @@ export default function LodgingResultsTemplate({
 
 // Efecto separado para manejar cambios en LodgingData
 useEffect(() => {
-  if (LodgingData && LodgingData?.length > 0) {
+  if (LodgingData && LodgingData.length > 0) {
     setLoading(true);
     setTimeout(() => {     
       setRows(LodgingData);

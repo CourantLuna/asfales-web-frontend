@@ -141,6 +141,13 @@ const PassengerSelector = React.forwardRef<HTMLButtonElement, PassengerSelectorP
 
     const [open, setOpen] = React.useState(false);
 
+    // Sincronizar con initialPassengers cuando cambie (por ejemplo, al cargar desde URL)
+    React.useEffect(() => {
+      if (initialPassengers) {
+        setPassengers(initialPassengers);
+      }
+    }, [initialPassengers]);
+
     // Update parent when passengers change
     React.useEffect(() => {
       onPassengersChange?.(passengers);

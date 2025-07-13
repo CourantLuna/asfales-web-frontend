@@ -1,9 +1,10 @@
+import FlightsResults from '@/components/transport/FlightsResults';
 import React from 'react';
 
 export default function Page() {
    return (
        <div>
-           <h1>page</h1>
+           <FlightsResults />
        </div>
    );
 }

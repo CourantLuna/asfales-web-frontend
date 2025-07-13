@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { StandardSearchField, StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
@@ -64,6 +64,9 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
   };
 
   return (
+     <Suspense
+            fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+          >
     <div className="w-full p-4 lg:p-0">
       <div className="space-y-6">
         <div className="flex flex-wrap gap-2 md:gap-4">
@@ -113,5 +116,6 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
         )}
       </div>
     </div>
+    </Suspense>
   );
 }
