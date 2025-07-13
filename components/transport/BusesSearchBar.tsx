@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SearchFieldsWithSwap } from '@/components/shared/SearchFieldsWithSwap';
 import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
@@ -38,6 +38,8 @@ export default function BusesSearchBar(
    BusesSearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const basePath = pathname.endsWith('/transports') ? pathname : '/transports';
 
   // Estados locales para origin/destination (fallback si no se pasan como props)
   const [localOrigin, setLocalOrigin] = useState('');
@@ -151,7 +153,7 @@ export default function BusesSearchBar(
     }
 
     // Navegar con la URL construida
-    const finalUrl = `buses?${params.toString()}`;
+    const finalUrl = `${basePath}/buses?${params.toString()}`;
     console.log("🌐 Final bus URL:", finalUrl);
     router.push(finalUrl);
   };

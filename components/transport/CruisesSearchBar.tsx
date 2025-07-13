@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { StandardSearchField, StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { DurationSelector, type DurationRange } from '@/components/shared/standard-fields-component/DurationSelector';
@@ -21,6 +21,9 @@ interface CruisesSearchBarProps {
 export default function CruisesSearchBar({ showSearchButton = true }: CruisesSearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+    const pathname = usePathname();
+  const basePath = pathname.endsWith('/transports') ? pathname : '/transports';
+  
   
   const [destination, setDestination] = useState('');
   const [departureDate, setDepartureDate] = useState<{ from?: Date; to?: Date }>({});
@@ -99,7 +102,7 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
     }
 
     // Navegar con la URL construida
-    const finalUrl = `cruises?${params.toString()}`;
+    const finalUrl = `${basePath}/cruises?${params.toString()}`;
     console.log("🌐 Final cruise URL:", finalUrl);
     router.push(finalUrl);
   };

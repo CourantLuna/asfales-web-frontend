@@ -41,6 +41,12 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
   const [selectedLodgingTypes, setSelectedLodgingTypes] = useState<string[]>([]);
   const [selectedTransportTypes, setSelectedTransportTypes] = useState<string[]>([]);
   const [selectedExperiences, setSelectedExperiences] = useState<string[]>([]);
+  useEffect(() => {
+    // Forzar scroll al top cuando se monta el componente
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
 
   // Efecto para cargar parámetros de la URL al inicializar el componente
   useEffect(() => {

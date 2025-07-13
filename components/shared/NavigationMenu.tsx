@@ -36,7 +36,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { fi } from "date-fns/locale";
+import { fi, tr } from "date-fns/locale";
 
 const navItems: {
   title: string;
@@ -255,6 +255,7 @@ const navItems: {
       href="/itineraries"
       title="Viajes prediseñados y paquetes"
       icon={Map}
+     
     >
       Itinerarios listos para disfrutar.
     </ListItem>
