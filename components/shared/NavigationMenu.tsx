@@ -161,7 +161,7 @@ const navItems: {
             backgroundImage:
               "url('https://concepto.de/wp-content/uploads/2013/03/turismo-peru-1536x768.jpg')",
           }}
-         href=""
+         href="/experiences"
         >
           
           <span className="absolute inset-0 bg-white/80 z-0" />
@@ -180,42 +180,42 @@ const navItems: {
 
     {/* Opciones de experiencias */}
     <ListItem
-      href="/experiencias/camping"
+      href={`/experiences?experiences=${encodeURIComponent('["adventure","camping"]')}`}
       title="Camping y estadías al aire libre"
       icon={Tent}
     >
       Dormir bajo las estrellas.
     </ListItem>
     <ListItem
-      href="/experiencias/senderismo"
+      href={`/experiences?experiences=${encodeURIComponent('["adventure","hiking"]')}`}
       title="Rutas de senderismo y trekking"
       icon={Footprints}
     >
       Rutas a pie por la naturaleza.
     </ListItem>
     <ListItem
-      href="/experiencias/cultura"
+      href={`/experiences?experiences=${encodeURIComponent('["cultural"]')}`}
       title="Visitas y actividades culturales"
       icon={Landmark}
     >
       Vive lo local y tradicional.
     </ListItem>
     <ListItem
-      href="/experiencias/conciertos"
+      href={`/experiences?experiences=${encodeURIComponent('["concerts","festivals"]')}`}
       title="Conciertos y festivales"
       icon={Music}
     >
       Música en vivo de todo tipo.
     </ListItem>
     <ListItem
-      href="/experiencias/gastronomia"
+      href={`/experiences?experiences=${encodeURIComponent('["gastronomy"]')}`}
       title="Experiencias gastronómicas"
       icon={Utensils}
     >
       Sabores típicos e inmersivos.
     </ListItem>
     <ListItem
-      href="/experiencias/comedia"
+      href={`/experiences?experiences=${encodeURIComponent('["comedy","festivals"]')}`}
       title="Eventos y comedia"
       icon={Mic}
     >

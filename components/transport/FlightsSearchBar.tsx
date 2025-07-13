@@ -278,9 +278,9 @@ export default function FlightsSearchBar({
     }
 
     // Navegar con la URL construida
-    const finalUrl = `/transports/flights?${params.toString()}`;
+    const finalUrl = `flights?${params.toString()}`;
     console.log("🌐 Final URL:", finalUrl);
-    router.replace(finalUrl);
+    router.push(finalUrl);
   };
 
   // Roundtrip Tab Content
@@ -333,10 +333,9 @@ export default function FlightsSearchBar({
           onValueChange={setCabinClass}
           containerClassName="w-full md:w-[280px]"
         />
-      </div>
 
-      {showSearchButton && (
-        <div className="flex justify-end">
+        {showSearchButton && (
+        <div className="flex justify-end items-end ml-auto">
           <Button
             onClick={handleSearch}
             className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
@@ -346,6 +345,9 @@ export default function FlightsSearchBar({
           </Button>
         </div>
       )}
+      </div>
+
+      
     </div>
   );
 
@@ -405,10 +407,9 @@ export default function FlightsSearchBar({
           onValueChange={setCabinClass}
           containerClassName="w-full md:w-[280px]"
         />
-      </div>
 
-      {showSearchButton && (
-        <div className="flex justify-end">
+         {showSearchButton && (
+        <div className="flex justify-end items-end ml-auto">
           <Button
             onClick={handleSearch}
             className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
@@ -418,6 +419,10 @@ export default function FlightsSearchBar({
           </Button>
         </div>
       )}
+      </div>
+
+     
+      
     </div>
   );
 
@@ -550,9 +555,9 @@ export default function FlightsSearchBar({
   ];
 
   return (
-    <Suspense
-                fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
-              >
+      <Suspense
+                    fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+                  >
     <div className=" py-4 lg:p-0">
         <StandardTabs
           items={tabItems}
@@ -564,7 +569,6 @@ export default function FlightsSearchBar({
           mobilePlaceholder="Select trip type"
         />
     </div>
-        </Suspense>
-    
+    </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { DateRange } from "react-day-picker";
 import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom";
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter";
@@ -22,12 +23,58 @@ interface IExperiencesSearchBarProps {
 }
 
 export default function ExperiencesSearchBar({ showSearchButton = true }: IExperiencesSearchBarProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
   const [selectedExperiences, setSelectedExperiences] = useState<string[]>(defaultSelectedExperiences);
   const [goingTo, setGoingTo] = useState("");
 
   // Obtener fuentes de datos para experiencias
   const searchDataSources = getExperiencesDataSources();
+
+  // Efecto para cargar parámetros de la URL al inicializar el componente
+  useEffect(() => {
+    if (searchParams.size === 0) return; // No hay parámetros que cargar
+
+    console.log('🎭 Loading experiences URL parameters:', Object.fromEntries(searchParams.entries()));
+
+    // Cargar destino
+    const destinationParam = searchParams.get('destination');
+    if (destinationParam) {
+      console.log('🎯 Loading destination:', { destinationParam });
+      setGoingTo(destinationParam);
+    }
+
+    // Cargar fechas
+    const fromDateParam = searchParams.get('fromDate');
+    const toDateParam = searchParams.get('toDate');
+    
+    if (fromDateParam || toDateParam) {
+      console.log('📅 Loading date range:', { fromDateParam, toDateParam });
+      setRange({
+        from: fromDateParam ? new Date(fromDateParam + 'T12:00:00') : undefined,
+        to: toDateParam ? new Date(toDateParam + 'T12:00:00') : undefined,
+      });
+    }
+
+    // Cargar tipos de experiencias seleccionadas
+    const experiencesParam = searchParams.get('experiences');
+    if (experiencesParam) {
+      try {
+        const parsedExperiences = JSON.parse(experiencesParam);
+        console.log('🎪 Loading selected experiences:', { parsedExperiences });
+        setSelectedExperiences(parsedExperiences);
+      } catch (error) {
+        console.error('❌ Error parsing experiences from URL:', error);
+        // Si hay error en el parsing, usar como string separado por comas
+        const experiencesArray = experiencesParam.split(',').filter(Boolean);
+        setSelectedExperiences(experiencesArray);
+      }
+    }
+
+    console.log('✅ Experiences URL parameters loaded successfully');
+  }, [searchParams]);
 
   const handleRangeChange = (newRange: { from?: Date; to?: Date }) => {
     if (newRange.from && newRange.to) {
@@ -45,16 +92,42 @@ export default function ExperiencesSearchBar({ showSearchButton = true }: IExper
 
   // Para el botón de búsqueda
   const handleBuscar = () => {
-    console.log("🔎 Buscar experiencias con:", {
+    console.log("🎭 Buscar experiencias con:", {
       range,
       selectedExperiences,
       goingTo,
     });
-    // Aquí puedes agregar la lógica de navegación o búsqueda real
+
+    // Construir los parámetros de la URL de forma segura
+    const params = new URLSearchParams();
+
+    // Agregar destino solo si tiene valor
+    if (goingTo) {
+      params.append("destination", goingTo);
+    }
+
+    // Agregar fechas
+    if (range?.from) {
+      params.append("fromDate", range.from.toISOString().split("T")[0]);
+    }
+    if (range?.to) {
+      params.append("toDate", range.to.toISOString().split("T")[0]);
+    }
+
+    // Agregar experiencias seleccionadas
+    if (selectedExperiences.length > 0) {
+      params.append("experiences", JSON.stringify(selectedExperiences));
+    }
+
+    // Navegar con la URL construida
+    const finalUrl = `?${params.toString()}`;
+    console.log("🌐 Final experiences URL:", finalUrl);
+    router.push(finalUrl);
   };
 
   return (
-    <div className="flex flex-wrap gap-4 items-end w-full">
+    
+    <div className="flex flex-wrap gap-4 items-end w-full max-w-7xl mx-auto">
       {/* Fechas */}
       <DateRangePickerCustom
         label="Fechas"

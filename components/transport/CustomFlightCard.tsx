@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Button } from '../ui/button';
 import { useIsMobile } from '../ui/use-mobile';
 
@@ -45,6 +45,9 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
   };
 
   return (
+    <Suspense
+                fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+              >
     <div
       className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer ${className}`}
       onClick={handleCardClick}
@@ -138,6 +141,7 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
           </Button>
       </div>
     </div>
+    </Suspense>
   );
 };
 

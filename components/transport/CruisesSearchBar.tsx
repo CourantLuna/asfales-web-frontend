@@ -1,7 +1,7 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { StandardSearchField, StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { DurationSelector, type DurationRange } from '@/components/shared/standard-fields-component/DurationSelector';
@@ -20,6 +20,7 @@ interface CruisesSearchBarProps {
 
 export default function CruisesSearchBar({ showSearchButton = true }: CruisesSearchBarProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   
   const [destination, setDestination] = useState('');
   const [departureDate, setDepartureDate] = useState<{ from?: Date; to?: Date }>({});
@@ -27,6 +28,46 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
 
   // Obtener fuentes de datos para cruceros
   const CRUISE_DATA_SOURCES = getTransportDataSources('cruise');
+
+  // Efecto para cargar parámetros de la URL al inicializar el componente
+  useEffect(() => {
+    if (searchParams.size === 0) return; // No hay parámetros que cargar
+
+    console.log('🚢 Loading cruise URL parameters:', Object.fromEntries(searchParams.entries()));
+
+    // Cargar destino
+    const destinationParam = searchParams.get('destination');
+    if (destinationParam) {
+      console.log('🎯 Loading destination:', { destinationParam });
+      setDestination(destinationParam);
+    }
+
+    // Cargar fechas de salida
+    const departureDateParam = searchParams.get('departureDate');
+    const departureDateToParam = searchParams.get('departureDateTo');
+    
+    if (departureDateParam || departureDateToParam) {
+      console.log('📅 Loading departure dates:', { departureDateParam, departureDateToParam });
+      setDepartureDate({
+        from: departureDateParam ? new Date(departureDateParam + 'T12:00:00') : undefined,
+        to: departureDateToParam ? new Date(departureDateToParam + 'T12:00:00') : undefined,
+      });
+    }
+
+    // Cargar duración
+    const minNightsParam = searchParams.get('minNights');
+    const maxNightsParam = searchParams.get('maxNights');
+    
+    if (minNightsParam || maxNightsParam) {
+      console.log('⏰ Loading duration:', { minNightsParam, maxNightsParam });
+      setDuration({
+        minNights: minNightsParam ? parseInt(minNightsParam) : 3,
+        maxNights: maxNightsParam ? parseInt(maxNightsParam) : 9,
+      });
+    }
+
+    console.log('✅ Cruise URL parameters loaded successfully');
+  }, [searchParams]);
 
   const handleSearch = () => {
     console.log('🚢 Searching cruises with:', {
@@ -58,15 +99,15 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
     }
 
     // Navegar con la URL construida
-    const finalUrl = `/transports/cruises?${params.toString()}`;
+    const finalUrl = `cruises?${params.toString()}`;
     console.log("🌐 Final cruise URL:", finalUrl);
-    router.replace(finalUrl);
+    router.push(finalUrl);
   };
 
   return (
-     <Suspense
-            fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
-          >
+      <Suspense
+                    fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+                  >
     <div className="w-full p-4 lg:p-0">
       <div className="space-y-6">
         <div className="flex flex-wrap gap-2 md:gap-4">
@@ -100,11 +141,10 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
             onChange={setDuration}
             containerClassName="w-full lg:w-[280px]"
           />
-        </div>
 
-        {/* Search Button */}
+          {/* Search Button */}
         {showSearchButton && (
-          <div className="flex justify-end">
+          <div className="flex justify-end items-end ml-auto">
             <Button
               onClick={handleSearch}
               className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
@@ -114,6 +154,9 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
             </Button>
           </div>
         )}
+        </div>
+
+        
       </div>
     </div>
     </Suspense>

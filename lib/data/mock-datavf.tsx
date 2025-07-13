@@ -16,7 +16,15 @@ import {
   Laugh as LaughIcon,
   Anchor,
   Bus,
-  Ship
+  Ship,
+  TreePine,
+  Waves,
+  Camera,
+  ShoppingBag,
+  Moon,
+  Dumbbell,
+  Calendar,
+  Sparkles
 } from "lucide-react";
 import { StandardSearchDataSource } from "@/components/shared/standard-fields-component/StandardSearchField";
 import { FilterOption } from "@/components/ui/quick-filter";
@@ -204,19 +212,22 @@ export const lodgingOptions: FilterOption[] = [
 ];
 
 export const experiencesOptions: FilterOption[] = [
-  { label: "Aventura", value: "aventura", icon: MountainIcon },
+  { label: "Aventura", value: "adventure", icon: MountainIcon },
   { label: "Camping", value: "camping", icon: TentTreeIcon },
-  { label: "Senderismo", value: "senderismo", icon: FootprintsIcon },
+  { label: "Senderismo", value: "hiking", icon: FootprintsIcon },
+  { label: "Trekking", value: "trekking", icon: TreePine },
   { label: "Cultural", value: "cultural", icon: LandmarkIcon },
-  { label: "Playa", value: "playa", icon: SunIcon },
-  { label: "Gastronómica", value: "gastronomica", icon: UtensilsIcon },
-  { label: "Conciertos", value: "conciertos", icon: MusicIcon },
-  { label: "Eventos de Comedia", value: "comedia", icon: LaughIcon },
-  // { label: "Deportes", value: "deportes", icon: () => "⚽" },
-  // { label: "Spa y Relajación", value: "spa", icon: () => "🧘" },
-  // { label: "Vida Nocturna", value: "nightlife", icon: () => "🌙" },
-  // { label: "Compras", value: "shopping", icon: () => "🛍️" },
-  // { label: "Fotografía", value: "photography", icon: () => "📸" },
+  { label: "Playa", value: "beach", icon: SunIcon },
+  { label: "Deportes Acuáticos", value: "watersports", icon: Waves },
+  { label: "Gastronómica", value: "gastronomy", icon: UtensilsIcon },
+  { label: "Conciertos", value: "concerts", icon: MusicIcon },
+  { label: "Festivales", value: "festivals", icon: Calendar },
+  { label: "Eventos de Comedia", value: "comedy", icon: LaughIcon },
+  { label: "Fotografía", value: "photography", icon: Camera },
+  { label: "Compras", value: "shopping", icon: ShoppingBag },
+  { label: "Vida Nocturna", value: "nightlife", icon: Moon },
+  { label: "Deportes", value: "sports", icon: Dumbbell },
+  { label: "Spa y Relajación", value: "spa", icon: Sparkles },
   // { label: "Historia", value: "history", icon: () => "🏛️" }
 ];
 
@@ -259,7 +270,7 @@ export const defaultPassengers: PassengerGroup = {
 
 export const defaultSelectedLodgingTypes = ["hotel"];
 export const defaultSelectedTransportTypes = ["air"];
-export const defaultSelectedExperiences = ["playa"];
+export const defaultSelectedExperiences = ["beach"];
 
 // ========================================
 // FUNCIONES HELPER

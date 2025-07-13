@@ -1,6 +1,5 @@
 
-
-import ItinerariesSearchBar from "@/components/itineraries/ItinerariesSearchBar";
+import ExperiencesSearchBar from "@/components/experiences/ExperiencesSearchBar";
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
@@ -23,13 +22,13 @@ export default function Layout({
       >
         <div className = "">
         <h1 className="hidden lg:block text-4xl text-secondary mx-auto max-w-7xl w-full mb-8 ">
-          ¡Dejate guiar y explorar!
+          ¡Vive lo local!
         </h1>
         </div>
-         <Suspense
+    <Suspense
                     fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
                   >
-        <ItinerariesSearchBar />
+        <ExperiencesSearchBar />
         <div className="w-full py-2 mx-auto max-w-7xl w-full">
           <BreadcrumbNav />
         </div>
