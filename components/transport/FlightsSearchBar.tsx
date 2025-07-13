@@ -1,6 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+
 import { StandardTabs, type TabItem } from '@/components/shared/standard-fields-component/StandardTabs';
 import { SearchFieldsWithSwap } from '@/components/shared/SearchFieldsWithSwap';
 import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
@@ -49,7 +52,8 @@ export default function FlightsSearchBar({
   onSwapLocations,
   searchDataSources,
 }: FlightsSearchBarProps) {
-
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [activeTab, setActiveTab] = useState('roundtrip');
   const [cabinClass, setCabinClass] = useState('economy');
@@ -86,6 +90,91 @@ export default function FlightsSearchBar({
     ]
   );
 
+  // Efecto para cargar parámetros de la URL al inicializar el componente
+  useEffect(() => {
+    if (searchParams.size === 0) return; // No hay parámetros que cargar
+
+    console.log('🔄 Loading URL parameters:', Object.fromEntries(searchParams.entries()));
+
+    // Cargar tipo de vuelo PRIMERO (tab activo)
+    const typeParam = searchParams.get('type');
+    if (typeParam && ['roundtrip', 'oneway', 'multicity'].includes(typeParam)) {
+      setActiveTab(typeParam);
+    }
+
+    // Cargar origen y destino (solo para roundtrip y oneway)
+    const fromParam = searchParams.get('from');
+    const toParam = searchParams.get('to');
+    if (fromParam && !travelingFrom && typeParam !== 'multicity') { // Solo si no viene como prop y no es multicity
+      handleTravelingFromChange(fromParam);
+    }
+    if (toParam && !goingTo && typeParam !== 'multicity') { // Solo si no viene como prop y no es multicity
+      handleGoingToChange(toParam);
+    }
+
+    // Cargar clase de cabina (para todos los tipos)
+    const classParam = searchParams.get('class');
+    if (classParam) {
+      setCabinClass(classParam);
+    }
+
+    // Cargar pasajeros (para todos los tipos)
+    const adultsParam = searchParams.get('adults');
+    const childrenParam = searchParams.get('children');
+    const infantsOnLapParam = searchParams.get('infantsOnLap');
+    const infantsInSeatParam = searchParams.get('infantsInSeat');
+    
+    if (adultsParam || childrenParam || infantsOnLapParam || infantsInSeatParam) {
+      console.log('📊 Loading passengers:', { adultsParam, childrenParam, infantsOnLapParam, infantsInSeatParam });
+      setPassengers(prev => ({
+        adults: adultsParam ? parseInt(adultsParam) : prev.adults,
+        children: childrenParam ? Array(parseInt(childrenParam)).fill({ age: 12 }) : prev.children,
+        infantsOnLap: infantsOnLapParam ? Array(parseInt(infantsOnLapParam)).fill({ age: 1 }) : prev.infantsOnLap,
+        infantsInSeat: infantsInSeatParam ? Array(parseInt(infantsInSeatParam)).fill({ age: 1 }) : prev.infantsInSeat,
+      }));
+    }
+
+    // Cargar fechas según el tipo de vuelo
+    const departureDateParam = searchParams.get('departureDate');
+    const returnDateParam = searchParams.get('returnDate');
+    const flightsParam = searchParams.get('flights');
+
+    if (typeParam === 'roundtrip') {
+      console.log('📅 Loading roundtrip dates:', { departureDateParam, returnDateParam });
+      setRoundtripDates({
+        from: departureDateParam ? new Date(departureDateParam + 'T12:00:00') : undefined,
+        to: returnDateParam ? new Date(returnDateParam + 'T12:00:00') : undefined,
+      });
+    } else if (typeParam === 'oneway') {
+      console.log('📅 Loading oneway date:', { departureDateParam });
+      if (departureDateParam) {
+        setOnewayDate({
+          from: new Date(departureDateParam + 'T12:00:00'),
+        });
+      }
+    } else if (typeParam === 'multicity') {
+      console.log('✈️ Loading multicity flights:', { flightsParam });
+      if (flightsParam) {
+        try {
+          const parsedFlights = JSON.parse(flightsParam);
+          console.log('✈️ Parsed flights:', parsedFlights);
+          const loadedFlights = parsedFlights.map((flight: any, index: number) => ({
+            id: (index + 1).toString(),
+            origin: flight.from || '',
+            destination: flight.to || '',
+            date: flight.date ? new Date(flight.date + 'T12:00:00') : undefined, // Forzar hora local del mediodía
+          }));
+          console.log('✈️ Loaded flights with dates:', loadedFlights);
+          setFlights(loadedFlights);
+        } catch (error) {
+          console.error('❌ Error parsing flights from URL:', error);
+        }
+      }
+    }
+
+    console.log('✅ URL parameters loaded successfully');
+  }, [searchParams, travelingFrom, goingTo, handleTravelingFromChange, handleGoingToChange]);
+
   const handleFlightSwap = (flightId: string) => {
     setFlights(prev => prev.map(flight => 
       flight.id === flightId 
@@ -116,15 +205,82 @@ export default function FlightsSearchBar({
     }
   };
 
-  const handleSearch = () => {
-    console.log('Searching transport with:', {
+ const handleSearch = () => {
+    console.log('🚀 handleSearch called with values:', {
       activeTab,
       cabinClass,
       passengers,
-      roundtrip: { origin: currentTravelingFrom, destination: currentGoingTo, dates: roundtripDates },
-      oneway: { origin: currentTravelingFrom, destination: currentGoingTo, date: onewayDate },
-      multicity: flights,
+      currentTravelingFrom,
+      currentGoingTo,
+      roundtripDates,
+      onewayDate,
+      flights,
     });
+
+    // Construir los parámetros de la URL de forma segura
+    const params = new URLSearchParams();
+
+    // Agregar parámetros básicos solo si tienen valor
+    if (currentTravelingFrom) {
+      params.append("from", currentTravelingFrom);
+    }
+    if (currentGoingTo) {
+      params.append("to", currentGoingTo);
+    }
+
+    // Tipo de viaje
+    params.append("type", activeTab);
+
+    // Clase de cabina
+    if (cabinClass) {
+      params.append("class", cabinClass);
+    }
+
+    // Pasajeros
+    if (passengers) {
+      params.append("adults", passengers.adults.toString());
+      if (passengers.children.length > 0) {
+        params.append("children", passengers.children.length.toString());
+      }
+      const totalInfants = passengers.infantsOnLap.length + passengers.infantsInSeat.length;
+      if (totalInfants > 0) {
+        params.append("infants", totalInfants.toString());
+        params.append("infantsOnLap", passengers.infantsOnLap.length.toString());
+        params.append("infantsInSeat", passengers.infantsInSeat.length.toString());
+      }
+    }
+
+    // Fechas según el tipo de viaje
+    if (activeTab === 'roundtrip') {
+      if (roundtripDates?.from) {
+        params.append("departureDate", roundtripDates.from.toISOString().split("T")[0]);
+      }
+      if (roundtripDates?.to) {
+        params.append("returnDate", roundtripDates.to.toISOString().split("T")[0]);
+      }
+    } else if (activeTab === 'oneway') {
+      if (onewayDate?.from) {
+        params.append("departureDate", onewayDate.from.toISOString().split("T")[0]);
+      }
+    } else if (activeTab === 'multicity') {
+      // Para multicity, serializar los vuelos como JSON
+      const validFlights = flights.filter(flight => 
+        flight.origin && flight.destination && flight.date
+      );
+      if (validFlights.length > 0) {
+        const flightsData = validFlights.map(flight => ({
+          from: flight.origin,
+          to: flight.destination,
+          date: flight.date?.toISOString().split("T")[0]
+        }));
+        params.append("flights", JSON.stringify(flightsData));
+      }
+    }
+
+    // Navegar con la URL construida
+    const finalUrl = `/transports/flights?${params.toString()}`;
+    console.log("🌐 Final URL:", finalUrl);
+    router.replace(finalUrl);
   };
 
   // Roundtrip Tab Content
@@ -162,6 +318,7 @@ export default function FlightsSearchBar({
           
           <PassengerSelector
             label="Viajeros"
+            key={`passengers-${activeTab}`} // Key estable basada en el tab activo
             initialPassengers={ passengers }
             onPassengersChange={ setPassengers }
             containerClassName="w-full md:w-[280px]"
@@ -220,6 +377,10 @@ export default function FlightsSearchBar({
         </div>
         
           <DateRangePickerCustom
+          dualTriggerLabels={{
+            from: 'Fecha de partida',
+            to: 'Fecha de regreso'
+          }}
             placeholder="Jul 11"
             showFlexibleDates={false}
             value={onewayDate}
@@ -230,6 +391,7 @@ export default function FlightsSearchBar({
           
           <PassengerSelector
             label="Viajeros"
+            key={`passengers-${activeTab}`} // Key estable basada en el tab activo
             initialPassengers={ passengers}
             onPassengersChange={ setPassengers}
           />
@@ -275,6 +437,7 @@ export default function FlightsSearchBar({
         
         <PassengerSelector
           label="Viajeros"
+          key={`passengers-${activeTab}`} // Key estable basada en el tab activo
           initialPassengers={  passengers}
           onPassengersChange={ setPassengers}
           containerClassName="w-full lg:w-auto"
@@ -320,12 +483,17 @@ export default function FlightsSearchBar({
               </div>
               
               <DateRangePickerCustom
-                label="Fecha de vuelo"
+                // label="Fecha de vuelo"
+                dualTriggerLabels={{
+            from: 'Fecha de partida',
+            to: 'Fecha de regreso'
+          }}
                 placeholder="Jul 11"
                 value={flight.date ? { from: flight.date } : {}}
                 onChange={(range) => updateFlight(flight.id, { date: range.from })}
                 hasReturnDate={false}
-                dualTrigger={false}
+                dualTrigger={true}
+                showFlexibleDates={false}
                 className="w-full lg:w-auto"
               />
             </div>

@@ -35,7 +35,7 @@ export default function LodgingSearchBar({
   searchDataSources = getLodgingDataSources(),
   travelingFrom,
   setTravelingFrom,
-  lodgingType = "hotels-and-resorts", // Por defecto, tipo de alojamiento
+  lodgingType, // Por defecto, tipo de alojamiento
   showSearchButton = true,
 }: ILodgingLayoutProps) {
   // Hook para navegación
@@ -67,13 +67,6 @@ export default function LodgingSearchBar({
     }
   };
 
-  const handleTravelingFromChange = (value: string) => {
-    if (setTravelingFrom) {
-      setTravelingFrom(value);
-    } else {
-      setLocalTravelingFrom(value);
-    }
-  };
 
   const handleRangeChange = (newRange: {
     from?: Date;
@@ -134,26 +127,26 @@ export default function LodgingSearchBar({
       }
       if (
         flexibleInfo.flexibleMonths &&
-        flexibleInfo.flexibleMonths.length > 0
+        flexibleInfo.flexibleMonths?.length > 0
       ) {
         params.append("flexibleMonths", flexibleInfo.flexibleMonths.join(","));
       }
     }
 
     // Simplificar la información de habitaciones
-    if (guestRooms.length > 0) {
+    if (guestRooms?.length > 0) {
       const totalAdults = guestRooms.reduce(
         (sum, room) => sum + room.adults,
         0
       );
       const totalChildren = guestRooms.reduce(
-        (sum, room) => sum + room.children.length,
+        (sum, room) => sum + room.children?.length || 0,
         0
       );
 
       params.append("adults", totalAdults.toString());
       params.append("children", totalChildren.toString());
-      params.append("rooms", guestRooms.length.toString());
+      params.append("rooms", guestRooms?.length.toString());
     }
 
     // Navegar con la URL construida

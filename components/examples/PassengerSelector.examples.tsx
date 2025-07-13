@@ -27,10 +27,10 @@ export function BasicPassengerExample() {
       
       {/* Display current selection for debugging */}
       <div className="text-sm text-muted-foreground space-y-1">
-        <div>Adultos: {passengers.adults}</div>
-        <div>Niños: {passengers.children.length}</div>
-        <div>Bebés en regazo: {passengers.infantsOnLap.length}</div>
-        <div>Bebés con asiento: {passengers.infantsInSeat.length}</div>
+        <div>Adultos: {passengers?.adults}</div>
+        <div>Niños: {passengers?.children.length}</div>
+        <div>Bebés en regazo: {passengers?.infantsOnLap.length}</div>
+        <div>Bebés con asiento: {passengers?.infantsInSeat.length}</div>
       </div>
     </div>
   );

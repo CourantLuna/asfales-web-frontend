@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { StandardSearchField, StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { DurationSelector, type DurationRange } from '@/components/shared/standard-fields-component/DurationSelector';
@@ -18,6 +19,8 @@ interface CruisesSearchBarProps {
 }
 
 export default function CruisesSearchBar({ showSearchButton = true }: CruisesSearchBarProps) {
+  const router = useRouter();
+  
   const [destination, setDestination] = useState('');
   const [departureDate, setDepartureDate] = useState<{ from?: Date; to?: Date }>({});
   const [duration, setDuration] = useState<DurationRange>({ minNights: 3, maxNights: 9 });
@@ -26,11 +29,38 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
   const CRUISE_DATA_SOURCES = getTransportDataSources('cruise');
 
   const handleSearch = () => {
-    console.log('Searching cruises with:', {
+    console.log('🚢 Searching cruises with:', {
       destination,
       departureDate,
       duration,
     });
+
+    // Construir los parámetros de la URL de forma segura
+    const params = new URLSearchParams();
+
+    // Agregar parámetros básicos solo si tienen valor
+    if (destination) {
+      params.append("destination", destination);
+    }
+
+    // Fechas de salida
+    if (departureDate?.from) {
+      params.append("departureDate", departureDate.from.toISOString().split("T")[0]);
+    }
+    if (departureDate?.to) {
+      params.append("departureDateTo", departureDate.to.toISOString().split("T")[0]);
+    }
+
+    // Duración del crucero
+    if (duration) {
+      params.append("minNights", duration.minNights.toString());
+      params.append("maxNights", duration.maxNights.toString());
+    }
+
+    // Navegar con la URL construida
+    const finalUrl = `/transports/cruises?${params.toString()}`;
+    console.log("🌐 Final cruise URL:", finalUrl);
+    router.replace(finalUrl);
   };
 
   return (

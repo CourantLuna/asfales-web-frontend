@@ -161,7 +161,7 @@ export default function LodgingCardList({
 
   // Handlers para mostrar más/menos
   const handleShowMore = () => {
-    setVisibleCards(prev => Math.min(prev + cardsPerStep, rows.length));
+    setVisibleCards(prev => Math.min(prev + cardsPerStep, rows?.length));
   };
 
   const handleShowLess = () => {
@@ -170,11 +170,11 @@ export default function LodgingCardList({
 
   // Calcular cards visibles
   const visibleRows = rows.slice(0, visibleCards);
-  const hasMoreCards = visibleCards < rows.length;
+  const hasMoreCards = visibleCards < rows?.length;
   const canShowLess = enableShowLess && visibleCards > initialVisibleCards;
 
   // Calcular cuántas cards más se pueden mostrar
-  const remainingCards = rows.length - visibleCards;
+  const remainingCards = rows?.length - visibleCards;
   const nextStepCards = Math.min(cardsPerStep, remainingCards);
 
   return (
@@ -234,7 +234,7 @@ export default function LodgingCardList({
         <div className="flex flex-col items-center space-y-3 py-6 md:w-auto w-full">
           {/* Contador de resultados */}
           <div className="text-sm text-gray-600 text-center">
-            Mostrando {visibleCards} de {rows.length} alojamientos
+            Mostrando {visibleCards} de {rows?.length} alojamientos
           </div>
 
           {/* Botones de acción */}
@@ -267,16 +267,16 @@ export default function LodgingCardList({
           </div>
 
           {/* Progreso visual opcional */}
-          {rows.length > initialVisibleCards && (
+          {rows?.length > initialVisibleCards && (
             <div className="w-full max-w-xs">
               <div className="bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-primary h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(visibleCards / rows.length) * 100}%` }}
+                  style={{ width: `${(visibleCards / rows?.length) * 100}%` }}
                 />
               </div>
               <div className="text-xs text-gray-500 mt-1 text-center">
-                {Math.round((visibleCards / rows.length) * 100)}% cargado
+                {Math.round((visibleCards / rows?.length) * 100)}% cargado
               </div>
             </div>
           )}
@@ -284,7 +284,7 @@ export default function LodgingCardList({
       )}
 
       {/* Mensaje cuando no hay más cards */}
-      {!hasMoreCards && rows.length > initialVisibleCards && (
+      {!hasMoreCards && rows?.length > initialVisibleCards && (
         <div className="text-center py-4">
           <p className="text-gray-600 text-sm">
             ✨ Has visto todos los alojamientos disponibles

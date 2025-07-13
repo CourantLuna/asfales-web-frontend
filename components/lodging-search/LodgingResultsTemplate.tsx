@@ -321,7 +321,7 @@ export default function LodgingResultsTemplate({
   onFiltersChange,
   onCardClick,
   LodgingData,
-  LodgingType = "hotels-and-resorts", // Por defecto es "hotels"
+  LodgingType, // Por defecto es "hotels"
 }: LodgingResultsTemplateProps) {
   const [rows, setRows] = useState<RowData[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -528,6 +528,8 @@ export default function LodgingResultsTemplate({
 
   // Actualizar el precio rango según el tipo
   const getPriceRangeForType = React.useMemo(() => {
+
+
     if (LodgingType === "hostels-and-guesthouses") {
       return { min: 5, max: 80, step: 5 };
     } else if (LodgingType === "apartments-and-longstays") {
@@ -549,15 +551,20 @@ export default function LodgingResultsTemplate({
 
   // Opciones específicas por tipo de lodging
   const getFilterOptionsForLodgingType = React.useMemo(() => {
+
+    if (LodgingType !== "hotels-and-resorts" && LodgingType !== "hostels-and-guesthouses" && LodgingType !== "apartments-and-longstays") {
+     return {};
+    }
+
     const baseOptions = {
-      "popular-filters": getPopularFiltersForType(LodgingType),
+      "popular-filters": getPopularFiltersForType(LodgingType ),
       "guest-rating": guestRatingOptions.map(opt => ({
         value: opt.value,
         label: opt.label,
         count: opt.count
       })),
-      "amenities": getAmenitiesForType(LodgingType),
-      "property-type": getPropertyTypesForType(LodgingType)
+      "amenities": getAmenitiesForType(LodgingType ),
+      "property-type": getPropertyTypesForType(LodgingType )
     };
 
     // Opciones específicas por tipo
@@ -643,32 +650,14 @@ export default function LodgingResultsTemplate({
     }
   }, [loading]);
 
-  // Solo para DEMO: simula una carga lenta
-useEffect(() => {
-  setLoading(true);
-  if (LodgingData && LodgingData.length > 0) {
-          setTimeout(() => {     
-    setRows(LodgingData);
-    setLoading(false);
-      }, 2000);
-  } else {
-   fetchLodgings()
-      .then((apiData) => {
-        setRows(apiData.map(mapLodgingToRowData));
-        console.log("Lodging data fetched:", apiData);
-      })
-      .finally(() => setLoading(false));
-  }
-}, []);
-
 // Efecto separado para manejar cambios en LodgingData
 useEffect(() => {
-  if (LodgingData && LodgingData.length > 0) {
+  if (LodgingData && LodgingData?.length > 0) {
     setLoading(true);
     setTimeout(() => {     
       setRows(LodgingData);
       setLoading(false);
-    }, 2000);
+    }, 1000);
   }
 }, [LodgingData]);
 
@@ -831,34 +820,4 @@ function getPropertyTypesForType(lodgingType: string): CheckboxOption[] {
   return propertyTypeOptions;
 }
 
-// ...resto del código permanece igual
-export function mapLodgingToRowData(lodging: Lodging): RowData {
-  return {
-    title: lodging.lodgingName,
-    images: [
-      lodging.image1,
-      lodging.image2,
-      lodging.image3,
-      lodging.image4,
-    ].filter(Boolean),
-    location: lodging.location,
-    feature1: lodging.feature1,
-    feature2: lodging.feature2,
-    descMain: lodging.descMain,
-    descSub: lodging.descSub,
-    refundable: lodging.refundable,
-    reserveNow: lodging.reserveNow,
-    beforePrice: { currency: "USD", value: lodging.beforePrice },
-    afterPrice: { currency: "USD", value: lodging.priceTotal },
-    nightlyPrice: { currency: "USD", value: lodging.nightlyPrice },
-    badge1: lodging.badge1,
-    badge2: lodging.availableBadge,
-    badge2ndColumn: lodging.availableBadge,
-    isFavorite: false,
-    rating: lodging.rating,
-    ratingLabel: lodging.ratingLabel,
-    ratingCount: lodging.ratingCount,
-  };
-}
-   
 

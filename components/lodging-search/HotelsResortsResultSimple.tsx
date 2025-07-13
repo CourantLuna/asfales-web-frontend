@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import LodgingResultsTemplate from './LodgingResultsTemplate';
+import { fetchLodgings } from "@/services/lodging.service";
+import { RowData } from '../shared/CustomTable';
+import { mapLodgingToRowData } from '@/lib/lodging-search-utils';
 
 interface HotelsResortsResultSimpleProps {
   initialSearchParams?: { [key: string]: string | string[] | undefined };
@@ -10,6 +13,7 @@ interface HotelsResortsResultSimpleProps {
 export default function HotelsResortsResultSimple({ initialSearchParams }: HotelsResortsResultSimpleProps) {
   const [parsedParams, setParsedParams] = useState<any>(null);
   const [urlParams, setUrlParams] = useState<string>('');
+  const [rows, setRows] = useState<RowData[]>([]);
 
   // Helper para mapear claves de meses a nombres abreviados
   const getMonthNames = (monthKeys: string[]) => {
@@ -34,6 +38,18 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
       default: return duration;
     }
   };
+
+  
+  useEffect(() => {
+
+fetchLodgings()
+      .then((apiData) => {
+        setRows(apiData.map(mapLodgingToRowData));
+        console.log("Lodging data fetched:", apiData);
+      })
+      
+
+  }, []);
 
   useEffect(() => {
     // Obtener parámetros directamente del navegador
@@ -61,6 +77,7 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
     setParsedParams(params);
   }, [initialSearchParams]);
 
+
   // Configurar filtros por defecto para hoteles y resorts
   const filterDefaults = {
     propertyType: ['hotel', 'resort'],
@@ -69,6 +86,8 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
     cancellationOptions: ['fully-refundable'],
     search: parsedParams?.goingTo || '',
   };
+
+  
 
   // Parsing de fechas
   const fromDate = parsedParams?.from ? new Date(parsedParams.from + 'T00:00:00') : null;
@@ -181,6 +200,7 @@ export default function HotelsResortsResultSimple({ initialSearchParams }: Hotel
 
       {/* Componente de resultados con filtros */}
       <LodgingResultsTemplate
+              LodgingData={rows}
         LodgingType="hotels-and-resorts"
         filterDefaults={filterDefaults}
         onFiltersChange={(filters: Record<string, any>) => {

@@ -109,7 +109,7 @@ export default function TransportsSearchBar({
   ];
 
   return (
-    <div className="w-full">
+           <div className="w-full max-w-7xl mx-auto">
       {/* Mobile/Tablet: ImageButtonSheet (lg hacia abajo) */}
       <div className="lg:hidden">
         <ImageButtonSheet

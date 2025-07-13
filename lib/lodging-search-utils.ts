@@ -2,6 +2,9 @@
  * Utilidades para manejar parámetros de búsqueda de alojamiento
  */
 
+import { RowData } from "@/components/shared/RenderFields";
+import { Lodging } from "@/types/lodging.types";
+
 export interface LodgingSearchParams {
   goingTo?: string;
   travelingFrom?: string;
@@ -10,6 +13,35 @@ export interface LodgingSearchParams {
   adults?: number;
   children?: number;
   rooms?: number;
+}
+
+export function mapLodgingToRowData(lodging: Lodging): RowData {
+  return {
+    title: lodging.lodgingName,
+    images: [
+      lodging.image1,
+      lodging.image2,
+      lodging.image3,
+      lodging.image4,
+    ].filter(Boolean),
+    location: lodging.location,
+    feature1: lodging.feature1,
+    feature2: lodging.feature2,
+    descMain: lodging.descMain,
+    descSub: lodging.descSub,
+    refundable: lodging.refundable,
+    reserveNow: lodging.reserveNow,
+    beforePrice: { currency: "USD", value: lodging.beforePrice },
+    afterPrice: { currency: "USD", value: lodging.priceTotal },
+    nightlyPrice: { currency: "USD", value: lodging.nightlyPrice },
+    badge1: lodging.badge1,
+    badge2: lodging.availableBadge,
+    badge2ndColumn: lodging.availableBadge,
+    isFavorite: false,
+    rating: lodging.rating,
+    ratingLabel: lodging.ratingLabel,
+    ratingCount: lodging.ratingCount,
+  };
 }
 
 /**
