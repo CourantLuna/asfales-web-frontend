@@ -13,6 +13,7 @@ interface LandingPageProps {
   children?: React.ReactNode;
 }
 
+
 export default function LandingSkeleton({ children }: LandingPageProps) {
   const [searchValues, setSearchValues] = useState<{ origin: string; destination: string } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -48,22 +49,7 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
     }
   }
 
-  function smoothScrollTo(targetY: number, duration = 800) {
-    const startY = window.scrollY;
-    const diff = targetY - startY;
-    let start: number | null = null;
 
-    function step(timestamp: number) {
-      if (!start) start = timestamp;
-      const progress = timestamp - start;
-      const percent = Math.min(progress / duration, 1);
-      const ease = 1 - Math.pow(1 - percent, 3); // easeOutCubic
-      window.scrollTo(0, startY + diff * ease);
-      if (progress < duration) requestAnimationFrame(step);
-    }
-
-    requestAnimationFrame(step);
-  }
 
   const handleSearch = (origin: string, destination: string) => {
     console.log('🔍 LandingSkeleton.handleSearch called with:', { origin, destination });
@@ -113,3 +99,21 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
     </div>
   );
 }
+
+
+ export function smoothScrollTo(targetY: number, duration = 800) {
+    const startY = window.scrollY;
+    const diff = targetY - startY;
+    let start: number | null = null;
+
+    function step(timestamp: number) {
+      if (!start) start = timestamp;
+      const progress = timestamp - start;
+      const percent = Math.min(progress / duration, 1);
+      const ease = 1 - Math.pow(1 - percent, 3); // easeOutCubic
+      window.scrollTo(0, startY + diff * ease);
+      if (progress < duration) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  }

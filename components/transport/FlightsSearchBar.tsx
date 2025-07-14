@@ -11,9 +11,10 @@ import { StandardSelect, type StandardSelectOption } from '@/components/shared/s
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { PassengerSelector, type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Plane, MapPin } from 'lucide-react';
+import { Plus, Search, Plane, MapPin, Trash, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTransportDataSources, defaultPassengers } from '@/lib/data/mock-datavf';
+import path from 'path';
 
 interface FlightsSearchBarProps {
   /**
@@ -55,8 +56,7 @@ export default function FlightsSearchBar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-const basePath = pathname.endsWith('/transports') ? pathname : '/transports';
-
+  const basePath = (pathname === '/' || pathname === '/global-transport-search') ? '/global-transport-search' : (pathname.endsWith('/transports') ? pathname : '/transports');
   const [activeTab, setActiveTab] = useState('roundtrip');
   const [cabinClass, setCabinClass] = useState('economy');
   const [passengers, setPassengers] = useState<PassengerGroup>(defaultPassengers);
@@ -279,8 +279,14 @@ const basePath = pathname.endsWith('/transports') ? pathname : '/transports';
       }
     }
 
+    // Agregar parámetro para mostrar resultados
+    params.append("showresults", "true");
+
+        // Agregar parámetro para mostrar resultados
+    params.append("transportType", "flights");
+
     // Navegar con la URL construida
-const finalUrl = `${basePath}/flights?${params.toString()}`;
+    const finalUrl = (pathname === '/' || pathname === '/global-transport-search')  ? `${basePath}?${params.toString()}` : `${basePath}/flights?${params.toString()}`;
     console.log("🌐 Final URL:", finalUrl);
     router.push(finalUrl);
   };
@@ -343,7 +349,7 @@ const finalUrl = `${basePath}/flights?${params.toString()}`;
             className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
           >
             <Search className="w-4 h-4 mr-2" />
-            Buscar
+            Buscar vuelos
           </Button>
         </div>
       )}
@@ -417,7 +423,7 @@ const finalUrl = `${basePath}/flights?${params.toString()}`;
             className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
           >
             <Search className="w-4 h-4 mr-2" />
-            Buscar
+            Buscar vuelo
           </Button>
         </div>
       )}
@@ -464,9 +470,9 @@ const finalUrl = `${basePath}/flights?${params.toString()}`;
                   variant="ghost"
                   size="sm"
                   onClick={() => removeFlight(flight.id)}
-                  className="text-red-600 hover:text-red-700 h-12 w-full md:w-[280px]"
+                  className="text-red-600 hover:text-red-700 "
                 >
-                  Remove
+                  <Trash2 className="w-4 h-4 mr-2" /> Eliminar vuelo
                 </Button>
               )}
             </div>
@@ -526,7 +532,7 @@ const finalUrl = `${basePath}/flights?${params.toString()}`;
             className="bg-primary hover:bg-primary text-white px-8 py-3 h-12 w-full md:w-[280px] rounded-lg font-medium"
           >
             <Search className="w-4 h-4 mr-2" />
-            Search
+            Buscar vuelos
           </Button>
         )}
       </div>

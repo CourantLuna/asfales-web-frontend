@@ -11,13 +11,13 @@ import { SearchFieldsWithSwap } from "@/components/shared/SearchFieldsWithSwap";
 import { StandardSearchDataSource } from "@/components/shared/standard-fields-component/StandardSearchField";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { 
+import {
   searchDataSources,
   lodgingOptions,
   experiencesOptions,
   transportTypes,
   defaultGuestRooms,
-  defaultDateRange 
+  defaultDateRange
 } from '@/lib/data/mock-datavf';
 import { ItinerarySharedCard } from './ItinerarySharedCard';
 import { ItinerariesPrivateCard } from './ItinerariesPrivateCard';
@@ -69,7 +69,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
     // Cargar fechas
     const fromDateParam = searchParams.get('fromDate');
     const toDateParam = searchParams.get('toDate');
-    
+
     if (fromDateParam || toDateParam) {
       console.log('📅 Loading date range:', { fromDateParam, toDateParam });
       setRange({
@@ -205,7 +205,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
 
     // Navegar con la URL construida
     const finalUrl = `/itineraries?${params.toString()}`;
-    
+
     console.log("🌐 Final itineraries URL:", finalUrl);
     router.push(finalUrl);
   };
@@ -298,18 +298,18 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
       )}
       </div>
 
-{/* Resultados de itinerarios */}
+{/* Resultados de itinerarios
       <ItinerariesResultsTemplate
         origin={travelingFrom}
         destination={goingTo}
         startDate={range?.from}
         endDate={range?.to}
         className="w-full"
-      />
+      /> */}
 
 
 
-      
+
     </div>
     </Suspense>
   );

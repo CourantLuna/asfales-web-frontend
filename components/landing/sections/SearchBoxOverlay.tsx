@@ -7,30 +7,27 @@ import { StandardSearchField, StandardSearchDataSource } from "@/components/shar
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useStickyBoundary } from "@/hooks/useStickyBoundary";
 
 export default function SearchBoxOverlay({ 
   onSearch,
   dataSources = [],
-  originValue,
-  onOriginValueChange,
-  destinationValue,
-  onDestinationValueChange,
   activeTab = "transport",
   onScrollToResults
 }: { 
   onSearch?: (origin: string, destination: string) => void;
   dataSources?: StandardSearchDataSource[];
-  originValue?: string;
-  onOriginValueChange?: (value: string) => void;
-  destinationValue?: string;
-  onDestinationValueChange?: (value: string) => void;
   activeTab?: string;
   onScrollToResults?: () => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  // Leer parámetros from y to de la URL
+  const fromParam = searchParams.get('from') || '';
+  const toParam = searchParams.get('to') || '';
   
   // Hook personalizado para detectar sticky boundary
   const { containerRef, stickyRef, isAtBottom: isStickyAtBottom } = useStickyBoundary({ 
@@ -59,35 +56,41 @@ export default function SearchBoxOverlay({
     setValue("origin", destination);
     setValue("destination", temp);
     
-    // Notificar al padre sobre el intercambio
-    if (onOriginValueChange && destination !== originValue) {
-      onOriginValueChange(destination);
-    }
-    if (onDestinationValueChange && temp !== destinationValue) {
-      onDestinationValueChange(temp);
-    }
-    
     setTimeout(() => setSwapAnimating(false), 200);
   }
 
 function handleBuscar() {
+    // Crear nuevos parámetros con los valores actuales de origen y destino
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Actualizar los parámetros from y to con los valores actuales
+    if (origin) {
+      params.set('from', origin);
+    }
+    if (destination) {
+      params.set('to', destination);
+    }
+    
     // Acción para LG hacia abajo
     if (isLgDown) {
       if (onScrollToResults) {
-      onScrollToResults();
-    }
-      // Aquí tu acción especial para mobile/tablet
-      // alert("Acción especial para LG hacia abajo");
+        onScrollToResults();
+      }
+      // Actualizar URL con los nuevos parámetros manteniendo la ruta actual
+      router.push(`${pathname}?${params.toString()}`);
       return;
     }
-    // Acción normal para LG hacia arriba
-    if (onSearch) {
-      onSearch(origin, destination);
-    }
+    
+    
+   
+    // Mantener los parámetros actualizados al cambiar la ruta
+    const newPath = `/global-${activeTab}-search`;
+    const fullUrl = `${newPath}?${params.toString()}`;
+    router.replace(fullUrl);
+
     if (onScrollToResults) {
       onScrollToResults();
     }
-    router.push(`/global-${activeTab}-search`);
   }
 
 
@@ -100,26 +103,26 @@ const {
 } = useForm<{ origin: string; destination: string }>({
   mode: "onChange",
   defaultValues: { 
-    origin: originValue || "", 
-    destination: destinationValue || "" 
+    origin: fromParam, 
+    destination: toParam 
   },
 });
 
 const origin = watch("origin");
 const destination = watch("destination");
 
-// SOLO sincronizar desde props hacia el formulario (evitar bucles)
+// Sincronizar con los parámetros de la URL
 useEffect(() => {
-  if (originValue !== undefined && originValue !== origin) {
-    setValue("origin", originValue, { shouldValidate: false });
+  if (fromParam !== origin) {
+    setValue("origin", fromParam, { shouldValidate: false });
   }
-}, [originValue]);
+}, [fromParam]);
 
 useEffect(() => {
-  if (destinationValue !== undefined && destinationValue !== destination) {
-    setValue("destination", destinationValue, { shouldValidate: false });
+  if (toParam !== destination) {
+    setValue("destination", toParam, { shouldValidate: false });
   }
-}, [destinationValue]);
+}, [toParam]);
 
   return (
     <form onSubmit={handleSubmit((data) => {
@@ -159,10 +162,6 @@ useEffect(() => {
                   value={origin}
                   onValueChange={(value) => {
                     setValue("origin", value, { shouldValidate: false });
-                    // Notificar al padre solo cuando el usuario cambia algo
-                    if (onOriginValueChange && value !== originValue) {
-                      onOriginValueChange(value);
-                    }
                   }}
                   dataSources={dataSources}
                   onSelect={(option, sourceType) => {
@@ -216,16 +215,12 @@ useEffect(() => {
                          value={destination}
                          onValueChange={(value) => {
                            setValue("destination", value, { shouldValidate: false });
-                           // Notificar al padre solo cuando el usuario cambia algo
-                           if (onDestinationValueChange && value !== destinationValue) {
-                             onDestinationValueChange(value);
-                           }
                          }}
                          dataSources={dataSources}
                          onSelect={(option, sourceType) => {
                            // StandardSearchField ya maneja el valor correctamente via onValueChange
                            // El value se almacena, el label se muestra
-                           console.log("🎯 TravelOptionsTabs - Destino seleccionado:", {
+                           console.log("🎯 SearchBoxOverlay - Destino seleccionado:", {
                              label: option.label,
                              value: option.value,
                              sourceType

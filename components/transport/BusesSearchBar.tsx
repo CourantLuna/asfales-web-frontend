@@ -39,7 +39,7 @@ export default function BusesSearchBar(
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const basePath = pathname.endsWith('/transports') ? pathname : '/transports';
+  const basePath = (pathname === '/' || pathname === '/global-transport-search') ? '/global-transport-search' : (pathname.endsWith('/transports') ? pathname : '/transports');
 
   // Estados locales para origin/destination (fallback si no se pasan como props)
   const [localOrigin, setLocalOrigin] = useState('');
@@ -152,8 +152,14 @@ export default function BusesSearchBar(
       params.append("returnDate", dates.to.toISOString().split("T")[0]);
     }
 
+    // Agregar parámetro para mostrar resultados
+    params.append("showresults", "true");
+
+        // Agregar parámetro para mostrar resultados
+    params.append("transportType", "buses");
+
     // Navegar con la URL construida
-    const finalUrl = `${basePath}/buses?${params.toString()}`;
+    const finalUrl = (pathname === '/' || pathname === '/global-transport-search') ? `${basePath}?${params.toString()}` : `${basePath}/buses?${params.toString()}`;
     console.log("🌐 Final bus URL:", finalUrl);
     router.push(finalUrl);
   };

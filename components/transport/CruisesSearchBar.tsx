@@ -22,7 +22,7 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
   const router = useRouter();
   const searchParams = useSearchParams();
     const pathname = usePathname();
-  const basePath = pathname.endsWith('/transports') ? pathname : '/transports';
+  const basePath = (pathname === '/' || pathname === '/global-transport-search') ? '/global-transport-search' : (pathname.endsWith('/transports') ? pathname : '/transports');
   
   
   const [destination, setDestination] = useState('');
@@ -101,8 +101,18 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
       params.append("maxNights", duration.maxNights.toString());
     }
 
+    // Agregar parámetro para mostrar resultados
+    params.append("showresults", "true");
+
+        // Agregar parámetro para mostrar resultados
+    params.append("transportType", "cruises");
+
     // Navegar con la URL construida
-    const finalUrl = `${basePath}/cruises?${params.toString()}`;
+    const finalUrl = 
+    (pathname === '/' || pathname === '/global-transport-search') ?
+     `${basePath}?${params.toString()}` :
+      `${basePath}/cruises?${params.toString()}`;
+
     console.log("🌐 Final cruise URL:", finalUrl);
     router.push(finalUrl);
   };

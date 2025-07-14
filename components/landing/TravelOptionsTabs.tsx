@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button"
 import { Plane, Bus, Ship, Hotel, Home, Building2,
@@ -39,6 +39,7 @@ import {
   defaultPassengers,
 } from "@/lib/data/mock-datavf";
 import TravelSearchBarMobile from "../shared/TravelSearchBarMobile";
+import { set } from "date-fns";
 
 
 
@@ -63,32 +64,42 @@ export default function TravelOptionsTabs({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [searchButtonLabel, setsearchButtonLabel] = useState("Buscar Opciones de Viaje");
+  const searchParams = useSearchParams();
+
 
   function handleTabChange(tab: string) {
     setActiveTab(tab);
     if (pathname.startsWith("/global-") && pathname.endsWith("-search")) {
-      router.replace(`/global-${tab}-search`);
+      // Mantener los parámetros actuales al cambiar la ruta
+      const currentParams = searchParams.toString();
+      const newPath = `/global-${tab}-search`;
+      const fullUrl = currentParams ? `${newPath}?${currentParams}` : newPath;
+      router.replace(fullUrl);
     }
   }
 
-  function handleBuscar() {
-    if (onScrollToResults) onScrollToResults(); // <--- mueve el scroll
+    const updateUrlWithType = () => {
+    const params = new URLSearchParams(searchParams.toString());
     
-    // const y = window.scrollY || window.pageYOffset;
-    // alert(`Scroll Y actual: ${y}`);
-    router.push(`/global-${activeTab}-search`);
-    setsearchButtonLabel("Filtrar Resultados");
-  }
+    // Construir los parámetros de la URL de forma segura
+    // Agregar parámetro para mostrar resultados
+    params.set("transportType", "flights");
+    params.set("lodgingType  ", "hotels-and-resorts");
+
+    
+    // Actualizar la URL manteniendo otros parámetros existentes
+    router.push(`${window.location.pathname}?${params.toString()}`);
+  };
 
   useEffect(() => {
     const match = pathname.match(/^\/global-(.*)-search$/);
     if (match) {
       setActiveTab(match[1]);
-      setsearchButtonLabel("Filtrar Resultados");
+      if (onScrollToResults) onScrollToResults(); // <--- mueve el scroll
     } else {
       setActiveTab("transport");
-      setsearchButtonLabel("Buscar Opciones de Viaje");
+      updateUrlWithType();
+
     }
   }, [pathname]);
 
@@ -97,23 +108,21 @@ export default function TravelOptionsTabs({
   const getTransportContent = () => (
     <div className="w-full">
       <TransportsSearchBar 
-        showSearchButton={false} 
         useToggleGroupTabsTransportType={true}
-
       />
     </div>
   );
 
   const getLodgingContent = () => (
-    <LodgingHomeSearchBar showSearchButtonLodging={false} />
+    <LodgingHomeSearchBar  />
   );
 
   const getExperiencesContent = () => (
-    <ExperiencesSearchBar showSearchButton={false} />
+    <ExperiencesSearchBar />
   );
 
   const getItinerariesContent = () => (
-    <ItinerariesSearchBar showSearchButton={false} />
+    <ItinerariesSearchBar  />
   );
 
   // Definición de los tabs
@@ -153,24 +162,6 @@ export default function TravelOptionsTabs({
         mobilePlaceholder="Selecciona una categoría"
         containerClassName="hidden lg:flex"
       />
-
-      <div className="hidden lg:flex items-end w-full lg:w-auto lg:ml-auto mt-4 lg:self-end">
-        <Button
-          className={
-            "bg-primary w-full md:w-[280px] h-[48px] px-4 gap-2 text-base md:text-sm"
-          }
-          variant="default"
-          onClick={handleBuscar}
-          // disabled={!goingTo || !travelingFrom}
-        >
-          {searchButtonLabel === "Buscar Opciones de Viaje" ? (
-            <Search className="mr-2 h-4 w-4" />
-          ) : (
-            <Filter className="mr-2 h-4 w-4" />
-          )}
-          {searchButtonLabel}
-        </Button>
-      </div>
 
       <div className="w-full lg:hidden">
       <TravelSearchBarMobile/>

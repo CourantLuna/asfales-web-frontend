@@ -15,6 +15,7 @@ interface IFlightsResultsProps {
   flightData?: any[];
   flightType?: 'roundtrip' | 'oneway' | 'multicity';
   destinations?: string[];
+  externalShowResults?: boolean; // Para controlar la visibilidad desde fuera
 }
 
 
@@ -25,7 +26,8 @@ export default function FlightsResults({
   onCardClick,
   flightData,
   flightType: propFlightType = 'roundtrip',
-  destinations: propDestinations
+  destinations: propDestinations,
+  externalShowResults, // Valor por defecto
 }: IFlightsResultsProps) {
   const searchParams = useSearchParams();
   
@@ -42,6 +44,7 @@ export default function FlightsResults({
     class: 'economy',
     flights: [] as Array<{from: string, to: string, date: string}>
   });
+
 
   // Efecto para cargar parámetros de la URL al inicializar el componente
   useEffect(() => {
@@ -67,6 +70,8 @@ export default function FlightsResults({
     const infantsParam = searchParams.get('infants') || '0';
     const classParam = searchParams.get('class') || 'economy';
     const flightsParam = searchParams.get('flights');
+
+
 
     let parsedFlights: Array<{from: string, to: string, date: string}> = [];
     if (flightsParam && typeParam === 'multicity') {
@@ -128,6 +133,9 @@ export default function FlightsResults({
     };
     return classMap[cabinClass] || cabinClass;
   };
+
+      const showLocalResults = externalShowResults !== undefined? externalShowResults : searchParams.get('showresults') === 'true';
+
 
   // Renderizar el header con información de búsqueda
   const renderSearchHeader = () => {
@@ -229,6 +237,7 @@ export default function FlightsResults({
         flightData={flightData}
         flightType={flightType}
         destinations={propDestinations}
+        showResults={ showLocalResults} // Asegúrate de definir externalShowResults si es necesario
       />
     </div>
   );

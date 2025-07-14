@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { StandardTabs, type TabItem } from '@/components/shared/standard-fields-component/StandardTabs';
 import { ImageButtonSheet, ImageButtonSheetItem } from '@/components/shared/standard-fields-component/ImageButtonSheet';
 import FlightsSearchBar from './FlightsSearchBar';
@@ -8,8 +9,6 @@ import CruisesSearchBar from './CruisesSearchBar';
 import BusesSearchBar from './BusesSearchBar';
 import { Plane, Ship, Bus } from 'lucide-react';
 
-import { type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
-import { defaultPassengers } from '@/lib/data/mock-datavf';
 
 
 interface TransportsSearchBarProps {
@@ -25,11 +24,7 @@ interface TransportsSearchBarProps {
   centerTabsTransportType?: boolean
   useToggleGroupTabsTransportType?: boolean;
   
-  // Props para sincronización de pasajeros
-  passengers?: PassengerGroup;
-  setPassengers?: (passengers: PassengerGroup) => void;
-  
-  
+
 }
 
 export default function TransportsSearchBar({ 
@@ -37,17 +32,30 @@ export default function TransportsSearchBar({
   showMobileSelect = true,
   centerTabsTransportType = true,
   useToggleGroupTabsTransportType = false,
-  passengers: externalPassengers,
-  setPassengers: externalSetPassengers
 }: TransportsSearchBarProps) {
   const [activeTab, setActiveTab] = useState('flights');
-  
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // Usar pasajeros externos si están disponibles, sino usar estado local
-  const [localPassengers, setLocalPassengers] = useState<PassengerGroup>(defaultPassengers);
-  
-  const passengers = externalPassengers || localPassengers;
-  const setPassengers = externalSetPassengers || setLocalPassengers;
+  // Función para actualizar la URL con el transportType
+  const updateUrlWithTransportType = (transportType: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Construir los parámetros de la URL de forma segura
+    // Agregar parámetro para mostrar resultados
+    params.set("transportType", transportType);
+    
+    // Actualizar la URL manteniendo otros parámetros existentes
+    router.push(`${window.location.pathname}?${params.toString()}`);
+  };
+
+  // Handler personalizado para el cambio de tab
+  const handleTabChange = (newTab: string) => {
+    setActiveTab(newTab);
+    updateUrlWithTransportType(newTab);
+  };
+
+ 
   
   // Items para ImageButtonSheet (mobile/tablet)
   const sheetItems: ImageButtonSheetItem[] = [
@@ -55,30 +63,39 @@ export default function TransportsSearchBar({
       label: "Vuelos",
       src: '/menu-icons/plane-icon.svg',
       size: 64,
-      sheetContent: <FlightsSearchBar showSearchButton={false} />,
+      sheetContent: <FlightsSearchBar />,
       sheetTitle: "Búsqueda de Vuelos",
       btnLabel: "Buscar Vuelos",
-      btnAction: () => console.log('Búsqueda de vuelos ejecutada'),
+      btnAction: () => {
+        handleTabChange('flights');
+        console.log('Búsqueda de vuelos ejecutada');
+      },
       key: "flights"
     },
     {
       label: "Cruceros",
       src: '/menu-icons/cruise-icon.svg',
       size: 64,
-      sheetContent: <CruisesSearchBar showSearchButton={false} />,
+      sheetContent: <CruisesSearchBar  />,
       sheetTitle: "Búsqueda de Cruceros",
       btnLabel: "Buscar Cruceros",
-      btnAction: () => console.log('Búsqueda de cruceros ejecutada'),
+      btnAction: () => {
+        handleTabChange('cruises');
+        console.log('Búsqueda de cruceros ejecutada');
+      },
       key: "cruises"
     },
     {
       label: "Buses",
       src: '/menu-icons/bus-icon.svg',
       size: 64,
-      sheetContent: <BusesSearchBar showSearchButton={false} />,
+      sheetContent: <BusesSearchBar  />,
       sheetTitle: "Búsqueda de Buses",
       btnLabel: "Buscar Buses",
-      btnAction: () => console.log('Búsqueda de buses ejecutada'),
+      btnAction: () => {
+        handleTabChange('buses');
+        console.log('Búsqueda de buses ejecutada');
+      },
       key: "buses"
     }
   ];
@@ -89,7 +106,8 @@ export default function TransportsSearchBar({
       value: 'flights',
       label: 'Vuelos',
       icon: <Plane className="w-4 h-4" />,
-      content: <FlightsSearchBar 
+      content: <FlightsSearchBar
+             
                 showSearchButton={showSearchButton} 
                />,
     },
@@ -132,7 +150,7 @@ export default function TransportsSearchBar({
           tabTriggerClassName=''
           items={tabItems}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           containerClassName="w-full"
           useMobileSelect={showMobileSelect}
           mobilePlaceholder="Selecciona tipo de transporte"
