@@ -131,7 +131,7 @@ export const useFlightBreadcrumbSteps = (
       case 'roundtrip':
         return [
           { id: 'choose-departure', label: 'Elige tu vuelo a Medellín' },
-          { id: 'choose-return', label: 'Elige tu vuelo a Madrid' },
+          { id: 'choose-return', label: 'Elige tu vuelo de vuelta a Santo Domingo' },
           { id: 'review-details', label: 'Revisa los detalles del viaje' }
         ];
       

@@ -81,9 +81,12 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
                 fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
               >
     <div
- className={`bg-white border border-gray-200 rounded-lg p-4  transition-shadow 
-  shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group relative ${className}`}
+ className={`bg-white border border-gray-200 rounded-lg p-4 transition-shadow 
+  shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group relative 
+  focus:outline-none focus:ring-0 focus:border-primary focus:border-2 
+  focus-within:outline-none focus-within:ring-0 focus-within:border-primary focus-within:border-2 ${className}`}
         onClick={handleCardClick}
+        tabIndex={0}
     >
       <div className="flex items-center justify-between mb-3">
 
@@ -120,12 +123,12 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
         <div className="flex flex-col">
           <div className="flex items-center space-x-2 text-sm md:text-lg font-bold text-gray-900">
             {/* Logo de aerolínea */}
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
               {flight.logo ? (
                 <img
                   src={flight.logo}
                   alt={flight.airline}
-                  className="w-6 h-6 rounded-full"
+                  className="w-8 h-8 rounded-full"
                 />
               ) : (
                 <span className="text-white text-xs font-bold">

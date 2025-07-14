@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import CustomFlightCard from './CustomFlightCard';
+import FlightDetailSheet from './FlightDetailSheet';
 import { Breadcrumb, useFlightBreadcrumbSteps } from '../shared/Breadcrumb';
 import { Button } from '../ui/button';
 import { Plus, Minus, Plane, Clock, MapPin, DollarSign, Users, Briefcase, Star, Building2, Clock4, Clock7, Clock9, Clock6, Clock5, Clock8 } from 'lucide-react';
@@ -19,6 +20,7 @@ import EventDrivenProgress, { EventDrivenProgressRef } from '../shared/EventDriv
 interface FlightData {
   id: string;
   airline: string;
+  flightNumber?: string;
   departureTime: string;
   arrivalTime: string;
   departureAirport: string;
@@ -31,6 +33,50 @@ interface FlightData {
   logo?: string;
   badge?: string;
   savings?: string;
+  // Clase de viaje
+  travelClass: 'economy' | 'premium-economy' | 'business' | 'first';
+  travelClassDetails: {
+    name: string;
+    description: string;
+    seatType?: string;
+    amenities?: string[];
+  };
+  // Equipaje
+  baggage: {
+    personalItem: {
+      included: boolean;
+      dimensions: string;
+      weight?: string;
+    };
+    carryOn: {
+      included: boolean;
+      dimensions: string;
+      weight: string;
+      price?: number;
+    };
+    checkedBag: {
+      included: boolean;
+      dimensions?: string;
+      weight: string;
+      price?: number;
+      count?: number;
+    };
+  };
+  // Flexibilidad
+  flexibility: {
+    refundable: boolean;
+    refundPolicy?: string;
+    changeable: boolean;
+    changePolicy?: string;
+    changeFee?: number;
+  };
+  // Servicios adicionales
+  services?: {
+    wifi: boolean;
+    meals: boolean;
+    entertainment: boolean;
+    powerOutlets: boolean;
+  };
 }
 
 interface FlightResultSet {
@@ -190,6 +236,10 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   const [selectedFlights, setSelectedFlights] = useState<SelectedFlight[]>([]);
   const [rows, setRows] = useState<RowData[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Estados para el sheet de detalles
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedFlightForDetails, setSelectedFlightForDetails] = useState<FlightData | null>(null);
 
   // Controlar visibilidad de resultados basado en prop o searchParam
   const showResultsFromUrl = searchParams.get('showresults') === 'true';
@@ -216,6 +266,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
 
   // Para multi-destino
   const multiDestinations = propDestinations || ['Medellín', 'Madrid'];
+  const rountripDestinations = ['Santo Domingo', 'Medellín'];
   
   // Generar steps del breadcrumb
   const breadcrumbSteps = useFlightBreadcrumbSteps(flightType, currentStep, multiDestinations);
@@ -433,6 +484,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
       {
         id: "dep-1",
         airline: "Arajet",
+        flightNumber: "DM 642",
         departureTime: "7:07 p. m.",
         arrivalTime: "8:42 p. m.",
         departureAirport: "Santo Domingo (SDQ)",
@@ -442,11 +494,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 325,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://images.trvl-media.com/media/content/expus/graphics/static_content/fusion/v0.1b/images/airlines/vector/s/DM_sq.svg",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Servicio de bebidas", "Snack ligero"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: false,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "8kg",
+            price: 45
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 65,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso según política de la aerolínea",
+          changeable: false,
+          changePolicy: "No se admiten cambios"
+        },
+        services: {
+          wifi: false,
+          meals: false,
+          entertainment: true,
+          powerOutlets: false
+        }
       },
       {
         id: "dep-2",
         airline: "Copa",
+        flightNumber: "CM 315",
         departureTime: "5:23 a. m.",
         arrivalTime: "5:00 p. m.",
         departureAirport: "Santo Domingo (SDQ)",
@@ -456,12 +546,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 265,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg",
-        badge: "Ahorra en paquete"
+        logo: "https://images.trvl-media.com/media/content/expus/graphics/static_content/fusion/v0.1b/images/airlines/vector/s/CM_sq.svg",
+        badge: "Ahorra en paquete",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Comida incluida", "Bebidas", "Entretenimiento"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: true,
+            weight: "23kg",
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso con penalización",
+          changeable: true,
+          changePolicy: "Cambios permitidos",
+          changeFee: 75
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "dep-3",
         airline: "Avianca",
+        flightNumber: "AV 8456",
         departureTime: "9:15 a. m.",
         arrivalTime: "2:30 p. m.",
         departureAirport: "Santo Domingo (SDQ)",
@@ -471,11 +598,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 380,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsX3AErK8dyqywQCNvjUdfHxewcn96gbwFyA&s",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable con espacio extra",
+          amenities: ["Comida completa", "Bebidas premium", "Kit de amenidades"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 85,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso completo hasta 24h antes",
+          changeable: true,
+          changePolicy: "Cambios permitidos con tarifa",
+          changeFee: 50
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "dep-4",
         airline: "LATAM",
+        flightNumber: "LA 2594",
         departureTime: "11:45 a. m.",
         arrivalTime: "4:20 p. m.",
         departureAirport: "Santo Domingo (SDQ)",
@@ -485,11 +650,48 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 450,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://i.pinimg.com/736x/0d/04/bb/0d04bb1980de2098c247543a2cfeb152.jpg",
+        travelClass: "premium-economy" as const,
+        travelClassDetails: {
+          name: "Económica Premium",
+          description: "Asiento premium con servicios mejorados",
+          seatType: "Asiento reclinable premium con más espacio",
+          amenities: ["Comida gourmet", "Bebidas premium", "Kit premium", "Prioridad en abordaje"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: true,
+            weight: "32kg",
+            count: 2
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso completo sin penalización",
+          changeable: true,
+          changePolicy: "Cambios gratuitos",
+          changeFee: 0
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "dep-5",
         airline: "JetBlue",
+        flightNumber: "B6 1247",
         departureTime: "3:30 p. m.",
         arrivalTime: "10:45 p. m.",
         departureAirport: "Santo Domingo (SDQ)",
@@ -499,11 +701,51 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 290,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+              logo: "https://images.trvl-media.com/media/content/expus/graphics/static_content/fusion/v0.1b/images/airlines/vector/s/b6_sq.svg",
+
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento estándar con entretenimiento personal",
+          amenities: ["TV personal", "Snacks", "Bebidas"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "43cm x 33cm x 20cm"
+          },
+          carryOn: {
+            included: false,
+            dimensions: "55cm x 35cm x 23cm",
+            weight: "10kg",
+            price: 65
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 80,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: false,
+          refundPolicy: "No reembolsable",
+          changeable: true,
+          changePolicy: "Cambios permitidos con tarifa",
+          changeFee: 100
+        },
+        services: {
+          wifi: true,
+          meals: false,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "dep-6",
         airline: "Spirit",
+        flightNumber: "NK 847",
         departureTime: "6:00 p. m.",
         arrivalTime: "11:25 p. m.",
         departureAirport: "Santo Domingo (SDQ)",
@@ -513,8 +755,45 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 199,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg",
-        badge: "Precio más bajo"
+        logo: "https://download.logo.wine/logo/Spirit_Airlines/Spirit_Airlines-Logo.wine.png",
+        badge: "Precio más bajo",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica Básica",
+          description: "Tarifa básica solo incluye el asiento",
+          seatType: "Asiento básico no reclinable",
+          amenities: ["Solo transporte"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: false,
+            dimensions: "56cm x 46cm x 25cm",
+            weight: "10kg",
+            price: 144
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 116,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: false,
+          refundPolicy: "No reembolsable",
+          changeable: false,
+          changePolicy: "No se admiten cambios"
+        },
+        services: {
+          wifi: false,
+          meals: false,
+          entertainment: false,
+          powerOutlets: false
+        }
       }
     ];
 
@@ -522,6 +801,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
       {
         id: "ret-1",
         airline: "LATAM",
+        flightNumber: "LA 2595",
         departureTime: "10:15 a. m.",
         arrivalTime: "6:30 p. m.",
         departureAirport: "Medellín (MDE)",
@@ -531,11 +811,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 380,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://i.pinimg.com/736x/0d/04/bb/0d04bb1980de2098c247543a2cfeb152.jpg",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Comida incluida", "Bebidas", "Entretenimiento"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 90,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso con penalización del 15%",
+          changeable: true,
+          changePolicy: "Cambios permitidos",
+          changeFee: 60
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "ret-2",
         airline: "Avianca",
+        flightNumber: "AV 8457",
         departureTime: "2:45 p. m.",
         arrivalTime: "8:20 p. m.",
         departureAirport: "Medellín (MDE)",
@@ -545,11 +863,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 420,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsX3AErK8dyqywQCNvjUdfHxewcn96gbwFyA&s",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable con espacio extra",
+          amenities: ["Comida completa", "Bebidas premium", "Kit de amenidades"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 85,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso completo hasta 24h antes",
+          changeable: true,
+          changePolicy: "Cambios permitidos con tarifa",
+          changeFee: 50
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "ret-3",
         airline: "Copa",
+        flightNumber: "CM 316",
         departureTime: "6:30 a. m.",
         arrivalTime: "2:15 p. m.",
         departureAirport: "Medellín (MDE)",
@@ -559,11 +915,48 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 340,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://images.trvl-media.com/media/content/expus/graphics/static_content/fusion/v0.1b/images/airlines/vector/s/CM_sq.svg",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Comida incluida", "Bebidas", "Entretenimiento"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: true,
+            weight: "23kg",
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso con penalización",
+          changeable: true,
+          changePolicy: "Cambios permitidos",
+          changeFee: 75
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "ret-4",
         airline: "Arajet",
+        flightNumber: "DM 643",
         departureTime: "11:20 a. m.",
         arrivalTime: "4:55 p. m.",
         departureAirport: "Medellín (MDE)",
@@ -573,11 +966,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 395,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://images.trvl-media.com/media/content/expus/graphics/static_content/fusion/v0.1b/images/airlines/vector/s/DM_sq.svg",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Servicio de bebidas", "Snack ligero"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: false,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "8kg",
+            price: 45
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 65,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso según política de la aerolínea",
+          changeable: false,
+          changePolicy: "No se admiten cambios"
+        },
+        services: {
+          wifi: false,
+          meals: false,
+          entertainment: true,
+          powerOutlets: false
+        }
       },
       {
         id: "ret-5",
         airline: "JetBlue",
+        flightNumber: "B6 1248",
         departureTime: "4:10 p. m.",
         arrivalTime: "10:45 p. m.",
         departureAirport: "Medellín (MDE)",
@@ -587,11 +1018,50 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 320,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://images.trvl-media.com/media/content/expus/graphics/static_content/fusion/v0.1b/images/airlines/vector/s/b6_sq.svg",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento estándar con entretenimiento personal",
+          amenities: ["TV personal", "Snacks", "Bebidas"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "43cm x 33cm x 20cm"
+          },
+          carryOn: {
+            included: false,
+            dimensions: "55cm x 35cm x 23cm",
+            weight: "10kg",
+            price: 65
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 80,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: false,
+          refundPolicy: "No reembolsable",
+          changeable: true,
+          changePolicy: "Cambios permitidos con tarifa",
+          changeFee: 100
+        },
+        services: {
+          wifi: true,
+          meals: false,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "ret-6",
         airline: "Spirit",
+        flightNumber: "NK 848",
         departureTime: "8:45 p. m.",
         arrivalTime: "2:30 a. m.+1",
         departureAirport: "Medellín (MDE)",
@@ -601,8 +1071,45 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 250,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg",
-        badge: "Precio más bajo"
+        logo: "https://download.logo.wine/logo/Spirit_Airlines/Spirit_Airlines-Logo.wine.png",
+        badge: "Precio más bajo",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica Básica",
+          description: "Tarifa básica solo incluye el asiento",
+          seatType: "Asiento básico no reclinable",
+          amenities: ["Solo transporte"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: false,
+            dimensions: "56cm x 46cm x 25cm",
+            weight: "10kg",
+            price: 144
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 116,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: false,
+          refundPolicy: "No reembolsable",
+          changeable: false,
+          changePolicy: "No se admiten cambios"
+        },
+        services: {
+          wifi: false,
+          meals: false,
+          entertainment: false,
+          powerOutlets: false
+        }
       }
     ];
 
@@ -610,6 +1117,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
       {
         id: "mad-1",
         airline: "Iberia",
+        flightNumber: "IB 6025",
         departureTime: "11:30 a. m.",
         arrivalTime: "6:45 a. m.+1",
         departureAirport: "Medellín (MDE)",
@@ -619,11 +1127,48 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 850,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://i.pinimg.com/736x/7a/0e/e1/7a0ee10240a467544945f3d95065e99a.jpg",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios premium",
+          seatType: "Asiento reclinable con espacio extra",
+          amenities: ["Comida gourmet", "Bebidas premium", "Entretenimiento personal", "Kit de viaje"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: true,
+            weight: "23kg",
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso completo hasta 24h antes",
+          changeable: true,
+          changePolicy: "Cambios gratuitos",
+          changeFee: 0
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "mad-2",
         airline: "Air Europa",
+        flightNumber: "UX 1094",
         departureTime: "6:20 p. m.",
         arrivalTime: "2:10 p. m.+1",
         departureAirport: "Medellín (MDE)",
@@ -633,11 +1178,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 780,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://play-lh.googleusercontent.com/dBtR6JtR4XpTjcPLjy8WmHrRWRc5mU4DlftaJucD8CWR566-lL3ULlzQ0pTNFH3M-mo",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Comida incluida", "Bebidas", "Entretenimiento"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 95,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso con penalización del 20%",
+          changeable: true,
+          changePolicy: "Cambios permitidos",
+          changeFee: 80
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "mad-3",
         airline: "LATAM",
+        flightNumber: "LA 5240",
         departureTime: "9:15 a. m.",
         arrivalTime: "4:30 a. m.+1",
         departureAirport: "Medellín (MDE)",
@@ -647,11 +1230,48 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 920,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://i.pinimg.com/736x/0d/04/bb/0d04bb1980de2098c247543a2cfeb152.jpg",
+        travelClass: "premium-economy" as const,
+        travelClassDetails: {
+          name: "Económica Premium",
+          description: "Asiento premium con servicios mejorados",
+          seatType: "Asiento reclinable premium con más espacio",
+          amenities: ["Comida gourmet", "Bebidas premium", "Kit premium", "Prioridad en abordaje", "Asiento preferencial"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: true,
+            weight: "32kg",
+            count: 2
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso completo sin penalización",
+          changeable: true,
+          changePolicy: "Cambios gratuitos",
+          changeFee: 0
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "mad-4",
         airline: "Avianca",
+        flightNumber: "AV 0027",
         departureTime: "3:45 p. m.",
         arrivalTime: "11:20 a. m.+1",
         departureAirport: "Medellín (MDE)",
@@ -661,11 +1281,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 750,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsX3AErK8dyqywQCNvjUdfHxewcn96gbwFyA&s",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable con espacio extra",
+          amenities: ["Comida completa", "Bebidas premium", "Kit de amenidades"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: false,
+            weight: "23kg",
+            price: 110,
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso completo hasta 24h antes",
+          changeable: true,
+          changePolicy: "Cambios permitidos con tarifa",
+          changeFee: 60
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "mad-5",
         airline: "Copa",
+        flightNumber: "CM 0492",
         departureTime: "7:00 a. m.",
         arrivalTime: "1:45 a. m.+1",
         departureAirport: "Medellín (MDE)",
@@ -675,12 +1333,49 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 680,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg",
-        badge: "Precio más bajo"
+        logo: "https://images.trvl-media.com/media/content/expus/graphics/static_content/fusion/v0.1b/images/airlines/vector/s/CM_sq.svg",
+        badge: "Precio más bajo",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Comida incluida", "Bebidas", "Entretenimiento"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "10kg"
+          },
+          checkedBag: {
+            included: true,
+            weight: "23kg",
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso con penalización",
+          changeable: true,
+          changePolicy: "Cambios permitidos",
+          changeFee: 75
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       },
       {
         id: "mad-6",
         airline: "Turkish Airlines",
+        flightNumber: "TK 1852",
         departureTime: "10:30 p. m.",
         arrivalTime: "8:15 p. m.+1",
         departureAirport: "Medellín (MDE)",
@@ -690,7 +1385,43 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         price: 890,
         currency: "USD",
         priceLabel: "Redondeado por pasajero",
-        logo: "/placeholder-logo.svg"
+        logo: "https://1000logos.net/wp-content/uploads/2020/04/Turkish-Airlines-symbol.png",
+        travelClass: "economy" as const,
+        travelClassDetails: {
+          name: "Económica",
+          description: "Asiento estándar con servicios básicos",
+          seatType: "Asiento reclinable estándar",
+          amenities: ["Comida tradicional turca", "Bebidas", "Entretenimiento amplio"]
+        },
+        baggage: {
+          personalItem: {
+            included: true,
+            dimensions: "40cm x 20cm x 25cm"
+          },
+          carryOn: {
+            included: true,
+            dimensions: "55cm x 40cm x 20cm",
+            weight: "8kg"
+          },
+          checkedBag: {
+            included: true,
+            weight: "30kg",
+            count: 1
+          }
+        },
+        flexibility: {
+          refundable: true,
+          refundPolicy: "Reembolso con penalización del 25%",
+          changeable: true,
+          changePolicy: "Cambios permitidos",
+          changeFee: 100
+        },
+        services: {
+          wifi: true,
+          meals: true,
+          entertainment: true,
+          powerOutlets: true
+        }
       }
     ];
 
@@ -786,9 +1517,19 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     }
   };
 
-  // Handler para ver detalles (no avanza)
+  // Handler para ver detalles (abre el sheet)
   const handleDetailsClick = (flight: FlightData) => {
-    console.log('Ver detalles del vuelo:', flight);
+    setSelectedFlightForDetails(flight);
+    setIsSheetOpen(true);
+  };
+
+  // Handler para seleccionar vuelo desde el sheet
+  const handleSelectFromSheet = () => {
+    if (selectedFlightForDetails) {
+      handleFlightSelect(selectedFlightForDetails);
+      setIsSheetOpen(false);
+      setSelectedFlightForDetails(null);
+    }
   };
 
   // Handler para cambiar tipo de vuelo (solo para demo - en producción se controla via URL)
@@ -807,26 +1548,74 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   // Handler para click en card de SearchWithFilters
   const handleCardClick = (idx: number, row: RowData) => {
     // Convertir RowData de vuelta a FlightData para la selección
-    const flight: FlightData = {
+    // Buscar el vuelo original para obtener todos los datos
+    const originalFlight = currentResultSet?.flights[idx];
+    
+    const flight: FlightData = originalFlight || {
       id: row.title || `flight-${idx}`,
-      airline: row.descMain || 'Aerolínea',
+      airline: row.title || 'Aerolínea',
       departureTime: row.feature1 || '',
       arrivalTime: row.feature2 || '',
-      departureAirport: row.location || '',
-      arrivalAirport: '',
-      duration: '',
+      departureAirport: row.location?.split(' → ')[0] || '',
+      arrivalAirport: row.location?.split(' → ')[1] || '',
+      duration: row.descMain || '',
       stops: row.descSub || '',
       price: row.afterPrice?.value || 0,
       currency: row.afterPrice?.currency || 'USD',
       priceLabel: 'Por pasajero',
       logo: row.images?.[0] || '/placeholder-logo.svg',
-      badge: row.badge1 || ''
+      badge: row.badge1 || '',
+      travelClass: 'economy' as const,
+      travelClassDetails: {
+        name: 'Económica',
+        description: 'Asiento estándar con servicios básicos'
+      },
+      baggage: {
+        personalItem: { included: true, dimensions: '40cm x 20cm x 25cm' },
+        carryOn: { included: false, dimensions: '55cm x 40cm x 20cm', weight: '8kg', price: 144 },
+        checkedBag: { included: false, weight: '23kg', price: 116, count: 1 }
+      },
+      flexibility: {
+        refundable: false,
+        changeable: false
+      }
     };
 
     handleFlightSelect(flight);
     
     if (onCardClick) {
       onCardClick(idx, row);
+    }
+  };
+
+  // Función para convertir FlightData a FlightCardData para compatibilidad
+  const convertToFlightCardData = (flight: FlightData): any => {
+    return {
+      id: flight.id,
+      airline: flight.airline,
+      flightNumber: flight.flightNumber,
+      departureTime: flight.departureTime,
+      arrivalTime: flight.arrivalTime,
+      departureAirport: flight.departureAirport,
+      arrivalAirport: flight.arrivalAirport,
+      duration: flight.duration,
+      stops: flight.stops,
+      price: flight.price,
+      currency: flight.currency,
+      priceLabel: flight.priceLabel,
+      logo: flight.logo,
+      badge: flight.badge,
+      savings: flight.savings
+    };
+  };
+
+  // Handler para ver detalles (abre el sheet) - ahora acepta FlightCardData y convierte
+  const handleDetailsClickWrapper = (flightCard: any) => {
+    // Buscar el vuelo completo en los datos originales
+    const fullFlight = currentResultSet?.flights.find(f => f.id === flightCard.id);
+    if (fullFlight) {
+      setSelectedFlightForDetails(fullFlight);
+      setIsSheetOpen(true);
     }
   };
 
@@ -870,8 +1659,8 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
                       {stepInfo?.label || `Vuelo ${index + 1}`}
                     </h3>
                     <CustomFlightCard
-                      flight={selected.flight}
-                      onDetailsClick={handleDetailsClick}
+                      flight={convertToFlightCardData(selected.flight)}
+                      onDetailsClick={handleDetailsClickWrapper}
                       className="bg-gray-50"
                     />
                   </div>
@@ -934,8 +1723,11 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
             ) : (
               <div className="space-y-4">
                 {filteredRows.slice(0, visibleFlights).map((row, index) => {
+                  // Usar el vuelo original para obtener todos los datos
+                  const originalFlight = currentResultSet?.flights[index];
+                  
                   // Convertir RowData de vuelta a FlightData para mostrar
-                  const flight: FlightData = {
+                  const flight: FlightData = originalFlight || {
                     id: row.title || `flight-${index}`,
                     airline: row.title || "Aerolínea",
                     departureTime: row.feature1 || "",
@@ -949,13 +1741,27 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
                     priceLabel: "Por pasajero",
                     logo: row.images?.[0] || "/placeholder-logo.svg",
                     badge: row.badge1 || "",
+                    travelClass: 'economy' as const,
+                    travelClassDetails: {
+                      name: 'Económica',
+                      description: 'Asiento estándar con servicios básicos'
+                    },
+                    baggage: {
+                      personalItem: { included: true, dimensions: '40cm x 20cm x 25cm' },
+                      carryOn: { included: false, dimensions: '55cm x 40cm x 20cm', weight: '8kg', price: 144 },
+                      checkedBag: { included: false, weight: '23kg', price: 116, count: 1 }
+                    },
+                    flexibility: {
+                      refundable: false,
+                      changeable: false
+                    }
                   };
 
                   return (
                     <CustomFlightCard
                       key={flight.id}
-                      flight={flight}
-                      onDetailsClick={handleDetailsClick}
+                      flight={convertToFlightCardData(flight)}
+                      onDetailsClick={handleDetailsClickWrapper}
                       onClick={() => cardClickHandler(index, row)}
                       showCompareCheckbox={compareMode} // para mostrar el checkbox
                       className="hover:bg-blue-50 transition-colors cursor-pointer"
@@ -993,8 +1799,6 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     );
   };
 
- 
-
   return (
     <div className={`container py-6 max-w-7xl ${className || ''}`}>
       {/* Controles de demo - COMENTADO: Ahora se controla via searchParams */}
@@ -1009,18 +1813,21 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         </div>
       )}
 
-      {/* Breadcrumb */}
-      <Breadcrumb
+     
+
+      {/* Contenido principal - Solo mostrar si shouldShowResults es true */}
+      {shouldShowResults ? (
+          <div>
+             <Breadcrumb
         steps={breadcrumbSteps}
         onStepClick={handleBreadcrumbClick}
         allowBackNavigation={true}
         allowForwardNavigation={false}
         className="w-full mb-4"
       />
-
-      {/* Contenido principal - Solo mostrar si shouldShowResults es true */}
-      {shouldShowResults ? (
-        renderFlightContent()
+      {  renderFlightContent()}
+          </div>
+        
       ) : (
         <div className="text-center py-12 text-gray-500">
           <Plane className="w-16 h-16 mx-auto mb-4 text-gray-300" />
@@ -1028,6 +1835,14 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
           <p className="text-sm">Ingresa tu origen, destino y fechas para comenzar</p>
         </div>
       )}
+      
+      {/* Sheet de detalles del vuelo */}
+      <FlightDetailSheet
+        isOpen={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+        flight={selectedFlightForDetails}
+        onSelectFlight={handleSelectFromSheet}
+      />
     </div>
   );
 };

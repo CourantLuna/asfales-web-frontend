@@ -65,8 +65,8 @@ export default function FlightsSearchBar({
   const TRANSPORT_DATA_SOURCES = searchDataSources || getTransportDataSources('air');
 
   // Estados locales para origin/destination (fallback si no se pasan como props)
-  const [localTravelingFrom, setLocalTravelingFrom] = useState('');
-  const [localGoingTo, setLocalGoingTo] = useState('');
+  const [localTravelingFrom, setLocalTravelingFrom] = useState('SDQ');
+  const [localGoingTo, setLocalGoingTo] = useState('MDE');
 
   // Usar props sincronizados o estado local
   const currentTravelingFrom = travelingFrom !== undefined ? travelingFrom : localTravelingFrom;
@@ -87,8 +87,8 @@ export default function FlightsSearchBar({
   // Multi-city states
   const [flights, setFlights] = useState<FlightData[]>(
     [
-      { id: '1', origin: '', destination: '', date: undefined },
-      { id: '2', origin: '', destination: '', date: undefined },
+      { id: '1', origin: 'SDQ', destination: 'MDE', date: undefined },
+      { id: '2', origin: 'MDE', destination: 'MAD', date: undefined },
     ]
   );
 
