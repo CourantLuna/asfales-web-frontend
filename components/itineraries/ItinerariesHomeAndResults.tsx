@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useState } from 'react';
 import { ItinerariesResultsTemplate } from './ItinerariesResultsTemplate';
+import ItinerariesHomeSections from './ItinerariesHomeSections';
 
 interface IItinerariesHomeAndResultsProps {}
 
@@ -21,7 +22,7 @@ export default function ItinerariesHomeAndResults() {
               ) : (
                 <>
                 {/*Secciones de Home de Itineraries*/}
-              <h1>Itineraries Home </h1>
+                    <ItinerariesHomeSections />
                 </>
               )}
       

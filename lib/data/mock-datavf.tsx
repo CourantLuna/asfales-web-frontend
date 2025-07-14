@@ -371,6 +371,7 @@ export interface ItineraryPackage {
     name: string;
     avatarUrl: string;
   }>;
+  maxParticipants?: number; // máximo de participantes permitido
   cities: string[];
   lodgingCount: number;
   experienceCount: number;
@@ -411,6 +412,7 @@ export const colombiaItineraries: ItineraryPackage[] = [
       { id: "p4", name: "Pedro", avatarUrl: "https://i.pravatar.cc/150?img=18" },
       { id: "p5", name: "Carmen", avatarUrl: "https://i.pravatar.cc/150?img=29" }
     ],
+    maxParticipants: 12,
     cities: ["Bogotá", "Medellín", "Cartagena"],
     lodgingCount: 4,
     experienceCount: 12,
@@ -443,6 +445,7 @@ export const colombiaItineraries: ItineraryPackage[] = [
       { id: "p7", name: "Elena", avatarUrl: "https://i.pravatar.cc/150?img=16" },
       { id: "p8", name: "Miguel", avatarUrl: "https://i.pravatar.cc/150?img=22" }
     ],
+     maxParticipants: 8,
     cities: ["Cartagena", "Santa Marta", "Tayrona"],
     lodgingCount: 3,
     experienceCount: 8,

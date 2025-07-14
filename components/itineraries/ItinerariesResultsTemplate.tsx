@@ -178,6 +178,7 @@ export function ItinerariesResultsTemplate({
                         price={itinerary.price}
                         creator={itinerary.creator}
                         participants={itinerary.participants}
+                        maxParticipants={itinerary.maxParticipants}
                         cities={itinerary.cities}
                         lodgingCount={itinerary.lodgingCount}
                         experienceCount={itinerary.experienceCount}
