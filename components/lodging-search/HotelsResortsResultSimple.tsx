@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import LodgingResultsTemplate from './LodgingResultsTemplate';
 import { fetchLodgings } from "@/services/lodging.service";
 import { RowData } from '../shared/CustomTable';
@@ -94,6 +94,9 @@ fetchLodgings()
   const toDate = parsedParams?.to ? new Date(parsedParams.to + 'T00:00:00') : null;
 
   return (
+      <Suspense
+                    fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+                  >
     <div className="py-2">
       {/* Información de búsqueda DEBUG only  NO BORRAR! SOLO COMENTAR*/}
       {/* <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -211,5 +214,6 @@ fetchLodgings()
         }}
       />
     </div>
+    </Suspense>
   );
 }

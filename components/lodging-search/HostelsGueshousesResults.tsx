@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import LodgingResultsTemplate from './LodgingResultsTemplate';
 import { fetchApartmentsAndLongStays, fetchHostelsAndGuesthouses, mapLodgingToRowData } from '@/services/lodging.service';
 
@@ -58,6 +58,9 @@ export default function HostelsGuesthousesResults({ initialSearchParams }: Hoste
   const toDate = parsedParams?.to ? new Date(parsedParams.to + 'T00:00:00') : null;
 
   return (
+      <Suspense
+                    fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+                  >
     <div className="py-6">
       {/* Información de búsqueda debug only */}
       {/* <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -129,5 +132,6 @@ export default function HostelsGuesthousesResults({ initialSearchParams }: Hoste
         }}
       />
     </div>
+    </Suspense>
   );
 }

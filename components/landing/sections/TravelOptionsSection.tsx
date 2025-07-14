@@ -11,19 +11,12 @@ export default function TravelOptionsSection({
   activeTab,
   setActiveTab,
   onScrollToResults,
-  travelingFrom,
-  setTravelingFrom,
-  goingTo,
-  setGoingTo,
+ 
 }: {
   searchDataSrc?: StandardSearchDataSource[];
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onScrollToResults: () => void;
-  travelingFrom: string;
-  setTravelingFrom: (value: string) => void;
-  goingTo: string;
-  setGoingTo: (value: string) => void;
 }) {
   
   return (
@@ -52,10 +45,6 @@ export default function TravelOptionsSection({
           activeTab={activeTab} 
           setActiveTab={setActiveTab}
           onScrollToResults={onScrollToResults}
-          travelingFrom={travelingFrom}
-          setTravelingFrom={setTravelingFrom}
-          goingTo={goingTo}
-          setGoingTo={setGoingTo}
           searchDataSourcesTravelOptions={searchDataSrc}
         />
         

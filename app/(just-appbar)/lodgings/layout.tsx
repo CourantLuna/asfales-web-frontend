@@ -3,6 +3,7 @@ import LodgingSearchBar from "@/components/lodging-search/LodgingSearchBar";
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
+export const dynamic = "force-dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 

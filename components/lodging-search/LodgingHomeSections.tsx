@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
@@ -14,6 +14,9 @@ export default function LodgingHomeSections() {
   };
 
   return (
+      <Suspense
+                    fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+                  >
     <div className="w-full py-8 h-[auto]">
       <h2 className="text-2xl font-bold mb-6">Ideas para tu próximo viaje</h2>
       
@@ -109,5 +112,6 @@ export default function LodgingHomeSections() {
         </div>
       </div>
     </div>
+    </Suspense>
   );
 }

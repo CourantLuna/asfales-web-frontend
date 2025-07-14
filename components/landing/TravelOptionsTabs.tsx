@@ -47,19 +47,12 @@ export default function TravelOptionsTabs({
   activeTab,
   setActiveTab,
   onScrollToResults,
-  travelingFrom: externalTravelingFrom,
-  setTravelingFrom: externalSetTravelingFrom,
-  goingTo: externalGoingTo,
-  setGoingTo: externalSetGoingTo,
+
   searchDataSourcesTravelOptions = searchDataSources
 }: {
   activeTab: string,
   setActiveTab: (tab: string) => void,
   onScrollToResults: () => void,
-  travelingFrom?: string,
-  setTravelingFrom?: (value: string) => void,
-  goingTo?: string,
-  setGoingTo?: (value: string) => void,
   searchDataSourcesTravelOptions?: any[]
 }) {
   const router = useRouter();
@@ -98,7 +91,6 @@ export default function TravelOptionsTabs({
       if (onScrollToResults) onScrollToResults(); // <--- mueve el scroll
     } else {
       setActiveTab("transport");
-      updateUrlWithType();
 
     }
   }, [pathname]);

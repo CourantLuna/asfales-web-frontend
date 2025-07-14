@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import { StandardToggleGroup } from '../shared/standard-fields-component/StandardToggleGroup';
 import { Building2, Hotel } from 'lucide-react';
@@ -51,6 +51,9 @@ onLodgingTypeChange,
   };
 
   return (
+    <Suspense
+                    fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
+                  >
            <div className="w-full max-w-7xl mx-auto">
 
     <div className="w-full space-y-6">
@@ -85,5 +88,6 @@ onLodgingTypeChange,
     </div>
 
   </div>
+  </Suspense>
   );
 }

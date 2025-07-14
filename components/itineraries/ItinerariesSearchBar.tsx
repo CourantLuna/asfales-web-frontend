@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Plane, Ship, Bus } from 'lucide-react';
 import { DateRange } from "react-day-picker";
 import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom";
@@ -33,6 +33,8 @@ interface IitinerariesSearchBarProps {
 export default function ItinerariesSearchBar({ showSearchButton = true }: IitinerariesSearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+ const pathname = usePathname();
+    const basePath = (pathname === '/' || pathname === '/global-itineraries-search') ? '/global-itineraries-search' : (pathname.endsWith('/itineraries') ? pathname : '/itineraries');
 
   const [travelingFrom, setTravelingFrom] = useState("");
   const [goingTo, setGoingTo] = useState("");
@@ -67,8 +69,8 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
     }
 
     // Cargar fechas
-    const fromDateParam = searchParams.get('fromDate');
-    const toDateParam = searchParams.get('toDate');
+    const fromDateParam = searchParams.get('departureDate');
+    const toDateParam = searchParams.get('returnDate');
 
     if (fromDateParam || toDateParam) {
       console.log('📅 Loading date range:', { fromDateParam, toDateParam });
@@ -177,10 +179,10 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
 
     // Agregar fechas
     if (range?.from) {
-      params.append("fromDate", range.from.toISOString().split("T")[0]);
+      params.append("departureDate", range.from.toISOString().split("T")[0]);
     }
     if (range?.to) {
-      params.append("toDate", range.to.toISOString().split("T")[0]);
+      params.append("returnDate", range.to.toISOString().split("T")[0]);
     }
 
     // Agregar habitaciones y huéspedes
@@ -204,7 +206,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
     }
 
     // Navegar con la URL construida
-    const finalUrl = `/itineraries?${params.toString()}`;
+    const finalUrl = (pathname === '/' || pathname === '/global-experiences-search')  ? `${basePath}?${params.toString()}` : `${basePath}/itineraries?${params.toString()}`;
 
     console.log("🌐 Final itineraries URL:", finalUrl);
     router.push(finalUrl);
@@ -222,7 +224,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
         onOriginValueChange={handleTravelingFromChange}
         destinationLabel="Destino"
         destinationPlaceholder="Voy hacia..."
-        destinationValue={goingTo}
+        destinationValue={goingTo }
         onDestinationValueChange={handleGoingToChange}
         dataSources={searchDataSources}
         onOriginSelect={(option, sourceType) => {

@@ -9,14 +9,14 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useStickyBoundary } from "@/hooks/useStickyBoundary";
+import { get } from "http";
+import { searchDataSources } from "@/lib/data/mock-datavf";
 
 export default function SearchBoxOverlay({ 
-  onSearch,
   dataSources = [],
   activeTab = "transport",
   onScrollToResults
 }: { 
-  onSearch?: (origin: string, destination: string) => void;
   dataSources?: StandardSearchDataSource[];
   activeTab?: string;
   onScrollToResults?: () => void;
@@ -84,7 +84,7 @@ function handleBuscar() {
     
    
     // Mantener los parámetros actualizados al cambiar la ruta
-    const newPath = `/global-${activeTab}-search`;
+    const newPath = `/global-${activeTab}-search?transportType=flights&lodgingType=hotels-and-resorts`;
     const fullUrl = `${newPath}?${params.toString()}`;
     router.replace(fullUrl);
 
@@ -103,26 +103,14 @@ const {
 } = useForm<{ origin: string; destination: string }>({
   mode: "onChange",
   defaultValues: { 
-    origin: fromParam, 
-    destination: toParam 
+    origin: fromParam || "SDQ", 
+    destination: toParam  || "MDE"
   },
 });
 
 const origin = watch("origin");
 const destination = watch("destination");
 
-// Sincronizar con los parámetros de la URL
-useEffect(() => {
-  if (fromParam !== origin) {
-    setValue("origin", fromParam, { shouldValidate: false });
-  }
-}, [fromParam]);
-
-useEffect(() => {
-  if (toParam !== destination) {
-    setValue("destination", toParam, { shouldValidate: false });
-  }
-}, [toParam]);
 
   return (
     <form onSubmit={handleSubmit((data) => {
@@ -163,7 +151,7 @@ useEffect(() => {
                   onValueChange={(value) => {
                     setValue("origin", value, { shouldValidate: false });
                   }}
-                  dataSources={dataSources}
+                  dataSources={dataSources || searchDataSources}
                   onSelect={(option, sourceType) => {
   // StandardSearchField ya maneja el valor correctamente via onValueChange
   console.log('🎯 SearchBoxOverlay - Origin selected:', {
@@ -216,7 +204,7 @@ useEffect(() => {
                          onValueChange={(value) => {
                            setValue("destination", value, { shouldValidate: false });
                          }}
-                         dataSources={dataSources}
+                         dataSources={dataSources || searchDataSources}
                          onSelect={(option, sourceType) => {
                            // StandardSearchField ya maneja el valor correctamente via onValueChange
                            // El value se almacena, el label se muestra

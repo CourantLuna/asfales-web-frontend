@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StandardSearchDataSource,
   StandardSearchField,
@@ -12,16 +12,12 @@ import {
 } from "../shared/standard-fields-component/GuestSelector";
 import { DateRange } from "react-day-picker";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Building2, Clock, MapPin, Plane, Search } from "lucide-react";
 import { getLodgingDataSources, defaultGuestRooms, defaultDateRange } from '@/lib/data/mock-datavf';
 
 interface ILodgingLayoutProps {
-  goingTo?: string;
-  setGoingTo?: (value: string) => void;
   searchDataSources?: StandardSearchDataSource[];
-  travelingFrom?: string;
-  setTravelingFrom?: (value: string) => void;
   lodgingType?: string;
   /**
    * Si es true, muestra el botón de buscar. Por defecto: true
@@ -30,20 +26,20 @@ interface ILodgingLayoutProps {
 }
 
 export default function LodgingSearchBar({
-  goingTo,
-  setGoingTo,
   searchDataSources = getLodgingDataSources(),
-  travelingFrom,
-  setTravelingFrom,
   lodgingType, // Por defecto, tipo de alojamiento
   showSearchButton = true,
 }: ILodgingLayoutProps) {
   // Hook para navegación
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+    const basePath = (pathname === '/' || pathname === '/global-lodging-search') ? '/global-lodging-search' : (pathname.endsWith('/lodgings') ? pathname : '/lodgings');
+   
 
-  // Estados locales para manejar valores si no vienen como props
-  const [localGoingTo, setLocalGoingTo] = useState<string>("MAD");
-  const [localTravelingFrom, setLocalTravelingFrom] = useState<string>("NYC");
+  // Estados locales para manejar valores
+  const [goingTo, setGoingTo] = useState<string>("");
+  const [TravelingFrom, setTravelingFrom] = useState<string>("");
 
   const [guestRooms, setGuestRooms] = useState<Room[]>(defaultGuestRooms);
   const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
@@ -53,18 +49,71 @@ export default function LodgingSearchBar({
     flexibleMonths?: string[];
   }>({});
 
-  // Funciones para manejar los valores - usar props si están disponibles, sino usar estado local
-  const currentGoingTo = goingTo !== undefined ? goingTo : localGoingTo;
-  const currentTravelingFrom =
-    travelingFrom !== undefined ? travelingFrom : localTravelingFrom;
+  // Efecto para cargar parámetros de la URL al inicializar el componente
+  useEffect(() => {
+    if (searchParams.size === 0) return; // No hay parámetros que cargar
+
+    console.log('🔄 Loading URL parameters:', Object.fromEntries(searchParams.entries()));
+
+    // Cargar datos de búsqueda
+    const toParam = searchParams.get('to') || '';
+    const fromParam = searchParams.get('from') || '';
+    const departureDateParam = searchParams.get('departureDate') || '';
+    const returnDateParam = searchParams.get('returnDate') || '';
+    const adultsParam = searchParams.get('adults') || '2';
+    const childrenParam = searchParams.get('children') || '0';
+    const roomsParam = searchParams.get('rooms') || '1';
+
+    if (toParam) {
+      setGoingTo(toParam);
+    }
+    if (fromParam) {
+      setTravelingFrom(fromParam);
+    }
+
+    // Cargar fechas si están disponibles
+    if (departureDateParam || returnDateParam) {
+      const departureDate = departureDateParam ? new Date(departureDateParam + 'T12:00:00') : undefined;
+      const returnDate = returnDateParam ? new Date(returnDateParam + 'T12:00:00') : undefined;
+      
+      setRange({
+        from: departureDate,
+        to: returnDate
+      });
+    }
+
+    // Cargar información de huéspedes
+    const totalAdults = parseInt(adultsParam) || 2;
+    const totalChildren = parseInt(childrenParam) || 0;
+    const totalRooms = parseInt(roomsParam) || 1;
+
+    // Crear estructura de habitaciones básica
+    const newRooms: Room[] = [];
+    for (let i = 0; i < totalRooms; i++) {
+      const adultsPerRoom = Math.floor(totalAdults / totalRooms) + (i < totalAdults % totalRooms ? 1 : 0);
+      const childrenPerRoom = Math.floor(totalChildren / totalRooms) + (i < totalChildren % totalRooms ? 1 : 0);
+      
+      newRooms.push({
+        id: `room-${i + 1}`,
+        adults: Math.max(1, adultsPerRoom),
+        children: Array(childrenPerRoom).fill(null).map((_, childIndex) => ({
+          id: `room-${i + 1}-child-${childIndex + 1}`,
+          age: 8
+        }))
+      });
+    }
+
+    if (newRooms.length > 0) {
+      setGuestRooms(newRooms);
+    }
+
+    console.log('✅ URL parameters loaded successfully');
+  }, [searchParams]);
+
 
   const handleGoingToChange = (value: string) => {
     console.log("🔍 handleGoingToChange called with value:", value);
-    if (setGoingTo) {
-      setGoingTo(value);
-    } else {
-      setLocalGoingTo(value);
-    }
+    setGoingTo(value);
   };
 
 
@@ -92,31 +141,32 @@ export default function LodgingSearchBar({
     });
   };
 
+
+
+
   function handleBuscar() {
     console.log("🚀 handleBuscar called with values:", {
-      currentGoingTo,
-      currentTravelingFrom,
       goingTo,
-      travelingFrom,
+      TravelingFrom,
     });
 
     // Construir los parámetros de la URL de forma segura
     const params = new URLSearchParams();
 
     // Agregar parámetros solo si tienen valor
-    if (currentGoingTo) {
-      params.append("goingTo", currentGoingTo);
+    if (goingTo) {
+      params.append("to", goingTo);
     }
-    if (currentTravelingFrom) {
-      params.append("travelingFrom", currentTravelingFrom);
+    if (TravelingFrom) {
+      params.append("from", TravelingFrom);
     }
 
     // Fechas en formato más amigable (YYYY-MM-DD)
     if (range?.from) {
-      params.append("from", range.from.toISOString().split("T")[0]);
+      params.append("departureDate", range.from.toISOString().split("T")[0]);
     }
     if (range?.to) {
-      params.append("to", range.to.toISOString().split("T")[0]);
+      params.append("returnDate", range.to.toISOString().split("T")[0]);
     }
 
     // Agregar parámetros de fechas flexibles si aplica
@@ -150,7 +200,7 @@ export default function LodgingSearchBar({
     }
 
     // Navegar con la URL construida
-    const finalUrl = `/lodgings/${lodgingType}?${params.toString()}`;
+    const finalUrl =(pathname === '/' || pathname === '/global-lodging-search')  ? `${basePath}?${params.toString()}` : `${basePath}/lodgings/${lodgingType}?${params.toString()}`;
     console.log("🌐 Final URL:", finalUrl);
     router.replace(finalUrl);
   }
@@ -163,7 +213,7 @@ export default function LodgingSearchBar({
           containerClassName="w-full md:w-[280px]"
           label={"Destino"}
           placeholder={"¿Hacia donde?"}
-          value={currentGoingTo}
+          value={goingTo}
           onValueChange={handleGoingToChange}
           dataSources={searchDataSources}
           onSelect={(option, sourceType) => {
@@ -203,7 +253,7 @@ export default function LodgingSearchBar({
               }
               variant="default"
               onClick={handleBuscar}
-              disabled={!currentGoingTo || !currentTravelingFrom}
+              disabled={!goingTo || !guestRooms || guestRooms.length === 0  }
             >
               <Search className="mr-2 h-4 w-4" />
               {"Buscar"}

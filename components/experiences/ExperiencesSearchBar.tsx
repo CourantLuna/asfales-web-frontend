@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { DateRange } from "react-day-picker";
 import { DateRangePickerCustom } from "@/components/ui/date-range-picker-custom";
 import { QuickFilter, FilterOption } from "@/components/ui/quick-filter";
@@ -25,6 +25,8 @@ interface IExperiencesSearchBarProps {
 export default function ExperiencesSearchBar({ showSearchButton = true }: IExperiencesSearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+    const basePath = (pathname === '/' || pathname === '/global-experiences-search') ? '/global-experiences-search' : (pathname.endsWith('/experiences') ? pathname : '/experiences');
 
   const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
   const [selectedExperiences, setSelectedExperiences] = useState<string[]>(defaultSelectedExperiences);
@@ -40,15 +42,15 @@ export default function ExperiencesSearchBar({ showSearchButton = true }: IExper
     console.log('🎭 Loading experiences URL parameters:', Object.fromEntries(searchParams.entries()));
 
     // Cargar destino
-    const destinationParam = searchParams.get('destination');
+    const destinationParam = searchParams.get('to');
     if (destinationParam) {
       console.log('🎯 Loading destination:', { destinationParam });
       setGoingTo(destinationParam);
     }
 
     // Cargar fechas
-    const fromDateParam = searchParams.get('fromDate');
-    const toDateParam = searchParams.get('toDate');
+    const fromDateParam = searchParams.get('departureDate');
+    const toDateParam = searchParams.get('returnDate');
     
     if (fromDateParam || toDateParam) {
       console.log('📅 Loading date range:', { fromDateParam, toDateParam });
@@ -103,15 +105,15 @@ export default function ExperiencesSearchBar({ showSearchButton = true }: IExper
 
     // Agregar destino solo si tiene valor
     if (goingTo) {
-      params.append("destination", goingTo);
+      params.append("to", goingTo);
     }
 
     // Agregar fechas
     if (range?.from) {
-      params.append("fromDate", range.from.toISOString().split("T")[0]);
+      params.append("departureDate", range.from.toISOString().split("T")[0]);
     }
     if (range?.to) {
-      params.append("toDate", range.to.toISOString().split("T")[0]);
+      params.append("returnDate", range.to.toISOString().split("T")[0]);
     }
 
     // Agregar experiencias seleccionadas
@@ -120,7 +122,7 @@ export default function ExperiencesSearchBar({ showSearchButton = true }: IExper
     }
 
     // Navegar con la URL construida
-    const finalUrl = `?${params.toString()}`;
+    const finalUrl = (pathname === '/' || pathname === '/global-experiences-search')  ? `${basePath}?${params.toString()}` : `${basePath}/experiences/?${params.toString()}`;
     console.log("🌐 Final experiences URL:", finalUrl);
     router.push(finalUrl);
   };

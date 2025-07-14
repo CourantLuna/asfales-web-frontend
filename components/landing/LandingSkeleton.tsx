@@ -15,27 +15,10 @@ interface LandingPageProps {
 
 
 export default function LandingSkeleton({ children }: LandingPageProps) {
-  const [searchValues, setSearchValues] = useState<{ origin: string; destination: string } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("transport");
   
-  // Estados compartidos para origen y destino - inicializar con valores deterministas
-  const [travelingFrom, setTravelingFrom] = useState<string>('SDQ');
-  const [goingTo, setGoingTo] = useState<string>('MAD');
-  
-  // Funciones wrapper para logging
-  const handleTravelingFromChange = (value: string) => {
-    console.log('🔄 travelingFrom changed to:', value);
-    setTravelingFrom(value);
-  };
-  
-  const handleGoingToChange = (value: string) => {
-    console.log('🔄 goingTo changed to:', value);
-    setGoingTo(value);
-  };
-
-
 
   function scrollToResults() {
     if(window.innerWidth < 768) 
@@ -50,28 +33,13 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
   }
 
 
-
-  const handleSearch = (origin: string, destination: string) => {
-    console.log('🔍 LandingSkeleton.handleSearch called with:', { origin, destination });
-    setSearchValues({ origin, destination });
-    handleTravelingFromChange(origin);
-    handleGoingToChange(destination);
-    console.log('🔍 State updated:', { travelingFrom: origin, goingTo: destination });
-    smoothScrollTo(resultsRef.current?.offsetTop ?? 0, 1000);
-  };
-
   return (
     <div className="min-h-screen w-full bg-[#F8FAFC]">
       {/* Imagen de fondo + overlay */}
       <div className="absolute w-full bg-[url('https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/Firefly%20la%20vista%20es%20desde%20encima%20de%20las%20nubes%2C%20vista%20desde%20un%20avion%2C%20en%20la%20toma%20hay%20nubes%20por%20arriba%20%281%29-OhzihO4aGu38K4tHjMwiVAhWXOLcPP.jpg')] bg-cover bg-center pointer-events-none">
         <div className="absolute inset-0 bg-white/50 backdrop-blur-sm" />
         <SearchBoxOverlay 
-          onSearch={handleSearch}
           dataSources={searchDataSources}
-          originValue={travelingFrom}
-          onOriginValueChange={handleTravelingFromChange}
-          destinationValue={goingTo}
-          onDestinationValueChange={handleGoingToChange}
           activeTab={activeTab}
           onScrollToResults={scrollToResults}
         />
@@ -85,11 +53,6 @@ export default function LandingSkeleton({ children }: LandingPageProps) {
             activeTab={activeTab} 
             setActiveTab={setActiveTab}
             onScrollToResults={scrollToResults}
-            // Props para sincronización de campos
-            travelingFrom={travelingFrom}
-            setTravelingFrom={handleTravelingFromChange}
-            goingTo={goingTo}
-            setGoingTo={handleGoingToChange}
             searchDataSrc={searchDataSources}
           />
 

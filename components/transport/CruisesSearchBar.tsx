@@ -39,7 +39,7 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
     console.log('🚢 Loading cruise URL parameters:', Object.fromEntries(searchParams.entries()));
 
     // Cargar destino
-    const destinationParam = searchParams.get('destination');
+    const destinationParam = searchParams.get('to');
     if (destinationParam) {
       console.log('🎯 Loading destination:', { destinationParam });
       setDestination(destinationParam);
@@ -84,7 +84,7 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
 
     // Agregar parámetros básicos solo si tienen valor
     if (destination) {
-      params.append("destination", destination);
+      params.append("to", destination);
     }
 
     // Fechas de salida
