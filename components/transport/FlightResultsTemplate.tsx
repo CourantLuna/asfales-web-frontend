@@ -29,7 +29,6 @@ interface FlightResultsTemplateProps {
   flightData?: RowData[];
   flightType?: 'roundtrip' | 'oneway' | 'multicity';
   destinations?: string[];
-  showResults?: boolean; // Prop para controlar visibilidad de resultados
 }
 
 const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
@@ -40,9 +39,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   flightData,
   flightType: propFlightType,
   destinations: propDestinations,
-  showResults, // Prop para controlar visibilidad de resultados
 }) => {
-  const searchParams = useSearchParams();
   
   // Estados principales - Usar propFlightType directamente en lugar de estado local
   const flightType = propFlightType || 'roundtrip'; // Usar prop directamente
@@ -55,9 +52,6 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedFlightForDetails, setSelectedFlightForDetails] = useState<FlightData | null>(null);
 
-  // Controlar visibilidad de resultados basado en prop o searchParam
-  const showResultsFromUrl = searchParams.get('showresults') === 'true';
-  const shouldShowResults = showResults !== undefined ? showResults : showResultsFromUrl;
 
   // Hook de paginación
   const {
@@ -577,10 +571,8 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
 
   return (
     <div className={`container py-6 max-w-7xl ${className || ''}`}>
-     
 
-      {/* Contenido principal - Solo mostrar si shouldShowResults es true */}
-      {shouldShowResults ? (
+   
           <div>
              <Breadcrumb
         steps={breadcrumbSteps}
@@ -592,14 +584,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
       {  renderFlightContent()}
           </div>
         
-      ) : (
-        <div className="text-center py-12 text-gray-500">
-          <Plane className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <p className="text-lg mb-2">Usa el buscador de arriba para encontrar vuelos</p>
-          <p className="text-sm">Ingresa tu origen, destino y fechas para comenzar</p>
-        </div>
-      )}
-      
+  
       {/* Sheet de detalles del vuelo */}
       <FlightDetailSheet
         isOpen={isSheetOpen}

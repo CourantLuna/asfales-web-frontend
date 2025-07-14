@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 export const dynamic = "force-dynamic";
 import TransportSearchBar from "@/components/transport/TransportsSearchBar";
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
+import TransportsHomeSections from '@/components/transport/TransportsHomeSections';
 
 export default function Page() {
    return (
@@ -13,6 +14,7 @@ export default function Page() {
           <TransportSearchBar />
           <div className="w-full py-2 mx-auto max-w-7xl w-full">
                     <BreadcrumbNav />
+                    <TransportsHomeSections />
                   </div>
         </Suspense>
        </div>

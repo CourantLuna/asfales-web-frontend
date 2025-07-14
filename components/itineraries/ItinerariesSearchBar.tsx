@@ -204,6 +204,10 @@ export default function ItinerariesSearchBar({ showSearchButton = true, basePath
       params.append("experiences", JSON.stringify(selectedExperiences));
     }
 
+    // Agregar parámetro para mostrar resultados
+    params.append("showresults", "true");
+
+
     // Navegar con la URL construida
     const finalUrl = basePathUrl ? `${basePathUrl}?${params.toString()}` : `/itineraries?${params.toString()}`;
 

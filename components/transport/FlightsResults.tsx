@@ -27,7 +27,6 @@ export default function FlightsResults({
   flightData,
   flightType: propFlightType = 'roundtrip',
   destinations: propDestinations,
-  externalShowResults, // Valor por defecto
 }: IFlightsResultsProps) {
   const searchParams = useSearchParams();
   
@@ -134,7 +133,6 @@ export default function FlightsResults({
     return classMap[cabinClass] || cabinClass;
   };
 
-      const showLocalResults = externalShowResults !== undefined? externalShowResults : searchParams.get('showresults') === 'true';
 
 
   // Renderizar el header con información de búsqueda
@@ -237,7 +235,6 @@ export default function FlightsResults({
         flightData={flightData}
         flightType={flightType}
         destinations={propDestinations}
-        showResults={ showLocalResults} // Asegúrate de definir externalShowResults si es necesario
       />
     </div>
   );

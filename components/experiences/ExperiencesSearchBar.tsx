@@ -118,6 +118,9 @@ export default function ExperiencesSearchBar({ showSearchButton = true, basePath
     if (selectedExperiences.length > 0) {
       params.append("experiences", JSON.stringify(selectedExperiences));
     }
+    // Agregar parámetro para mostrar resultados
+    params.append("showresults", "true");
+
 
     // Navegar con la URL construida
     const finalUrl = basePathUrl  ? `${basePathUrl}?${params.toString()}` : `/experiences/?${params.toString()}`;

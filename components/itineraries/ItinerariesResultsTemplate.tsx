@@ -28,26 +28,11 @@ import SearchWithFilters, { GenericFilterConfig } from '@/components/shared/Sear
 import { CheckboxOption } from '@/components/shared/standard-fields-component/CheckboxFilter';
 import { RowData } from '@/components/shared/RenderFields';
 import { CustomSelectOption } from '@/components/shared/CustomSelect';
+import { ItinerariesResultsTemplateProps, ItineraryRowData } from '@/lib/data/itineraries-types';
+import { budgetOptions, destinationsOptions, durationOptions, experienceTypesOptions, getFilterOptionsForItineraries, popularFiltersOptions, sortOptions, transportOptions } from '@/lib/data/itineraries-filter-options';
+import { createDataSourcesItineraries, getFiltersForItineraries, mapItinerariesToRowData } from '@/lib/data/itineraries-utils';
 
-// Tipos para RowData de itinerarios
-export interface ItineraryRowData extends RowData {
-  id: string;
-  title: string;
-  descMain: string;
-  descSecondary?: string;
-  price: string;
-  originalData: ItineraryPackage;
-}
 
-interface ItinerariesResultsTemplateProps {
-  origin?: string;
-  destination?: string;
-  startDate?: Date;
-  endDate?: Date;
-  className?: string;
-  onFiltersChange?: (filters: Record<string, any>) => void;
-  onCardClick?: (idx: number, row: RowData) => void;
-}
 
 export function ItinerariesResultsTemplate({
   origin = "Santo Domingo",
@@ -56,7 +41,7 @@ export function ItinerariesResultsTemplate({
   endDate,
   className = "",
   onFiltersChange,
-  onCardClick
+  onCardClick,
 }: ItinerariesResultsTemplateProps) {
 
   // Estados para filtros y paginación
@@ -81,234 +66,16 @@ export function ItinerariesResultsTemplate({
 
 
 
-  // Opciones de filtros mock
-  const popularFiltersOptions: CheckboxOption[] = [
-    { value: "best-rated", label: "Mejor valorados (4.8+)", count: 8 },
-    { value: "cultural", label: "Experiencias culturales", count: 12 },
-    { value: "adventure", label: "Aventura y deportes", count: 6 },
-    { value: "budget-friendly", label: "Económicos (<$1,500)", count: 9 },
-    { value: "small-group", label: "Grupos pequeños", count: 14 },
-    { value: "guided", label: "Con guía especializado", count: 18 },
-    { value: "food-included", label: "Gastronomía incluida", count: 15 },
-    { value: "short-duration", label: "Corta duración (<12 días)", count: 11 }
-  ];
-
-  const destinationsOptions: CheckboxOption[] = [
-    { value: "bogota", label: "Bogotá", count: 8 },
-    { value: "medellin", label: "Medellín", count: 6 },
-    { value: "cartagena", label: "Cartagena", count: 7 },
-    { value: "cali", label: "Cali", count: 3 },
-    { value: "santa-marta", label: "Santa Marta", count: 4 },
-    { value: "san-gil", label: "San Gil", count: 2 },
-    { value: "armenia", label: "Armenia", count: 3 },
-    { value: "leticia", label: "Leticia", count: 1 },
-    { value: "pasto", label: "Pasto", count: 1 },
-    { value: "valledupar", label: "Valledupar", count: 1 }
-  ];
-
-  const durationOptions: CheckboxOption[] = [
-    { value: "short", label: "Corto (7-10 días)", count: 8 },
-    { value: "medium", label: "Medio (11-15 días)", count: 9 },
-    { value: "long", label: "Largo (16-20 días)", count: 2 },
-    { value: "extended", label: "Extendido (21+ días)", count: 1 }
-  ];
-
-  const experienceTypesOptions: CheckboxOption[] = [
-    { value: "cultural", label: "Cultural", count: 12 },
-    { value: "adventure", label: "Aventura", count: 8 },
-    { value: "nature", label: "Naturaleza", count: 10 },
-    { value: "beach", label: "Playa", count: 6 },
-    { value: "gastronomy", label: "Gastronomía", count: 15 },
-    { value: "wellness", label: "Bienestar", count: 4 },
-    { value: "photography", label: "Fotografía", count: 7 },
-    { value: "music", label: "Música", count: 3 }
-  ];
-
-  const budgetOptions: CheckboxOption[] = [
-    { value: "budget", label: "Económico (<$1,200)", count: 4 },
-    { value: "mid-range", label: "Medio ($1,200-$1,800)", count: 11 },
-    { value: "premium", label: "Premium ($1,800-$2,500)", count: 4 },
-    { value: "luxury", label: "Lujo ($2,500+)", count: 1 }
-  ];
-
-  const transportOptions: CheckboxOption[] = [
-    { value: "flight", label: "Vuelos incluidos", count: 19 },
-    { value: "bus", label: "Transporte terrestre", count: 16 },
-    { value: "cruise", label: "Cruceros", count: 4 },
-    { value: "private", label: "Transporte privado", count: 8 }
-  ];
-
-  // Opciones de ordenamiento
-  const sortOptions: CustomSelectOption[] = [
-    { key: "recommended", label: "Recomendados" },
-    { key: "price-low", label: "Precio: menor a mayor" },
-    { key: "price-high", label: "Precio: mayor a menor" },
-    { key: "duration-short", label: "Duración: más corto" },
-    { key: "duration-long", label: "Duración: más largo" },
-    { key: "rating", label: "Mejor valorados" },
-    { key: "newest", label: "Más recientes" }
-  ];
-
   // Configuración del data source para búsqueda
-  const dataSourcesItineraries = useMemo(() => [
-    {
-      id: "itineraries",
-      label: "Itinerarios",
-      icon: <MapPin className="h-4 w-4" />,
-      type: "custom" as const,
-      nameLabelField: "title",
-      nameValueField: "title",
-      nameDescriptionField: "descMain",
-      options: rows
-    }
-  ], [rows]);
+  const dataSourcesItineraries = useMemo(() => createDataSourcesItineraries(rows), [rows]);
 
   // Configuración de filtros
-  const getFiltersForItineraries = useMemo((): GenericFilterConfig[] => [
-    {
-      id: "search",
-      type: "search",
-      label: "Buscar itinerarios",
-      placeholder: "Buscar por destino, actividad, guía...",
-      dataSources: dataSourcesItineraries,
-      defaultValue: "",
-      showClearButton: true,
-      minSearchLength: 2,
-      emptyMessage: "No se encontraron itinerarios",
-      searchPlaceholder: "Escribe para buscar itinerarios..."
-    },
-    {
-      id: "separator-1",
-      type: "separator"
-    },
-    {
-      id: "popularFilters",
-      type: "checkbox",
-      label: "Filtros populares",
-      showCounts: true,
-      maxSelections: 4,
-      initialVisibleCount: 6,
-      showMoreText: "Ver más filtros",
-      showLessText: "Ver menos",
-      defaultValue: []
-    },
-    {
-      id: "separator-2",
-      type: "separator"
-    },
-    {
-      id: "priceRange",
-      type: "range",
-      label: "Rango de precio",
-      min: 500,
-      max: 5000,
-      step: 100,
-      currency: "USD",
-      defaultValue: [500, 5000]
-    },
-    {
-      id: "separator-3",
-      type: "separator"
-    },
-    {
-      id: "destinations",
-      type: "checkbox",
-      label: "Destinos",
-      showCounts: true,
-      maxSelections: 5,
-      initialVisibleCount: 5,
-      showMoreText: "Ver más destinos",
-      showLessText: "Ver menos",
-      defaultValue: []
-    },
-    {
-      id: "separator-4",
-      type: "separator"
-    },
-    {
-      id: "duration",
-      type: "toggle",
-      label: "Duración del viaje",
-      type_toggle: "multiple",
-      variant: "vertical",
-      wrap: true,
-      gridCols: "auto",
-      containerClassName: "w-full",
-      labelClassName: "text-lg font-semibold mb-4",
-      toggleGroupClassName: "gap-3",
-      toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
-      maxSelections: 3,
-      defaultValue: []
-    },
-    {
-      id: "separator-5",
-      type: "separator"
-    },
-    {
-      id: "experienceTypes",
-      type: "checkbox",
-      label: "Tipo de experiencias",
-      showCounts: true,
-      maxSelections: 4,
-      initialVisibleCount: 4,
-      showMoreText: "Ver más tipos",
-      showLessText: "Ver menos",
-      defaultValue: []
-    },
-    {
-      id: "separator-6",
-      type: "separator"
-    },
-    {
-      id: "budget",
-      type: "radio",
-      label: "Categoría de presupuesto",
-      defaultValue: ""
-    },
-    {
-      id: "separator-7",
-      type: "separator"
-    },
-    {
-      id: "transport",
-      type: "checkbox",
-      label: "Transporte incluido",
-      showCounts: true,
-      defaultValue: []
-    }
-  ], [dataSourcesItineraries]);
+  const getFiltersForItinerariesLocal = useMemo((): GenericFilterConfig[] => {
+    return getFiltersForItineraries(dataSourcesItineraries)
+  }
+  , [dataSourcesItineraries]);
 
-  // Opciones de filtros
-  const getFilterOptionsForItineraries = useMemo(() => ({
-    popularFilters: popularFiltersOptions,
-    destinations: destinationsOptions,
-    duration: durationOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count,
-      icon: <Clock className="w-full h-full" />
-    })),
-    experienceTypes: experienceTypesOptions,
-    budget: budgetOptions.map(opt => ({
-      value: opt.value,
-      label: opt.label,
-      count: opt.count
-    })),
-    transport: transportOptions
-  }), []);
-
-  // Función para mapear ItineraryPackage a ItineraryRowData
-  const mapItinerariesToRowData = (itineraries: ItineraryPackage[]): ItineraryRowData[] => {
-    return itineraries.map((itinerary) => ({
-      id: itinerary.id,
-      title: itinerary.title,
-      descMain: `${itinerary.cities.join(', ')} • ${itinerary.duration} • ${itinerary.price}`,
-      descSecondary: `⭐ ${itinerary.rating} (${itinerary.reviewCount} reseñas) • ${itinerary.experienceCount} experiencias`,
-      price: itinerary.price,
-      originalData: itinerary
-    }));
-  };
-
+  
   // Actualizar rows cuando cambien los itinerarios filtrados
   useEffect(() => {
     const mappedData = mapItinerariesToRowData(colombiaItineraries);
@@ -383,8 +150,8 @@ export function ItinerariesResultsTemplate({
       {/* SearchWithFilters */}
       <SearchWithFilters
         rows={rows}
-        filters={getFiltersForItineraries}
-        filterOptions={getFilterOptionsForItineraries}
+        filters={getFiltersForItinerariesLocal}
+        filterOptions={getFilterOptionsForItineraries()}
         sortOptions={sortOptions}
         onFiltersChange={handleFiltersChange}
         onCardClick={handleCardClick}

@@ -1,3 +1,4 @@
+import FlightsHomeAndResults from '@/components/transport/FlightsHomeAndResults';
 import FlightsResults from '@/components/transport/FlightsResults';
 import React, { Suspense } from 'react';
 
@@ -7,7 +8,7 @@ export default function Page() {
         <Suspense
                 fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
               >
-           <FlightsResults />
+           <FlightsHomeAndResults />
            </Suspense>
        </div>
    );
