@@ -115,27 +115,27 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
 
 // Hook para generar steps según el tipo de vuelo
 export const useFlightBreadcrumbSteps = (
-  flightType: 'round-trip' | 'one-way' | 'multi-destination',
+  flightType: 'roundtrip' | 'oneway' | 'multicity',
   currentStep: string,
   destinations?: string[],
   allowBackNavigation: boolean = true
 ) => {
   const baseSteps = React.useMemo(() => {
     switch (flightType) {
-      case 'one-way':
+      case 'oneway':
         return [
           { id: 'choose-departure', label: 'Elige tu vuelo de salida' },
           { id: 'review-details', label: 'Revisa los detalles del viaje' }
         ];
       
-      case 'round-trip':
+      case 'roundtrip':
         return [
           { id: 'choose-departure', label: 'Elige tu vuelo a Medellín' },
           { id: 'choose-return', label: 'Elige tu vuelo a Madrid' },
           { id: 'review-details', label: 'Revisa los detalles del viaje' }
         ];
       
-      case 'multi-destination':
+      case 'multicity':
         const steps = [];
         if (destinations && destinations.length > 0) {
           destinations.forEach((destination, index) => {

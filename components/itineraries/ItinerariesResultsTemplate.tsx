@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { ItinerarySharedCard } from './ItinerarySharedCard';
-import { colombiaItineraries, type ItineraryPackage } from '@/lib/data/mock-datavf';
+import { colombiaItineraries, formatCityName, type ItineraryPackage } from '@/lib/data/mock-datavf';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import PaginationCard from '@/components/shared/PaginationCard';
@@ -333,64 +333,7 @@ export function ItinerariesResultsTemplate({
     }
   };
 
-  // Función para formatear nombres de ciudades
-  const formatCityName = (cityName: string) => {
-    if (!cityName) return "";
-    
-    // Primero verificar si es un código de aeropuerto (con o sin números)
-    const cleanInput = cityName.toLowerCase().replace(/\d+/g, ''); // Remover números
-    
-    // Casos especiales para códigos de aeropuerto (expandidos)
-    const airportCodes = {
-      'mde': 'Medellín',
-      'med': 'Medellín',
-      'bog': 'Bogotá',
-      'ctg': 'Cartagena',
-      'clo': 'Cali',
-      'smr': 'Santa Marta',
-      'puj': 'Punta Cana',
-      'sdq': 'Santo Domingo',
-      'sjj': 'San Juan de la Maguana',
-      'bcn': 'Barcelona',
-      'mad': 'Madrid',
-      'lis': 'Lisboa',
-      'cdg': 'París',
-      'lhr': 'Londres',
-      'fco': 'Roma',
-      'jfk': 'Nueva York',
-      'lax': 'Los Ángeles',
-      'mia': 'Miami',
-      'can': 'Cancún',
-      'gru': 'São Paulo',
-      'eze': 'Buenos Aires',
-      'scl': 'Santiago',
-      'lim': 'Lima',
-      'uio': 'Quito',
-      'gye': 'Guayaquil'
-    };
-    
-    // Verificar si el input limpio coincide con algún código de aeropuerto
-    if (cleanInput in airportCodes) {
-      return airportCodes[cleanInput as keyof typeof airportCodes];
-    }
-    
-    // Si no es un código de aeropuerto, aplicar formateo normal
-    const formatted = cityName
-      .toLowerCase()
-      .split(' ')
-      .map(word => {
-        // Casos especiales para preposiciones y artículos
-        const exceptions = ['de', 'del', 'la', 'el', 'los', 'las', 'y', 'e'];
-        if (exceptions.includes(word)) {
-          return word;
-        }
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(' ');
-    
-    return formatted;
-  };
-
+ 
   const formatDateRange = (start?: Date, end?: Date) => {
     if (!start || !end) return "Fechas flexibles";
     

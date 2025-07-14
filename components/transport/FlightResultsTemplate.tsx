@@ -66,7 +66,7 @@ interface FlightResultsTemplateProps {
   onFiltersChange?: (filters: Record<string, any>) => void;
   onCardClick?: (idx: number, row: any) => void;
   flightData?: RowData[];
-  flightType?: 'round-trip' | 'one-way' | 'multi-destination';
+  flightType?: 'roundtrip' | 'oneway' | 'multicity';
   destinations?: string[];
 }
 
@@ -179,8 +179,8 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   flightType: propFlightType,
   destinations: propDestinations
 }) => {
-  // Estados principales
-  const [flightType, setFlightType] = useState<'round-trip' | 'one-way' | 'multi-destination'>(propFlightType || 'round-trip');
+  // Estados principales - Usar propFlightType directamente en lugar de estado local
+  const flightType = propFlightType || 'roundtrip'; // Usar prop directamente
   const [currentStep, setCurrentStep] = useState('choose-departure');
   const [selectedFlights, setSelectedFlights] = useState<SelectedFlight[]>([]);
   const [rows, setRows] = useState<RowData[]>([]);
@@ -211,11 +211,21 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   // Generar steps del breadcrumb
   const breadcrumbSteps = useFlightBreadcrumbSteps(flightType, currentStep, multiDestinations);
 
+  // Efecto para sincronizar cuando cambia propFlightType desde searchParams
+  useEffect(() => {
+    if (propFlightType) {
+      const initialStep = propFlightType === 'multicity' ? 'choose-flight-0' : 'choose-departure';
+      setCurrentStep(initialStep);
+      setSelectedFlights([]);
+      resetPagination();
+    }
+  }, [propFlightType, resetPagination]);
+
   // Efecto para ajustar el step cuando cambia el tipo de vuelo
   useEffect(() => {
-    if (flightType === 'multi-destination' && currentStep === 'choose-departure') {
+    if (flightType === 'multicity' && currentStep === 'choose-departure') {
       setCurrentStep('choose-flight-0');
-    } else if (flightType !== 'multi-destination' && currentStep.startsWith('choose-flight-')) {
+    } else if (flightType !== 'multicity' && currentStep.startsWith('choose-flight-')) {
       setCurrentStep('choose-departure');
     }
   }, [flightType, currentStep]);
@@ -396,36 +406,17 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   }), []);
 
   // Dispara la barra de progreso cuando loading cambia
-  useEffect(() => {
-    if (loading && progressRef.current) {
-      progressRef.current.start();
-    }
-  }, [loading]);
-
-  // Simular carga de datos (para demo)
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      if (flightData && flightData.length > 0) {
-        setRows(flightData);
+   useEffect(() => {
+      if (loading !== false) {
+        setTimeout(() => {
+          progressRef.current?.start();
+        }, 0);
       } else {
-        // Generar datos simulados de vuelos
-        const simulatedFlights = mapFlightsToRowData(currentResultSet?.flights || []);
-        setRows(simulatedFlights);
+        progressRef.current?.finish();
       }
-      setLoading(false);
-    }, 1500);
+    }, [loading]);
 
-    return () => clearTimeout(timer);
-  }, [flightData, flightType]);
-
-  // Handler para cambios en flightData
-  useEffect(() => {
-    if (flightData && flightData.length > 0) {
-      setRows(flightData);
-      setLoading(false);
-    }
-  }, [flightData]);
+  
 
   // Datos simulados - diferentes conjuntos según el tipo de viaje
   const flightResultSets: FlightResultSet[] = useMemo(() => {
@@ -695,7 +686,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     ];
 
     switch (flightType) {
-      case 'one-way':
+      case 'oneway':
         return [
           {
             stepId: 'choose-departure',
@@ -705,7 +696,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
           }
         ];
 
-      case 'round-trip':
+      case 'roundtrip':
         return [
           {
             stepId: 'choose-departure',
@@ -721,7 +712,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
           }
         ];
 
-      case 'multi-destination':
+      case 'multicity':
         return [
           {
             stepId: 'choose-flight-0',
@@ -745,14 +736,22 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   // Obtener el conjunto de resultados actual
   const currentResultSet = flightResultSets.find(set => set.stepId === currentStep);
 
-  // Actualizar rows cuando cambie currentResultSet
+  // Simular carga de datos (para demo)
   useEffect(() => {
-    if (currentResultSet && !flightData) {
-      const flightRows = mapFlightsToRowData(currentResultSet.flights);
-      setRows(flightRows);
+    setLoading(true);
+    const timer = setTimeout(() => {
+      if (flightData && flightData.length > 0) {
+        setRows(flightData);
+      } else {
+        // Generar datos simulados de vuelos
+        const simulatedFlights = mapFlightsToRowData(currentResultSet?.flights || []);
+        setRows(simulatedFlights);
+      }
       setLoading(false);
-    }
-  }, [currentResultSet, flightData]);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [flightData, flightType, currentResultSet]);
 
   // Handler para navegación de breadcrumb (solo hacia atrás)
   const handleBreadcrumbClick = (stepId: string) => {
@@ -783,14 +782,17 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     console.log('Ver detalles del vuelo:', flight);
   };
 
-  // Handler para cambiar tipo de vuelo
-  const handleFlightTypeChange = (type: 'round-trip' | 'one-way' | 'multi-destination') => {
-    setFlightType(type);
-    // Ajustar el step inicial según el tipo
-    const initialStep = type === 'multi-destination' ? 'choose-flight-0' : 'choose-departure';
+  // Handler para cambiar tipo de vuelo (solo para demo - en producción se controla via URL)
+  const handleFlightTypeChange = (type: 'roundtrip' | 'oneway' | 'multicity') => {
+    console.warn('⚠️ handleFlightTypeChange: Esta función es solo para demo. En producción, el flightType se controla via searchParams.');
+    // Solo ajustar el step y resetear datos locales
+    const initialStep = type === 'multicity' ? 'choose-flight-0' : 'choose-departure';
     setCurrentStep(initialStep);
     setSelectedFlights([]);
     resetPagination(); // Reset paginación
+    
+    // En producción, aquí deberías navegar a una nueva URL con el tipo correcto
+    // router.push(`/flights?type=${type}&...otherParams`);
   };
 
   // Handler para click en card de SearchWithFilters
@@ -884,6 +886,9 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     // Mostrar SearchWithFilters para selección de vuelos
     if (currentResultSet) {
       return (
+    
+        
+
         <SearchWithFilters
           rows={rows}
           filters={getFiltersForFlights}
@@ -907,7 +912,15 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
           sortByText="Ordenar por"
           resultsCountText={(count) => `${count}+ vuelos encontrados`}
           renderResults={({ filteredRows, compareMode, onCardClick: cardClickHandler }) => (
-            <div className="space-y-4">
+            loading ? (
+             <div className="container max-w-7xl">
+        <div className="text-center mb-5 mt-1">
+          <EventDrivenProgress ref={progressRef} />
+          <p className="text-gray-600 mt-4">Buscando los mejores vuelos...</p>
+        </div>
+      </div>
+            ) : (
+              <div className="space-y-4">
               {filteredRows.slice(0, visibleFlights).map((row, index) => {
                 // Convertir RowData de vuelta a FlightData para mostrar
                 const flight: FlightData = {
@@ -956,6 +969,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
                 progressColor="bg-primary"
               />
             </div>
+            )
 
 
           )}
@@ -970,56 +984,21 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     );
   };
 
-  // Mostrar loading si está cargando
-  if (loading) {
-    return (
-      <div className="container py-6 max-w-7xl">
-        <div className="text-center py-12">
-          <EventDrivenProgress ref={progressRef} />
-          <p className="text-gray-600 mt-4">Buscando los mejores vuelos...</p>
-        </div>
-      </div>
-    );
-  }
+ 
 
   return (
     <div className={`container py-6 max-w-7xl ${className || ''}`}>
-      {/* Controles de demo */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Demo: Tipos de vuelo</h3>
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => handleFlightTypeChange('one-way')}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-              flightType === 'one-way'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 border hover:bg-gray-50'
-            }`}
-          >
-            Vuelo sencillo
-          </button>
-          <button
-            onClick={() => handleFlightTypeChange('round-trip')}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-              flightType === 'round-trip'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 border hover:bg-gray-50'
-            }`}
-          >
-            Vuelo redondo
-          </button>
-          <button
-            onClick={() => handleFlightTypeChange('multi-destination')}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-              flightType === 'multi-destination'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 border hover:bg-gray-50'
-            }`}
-          >
-            Multi-destino
-          </button>
+      {/* Controles de demo - COMENTADO: Ahora se controla via searchParams */}
+      {false && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="text-sm font-medium text-yellow-800 mb-3">
+            ⚠️ Demo deshabilitado: El tipo de vuelo ahora se controla via URL searchParams
+          </h3>
+          <p className="text-xs text-yellow-700 mb-3">
+            Actual: <strong>{flightType}</strong> (viene de searchParams)
+          </p>
         </div>
-      </div>
+      )}
 
       {/* Breadcrumb */}
       <Breadcrumb
@@ -1029,23 +1008,6 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         allowForwardNavigation={false}
         className="w-full mb-4"
       />
-
-      {/* Título y subtítulo */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          {currentResultSet?.title || breadcrumbSteps.find(step => step.isActive)?.label || 'Resumen del viaje'}
-        </h1>
-        {currentResultSet && (
-          <p className="text-gray-600">
-            {currentResultSet.subtitle} • {currentResultSet.flights.length} vuelos encontrados
-          </p>
-        )}
-        {currentStep === 'review-details' && (
-          <p className="text-gray-600">
-            Revisa y confirma tu selección de {selectedFlights.length} vuelo{selectedFlights.length !== 1 ? 's' : ''}
-          </p>
-        )}
-      </div>
 
       {/* Contenido principal */}
       {renderFlightContent()}

@@ -68,7 +68,7 @@ export function DualTriggerExample() {
   );
 }
 
-// Example 5: One-way trip (only departure date)
+// Example 5: oneway trip (only departure date)
 export function OneWayTripExample() {
   const [range, setRange] = useState<{ from?: Date; to?: Date }>({});
 

@@ -7,7 +7,7 @@ import { Button } from '../ui/button';
 
 const CustomFlightCardDemo: React.FC = () => {
   // Estados para el demo
-  const [flightType, setFlightType] = useState<'round-trip' | 'one-way' | 'multi-destination'>('round-trip');
+  const [flightType, setFlightType] = useState<'roundtrip' | 'oneway' | 'multicity'>('roundtrip');
   const [currentStep, setCurrentStep] = useState('choose-departure');
   const [allowBackNavigation, setAllowBackNavigation] = useState(true);
   const [allowForwardNavigation, setAllowForwardNavigation] = useState(false);
@@ -24,7 +24,7 @@ const CustomFlightCardDemo: React.FC = () => {
   };
 
   // Handler para cambiar tipo de vuelo (demo)
-  const handleFlightTypeChange = (type: 'round-trip' | 'one-way' | 'multi-destination') => {
+  const handleFlightTypeChange = (type: 'roundtrip' | 'oneway' | 'multicity') => {
     setFlightType(type);
     setCurrentStep('choose-departure');
   };
@@ -105,23 +105,23 @@ const CustomFlightCardDemo: React.FC = () => {
         <h3 className="text-sm font-medium text-gray-700 mb-3">Demo: Tipos de vuelo</h3>
         <div className="flex flex-wrap gap-3 mb-4">
           <Button
-            variant={flightType === 'one-way' ? 'default' : 'outline'}
+            variant={flightType === 'oneway' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => handleFlightTypeChange('one-way')}
+            onClick={() => handleFlightTypeChange('oneway')}
           >
             Vuelo sencillo
           </Button>
           <Button
-            variant={flightType === 'round-trip' ? 'default' : 'outline'}
+            variant={flightType === 'roundtrip' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => handleFlightTypeChange('round-trip')}
+            onClick={() => handleFlightTypeChange('roundtrip')}
           >
             Vuelo redondo
           </Button>
           <Button
-            variant={flightType === 'multi-destination' ? 'default' : 'outline'}
+            variant={flightType === 'multicity' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => handleFlightTypeChange('multi-destination')}
+            onClick={() => handleFlightTypeChange('multicity')}
           >
             Multi-destino
           </Button>

@@ -1037,3 +1037,75 @@ export const mockData = {
   defaultSelectedExperiences,
   colombiaItineraries
 };
+
+
+// Función para formatear nombres de ciudades usando los datos de searchDataSources
+export const formatCityName = (cityName: string) => {
+  if (!cityName) return "";
+  
+  // Primero verificar si es un código de aeropuerto (con o sin números)
+  const cleanInput = cityName.toLowerCase().replace(/\d+/g, ''); // Remover números
+  
+  // Obtener códigos de aeropuerto desde searchDataSources
+  const airportsSource = searchDataSources.find(source => source.id === "airports");
+  const citiesSource = searchDataSources.find(source => source.id === "cities");
+  const recentSource = searchDataSources.find(source => source.id === "recent");
+  
+  // Crear mapas de códigos desde los datos existentes
+  const airportCodeMap: Record<string, string> = {};
+  const cityCodeMap: Record<string, string> = {};
+  
+  // Mapear aeropuertos
+  if (airportsSource?.options) {
+    airportsSource.options.forEach((airport: any) => {
+      if (airport.code && airport.name) {
+        airportCodeMap[airport.code.toLowerCase()] = airport.name.split(' (')[0]; // Extraer solo el nombre de la ciudad
+      }
+    });
+  }
+  
+  // Mapear ciudades
+  if (citiesSource?.options) {
+    citiesSource.options.forEach((city: any) => {
+      if (city.cityCode && city.cityName) {
+        cityCodeMap[city.cityCode.toLowerCase()] = city.cityName.split(',')[0]; // Extraer solo el nombre de la ciudad
+      }
+    });
+  }
+  
+  // Mapear búsquedas recientes (extraer códigos de aeropuerto)
+  if (recentSource?.options) {
+    recentSource.options.forEach((recent: any) => {
+      if (recent.searchId && recent.destination) {
+        const destinationName = recent.destination.split(' (')[0]; // Extraer nombre antes del paréntesis
+        airportCodeMap[recent.searchId.replace(/\d+/g, '').toLowerCase()] = destinationName;
+      }
+    });
+  }
+  
+  // Verificar si el input limpio coincide con algún código de aeropuerto
+  if (cleanInput in airportCodeMap) {
+    return airportCodeMap[cleanInput];
+  }
+  
+  // Verificar si coincide con algún código de ciudad
+  if (cleanInput in cityCodeMap) {
+    return cityCodeMap[cleanInput];
+  }
+  
+  // Si no es un código, aplicar formateo normal
+  const formatted = cityName
+    .toLowerCase()
+    .split(' ')
+    .map(word => {
+      // Casos especiales para preposiciones y artículos en español
+      const exceptions = ['de', 'del', 'la', 'el', 'los', 'las', 'y', 'e', 'en', 'a', 'al'];
+      if (exceptions.includes(word)) {
+        return word;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+  
+  return formatted;
+};

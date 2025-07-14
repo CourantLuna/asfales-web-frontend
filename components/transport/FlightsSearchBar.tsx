@@ -353,7 +353,7 @@ const finalUrl = `${basePath}/flights?${params.toString()}`;
     </div>
   );
 
-  // One-way Tab Content
+  // oneway Tab Content
   const onewayContent = (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 md:gap-4">
