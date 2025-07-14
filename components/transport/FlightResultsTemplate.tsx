@@ -15,6 +15,7 @@ import { CheckboxOption } from '../shared/standard-fields-component/CheckboxFilt
 import { RowData } from '../shared/RenderFields';
 import { AdItem } from '../shared/Ads';
 import EventDrivenProgress, { EventDrivenProgressRef } from '../shared/EventDrivenProgress';
+import { openInNewTab } from '../../lib/utils/navigation';
 
 // Interfaces
 interface FlightData {
@@ -122,7 +123,7 @@ interface FlightResultsTemplateProps {
 const flightAds: AdItem[] = [
   {
     id: "cheap-flights",
-    src: "https://tpc.googlesyndication.com/simgad/7006773931942455307?",
+    src: "https://tpc.googlesyndication.com/simgad/14018803340569695221?",
     alt: "Vuelos Baratos - Reserva Ahora",
     href: "https://cheapflights.com/ofertas-especiales",
     title: "Vuelos nacionales e internacionales desde $99",
@@ -270,6 +271,16 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   
   // Generar steps del breadcrumb
   const breadcrumbSteps = useFlightBreadcrumbSteps(flightType, currentStep, multiDestinations);
+
+  // Debug breadcrumb steps
+  useEffect(() => {
+    console.log('🔍 DEBUG breadcrumbSteps actualizado:', {
+      flightType,
+      currentStep,
+      breadcrumbSteps,
+      multiDestinations
+    });
+  }, [breadcrumbSteps, flightType, currentStep, multiDestinations]);
 
   // Efecto para sincronizar cuando cambia propFlightType desde searchParams
   useEffect(() => {
@@ -1501,23 +1512,73 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
 
   // Handler para seleccionar vuelo (avanza automáticamente)
   const handleFlightSelect = (flight: FlightData) => {
-    if (!currentResultSet) return;
-
-    // Agregar/actualizar vuelo seleccionado
-    setSelectedFlights(prev => {
-      const filtered = prev.filter(sf => sf.stepId !== currentStep);
-      return [...filtered, { stepId: currentStep, flight }];
+    console.log('🔍 DEBUG handleFlightSelect - Inicio:', {
+      currentStep,
+      currentResultSet: !!currentResultSet,
+      breadcrumbSteps,
+      flightType
     });
 
-    // Avanzar al siguiente paso automáticamente
-    const currentIndex = breadcrumbSteps.findIndex(step => step.isActive);
-    if (currentIndex < breadcrumbSteps.length - 1) {
-      setCurrentStep(breadcrumbSteps[currentIndex + 1].id);
-      resetPagination(); // Reset paginación al avanzar step
+    if (!currentResultSet) {
+      console.warn('⚠️ No hay currentResultSet, saliendo');
+      return;
+    }
+
+    // Agregar/actualizar vuelo seleccionado
+    const updatedSelectedFlights = (() => {
+      const filtered = selectedFlights.filter(sf => sf.stepId !== currentStep);
+      return [...filtered, { stepId: currentStep, flight }];
+    })();
+    
+    setSelectedFlights(updatedSelectedFlights);
+
+    // Verificar si este es el último paso con vuelos (no incluir review-details)
+    const flightSteps = breadcrumbSteps.filter(step => step.id !== 'review-details');
+    const currentIndex = flightSteps.findIndex(step => step.id === currentStep);
+    const isLastFlightStep = currentIndex === flightSteps.length - 1;
+    
+    console.log('🔍 DEBUG navegación:', {
+      flightSteps,
+      currentIndex,
+      isLastFlightStep,
+      updatedSelectedFlights,
+      currentStep
+    });
+    
+    if (isLastFlightStep) {
+      // Es el último paso con vuelos, abrir página de detalles finales en nueva pestaña
+      const currentUrl = window.location.href;
+      
+      // Calcular información adicional para la URL
+      const totalPrice = updatedSelectedFlights.reduce((sum, sf) => sum + sf.flight.price, 0);
+      const currency = updatedSelectedFlights[0]?.flight.currency || 'USD';
+      
+      // Preparar parámetros para la URL
+      const queryParams = {
+        flights: JSON.stringify(updatedSelectedFlights),
+        type: flightType,
+        return: currentUrl,
+        total: totalPrice,
+        currency: currency,
+        count: updatedSelectedFlights.length
+      };
+      
+      // Abrir página de detalles finales en nueva pestaña
+      console.log('🛫 Abriendo detalles finales en nueva pestaña con vuelos:', updatedSelectedFlights);
+      console.log('🛫 Parámetros de navegación:', queryParams);
+      openInNewTab('/flights-details', queryParams);
+    } else {
+      // Avanzar al siguiente paso
+      const nextStep = breadcrumbSteps[breadcrumbSteps.findIndex(step => step.id === currentStep) + 1]?.id;
+      console.log('➡️ Avanzando al siguiente paso:', nextStep);
+      if (nextStep) {
+        setCurrentStep(nextStep);
+        resetPagination(); // Reset paginación al avanzar step
+      }
     }
   };
 
-  // Handler para ver detalles (abre el sheet)
+  // Handler para ver detalles (abre el sheet para preview)
   const handleDetailsClick = (flight: FlightData) => {
     setSelectedFlightForDetails(flight);
     setIsSheetOpen(true);
@@ -1609,7 +1670,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     };
   };
 
-  // Handler para ver detalles (abre el sheet) - ahora acepta FlightCardData y convierte
+  // Handler para ver detalles (abre el sheet para preview) - ahora acepta FlightCardData y convierte
   const handleDetailsClickWrapper = (flightCard: any) => {
     // Buscar el vuelo completo en los datos originales
     const fullFlight = currentResultSet?.flights.find(f => f.id === flightCard.id);
@@ -1640,47 +1701,8 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     }));
   };
 
-  // Renderizar contenido de vuelos con SearchWithFilters o resumen
+  // Renderizar contenido de vuelos con SearchWithFilters
   const renderFlightContent = () => {
-    // Si estamos en el paso de revisión, mostrar vuelos seleccionados
-    if (currentStep === 'review-details') {
-      return (
-        <div className="space-y-6">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-green-800 mb-4">
-              🎉 ¡Resumen de tu viaje!
-            </h2>
-            <div className="space-y-4">
-              {selectedFlights.map((selected, index) => {
-                const stepInfo = breadcrumbSteps.find(step => step.id === selected.stepId);
-                return (
-                  <div key={selected.stepId} className="bg-white rounded-lg p-4 border">
-                    <h3 className="font-semibold text-gray-800 mb-2">
-                      {stepInfo?.label || `Vuelo ${index + 1}`}
-                    </h3>
-                    <CustomFlightCard
-                      flight={convertToFlightCardData(selected.flight)}
-                      onDetailsClick={handleDetailsClickWrapper}
-                      className="bg-gray-50"
-                    />
-                  </div>
-                );
-              })}
-              
-              <div className="mt-6 pt-4 border-t">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Total estimado:</span>
-                  <span className="text-2xl font-bold text-green-600">
-                    ${selectedFlights.reduce((total, sf) => total + sf.flight.price, 0)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     // Mostrar SearchWithFilters para selección de vuelos
     if (currentResultSet) {
       return (
