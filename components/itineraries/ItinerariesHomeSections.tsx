@@ -27,8 +27,10 @@ import {
   ArrowRight,
   Zap,
   Shield,
-  Compass
+  Compass,
+  Route
 } from 'lucide-react';
+import router from 'next/router';
 
 interface IItinerariesHomeSectionsProps {}
 
@@ -190,7 +192,7 @@ export default function ItinerariesHomeSections() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-br from-primary via-primary/90 to-secondary text-white overflow-hidden">
+      <section className="relative mt-10 py-12 px-4 2xl:px-0 bg-gradient-to-br from-primary via-primary/90 to-secondary text-white overflow-hidden rounded-3xl">
         <div className="absolute inset-0 bg-black/20"></div>
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-10"
@@ -198,20 +200,20 @@ export default function ItinerariesHomeSections() {
         ></div>
         
         <div className="relative max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
             Itinerarios Únicos
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto">
             Descubre, crea y comparte experiencias de viaje extraordinarias con una comunidad de exploradores apasionados
           </p>
           
           <ShowIfUnauth>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8 py-4 text-lg">
+              <Button variant={"secondary"}  className=" px-8 py-4 text-lg  h-12 w-[280px]">
                 <Search className="mr-2 h-5 w-5" />
                 Explorar Itinerarios
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg">
+              <Button variant="ghost" className="border border-white px-8 py-4 text-lg w-full h-12 lg:w-[280px]">
                 <UserPlus className="mr-2 h-5 w-5" />
                 Únete Gratis
               </Button>
@@ -220,14 +222,15 @@ export default function ItinerariesHomeSections() {
 
           <ShowIfAuth>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-secondary hover:bg-secondary/90 px-8 py-4 text-lg">
+               <Button  variant="ghost" className="border border-white px-8 py-4 text-lg w-full h-12 lg:w-[280px]">
+                <Route className="mr-2 h-5 w-5" />
+                Descubrir Itinerarios
+              </Button>
+              <Button variant={"secondary"} className=" px-8 py-4 text-lg w-full h-12 lg:w-[280px]">
                 <Plus className="mr-2 h-5 w-5" />
                 Crear Mi Itinerario
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg">
-                <Users className="mr-2 h-5 w-5" />
-                Mis Grupos
-              </Button>
+             
             </div>
           </ShowIfAuth>
 
@@ -250,11 +253,11 @@ export default function ItinerariesHomeSections() {
       </section>
 
       {/* Featured Itineraries Section */}
-      <section className="py-20 px-4 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-12 px-4 2xl:px-0 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Itinerarios Destacados</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-800 text-start">Itinerarios Destacados</h2>
+            <p className="text-muted-foreground mt-2 text-start mb-10 text-lg">
               Descubre aventuras cuidadosamente seleccionadas por nuestra comunidad de viajeros expertos
             </p>
           </div>
@@ -276,7 +279,9 @@ export default function ItinerariesHomeSections() {
           </ShowIfAuth>
 
           <div className="text-center mt-12">
-            <Button size="lg" variant="outline" className="px-8 border-primary text-primary hover:bg-primary hover:text-white">
+            <Button size="lg" variant="outline" className="px-8 border-primary text-primary hover:bg-primary hover:text-white"
+              onClick={()=>router.push("/itineraries")}
+            >
               Ver Todos los Itinerarios
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
@@ -286,11 +291,11 @@ export default function ItinerariesHomeSections() {
 
       {/* Private Templates Section - Solo para usuarios autenticados */}
       <ShowIfAuth>
-        <section className="py-20 px-4 bg-white">
-          <div className="max-w-6xl mx-auto">
+        <section className="py-12 px-4 2xl:px-0">
+          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">Plantillas para Empezar</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-800 text-start">Plantillas para Empezar</h2>
+              <p className="text-muted-foreground mt-2 text-start mb-10 text-lg">
                 Comienza tu próximo viaje con estas plantillas listas para personalizar
               </p>
             </div>
@@ -307,7 +312,7 @@ export default function ItinerariesHomeSections() {
             </div>
 
             <div className="text-center mt-12">
-              <Button size="lg" className="bg-secondary hover:bg-secondary/90 px-8">
+              <Button className="bg-secondary hover:bg-secondary/90 px-8 h-12 w-[280px]">
                 <Plus className="mr-2 h-5 w-5" />
                 Crear Desde Cero
               </Button>
@@ -317,11 +322,11 @@ export default function ItinerariesHomeSections() {
       </ShowIfAuth>
 
       {/* How It Works Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/5 to-secondary/5">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-12 px-4 2xl:px-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl">
+        <div className="max-w-7xl mx-auto px-10">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">¿Cómo Funciona?</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-800 ">¿Cómo Funciona?</h2>
+            <p className="text-muted-foreground mt-2 mb-10 text-lg">
               Crear y unirse a itinerarios nunca había sido tan fácil
             </p>
           </div>
@@ -402,11 +407,11 @@ export default function ItinerariesHomeSections() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-12 px-4 2xl:px-0">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Características Únicas</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-800 text-start">Características Únicas</h2>
+            <p className="text-muted-foreground mt-2 mb-10 text-start text-lg">
               Todo lo que necesitas para crear y gestionar experiencias de viaje inolvidables
             </p>
           </div>
@@ -417,7 +422,7 @@ export default function ItinerariesHomeSections() {
                 <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
                   <MessageCircle className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Chat Grupal</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 ">Chat Grupal</h3>
                 <p className="text-gray-600">
                   Comunícate en tiempo real con tu grupo de viaje para coordinar cada detalle
                 </p>
@@ -488,22 +493,22 @@ export default function ItinerariesHomeSections() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-primary to-secondary text-white">
+      <section className="py-12 px-4 2xl:px-0 bg-gradient-to-r from-primary to-secondary text-white rounded-3xl mb-10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             ¿Listo para tu Próxima Aventura?
           </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+          <p className=" text-white/90 mb-8 max-w-2xl mx-auto text-lg">
             Únete a miles de viajeros que ya están creando recuerdos inolvidables juntos
           </p>
           
           <ShowIfUnauth>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8 py-4 text-lg">
+              <Button variant={"secondary"} className=" px-8 py-4 text-lg h-12 w-[280px]">
                 <UserPlus className="mr-2 h-5 w-5" />
                 Comienza Gratis
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg">
+              <Button variant="ghost" className="border border-white px-8 py-4 text-lg w-full h-12 lg:w-[280px]">
                 <Search className="mr-2 h-5 w-5" />
                 Explorar Primero
               </Button>
@@ -511,7 +516,7 @@ export default function ItinerariesHomeSections() {
           </ShowIfUnauth>
 
           <ShowIfAuth>
-            <Button size="lg" className="bg-secondary hover:bg-secondary/90 px-8 py-4 text-lg">
+            <Button  className="bg-secondary hover:bg-secondary/90 px-8 py-4 text-lg  h-12 w-[280px]">
               <Plus className="mr-2 h-5 w-5" />
               Crear Mi Primer Itinerario
             </Button>
