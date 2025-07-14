@@ -26,7 +26,7 @@ export default function ExperiencesSearchBar({ showSearchButton = true }: IExper
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-    const basePath = (pathname === '/' || pathname === '/global-experiences-search') ? '/global-experiences-search' : (pathname.endsWith('/experiences') ? pathname : '/experiences');
+    const basePath = (pathname === '/' || pathname === '/global-experiences-search') ? '/global-experiences-search' : (pathname.endsWith('/experiences') ? pathname : '');
 
   const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
   const [selectedExperiences, setSelectedExperiences] = useState<string[]>(defaultSelectedExperiences);

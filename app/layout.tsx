@@ -1,5 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
+import Script from 'next/script'; // 👈 Importante
+
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
@@ -25,6 +27,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="google-adsense-account" content="ca-pub-1409189363480446" />
+
+         {/* Google AdSense */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1409189363480446"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body suppressHydrationWarning className={inter.className}>
         <ThemeProvider
           attribute="class"

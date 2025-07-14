@@ -34,7 +34,7 @@ export default function LodgingSearchBar({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-    const basePath = (pathname === '/' || pathname === '/global-lodging-search') ? '/global-lodging-search' : (pathname.endsWith('/lodgings') ? pathname : '/lodgings');
+    const basePath = (pathname === '/' || pathname === '/global-lodging-search') ? '/global-lodging-search' : (pathname.endsWith('/lodgings') ? pathname : 'lodgings');
    
 
   // Estados locales para manejar valores
@@ -200,7 +200,7 @@ export default function LodgingSearchBar({
     }
 
     // Navegar con la URL construida
-    const finalUrl =(pathname === '/' || pathname === '/global-lodging-search')  ? `${basePath}?${params.toString()}` : `${basePath}/lodgings/${lodgingType}?${params.toString()}`;
+    const finalUrl =(pathname === '/' || pathname === '/global-lodging-search')  ? `${basePath}?${params.toString()}` : `/${basePath}/${lodgingType}?${params.toString()}`;
     console.log("🌐 Final URL:", finalUrl);
     router.replace(finalUrl);
   }

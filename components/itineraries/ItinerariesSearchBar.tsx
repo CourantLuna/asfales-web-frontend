@@ -34,7 +34,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
   const router = useRouter();
   const searchParams = useSearchParams();
  const pathname = usePathname();
-    const basePath = (pathname === '/' || pathname === '/global-itineraries-search') ? '/global-itineraries-search' : (pathname.endsWith('/itineraries') ? pathname : '/itineraries');
+    const basePath = (pathname === '/' || pathname === '/global-itineraries-search') ? '/global-itineraries-search' : (pathname.endsWith('/itineraries') ? pathname : '');
 
   const [travelingFrom, setTravelingFrom] = useState("");
   const [goingTo, setGoingTo] = useState("");
@@ -206,7 +206,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
     }
 
     // Navegar con la URL construida
-    const finalUrl = (pathname === '/' || pathname === '/global-itineraries-search')  ? `${basePath}?${params.toString()}` : `${basePath}/itineraries?${params.toString()}`;
+    const finalUrl = (pathname === '/' || pathname === '/global-itineraries-search')  ? `${basePath}?${params.toString()}` : `/${basePath}/itineraries?${params.toString()}`;
 
     console.log("🌐 Final itineraries URL:", finalUrl);
     router.push(finalUrl);

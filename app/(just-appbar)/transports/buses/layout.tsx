@@ -11,7 +11,7 @@ export default function Layout({
     <div>
       <div className = "">
         <h1 className="hidden lg:block text-4xl text-secondary mx-auto max-w-7xl w-full mb-8 ">
-          ¡Te llevamos conduciendo!
+          ¡Te llevamos en carretera!
         </h1>
         </div>
         <BusesSearchBar />
