@@ -26,7 +26,7 @@ export default function LodgingLayout({
         </h1>
         </div>
 
-        <LodgingHomeSearchBar />
+        <LodgingHomeSearchBar  />
         <div className="w-full py-2 mx-auto max-w-7xl w-full">
           <BreadcrumbNav />
         </div>

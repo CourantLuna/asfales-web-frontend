@@ -20,14 +20,12 @@ interface IExperiencesSearchBarProps {
    * Si es true, muestra el botón de buscar. Por defecto: true
    */
   showSearchButton?: boolean;
+  basePathUrl?: string
 }
 
-export default function ExperiencesSearchBar({ showSearchButton = true }: IExperiencesSearchBarProps) {
+export default function ExperiencesSearchBar({ showSearchButton = true, basePathUrl }: IExperiencesSearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-    const basePath = (pathname === '/' || pathname === '/global-experiences-search') ? '/global-experiences-search' : (pathname.endsWith('/experiences') ? pathname : '');
-
   const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
   const [selectedExperiences, setSelectedExperiences] = useState<string[]>(defaultSelectedExperiences);
   const [goingTo, setGoingTo] = useState("");
@@ -122,7 +120,7 @@ export default function ExperiencesSearchBar({ showSearchButton = true }: IExper
     }
 
     // Navegar con la URL construida
-    const finalUrl = (pathname === '/' || pathname === '/global-experiences-search')  ? `${basePath}?${params.toString()}` : `${basePath}/experiences/?${params.toString()}`;
+    const finalUrl = basePathUrl  ? `${basePathUrl}?${params.toString()}` : `/experiences/?${params.toString()}`;
     console.log("🌐 Final experiences URL:", finalUrl);
     router.push(finalUrl);
   };

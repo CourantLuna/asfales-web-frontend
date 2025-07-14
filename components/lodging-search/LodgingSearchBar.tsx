@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Building2, Clock, MapPin, Plane, Search } from "lucide-react";
 import { getLodgingDataSources, defaultGuestRooms, defaultDateRange } from '@/lib/data/mock-datavf';
+import path from "path";
 
 interface ILodgingLayoutProps {
   searchDataSources?: StandardSearchDataSource[];
@@ -23,18 +24,18 @@ interface ILodgingLayoutProps {
    * Si es true, muestra el botón de buscar. Por defecto: true
    */
   showSearchButton?: boolean;
+  basePathUrl?: string; // Ruta base opcional para la navegación
 }
 
 export default function LodgingSearchBar({
   searchDataSources = getLodgingDataSources(),
   lodgingType, // Por defecto, tipo de alojamiento
   showSearchButton = true,
+  basePathUrl,
 }: ILodgingLayoutProps) {
   // Hook para navegación
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-    const basePath = (pathname === '/' || pathname === '/global-lodging-search') ? '/global-lodging-search' : (pathname.endsWith('/lodgings') ? pathname : 'lodgings');
    
 
   // Estados locales para manejar valores
@@ -152,6 +153,7 @@ export default function LodgingSearchBar({
 
     // Construir los parámetros de la URL de forma segura
     const params = new URLSearchParams();
+    params.append("lodgingType", lodgingType || "hotels-and-resorts");
 
     // Agregar parámetros solo si tienen valor
     if (goingTo) {
@@ -200,7 +202,7 @@ export default function LodgingSearchBar({
     }
 
     // Navegar con la URL construida
-    const finalUrl =(pathname === '/' || pathname === '/global-lodging-search')  ? `${basePath}?${params.toString()}` : `/${basePath}/${lodgingType}?${params.toString()}`;
+    const finalUrl = basePathUrl ? `${basePathUrl}?${params.toString()}`: `/lodgings/${lodgingType}?${params.toString()}`;
     console.log("🌐 Final URL:", finalUrl);
     router.replace(finalUrl);
   }

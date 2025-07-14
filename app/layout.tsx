@@ -31,12 +31,12 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-1409189363480446" />
 
          {/* Google AdSense */}
-        <Script
+        {/* <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1409189363480446"
           crossOrigin="anonymous"
           strategy="afterInteractive"
-        />
+        /> */}
       </head>
       <body suppressHydrationWarning className={inter.className}>
         <ThemeProvider

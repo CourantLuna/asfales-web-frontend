@@ -80,7 +80,6 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
 
   // Para multi-destino
   const multiDestinations = propDestinations || ['Medellín', 'Madrid'];
-  const rountripDestinations = ['Santo Domingo', 'Medellín'];
   
   // Generar steps del breadcrumb
   const breadcrumbSteps = useFlightBreadcrumbSteps(flightType, currentStep, multiDestinations);

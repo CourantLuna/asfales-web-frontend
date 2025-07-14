@@ -106,15 +106,15 @@ export default function TravelOptionsTabs({
   );
 
   const getLodgingContent = () => (
-    <LodgingHomeSearchBar  />
+    <LodgingHomeSearchBar basePath="/global-lodging-search"  />
   );
 
   const getExperiencesContent = () => (
-    <ExperiencesSearchBar />
+    <ExperiencesSearchBar basePathUrl="/global-experiences-search" />
   );
 
   const getItinerariesContent = () => (
-    <ItinerariesSearchBar  />
+    <ItinerariesSearchBar basePathUrl="/global-itineraries-search" />
   );
 
   // Definición de los tabs

@@ -1,25 +1,30 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { StandardToggleGroup } from '../shared/standard-fields-component/StandardToggleGroup';
 import { Building2, Hotel } from 'lucide-react';
 import LodgingSearchBar from './LodgingSearchBar';
 import BreadcrumbNav from '../shared/BreadcrumbNav';
+import router from 'next/router';
 
 interface ILodgingHomeSearchBarProps {
   showSearchButtonLodging?: boolean,
   onLodgingTypeChange?: (type: string) => void; // Nueva prop
   initialLodgingType?: string; // Nueva prop opcional
+  basePath?: string; // Nueva prop opcional para la ruta base
 }
 
 export default function LodgingHomeSearchBar({ 
   showSearchButtonLodging = true,
 onLodgingTypeChange,
-  initialLodgingType
+  initialLodgingType,
+  basePath,
 }: ILodgingHomeSearchBarProps) {
   const pathname = usePathname();
-  const [selectedLodgingType, setSelectedLodgingType] = useState<string>("");
+  const searchParams = useSearchParams();
+  
+  const [selectedLodgingType, setSelectedLodgingType] = useState<string>("hotels-and-resorts");
 
   // Efecto para sincronizar el toggle con la URL actual
   useEffect(() => {
@@ -43,10 +48,22 @@ onLodgingTypeChange,
     }
   }, [pathname]);
 
+  // Función para actualizar la URL con el transportType
+  const updateUrlWithLodgingType = (LodgingType: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Construir los parámetros de la URL de forma segura
+    // Agregar parámetro para mostrar resultados
+    params.set("lodgingType",LodgingType );
+    
+    // Actualizar la URL manteniendo otros parámetros existentes
+    router.push(`${window.location.pathname}?${params.toString()}`);
+  };
   
   // Función para manejar cambios y notificar al padre
   const handleLodgingTypeChange = (value: string) => {
     setSelectedLodgingType(value);
+    updateUrlWithLodgingType(value); // Actualizar la URL
     onLodgingTypeChange?.(value); // Notificar al padre
   };
 
@@ -83,7 +100,9 @@ onLodgingTypeChange,
       />
 
       {/* Search Bar con el tipo seleccionado */}
-      <LodgingSearchBar lodgingType={selectedLodgingType} showSearchButton={showSearchButtonLodging} />
+      <LodgingSearchBar lodgingType={selectedLodgingType} showSearchButton={showSearchButtonLodging} 
+        basePathUrl={basePath}
+      />
         
     </div>
 

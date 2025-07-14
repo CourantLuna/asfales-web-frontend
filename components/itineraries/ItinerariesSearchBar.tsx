@@ -28,14 +28,13 @@ interface IitinerariesSearchBarProps {
    * Si es true, muestra el botón de buscar. Por defecto: true
    */
   showSearchButton?: boolean;
+    basePathUrl?: string; // Ruta base opcional para la navegación
+
 }
 
-export default function ItinerariesSearchBar({ showSearchButton = true }: IitinerariesSearchBarProps) {
+export default function ItinerariesSearchBar({ showSearchButton = true, basePathUrl }: IitinerariesSearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
- const pathname = usePathname();
-    const basePath = (pathname === '/' || pathname === '/global-itineraries-search') ? '/global-itineraries-search' : (pathname.endsWith('/itineraries') ? pathname : '');
-
   const [travelingFrom, setTravelingFrom] = useState("");
   const [goingTo, setGoingTo] = useState("");
   const [range, setRange] = useState<DateRange | undefined>(defaultDateRange);
@@ -206,10 +205,10 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
     }
 
     // Navegar con la URL construida
-    const finalUrl = (pathname === '/' || pathname === '/global-itineraries-search')  ? `${basePath}?${params.toString()}` : `/${basePath}/itineraries?${params.toString()}`;
+    const finalUrl = basePathUrl ? `${basePathUrl}?${params.toString()}` : `/itineraries?${params.toString()}`;
 
     console.log("🌐 Final itineraries URL:", finalUrl);
-    router.push(finalUrl);
+    router.replace(finalUrl);
   };
 
   return (
