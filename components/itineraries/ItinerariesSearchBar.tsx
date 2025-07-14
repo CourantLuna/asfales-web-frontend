@@ -206,7 +206,7 @@ export default function ItinerariesSearchBar({ showSearchButton = true }: Iitine
     }
 
     // Navegar con la URL construida
-    const finalUrl = (pathname === '/' || pathname === '/global-experiences-search')  ? `${basePath}?${params.toString()}` : `${basePath}/itineraries?${params.toString()}`;
+    const finalUrl = (pathname === '/' || pathname === '/global-itineraries-search')  ? `${basePath}?${params.toString()}` : `${basePath}/itineraries?${params.toString()}`;
 
     console.log("🌐 Final itineraries URL:", finalUrl);
     router.push(finalUrl);
