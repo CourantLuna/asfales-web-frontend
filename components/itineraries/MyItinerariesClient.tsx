@@ -10,7 +10,7 @@ import {
   myItinerariesSortOptions,
   filterMyItineraries,
   sortMyItineraries,
-  type PrivateItinerary
+  DataItinerary
 } from '@/lib/data/itineraries-data';
 import SearchWithFilters, { GenericFilterConfig } from '@/components/shared/SearchWithFilters';
 import { RowData } from '@/components/shared/RenderFields';
@@ -38,6 +38,8 @@ import { ShowIfAuth } from '../ShowIfAuth';
 import { ShowIfUnauth } from '../ShowIfUnauth';
 import ItinerariesHomeSections from './ItinerariesHomeSections';
 import MyItinerariesHomeSections from './MyItinerariesHomeSections';
+import { StandardTabs, TabItem } from '../shared/standard-fields-component/StandardTabs';
+import { ItinerarySharedCard } from './ItinerarySharedCard';
 
 // Tipos para RowData de itinerarios privados
 export interface MyItineraryRowData extends RowData {
@@ -45,7 +47,7 @@ export interface MyItineraryRowData extends RowData {
   title: string;
   descMain: string;
   descSecondary?: string;
-  originalData: PrivateItinerary;
+  originalData: DataItinerary;
 }
 
 interface IMyItinerariesClientProps {
@@ -58,20 +60,29 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
   const [loading, setLoading] = useState(false);
   const [filteredRowsLength, setFilteredRowsLength] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [activeTab, setActiveTab] = useState('private');
 
-    // Constantes de paginación
+  // Constantes de paginación
   const initialVisibleItineraries = 6;
   const itinerariesPerStep = 2;
-  // Hook de paginación
-  const {
-    visibleItems: visibleItineraries,
-    showMore: handleShowMore,
-    showLess: handleShowLess,
-    reset: resetPagination
-  } = usePagination({
+
+  // Hooks de paginación separados para cada tab
+  const privateItinerariesPagination = usePagination({
     initialVisibleItems: initialVisibleItineraries,
     itemsPerStep: itinerariesPerStep,
-    totalItems: filteredRowsLength
+    totalItems: 0 // Se actualizará dinámicamente
+  });
+
+  const sharedItinerariesPagination = usePagination({
+    initialVisibleItems: initialVisibleItineraries,
+    itemsPerStep: itinerariesPerStep,
+    totalItems: 0 // Se actualizará dinámicamente
+  });
+
+  const publicItinerariesPagination = usePagination({
+    initialVisibleItems: initialVisibleItineraries,
+    itemsPerStep: itinerariesPerStep,
+    totalItems: 0 // Se actualizará dinámicamente
   });
 
 
@@ -175,8 +186,21 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
   
   ], [dataSourcesMyItineraries]);
 
+  // Función para separar itinerarios por categoría
+  const categorizeItineraries = (filteredRows: MyItineraryRowData[]) => {
+    const privateItineraries = filteredRows.filter(row => row.originalData.visibility === 'private');
+    const sharedItineraries = filteredRows.filter(row => row.originalData.visibility === 'shared');
+    const publicItineraries = filteredRows.filter(row => row.originalData.visibility === 'public');
+    
+    return {
+      private: privateItineraries,
+      shared: sharedItineraries,
+      public: publicItineraries
+    };
+  };
+
   // Función para transformar datos del itinerario a las props del componente
-  const transformItineraryData = (itinerary: PrivateItinerary) => {
+  const transformItineraryData = (itinerary: DataItinerary) => {
     // Transformar accommodations
     const accommodations = itinerary.accommodations.map(acc => ({
       type: acc.type as 'hotel' | 'apartment' | 'house' | 'resort',
@@ -206,8 +230,44 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
     };
   };
 
-  // Función para mapear PrivateItinerary a MyItineraryRowData
-  const mapItinerariesToRowData = (itineraries: PrivateItinerary[]): MyItineraryRowData[] => {
+  // Función para transformar datos para ItinerarySharedCard
+  const transformItineraryDataForShared = (itinerary: DataItinerary) => {
+    // Transformar transportSummary
+    const transportSummary = itinerary.transport.map(transport => ({
+      mode: transport.type as "flight" | "bus" | "cruise",
+      count: 1 // Asumimos 1 por ahora, se puede ajustar
+    }));
+
+    return {
+      id: itinerary.id,
+      title: itinerary.title,
+      coverImage: itinerary.coverImage,
+      startDate: new Date(itinerary.startDate).toLocaleDateString('es-ES', { 
+        day: 'numeric', 
+        month: 'short' 
+      }),
+      endDate: new Date(itinerary.endDate).toLocaleDateString('es-ES', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      }),
+      price: `$${itinerary.totalBudget.toLocaleString()} ${itinerary.currency}`,
+      creator: itinerary.creator,
+      creatorBio: `Creador de ${itinerary.title}`, // Bio por defecto
+      colaborators: itinerary.collaborators,
+      participants: itinerary.participants,
+      maxParticipants: itinerary.maxParticipants,
+      cities: itinerary.destinations,
+      lodgingCount: itinerary.accommodations.length,
+      experienceCount: itinerary.experiences.length,
+      transportSummary,
+      isPriceEstimated: true, // Por defecto true para mock data
+      showwRowColaborators: itinerary.visibility === 'shared'
+    };
+  };
+
+  // Función para mapear DataItinerary a MyItineraryRowData
+  const mapItinerariesToRowData = (itineraries: DataItinerary[]): MyItineraryRowData[] => {
     return itineraries.map((itinerary) => ({
       id: itinerary.id,
       title: itinerary.title,
@@ -369,17 +429,79 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
             compareMode,
             onCardClick: onCardClickFromRender,
           }) => {
-            // Actualizar el length de filteredRows para el hook de paginación
+            // Categorizar los itinerarios filtrados
+            const categorizedData = categorizeItineraries(filteredRows as MyItineraryRowData[]);
+            
+            // Actualizar los totales para los hooks de paginación
             React.useEffect(() => {
-              if (filteredRows.length !== filteredRowsLength) {
-                setFilteredRowsLength(filteredRows.length);
-                resetPagination();
+              privateItinerariesPagination.reset();
+              sharedItinerariesPagination.reset();
+              publicItinerariesPagination.reset();
+            }, [filteredRows.length, activeTab]);
+
+            // Obtener datos del tab activo
+            const getCurrentTabData = () => {
+              switch (activeTab) {
+                case 'private':
+                  return categorizedData.private;
+                case 'shared':
+                  return categorizedData.shared;
+                case 'public':
+                  return categorizedData.public;
+                default:
+                  return categorizedData.private;
               }
-            }, [filteredRows.length]);
+            };
+
+            // Obtener paginación del tab activo
+            const getCurrentPagination = () => {
+              switch (activeTab) {
+                case 'private':
+                  return privateItinerariesPagination;
+                case 'shared':
+                  return sharedItinerariesPagination;
+                case 'public':
+                  return publicItinerariesPagination;
+                default:
+                  return privateItinerariesPagination;
+              }
+            };
+
+            const currentTabData = getCurrentTabData();
+            const currentPagination = getCurrentPagination();
+            
+            // Configurar tabs con contadores
+            const tabsWithCounts: TabItem[] = [
+              {
+                value: 'private',
+                label: `Privados (${categorizedData.private.length})`,
+                icon: <Users className="w-4 h-4" />,
+                content: <div>Contenido privados</div>,
+              },
+              {
+                value: 'shared', 
+                label: `Compartidos (${categorizedData.shared.length})`,
+                icon: <Share2 className="w-4 h-4" />,
+                content: <div>Contenido compartidos</div>,
+              },
+              {
+                value: 'public',
+                label: `Públicos (${categorizedData.public.length})`, 
+                icon: <Globe className="w-4 h-4" />,
+                content: <div>Contenido públicos</div>,
+              }
+            ];
 
             return (
               <div className="space-y-6">
-                {/* Grid/List de resultados */}
+                <StandardTabs
+                  items={tabsWithCounts}
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  containerClassName="mb-4"
+                />
+
+                {/* Grid/List de resultados del tab activo */}
                 <div
                   className={
                     viewMode === "grid"
@@ -387,56 +509,72 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
                       : "space-y-4"
                   }
                 >
-                  {filteredRows
-                    .slice(0, visibleItineraries)
+                  {currentTabData
+                    .slice(0, currentPagination.visibleItems)
                     .map((row, index) => {
                       const itineraryRow = row as MyItineraryRowData;
                       const itinerary = itineraryRow.originalData;
-                      const transformedData = transformItineraryData(itinerary);
 
-                      return (
-                        <div key={itinerary.id} className="relative">
-                          <ItinerariesPrivateCard
-                            {...transformedData}
-                            onClick={() => handleCardClick(index, itineraryRow)}
-                          />
-                        </div>
-                      );
+                      if (activeTab === 'private') {
+                        const transformedData = transformItineraryData(itinerary);
+                        return (
+                          <div key={itinerary.id} className="relative">
+                            <ItinerariesPrivateCard
+                              {...transformedData}
+                              onClick={() => handleCardClick(index, itineraryRow)}
+                            />
+                          </div>
+                        );
+                      } else {
+                        const transformedData = transformItineraryDataForShared(itinerary);
+                        return (
+                          <div key={itinerary.id} className="relative">
+                            <ItinerarySharedCard
+                              {...transformedData}
+                            />
+                          </div>
+                        );
+                      }
                     })}
                 </div>
 
                 {/* Componente de paginación reutilizable */}
                 <PaginationCard
-                  totalItems={filteredRows.length}
-                  visibleItems={visibleItineraries}
+                  totalItems={currentTabData.length}
+                  visibleItems={currentPagination.visibleItems}
                   initialVisibleItems={initialVisibleItineraries}
                   itemsPerStep={itinerariesPerStep}
-                  onShowMore={handleShowMore}
-                  onShowLess={handleShowLess}
+                  onShowMore={currentPagination.showMore}
+                  onShowLess={currentPagination.showLess}
                   itemLabel="itinerarios"
                   showMoreText="Mostrar más itinerarios"
                   showLessText="Mostrar menos itinerarios"
-                  allItemsMessage="🗺️ Has visto todos tus itinerarios"
+                  allItemsMessage="🗺️ Has visto todos los itinerarios de esta categoría"
                   className=""
                   showProgressBar={true}
                   progressColor="bg-primary"
                 />
 
-                {/* Mensaje si no hay resultados */}
-                {filteredRows.length === 0 && !loading && (
+                {/* Mensaje si no hay resultados en el tab activo */}
+                {currentTabData.length === 0 && !loading && (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                       <MapPin className="w-8 h-8 text-muted-foreground" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2">
-                      No se encontraron itinerarios
+                      No se encontraron itinerarios {activeTab === 'private' ? 'privados' : activeTab === 'shared' ? 'compartidos' : 'públicos'}
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      Intenta ajustar tus filtros de búsqueda
+                      {activeTab === 'private' 
+                        ? 'Crea tu primer itinerario privado'
+                        : activeTab === 'shared'
+                        ? 'Comparte algún itinerario con colaboradores'
+                        : 'Publica algún itinerario para que otros lo vean'
+                      }
                     </p>
                     <Button variant="outline">
                       <Plus className="w-4 h-4 mr-2" />
-                      Crear tu primer itinerario
+                      Crear nuevo itinerario
                     </Button>
                   </div>
                 )}
