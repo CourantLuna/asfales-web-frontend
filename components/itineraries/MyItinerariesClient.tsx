@@ -310,6 +310,7 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
         sortOptions={myItinerariesSortOptions}
         onFiltersChange={handleFiltersChange}
         onCardClick={handleCardClick}
+        showToggleShowFilters={true}
         renderResults={({ filteredRows, compareMode, onCardClick: onCardClickFromRender }) => {
           // Actualizar el length de filteredRows para el hook de paginación
           React.useEffect(() => {

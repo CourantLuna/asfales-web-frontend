@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useCallback, useMemo } from "react";
-import { Info, Filter, X } from "lucide-react";
+import { Info, Filter, X, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import { FilterChips, FilterChip } from "./standard-fields-component/FilterChips";
 import ResultFilters, { FilterConfig } from "./ResultFilters";
 import CustomSelect, { CustomSelectOption } from "./CustomSelect";
@@ -105,6 +105,9 @@ interface SearchWithFiltersProps {
     titleOn?: string;
     subtitleOn?: string;
   };
+
+  // Control de visibilidad de la columna de filtros (opcional)
+  showToggleShowFilters?: boolean;
  
   // Renderizado de resultados
   renderResults: (props: {
@@ -143,6 +146,7 @@ export default function SearchWithFilters({
     titleOn: "Comparando elementos",
     subtitleOn: "Selecciona elementos para comparar lado a lado"
   },
+  showToggleShowFilters = false,
   renderResults,
   onCardClick = () => {},
   onFiltersChange,
@@ -160,7 +164,8 @@ export default function SearchWithFilters({
   const [searchValue, setSearchValue] = useState<string>("");
   const [filteredRows, setFilteredRows] = useState<RowData[]>(rows);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  
+  const [showFilters, setShowFilters] = useState(true);
+
   // Estados dinámicos para filtros genéricos - Inicialización estática para evitar loops
   const [filterStates, setFilterStates] = useState<Record<string, any>>({});
   const [activeChips, setActiveChips] = useState<Array<{id: string, label: string, onRemove: () => void}>>([]);
@@ -544,10 +549,23 @@ export default function SearchWithFilters({
   );
 
   return (
-    <div className="flex flex-col lg:flex-row mt-2 mb-12 gap-6">
-      {/* Columna de Filtros - Lado Izquierdo (Desktop) */}
-      <div className="hidden lg:block w-full lg:w-60 flex-shrink-0 mt-1">
-        <FiltersContent />
+    <div className="flex flex-col lg:flex-row mt-2 mb-12">
+      {/* Columna de Filtros - Lado Izquierdo (Desktop) - Controlada opcionalmente */}
+      <div 
+        className={`
+          hidden lg:block flex-shrink-0 mt-1 transition-all duration-300 ease-in-out overflow-hidden
+          ${showFilters 
+            ? 'w-[280px] opacity-100 translate-x-0' 
+            : 'w-0 opacity-0 -translate-x-4'
+          }
+        `}
+      >
+        <div className={`
+          w-60 transition-all duration-300 ease-in-out
+          ${showFilters ? 'opacity-100 scale-100 mr-10' : 'opacity-0 scale-95'}
+        `}>
+          <FiltersContent />
+        </div>
       </div>
 
       {/* Contenido Principal - Lado Derecho */}
@@ -556,7 +574,10 @@ export default function SearchWithFilters({
         <div className="lg:hidden mb-4">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" className="w-full md:w-[280px] h-12 text-primary">
+              <Button
+                variant="outline"
+                className="w-full md:w-[280px] h-12 text-primary"
+              >
                 <Filter className="w-4 h-4 mr-2" />
                 Busca y Filtra
                 {activeChips.length > 0 && (
@@ -574,34 +595,33 @@ export default function SearchWithFilters({
                 </SheetDescription>
               </SheetHeader>
               <div className="px-6 pb-6 overflow-y-auto max-h-[calc(100vh-180px)]">
-                 { /* Selector de ordenamiento en mobile/laptop */}
-          <div className="lg:hidden flex flex-col items-center md:items-end w-full md:w-auto">
-            <span className="text-xs text-muted-foreground mb-0.5">
-              {sortByText}
-            </span>
-            <CustomSelect
-              options={sortOptions}
-              selectedKey={sort}
-              onChange={setSort}
-            />
-          </div>
+                {/* Selector de ordenamiento en mobile/laptop */}
+                <div className="lg:hidden flex flex-col items-center md:items-end w-full md:w-auto">
+                  <span className="text-xs text-muted-foreground mb-0.5">
+                    {sortByText}
+                  </span>
+                  <CustomSelect
+                    options={sortOptions}
+                    selectedKey={sort}
+                    onChange={setSort}
+                  />
+                </div>
 
                 <FiltersContent />
-                
               </div>
               <div className="border-t p-4 mt-auto">
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={clearAllFilters}
                     className="flex-1"
                   >
                     <X className="w-4 h-4 mr-2" />
                     Limpiar
                   </Button>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     onClick={() => setIsSheetOpen(false)}
                     className="flex-1"
                   >
@@ -625,18 +645,33 @@ export default function SearchWithFilters({
 
         {/* Barra de control superior */}
         <div className="flex flex-col md:flex-row w-full items-center md:justify-between justify-center gap-4 border-b border-muted pb-2 mb-6">
-          <div className="flex flex-col items-center md:items-start gap-1 w-full md:w-auto">
-            <span className="text-xs text-muted-foreground font-medium">
-              {filteredRows.length ? resultsCountText(filteredRows.length) : noResultsMessage}
-            </span>
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-sm underline underline-offset-2 cursor-pointer hover:text-primary transition-colors">
-                {howItWorksText}
+          <div className="flex items-center gap-2">
+            {showToggleShowFilters && (
+              <div 
+    className="hidden lg:block cursor-pointer rounded-lg p-2 bg-primary text-white hover:bg-secondary transition-all duration-200 ease-in-out hover:scale-105 active:scale-95" 
+    role="button" 
+    onClick={() => setShowFilters(!showFilters)}
+  >
+    <div className="transition-transform duration-200 ease-in-out">
+      {showFilters ? <PanelLeftClose className="w-6 h-6"/> : <PanelLeftOpen className="w-6 h-6"/>}
+    </div>
+  </div>
+            )}
+            <div className="flex flex-col items-center md:items-start gap-1 w-full md:w-auto">
+              <span className="text-xs text-muted-foreground font-medium">
+                {filteredRows.length
+                  ? resultsCountText(filteredRows.length)
+                  : noResultsMessage}
               </span>
-              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+              <div className="flex items-center gap-1">
+                <span className="font-medium text-sm underline underline-offset-2 cursor-pointer hover:text-primary transition-colors">
+                  {howItWorksText}
+                </span>
+                <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+              </div>
             </div>
           </div>
-          { /* Selector de ordenamiento en Desktop */}
+          {/* Selector de ordenamiento en Desktop */}
           <div className="hidden lg:block flex flex-col items-center md:items-end w-full md:w-auto">
             <span className="text-xs text-muted-foreground mb-0.5">
               {sortByText}
@@ -654,21 +689,19 @@ export default function SearchWithFilters({
           {renderResults({
             filteredRows,
             compareMode,
-            onCardClick
+            onCardClick,
           })}
         </div>
       </div>
 
-        {showAds && ads && ads.length > 0 && (
-            <Ads
-              ads={ads}
-              direction={adsDirection}
-              gap={adsGap}
-              containerClassName={adsContainerClassName}
-            />
-        )}
-
-
+      {showAds && ads && ads.length > 0 && (
+        <Ads
+          ads={ads}
+          direction={adsDirection}
+          gap={adsGap}
+          containerClassName={adsContainerClassName}
+        />
+      )}
     </div>
   );
 }
