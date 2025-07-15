@@ -60,6 +60,7 @@ type ItinerarySharedCardProps = {
     count: number;
   }[];
   isPriceEstimated?: boolean
+  ownerBadge?: boolean; // si se debe mostrar badge de propietario
 };
 
 export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
@@ -80,7 +81,8 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
     isPriceEstimated = false,
     maxParticipants,
     colaborators,
-    showwRowColaborators = false
+    showwRowColaborators = false,
+    ownerBadge = false
   } = props;
 
  
@@ -167,13 +169,18 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
                 </span>
               )}
              </div>
-
+              {ownerBadge && (
+                <Badge className="bg-emerald-500 text-white text-xs">
+                  Propietario
+                </Badge>)}
               
             </div>
 
             <Separator />
 
-            <div className="flex items-center gap-2">
+
+           {!ownerBadge && (
+             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={creator.avatarUrl} />
                 <AvatarFallback>{creator.name[0]}</AvatarFallback>
@@ -240,12 +247,14 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
                  
                 </div>
 
-                  <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                   {creatorBio || "Agente de viajes en Medellin"}
                 </p>
+                  
               
               </div>
             </div>
+           )}
 
             <div className="flex items-center justify-between ">
                {showwRowColaborators && colaborators && colaborators.length > 0 && ( 

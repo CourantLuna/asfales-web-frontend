@@ -8,13 +8,10 @@ import {
   myPrivateItineraries, 
   myItinerariesFilterOptions,
   myItinerariesSortOptions,
-  filterMyItineraries,
-  sortMyItineraries,
   DataItinerary
 } from '@/lib/data/itineraries-data';
 import SearchWithFilters, { GenericFilterConfig } from '@/components/shared/SearchWithFilters';
 import { RowData } from '@/components/shared/RenderFields';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, 
@@ -23,20 +20,13 @@ import {
   Star,
   Users,
   Share2,
-  Filter,
   Grid3X3,
   List,
-  ChevronRight,
-  UserPlus,
-  DollarSign,
+
   Globe,
-  Route,
-  Eye,
-  Search
+
 } from 'lucide-react';
 import { ShowIfAuth } from '../ShowIfAuth';
-import { ShowIfUnauth } from '../ShowIfUnauth';
-import ItinerariesHomeSections from './ItinerariesHomeSections';
 import MyItinerariesHomeSections from './MyItinerariesHomeSections';
 import { StandardTabs, TabItem } from '../shared/standard-fields-component/StandardTabs';
 import { ItinerarySharedCard } from './ItinerarySharedCard';
@@ -476,19 +466,19 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
                 value: 'private',
                 label: `Privados (${categorizedData.private.length})`,
                 icon: <Users className="w-4 h-4" />,
-                content: <div>Contenido privados</div>,
+                content: <></>,
               },
               {
                 value: 'shared', 
                 label: `Compartidos (${categorizedData.shared.length})`,
                 icon: <Share2 className="w-4 h-4" />,
-                content: <div>Contenido compartidos</div>,
+                content: <></>,
               },
               {
                 value: 'public',
                 label: `Públicos (${categorizedData.public.length})`, 
                 icon: <Globe className="w-4 h-4" />,
-                content: <div>Contenido públicos</div>,
+                content: <></>,
               }
             ];
 
@@ -531,6 +521,8 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
                           <div key={itinerary.id} className="relative">
                             <ItinerarySharedCard
                               {...transformedData}
+                              showwRowColaborators={true}
+                              ownerBadge={true}
                             />
                           </div>
                         );

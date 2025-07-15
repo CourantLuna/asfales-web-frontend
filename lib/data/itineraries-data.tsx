@@ -1406,7 +1406,8 @@ export const myPrivateItineraries: DataItinerary[] = [
     difficulty: "easy",
     physicalDemand: "low",
     badges: ["luxury", "family-friendly"]
-  }
+  },
+  
 ];
 
 // Opciones de filtros centralizadas para "Mis Itinerarios"
