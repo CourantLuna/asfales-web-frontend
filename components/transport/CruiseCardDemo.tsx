@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function CruiseCardDemo() {
-  const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact' | 'featured' | 'detailed'>('default');
+  const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact' | 'featured'>('default');
   const [selectedCruiseIndex, setSelectedCruiseIndex] = useState(0);
 
   const handleSave = (cruiseId: string) => {
@@ -17,10 +17,6 @@ export default function CruiseCardDemo() {
 
   const handleShare = (cruiseId: string) => {
     console.log('🔗 Crucero compartido:', cruiseId);
-  };
-
-  const handleCompare = (cruiseId: string) => {
-    console.log('⚖️ Crucero añadido a comparación:', cruiseId);
   };
 
   const handleClick = (cruiseId: string) => {
@@ -40,7 +36,7 @@ export default function CruiseCardDemo() {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-gray-900">Custom Cruise Card Demo</h1>
           <p className="text-lg text-gray-600">
-            Componente de cruceros más avanzado que Expedia - Creado para Asfales
+            Componente de cruceros compacto con tabs navegables - Inspirado en el diseño de buses
           </p>
         </div>
 
@@ -54,7 +50,7 @@ export default function CruiseCardDemo() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Variante del Card:</label>
               <div className="flex gap-2">
-                {['default', 'compact', 'featured', 'detailed'].map((variant) => (
+                {['default', 'compact', 'featured'].map((variant) => (
                   <Button
                     key={variant}
                     variant={selectedVariant === variant ? 'default' : 'outline'}
@@ -153,7 +149,6 @@ export default function CruiseCardDemo() {
                 variant={selectedVariant}
                 onSave={handleSave}
                 onShare={handleShare}
-                onCompare={handleCompare}
                 onClick={handleClick}
                 onCabinSelect={handleCabinSelect}
               />
@@ -173,7 +168,6 @@ export default function CruiseCardDemo() {
               variant="compact"
               onSave={handleSave}
               onShare={handleShare}
-              onCompare={handleCompare}
               onClick={handleClick}
             />
           </div>
@@ -187,7 +181,6 @@ export default function CruiseCardDemo() {
                 variant="default"
                 onSave={handleSave}
                 onShare={handleShare}
-                onCompare={handleCompare}
                 onClick={handleClick}
                 onCabinSelect={handleCabinSelect}
               />
@@ -200,7 +193,6 @@ export default function CruiseCardDemo() {
                 variant="featured"
                 onSave={handleSave}
                 onShare={handleShare}
-                onCompare={handleCompare}
                 onClick={handleClick}
                 onCabinSelect={handleCabinSelect}
               />
@@ -219,7 +211,6 @@ export default function CruiseCardDemo() {
                 variant={index === 0 ? 'featured' : 'default'}
                 onSave={handleSave}
                 onShare={handleShare}
-                onCompare={handleCompare}
                 onClick={handleClick}
                 onCabinSelect={handleCabinSelect}
               />
@@ -242,37 +233,38 @@ export default function CruiseCardDemo() {
         {/* Características destacadas */}
         <Card className="shadow-lg border-primary/20">
           <CardHeader>
-            <CardTitle className="text-xl text-primary">🚢 Características Superiores a Expedia</CardTitle>
+            <CardTitle className="text-xl text-primary">🚢 Características del Nuevo Diseño</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
               <div className="space-y-2">
-                <h4 className="font-semibold text-green-600">✅ Interfaz Avanzada</h4>
+                <h4 className="font-semibold text-green-600">✅ Diseño Compacto</h4>
                 <ul className="space-y-1 text-gray-600">
-                  <li>• Selector de cabinas interactivo</li>
-                  <li>• Estados de disponibilidad en tiempo real</li>
-                  <li>• Animaciones fluidas y hover effects</li>
-                  <li>• Variantes múltiples (4 tipos)</li>
-                </ul>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-semibold text-blue-600">🎯 Funcionalidades</h4>
-                <ul className="space-y-1 text-gray-600">
-                  <li>• Comparación de cruceros</li>
-                  <li>• Información detallada del itinerario</li>
-                  <li>• Políticas claras y transparentes</li>
-                  <li>• Amenidades visuales con iconos</li>
-                </ul>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-semibold text-purple-600">🚀 UX Superior</h4>
-                <ul className="space-y-1 text-gray-600">
-                  <li>• Diseño responsive perfecto</li>
+                  <li>• Estructura inspirada en BusCard</li>
+                  <li>• Tabs navegables organizados</li>
                   <li>• Información jerarquizada</li>
-                  <li>• Call-to-actions prominentes</li>
-                  <li>• Feedback visual inmediato</li>
+                  <li>• Responsive y optimizado</li>
+                </ul>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-semibold text-blue-600">🎯 Tabs Funcionales</h4>
+                <ul className="space-y-1 text-gray-600">
+                  <li>• Información del Crucero</li>
+                  <li>• Amenidades a bordo</li>
+                  <li>• Itinerario completo</li>
+                  <li>• Políticas y términos</li>
+                  <li>• Selector de cabinas</li>
+                </ul>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-semibold text-purple-600">🚀 UX Mejorada</h4>
+                <ul className="space-y-1 text-gray-600">
+                  <li>• Selección visual de cabinas</li>
+                  <li>• Resumen de reserva integrado</li>
+                  <li>• Navegación intuitiva</li>
+                  <li>• Estados visuales claros</li>
                 </ul>
               </div>
             </div>
