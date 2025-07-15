@@ -694,19 +694,20 @@ export default function SearchWithFilters({
         </div>
       </div>
 
-      {showAds && ads && ads.length > 0 && (
+      
+        {showAds && ads && ads.length > 0 && (
         <Ads
           ads={ads}
           direction={adsDirection}
           gap={adsGap}
-          containerClassName={adsContainerClassName}
+          containerClassName={`ml-6 ${adsContainerClassName || ''}`}
         />
       )}
+      
     </div>
   );
 }
 
 export type { GenericFilterConfig, GenericFilterOption, DataSource };
-
 
 

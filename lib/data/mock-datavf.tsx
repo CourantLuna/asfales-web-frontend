@@ -363,13 +363,21 @@ export interface ItineraryPackage {
   creator: {
     id: string;
     name: string;
-    username: string;
+    userName: string;
     avatarUrl: string;
   };
+  creatorBio?: string; // opcional para mostrar en perfil
+  colaborators?: Array<{
+    id: string;
+    name: string;
+    avatarUrl: string;
+    userName?: string; // opcional para mostrar en perfil 
+    }>; // opcional para mostrar en perfil
   participants: Array<{
     id: string;
     name: string;
     avatarUrl: string;
+    userName?: string; // opcional para mostrar en perfil
   }>;
   maxParticipants?: number; // máximo de participantes permitido
   cities: string[];
@@ -402,15 +410,29 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-carlosviajes",
       name: "Carlos Rodríguez",
-      username: "carlosviajes",
+      userName: "carlosviajes",
       avatarUrl: "https://i.pravatar.cc/150?img=12"
     },
+    colaborators: [
+      { 
+        id: "col1", 
+        name: "Andrea Morales", 
+        avatarUrl: "https://i.pravatar.cc/150?img=24",
+        userName: "andreamorales"
+      },
+      { 
+        id: "col2", 
+        name: "Roberto Silva", 
+        avatarUrl: "https://i.pravatar.cc/150?img=31",
+        userName: "robertosilva"
+      }
+    ],
     participants: [
-      { id: "p1", name: "María", avatarUrl: "https://i.pravatar.cc/150?img=25" },
-      { id: "p2", name: "José", avatarUrl: "https://i.pravatar.cc/150?img=32" },
-      { id: "p3", name: "Ana", avatarUrl: "https://i.pravatar.cc/150?img=47" },
-      { id: "p4", name: "Pedro", avatarUrl: "https://i.pravatar.cc/150?img=18" },
-      { id: "p5", name: "Carmen", avatarUrl: "https://i.pravatar.cc/150?img=29" }
+      { id: "p1", name: "María González", avatarUrl: "https://i.pravatar.cc/150?img=25", userName: "mariagonzalez" },
+      { id: "p2", name: "José Martínez", avatarUrl: "https://i.pravatar.cc/150?img=32", userName: "josemartinez" },
+      { id: "p3", name: "Ana López", avatarUrl: "https://i.pravatar.cc/150?img=47", userName: "analopez" },
+      { id: "p4", name: "Pedro Sánchez", avatarUrl: "https://i.pravatar.cc/150?img=18", userName: "pedrosanchez" },
+      { id: "p5", name: "Carmen Ruiz", avatarUrl: "https://i.pravatar.cc/150?img=29", userName: "carmenruiz" }
     ],
     maxParticipants: 12,
     cities: ["Bogotá", "Medellín", "Cartagena"],
@@ -437,15 +459,23 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-luzcaribe",
       name: "Luz Marina",
-      username: "luzcaribe",
+      userName: "luzcaribe",
       avatarUrl: "https://i.pravatar.cc/150?img=44"
     },
-    participants: [
-      { id: "p6", name: "Roberto", avatarUrl: "https://i.pravatar.cc/150?img=51" },
-      { id: "p7", name: "Elena", avatarUrl: "https://i.pravatar.cc/150?img=16" },
-      { id: "p8", name: "Miguel", avatarUrl: "https://i.pravatar.cc/150?img=22" }
+    colaborators: [
+      { 
+        id: "col3", 
+        name: "Santiago Herrera", 
+        avatarUrl: "https://i.pravatar.cc/150?img=15",
+        userName: "santiagoherrera"
+      }
     ],
-     maxParticipants: 8,
+    participants: [
+      { id: "p6", name: "Roberto Vega", avatarUrl: "https://i.pravatar.cc/150?img=51", userName: "robertovega" },
+      { id: "p7", name: "Elena Castro", avatarUrl: "https://i.pravatar.cc/150?img=16", userName: "elenacastro" },
+      { id: "p8", name: "Miguel Torres", avatarUrl: "https://i.pravatar.cc/150?img=22", userName: "migueltorres" }
+    ],
+    maxParticipants: 8,
     cities: ["Cartagena", "Santa Marta", "Tayrona"],
     lodgingCount: 3,
     experienceCount: 8,
@@ -470,15 +500,30 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-aventuracol",
       name: "Diego Morales",
-      username: "aventuracol",
+      userName: "aventuracol",
       avatarUrl: "https://i.pravatar.cc/150?img=33"
     },
-    participants: [
-      { id: "p9", name: "Sofia", avatarUrl: "https://i.pravatar.cc/150?img=19" },
-      { id: "p10", name: "Andrés", avatarUrl: "https://i.pravatar.cc/150?img=27" },
-      { id: "p11", name: "Valeria", avatarUrl: "https://i.pravatar.cc/150?img=38" },
-      { id: "p12", name: "Luis", avatarUrl: "https://i.pravatar.cc/150?img=14" }
+    colaborators: [
+      { 
+        id: "col4", 
+        name: "Camila Ospina", 
+        avatarUrl: "https://i.pravatar.cc/150?img=36",
+        userName: "camilaospina"
+      },
+      { 
+        id: "col5", 
+        name: "Julián Ríos", 
+        avatarUrl: "https://i.pravatar.cc/150?img=45",
+        userName: "julianrios"
+      }
     ],
+    participants: [
+      { id: "p9", name: "Sofia Mendoza", avatarUrl: "https://i.pravatar.cc/150?img=19", userName: "sofiamendoza" },
+      { id: "p10", name: "Andrés Parra", avatarUrl: "https://i.pravatar.cc/150?img=27", userName: "andresparra" },
+      { id: "p11", name: "Valeria Díaz", avatarUrl: "https://i.pravatar.cc/150?img=38", userName: "valeriadiaz" },
+      { id: "p12", name: "Luis Ramírez", avatarUrl: "https://i.pravatar.cc/150?img=14", userName: "luisramirez" }
+    ],
+    maxParticipants: 10,
     cities: ["Bogotá", "San Gil", "Villa de Leyva"],
     lodgingCount: 4,
     experienceCount: 15,
@@ -504,14 +549,23 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-culturacol",
       name: "Patricia Vega",
-      username: "culturacol",
+      userName: "culturacol",
       avatarUrl: "https://i.pravatar.cc/150?img=26"
     },
-    participants: [
-      { id: "p13", name: "Fernando", avatarUrl: "https://i.pravatar.cc/150?img=41" },
-      { id: "p14", name: "Isabella", avatarUrl: "https://i.pravatar.cc/150?img=35" },
-      { id: "p15", name: "Rodrigo", avatarUrl: "https://i.pravatar.cc/150?img=28" }
+    colaborators: [
+      { 
+        id: "col6", 
+        name: "Alejandro Muñoz", 
+        avatarUrl: "https://i.pravatar.cc/150?img=42",
+        userName: "alejandromuz"
+      }
     ],
+    participants: [
+      { id: "p13", name: "Fernando García", avatarUrl: "https://i.pravatar.cc/150?img=41", userName: "fernandogarcia" },
+      { id: "p14", name: "Isabella Vargas", avatarUrl: "https://i.pravatar.cc/150?img=35", userName: "isabellavargas" },
+      { id: "p15", name: "Rodrigo Peña", avatarUrl: "https://i.pravatar.cc/150?img=28", userName: "rodrigopena" }
+    ],
+    maxParticipants: 12,
     cities: ["Bogotá", "Armenia", "Manizales", "Salento"],
     lodgingCount: 5,
     experienceCount: 11,
@@ -536,17 +590,32 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-relaxcol",
       name: "Sandra López",
-      username: "relaxcol",
+      userName: "relaxcol",
       avatarUrl: "https://i.pravatar.cc/150?img=49"
     },
-    participants: [
-      { id: "p16", name: "Julio", avatarUrl: "https://i.pravatar.cc/150?img=31" },
-      { id: "p17", name: "Claudia", avatarUrl: "https://i.pravatar.cc/150?img=42" },
-      { id: "p18", name: "Gustavo", avatarUrl: "https://i.pravatar.cc/150?img=23" },
-      { id: "p19", name: "Mónica", avatarUrl: "https://i.pravatar.cc/150?img=36" },
-      { id: "p20", name: "Raúl", avatarUrl: "https://i.pravatar.cc/150?img=15" },
-      { id: "p21", name: "Teresa", avatarUrl: "https://i.pravatar.cc/150?img=48" }
+    colaborators: [
+      { 
+        id: "col7", 
+        name: "Daniela Restrepo", 
+        avatarUrl: "https://i.pravatar.cc/150?img=43",
+        userName: "danielarestrepo"
+      },
+      { 
+        id: "col8", 
+        name: "Mauricio Aguilar", 
+        avatarUrl: "https://i.pravatar.cc/150?img=52",
+        userName: "mauricioaguilar"
+      }
     ],
+    participants: [
+      { id: "p16", name: "Julio Martín", avatarUrl: "https://i.pravatar.cc/150?img=31", userName: "juliomartin" },
+      { id: "p17", name: "Claudia Rojas", avatarUrl: "https://i.pravatar.cc/150?img=42", userName: "claudiarojas" },
+      { id: "p18", name: "Gustavo Pineda", avatarUrl: "https://i.pravatar.cc/150?img=23", userName: "gustavopineda" },
+      { id: "p19", name: "Mónica Herrera", avatarUrl: "https://i.pravatar.cc/150?img=36", userName: "monicaherrera" },
+      { id: "p20", name: "Raúl Jiménez", avatarUrl: "https://i.pravatar.cc/150?img=15", userName: "rauljimenez" },
+      { id: "p21", name: "Teresa Moreno", avatarUrl: "https://i.pravatar.cc/150?img=48", userName: "teresamoreno" }
+    ],
+    maxParticipants: 10,
     cities: ["Cartagena", "San Andrés"],
     lodgingCount: 2,
     experienceCount: 6,
@@ -571,13 +640,22 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-economicocol",
       name: "Javier Ruiz",
-      username: "economicocol",
+      userName: "economicocol",
       avatarUrl: "https://i.pravatar.cc/150?img=17"
     },
-    participants: [
-      { id: "p22", name: "David", avatarUrl: "https://i.pravatar.cc/150?img=39" },
-      { id: "p23", name: "Laura", avatarUrl: "https://i.pravatar.cc/150?img=24" }
+    colaborators: [
+      { 
+        id: "col9", 
+        name: "Laura Buitrago", 
+        avatarUrl: "https://i.pravatar.cc/150?img=39",
+        userName: "laurabuitrago"
+      }
     ],
+    participants: [
+      { id: "p22", name: "David Navarro", avatarUrl: "https://i.pravatar.cc/150?img=39", userName: "davidnavarro" },
+      { id: "p23", name: "Laura Ochoa", avatarUrl: "https://i.pravatar.cc/150?img=24", userName: "lauraochoa" }
+    ],
+    maxParticipants: 15,
     cities: ["Bogotá", "Medellín"],
     lodgingCount: 2,
     experienceCount: 7,
@@ -602,13 +680,22 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-llanero",
       name: "Ricardo Vargas",
-      username: "llanero",
+      userName: "llanero",
       avatarUrl: "https://i.pravatar.cc/150?img=52"
     },
-    participants: [
-      { id: "p24", name: "Camila", avatarUrl: "https://i.pravatar.cc/150?img=45" },
-      { id: "p25", name: "Santiago", avatarUrl: "https://i.pravatar.cc/150?img=13" }
+    colaborators: [
+      { 
+        id: "col10", 
+        name: "Esperanza Quintero", 
+        avatarUrl: "https://i.pravatar.cc/150?img=50",
+        userName: "esperanzaquintero"
+      }
     ],
+    participants: [
+      { id: "p24", name: "Camila Suárez", avatarUrl: "https://i.pravatar.cc/150?img=45", userName: "camilasuarez" },
+      { id: "p25", name: "Santiago Mendez", avatarUrl: "https://i.pravatar.cc/150?img=13", userName: "santiagomendez" }
+    ],
+    maxParticipants: 8,
     cities: ["Villavicencio", "Puerto López", "Yopal"],
     lodgingCount: 3,
     experienceCount: 9,
@@ -633,14 +720,29 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-amazonico",
       name: "Elena Moreno",
-      username: "amazonico",
+      userName: "amazonico",
       avatarUrl: "https://i.pravatar.cc/150?img=37"
     },
-    participants: [
-      { id: "p26", name: "Mateo", avatarUrl: "https://i.pravatar.cc/150?img=21" },
-      { id: "p27", name: "Daniela", avatarUrl: "https://i.pravatar.cc/150?img=43" },
-      { id: "p28", name: "Sebastián", avatarUrl: "https://i.pravatar.cc/150?img=11" }
+    colaborators: [
+      { 
+        id: "col11", 
+        name: "Carlos Yagüe", 
+        avatarUrl: "https://i.pravatar.cc/150?img=21",
+        userName: "carlosyague"
+      },
+      { 
+        id: "col12", 
+        name: "Natalia Rincón", 
+        avatarUrl: "https://i.pravatar.cc/150?img=43",
+        userName: "nataliarincon"
+      }
     ],
+    participants: [
+      { id: "p26", name: "Mateo Delgado", avatarUrl: "https://i.pravatar.cc/150?img=21", userName: "mateodelgado" },
+      { id: "p27", name: "Daniela Córdoba", avatarUrl: "https://i.pravatar.cc/150?img=43", userName: "danielacordoba" },
+      { id: "p28", name: "Sebastián Villa", avatarUrl: "https://i.pravatar.cc/150?img=11", userName: "sebastianvilla" }
+    ],
+    maxParticipants: 6,
     cities: ["Leticia", "Puerto Nariño", "Isla de los Micos"],
     lodgingCount: 2,
     experienceCount: 14,
@@ -665,14 +767,23 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-pacifico",
       name: "Alejandra Costa",
-      username: "pacifico",
+      userName: "pacifico",
       avatarUrl: "https://i.pravatar.cc/150?img=46"
     },
-    participants: [
-      { id: "p29", name: "Felipe", avatarUrl: "https://i.pravatar.cc/150?img=20" },
-      { id: "p30", name: "Valentina", avatarUrl: "https://i.pravatar.cc/150?img=34" },
-      { id: "p31", name: "Nicolás", avatarUrl: "https://i.pravatar.cc/150?img=50" }
+    colaborators: [
+      { 
+        id: "col13", 
+        name: "Felipe Londoño", 
+        avatarUrl: "https://i.pravatar.cc/150?img=20",
+        userName: "felipelondono"
+      }
     ],
+    participants: [
+      { id: "p29", name: "Felipe Miranda", avatarUrl: "https://i.pravatar.cc/150?img=20", userName: "felipemiranda" },
+      { id: "p30", name: "Valentina Cruz", avatarUrl: "https://i.pravatar.cc/150?img=34", userName: "valentinacruz" },
+      { id: "p31", name: "Nicolás Arango", avatarUrl: "https://i.pravatar.cc/150?img=50", userName: "nicolasarango" }
+    ],
+    maxParticipants: 10,
     cities: ["Nuquí", "Bahía Solano", "El Valle"],
     lodgingCount: 3,
     experienceCount: 10,
@@ -697,13 +808,28 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-colonial",
       name: "Andrés Molina",
-      username: "colonial",
+      userName: "colonial",
       avatarUrl: "https://i.pravatar.cc/150?img=40"
     },
-    participants: [
-      { id: "p32", name: "Lucía", avatarUrl: "https://i.pravatar.cc/150?img=48" },
-      { id: "p33", name: "Gabriel", avatarUrl: "https://i.pravatar.cc/150?img=19" }
+    colaborators: [
+      { 
+        id: "col14", 
+        name: "Lucía Escobar", 
+        avatarUrl: "https://i.pravatar.cc/150?img=48",
+        userName: "luciaescobar"
+      },
+      { 
+        id: "col15", 
+        name: "Gabriel Ayala", 
+        avatarUrl: "https://i.pravatar.cc/150?img=19",
+        userName: "gabrielayala"
+      }
     ],
+    participants: [
+      { id: "p32", name: "Lucía Fernández", avatarUrl: "https://i.pravatar.cc/150?img=48", userName: "luciafernandez" },
+      { id: "p33", name: "Gabriel Cárdenas", avatarUrl: "https://i.pravatar.cc/150?img=19", userName: "gabrielcardenas" }
+    ],
+    maxParticipants: 12,
     cities: ["Villa de Leyva", "Tunja", "Ráquira", "Chiquinquirá"],
     lodgingCount: 3,
     experienceCount: 8,
@@ -728,14 +854,23 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-extremo",
       name: "Carolina Ruiz",
-      username: "extremo",
+      userName: "extremo",
       avatarUrl: "https://i.pravatar.cc/150?img=33"
     },
-    participants: [
-      { id: "p34", name: "Martín", avatarUrl: "https://i.pravatar.cc/150?img=15" },
-      { id: "p35", name: "Paola", avatarUrl: "https://i.pravatar.cc/150?img=41" },
-      { id: "p36", name: "Esteban", avatarUrl: "https://i.pravatar.cc/150?img=27" }
+    colaborators: [
+      { 
+        id: "col16", 
+        name: "Martín Solano", 
+        avatarUrl: "https://i.pravatar.cc/150?img=15",
+        userName: "martinsolano"
+      }
     ],
+    participants: [
+      { id: "p34", name: "Martín García", avatarUrl: "https://i.pravatar.cc/150?img=15", userName: "martingarcia" },
+      { id: "p35", name: "Paola Rivera", avatarUrl: "https://i.pravatar.cc/150?img=41", userName: "paolarivera" },
+      { id: "p36", name: "Esteban Cortés", avatarUrl: "https://i.pravatar.cc/150?img=27", userName: "estebancortes" }
+    ],
+    maxParticipants: 8,
     cities: ["San Gil", "Barichara", "Socorro", "Curití"],
     lodgingCount: 4,
     experienceCount: 16,
@@ -760,13 +895,22 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-nevados",
       name: "Miguel Torres",
-      username: "nevados",
+      userName: "nevados",
       avatarUrl: "https://i.pravatar.cc/150?img=12"
     },
-    participants: [
-      { id: "p37", name: "Andrea", avatarUrl: "https://i.pravatar.cc/150?img=29" },
-      { id: "p38", name: "Julián", avatarUrl: "https://i.pravatar.cc/150?img=16" }
+    colaborators: [
+      { 
+        id: "col17", 
+        name: "Andrea Castillo", 
+        avatarUrl: "https://i.pravatar.cc/150?img=29",
+        userName: "andreacastillo"
+      }
     ],
+    participants: [
+      { id: "p37", name: "Andrea Beltrán", avatarUrl: "https://i.pravatar.cc/150?img=29", userName: "andreabeltran" },
+      { id: "p38", name: "Julián Acosta", avatarUrl: "https://i.pravatar.cc/150?img=16", userName: "julianacosta" }
+    ],
+    maxParticipants: 10,
     cities: ["Ibagué", "Salento", "Santa Isabel", "Nevado del Ruiz"],
     lodgingCount: 4,
     experienceCount: 13,
@@ -791,14 +935,23 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-arqueologico",
       name: "Patricia Sánchez",
-      username: "arqueologico",
+      userName: "arqueologico",
       avatarUrl: "https://i.pravatar.cc/150?img=44"
     },
-    participants: [
-      { id: "p39", name: "Carlos", avatarUrl: "https://i.pravatar.cc/150?img=23" },
-      { id: "p40", name: "María José", avatarUrl: "https://i.pravatar.cc/150?img=32" },
-      { id: "p41", name: "Ricardo", avatarUrl: "https://i.pravatar.cc/150?img=18" }
+    colaborators: [
+      { 
+        id: "col18", 
+        name: "Carlos Duarte", 
+        avatarUrl: "https://i.pravatar.cc/150?img=23",
+        userName: "carlosduarte"
+      }
     ],
+    participants: [
+      { id: "p39", name: "Carlos Montoya", avatarUrl: "https://i.pravatar.cc/150?img=23", userName: "carlosmontoya" },
+      { id: "p40", name: "María José Pérez", avatarUrl: "https://i.pravatar.cc/150?img=32", userName: "mariajoseperez" },
+      { id: "p41", name: "Ricardo Zapata", avatarUrl: "https://i.pravatar.cc/150?img=18", userName: "ricardozapata" }
+    ],
+    maxParticipants: 9,
     cities: ["San Agustín", "Tierradentro", "Pitalito", "Isnos"],
     lodgingCount: 4,
     experienceCount: 12,
@@ -823,13 +976,22 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-frontera",
       name: "Jorge Delgado",
-      username: "frontera",
+      userName: "frontera",
       avatarUrl: "https://i.pravatar.cc/150?img=51"
     },
-    participants: [
-      { id: "p42", name: "Sofía", avatarUrl: "https://i.pravatar.cc/150?img=25" },
-      { id: "p43", name: "Alejandro", avatarUrl: "https://i.pravatar.cc/150?img=14" }
+    colaborators: [
+      { 
+        id: "col19", 
+        name: "Sofía Ordóñez", 
+        avatarUrl: "https://i.pravatar.cc/150?img=25",
+        userName: "sofiaordonez"
+      }
     ],
+    participants: [
+      { id: "p42", name: "Sofía Herrera", avatarUrl: "https://i.pravatar.cc/150?img=25", userName: "sofiaherrera" },
+      { id: "p43", name: "Alejandro Mora", avatarUrl: "https://i.pravatar.cc/150?img=14", userName: "alejandromora" }
+    ],
+    maxParticipants: 12,
     cities: ["Pasto", "Ipiales", "Las Lajas", "Túquerres"],
     lodgingCount: 3,
     experienceCount: 9,
@@ -854,14 +1016,23 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-vallenato",
       name: "Camilo Zabaleta",
-      username: "vallenato",
+      userName: "vallenato",
       avatarUrl: "https://i.pravatar.cc/150?img=30"
     },
-    participants: [
-      { id: "p44", name: "Isabella", avatarUrl: "https://i.pravatar.cc/150?img=47" },
-      { id: "p45", name: "Diego", avatarUrl: "https://i.pravatar.cc/150?img=26" },
-      { id: "p46", name: "Natalia", avatarUrl: "https://i.pravatar.cc/150?img=38" }
+    colaborators: [
+      { 
+        id: "col20", 
+        name: "Isabella Mejía", 
+        avatarUrl: "https://i.pravatar.cc/150?img=47",
+        userName: "isabellamejia"
+      }
     ],
+    participants: [
+      { id: "p44", name: "Isabella Carrillo", avatarUrl: "https://i.pravatar.cc/150?img=47", userName: "isabellacarrillo" },
+      { id: "p45", name: "Diego Bermúdez", avatarUrl: "https://i.pravatar.cc/150?img=26", userName: "diegobermudez" },
+      { id: "p46", name: "Natalia Gómez", avatarUrl: "https://i.pravatar.cc/150?img=38", userName: "nataliagomez" }
+    ],
+    maxParticipants: 10,
     cities: ["Valledupar", "La Paz", "Pueblo Bello", "Manaure"],
     lodgingCount: 3,
     experienceCount: 8,
@@ -886,13 +1057,22 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-biodiversidad",
       name: "Ana Lucía Perea",
-      username: "biodiversidad",
+      userName: "biodiversidad",
       avatarUrl: "https://i.pravatar.cc/150?img=49"
     },
-    participants: [
-      { id: "p47", name: "Manuel", avatarUrl: "https://i.pravatar.cc/150?img=22" },
-      { id: "p48", name: "Cristina", avatarUrl: "https://i.pravatar.cc/150?img=35" }
+    colaborators: [
+      { 
+        id: "col21", 
+        name: "Manuel Cuesta", 
+        avatarUrl: "https://i.pravatar.cc/150?img=22",
+        userName: "manuelcuesta"
+      }
     ],
+    participants: [
+      { id: "p47", name: "Manuel Restrepo", avatarUrl: "https://i.pravatar.cc/150?img=22", userName: "manuelrestrepo" },
+      { id: "p48", name: "Cristina Varón", avatarUrl: "https://i.pravatar.cc/150?img=35", userName: "cristinavaron" }
+    ],
+    maxParticipants: 6,
     cities: ["Quibdó", "Acandí", "Capurganá", "Río Atrato"],
     lodgingCount: 4,
     experienceCount: 15,
@@ -917,14 +1097,29 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-guajira",
       name: "Rafael Pushaina",
-      username: "guajira",
+      userName: "guajira",
       avatarUrl: "https://i.pravatar.cc/150?img=28"
     },
-    participants: [
-      { id: "p49", name: "Laura", avatarUrl: "https://i.pravatar.cc/150?img=42" },
-      { id: "p50", name: "Tomás", avatarUrl: "https://i.pravatar.cc/150?img=31" },
-      { id: "p51", name: "Camila", avatarUrl: "https://i.pravatar.cc/150?img=24" }
+    colaborators: [
+      { 
+        id: "col22", 
+        name: "Laura Jiménez", 
+        avatarUrl: "https://i.pravatar.cc/150?img=42",
+        userName: "laurajimenez"
+      },
+      { 
+        id: "col23", 
+        name: "Tomás Uriana", 
+        avatarUrl: "https://i.pravatar.cc/150?img=31",
+        userName: "tomasuriana"
+      }
     ],
+    participants: [
+      { id: "p49", name: "Laura Bustamante", avatarUrl: "https://i.pravatar.cc/150?img=42", userName: "laurabustamante" },
+      { id: "p50", name: "Tomás Galvis", avatarUrl: "https://i.pravatar.cc/150?img=31", userName: "tomasgalvis" },
+      { id: "p51", name: "Camila Uribe", avatarUrl: "https://i.pravatar.cc/150?img=24", userName: "camilauribe" }
+    ],
+    maxParticipants: 8,
     cities: ["Riohacha", "Cabo de la Vela", "Punta Gallinas", "Uribia"],
     lodgingCount: 3,
     experienceCount: 11,
@@ -949,13 +1144,22 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-paisaje",
       name: "Gloria Henao",
-      username: "paisaje",
+      userName: "paisaje",
       avatarUrl: "https://i.pravatar.cc/150?img=36"
     },
-    participants: [
-      { id: "p52", name: "Juan Pablo", avatarUrl: "https://i.pravatar.cc/150?img=17" },
-      { id: "p53", name: "Mariana", avatarUrl: "https://i.pravatar.cc/150?img=45" }
+    colaborators: [
+      { 
+        id: "col24", 
+        name: "Juan Pablo Uribe", 
+        avatarUrl: "https://i.pravatar.cc/150?img=17",
+        userName: "juanpablou"
+      }
     ],
+    participants: [
+      { id: "p52", name: "Juan Pablo Cifuentes", avatarUrl: "https://i.pravatar.cc/150?img=17", userName: "juanpabloc" },
+      { id: "p53", name: "Mariana Zuluaga", avatarUrl: "https://i.pravatar.cc/150?img=45", userName: "marianazuluaga" }
+    ],
+    maxParticipants: 12,
     cities: ["Manizales", "Chinchiná", "Neira", "Villamaría"],
     lodgingCount: 4,
     experienceCount: 12,
@@ -982,15 +1186,36 @@ export const colombiaItineraries: ItineraryPackage[] = [
     creator: {
       id: "u-completo",
       name: "Fernando Gutiérrez",
-      username: "completo",
+      userName: "completo",
       avatarUrl: "https://i.pravatar.cc/150?img=39"
     },
-    participants: [
-      { id: "p54", name: "Adriana", avatarUrl: "https://i.pravatar.cc/150?img=50" },
-      { id: "p55", name: "Pablo", avatarUrl: "https://i.pravatar.cc/150?img=13" },
-      { id: "p56", name: "Verónica", avatarUrl: "https://i.pravatar.cc/150?img=21" },
-      { id: "p57", name: "Álvaro", avatarUrl: "https://i.pravatar.cc/150?img=43" }
+    colaborators: [
+      { 
+        id: "col25", 
+        name: "Adriana Ramos", 
+        avatarUrl: "https://i.pravatar.cc/150?img=50",
+        userName: "adrianaramos"
+      },
+      { 
+        id: "col26", 
+        name: "Pablo Quintana", 
+        avatarUrl: "https://i.pravatar.cc/150?img=13",
+        userName: "pabloquintana"
+      },
+      { 
+        id: "col27", 
+        name: "Verónica Salazar", 
+        avatarUrl: "https://i.pravatar.cc/150?img=21",
+        userName: "veronicasalazar"
+      }
     ],
+    participants: [
+      { id: "p54", name: "Adriana Valencia", avatarUrl: "https://i.pravatar.cc/150?img=50", userName: "adrianavalencia" },
+      { id: "p55", name: "Pablo Medina", avatarUrl: "https://i.pravatar.cc/150?img=13", userName: "pablomedina" },
+      { id: "p56", name: "Verónica León", avatarUrl: "https://i.pravatar.cc/150?img=21", userName: "veronicaleon" },
+      { id: "p57", name: "Álvaro Rincón", avatarUrl: "https://i.pravatar.cc/150?img=43", userName: "alvarorincon" }
+    ],
+    maxParticipants: 6,
     cities: ["Bogotá", "Medellín", "Cartagena", "Cali", "Bucaramanga", "Pereira", "Manizales", "Santa Marta"],
     lodgingCount: 12,
     experienceCount: 45,

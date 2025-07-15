@@ -47,9 +47,18 @@ export default function ItinerariesHomeSections() {
       creator: {
         id: "user1",
         name: "María García",
-        username: "maria_travel",
+        userName: "maria_travel",
         avatarUrl: "https://images.unsplash.com/photo-1494790108755-2616b9c1a37b?w=100&h=100&fit=crop&crop=face"
       },
+      creatorBio: "Conoce a los Andes como nunca antes",
+      colaborators: [
+      { 
+        id: "col3", 
+        name: "Santiago Herrera", 
+        avatarUrl: "https://i.pravatar.cc/150?img=15",
+        userName: "santiagoherrera"
+      }
+    ],
       participants: [
         { id: "p1", name: "Carlos", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" },
         { id: "p2", name: "Ana", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" },
@@ -76,9 +85,10 @@ export default function ItinerariesHomeSections() {
       creator: {
         id: "user2",
         name: "Carlos Ruiz",
-        username: "carlos_explorer",
+        userName: "carlos_explorer",
         avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
       },
+      creatorBio: "Explorador de los destinos más exóticos",
       participants: [
         { id: "p5", name: "Diana", avatarUrl: "https://images.unsplash.com/photo-1494790108755-2616b9c1a37b?w=100&h=100&fit=crop&crop=face" },
         { id: "p6", name: "Miguel", avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" },
@@ -107,9 +117,24 @@ export default function ItinerariesHomeSections() {
       creator: {
         id: "user3",
         name: "Ana López",
-        username: "ana_coffee",
+        userName: "ana_coffee",
         avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
       },
+      creatorBio: "Amante del café y la naturaleza",
+       colaborators: [
+      { 
+        id: "col1", 
+        name: "Andrea Morales", 
+        avatarUrl: "https://i.pravatar.cc/150?img=24",
+        userName: "andreamorales"
+      },
+      { 
+        id: "col2", 
+        name: "Roberto Silva", 
+        avatarUrl: "https://i.pravatar.cc/150?img=31",
+        userName: "robertosilva"
+      }
+    ],
       participants: [
         { id: "p11", name: "Roberto", avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" },
         { id: "p12", name: "Carmen", avatarUrl: "https://images.unsplash.com/photo-1494790108755-2616b9c1a37b?w=100&h=100&fit=crop&crop=face" },
@@ -262,21 +287,11 @@ export default function ItinerariesHomeSections() {
             </p>
           </div>
 
-          <ShowIfUnauth>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {sharedItineraries.map((itinerary) => (
                 <ItinerarySharedCard key={itinerary.id} {...itinerary} />
               ))}
             </div>
-          </ShowIfUnauth>
-
-          <ShowIfAuth>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {sharedItineraries.map((itinerary) => (
-                <ItinerarySharedCard key={itinerary.id} {...itinerary} />
-              ))}
-            </div>
-          </ShowIfAuth>
 
           <div className="text-center mt-12">
             <Button size="lg" variant="outline" className="px-8 border-primary text-primary hover:bg-primary hover:text-white"

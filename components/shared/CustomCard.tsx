@@ -110,7 +110,7 @@ export default function CustomCard({
       )}
       <div className="flex flex-col w-full h-full">
         <CardHeader className="py-3 px-6">
-          <CardTitle className="text-xl font-bold">{title}</CardTitle>
+          <CardTitle className="text-xl font-bold pr-[90px]">{title}</CardTitle>
           {description.length>0? <CardDescription className="text-sm">{description}</CardDescription> : null}
         </CardHeader>
         {content && <CardContent>{content}</CardContent>}
