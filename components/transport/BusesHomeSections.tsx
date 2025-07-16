@@ -64,7 +64,8 @@ import {
   TreePine,
   Sunset,
   Building,
-  Palmtree
+  Palmtree,
+  ListPlus
 } from 'lucide-react';
 
 interface IBusesHomeSectionsProps {}
@@ -522,18 +523,21 @@ export default function BusesHomeSections() {
                 Viaja por tierra con comodidad
               </h1>
               <p className="text-muted-foreground text-start mb-10">
-                Conectamos cada rincón del país con buses modernos y servicios premium
+                Conectamos cada rincón del país con buses modernos y servicios
+                premium
               </p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
             {busStats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="flex justify-center mb-2">
                   <stat.icon className="w-8 h-8 text-primary" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {stat.value}
+                </div>
                 <div className="text-sm text-gray-600">{stat.label}</div>
               </div>
             ))}
@@ -552,7 +556,7 @@ export default function BusesHomeSections() {
         benefits={[
           { text: "Tarifas competitivas", icon: "check" },
           { text: "Horarios puntuales", icon: "shield" },
-          { text: "Soporte 24/7", icon: "award" }
+          { text: "Soporte 24/7", icon: "award" },
         ]}
       />
 
@@ -566,31 +570,42 @@ export default function BusesHomeSections() {
             content: (
               <div className="space-y-4">
                 <div className="flex items-center justify-between pl-10">
-                  <h2 className="text-3xl font-bold text-start mb-2">Rutas Populares</h2>
+                  <h2 className="text-3xl font-bold text-start mb-2">
+                    Rutas Populares
+                  </h2>
                   <Button variant="outline" className="flex items-center gap-2">
                     Ver todas <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
                 <p className="text-muted-foreground text-start mb-10 pl-10">
-                  Los destinos más solicitados con las mejores frecuencias y tarifas
+                  Los destinos más solicitados con las mejores frecuencias y
+                  tarifas
                 </p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {popularRoutes.map((route) => (
-                    <Card key={route.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-white rounded-lg flex flex-col">
+                    <Card
+                      key={route.id}
+                      className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-white rounded-lg flex flex-col"
+                    >
                       <div className="relative">
-                        <img 
-                          src={route.image} 
+                        <img
+                          src={route.image}
                           alt={route.route}
                           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-0"
                         />
                         <div
                           role="button"
-                          className="absolute top-2 right-2 text-red-500 hover:text-red-600"
+                          className="absolute h-8 w-8 flex items-center justify-center top-2 right-2 text-red-500 hover:text-red-600 bg-white rounded-full p-1 shadow-md transition-colors duration-300 cursor-pointer"
                           onClick={() => toggleLike(route.id)}
                         >
-                          <Heart size={24}
-                            className={`stroke-2 ${likedRoutes.includes(route.id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500'} hover:fill-red-500`} 
+                          <Heart
+                            size={20}
+                            className={`stroke-2 ${
+                              likedRoutes.includes(route.id)
+                                ? "fill-red-500 text-red-500"
+                                : "hover:fill-red-500"
+                            } hover:fill-red-500`}
                           />
                         </div>
                         {route.isPopular && (
@@ -599,7 +614,10 @@ export default function BusesHomeSections() {
                             Popular
                           </Badge>
                         )}
-                        <Badge variant="secondary" className="absolute bottom-2 left-2 bg-green-500 text-white hover:bg-green-600">
+                        <Badge
+                          variant="secondary"
+                          className="absolute bottom-2 left-2 bg-green-500 text-white hover:bg-green-600"
+                        >
                           {route.discount}
                         </Badge>
                         <Badge className="absolute bottom-2 right-2 bg-primary/80 text-white">
@@ -611,29 +629,43 @@ export default function BusesHomeSections() {
                           <h3 className="font-bold text-lg">{route.route}</h3>
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium">{route.rating}</span>
+                            <span className="text-sm font-medium">
+                              {route.rating}
+                            </span>
                           </div>
                         </div>
-                        <p className="text-gray-600 text-sm mb-2">{route.operator}</p>
-                        <p className="text-gray-700 text-sm mb-3">{route.description}</p>
+                        <p className="text-gray-600 text-sm mb-2">
+                          {route.operator}
+                        </p>
+                        <p className="text-gray-700 text-sm mb-3">
+                          {route.description}
+                        </p>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2 text-gray-600">
                               <Clock className="w-4 h-4" />
                               {route.duration}
                             </div>
-                            <div className="text-2xl font-bold text-primary">{route.price}</div>
+                            <div className="text-2xl font-bold text-primary">
+                              {route.price}
+                            </div>
                           </div>
                           <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2 text-gray-600">
                               <Route className="w-4 h-4" />
                               {route.distance}
                             </div>
-                            <div className="text-gray-600">{route.frequency}</div>
+                            <div className="text-gray-600">
+                              {route.frequency}
+                            </div>
                           </div>
                           <div className="flex flex-wrap gap-1 mt-2">
                             {route.amenities.slice(0, 3).map((amenity, idx) => (
-                              <Badge key={idx} variant="outline" className="text-xs">
+                              <Badge
+                                key={idx}
+                                variant="outline"
+                                className="text-xs"
+                              >
                                 {amenity}
                               </Badge>
                             ))}
@@ -645,26 +677,29 @@ export default function BusesHomeSections() {
                           </div>
                         </div>
                       </CardContent>
-                      <CardFooter className="p-4 pt-0 space-y-2">
+                      <CardFooter className="flex flex-row gap-2 items-center">
                         <Button className="w-full bg-primary hover:bg-primary/80 text-white h-12">
-                          Ver horarios disponibles
+                          Horarios
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="w-full h-10 border-primary text-primary hover:bg-primary/10"
+                        <Button
+                          variant="outline"
+                          
+                          className="w-full border-primary text-primary hover:bg-primary/10 h-12"
                           onClick={() => toggleCompare(route.route)}
-                          disabled={compareBuses.length >= 3 && !compareBuses.includes(route.route)}
+                          disabled={
+                            compareBuses.length >= 3 &&
+                            !compareBuses.includes(route.route)
+                          }
                         >
                           {compareBuses.includes(route.route) ? (
                             <>
                               <Minus className="w-4 h-4 mr-2" />
-                              Quitar de comparación
+                              Quitar
                             </>
                           ) : (
                             <>
-                              <Plus className="w-4 h-4 mr-2" />
-                              Comparar ({compareBuses.length}/3)
+                              <ListPlus className="w-4 h-4 mr-2" />
+                              Comparar
                             </>
                           )}
                         </Button>
@@ -673,7 +708,7 @@ export default function BusesHomeSections() {
                   ))}
                 </div>
               </div>
-            )
+            ),
           },
           {
             value: "deals",
@@ -682,16 +717,24 @@ export default function BusesHomeSections() {
             content: (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-3xl font-bold text-start mb-2">Ofertas Flash</h2>
-                  <Badge variant="destructive" className="animate-pulse bg-red-500 text-white">
+                  <h2 className="text-3xl font-bold text-start mb-2">
+                    Ofertas Flash
+                  </h2>
+                  <Badge
+                    variant="destructive"
+                    className="animate-pulse bg-red-500 text-white"
+                  >
                     <Clock className="w-3 h-3 mr-1" />
                     Tiempo limitado
                   </Badge>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {busDeals.map((deal, index) => (
-                    <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-shadow rounded-lg">
+                    <Card
+                      key={index}
+                      className="relative overflow-hidden hover:shadow-xl transition-shadow rounded-lg"
+                    >
                       <div className="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 text-sm font-medium rounded-bl-lg">
                         Ahorra {deal.savings}
                       </div>
@@ -699,10 +742,14 @@ export default function BusesHomeSections() {
                         <div className="flex items-center gap-3">
                           <Avatar className="h-12 w-12">
                             <AvatarImage src={deal.logo} alt={deal.operator} />
-                            <AvatarFallback><Bus className="w-6 h-6" /></AvatarFallback>
+                            <AvatarFallback>
+                              <Bus className="w-6 h-6" />
+                            </AvatarFallback>
                           </Avatar>
                           <div>
-                            <CardTitle className="text-lg">{deal.operator}</CardTitle>
+                            <CardTitle className="text-lg">
+                              {deal.operator}
+                            </CardTitle>
                             <CardDescription>{deal.route}</CardDescription>
                           </div>
                         </div>
@@ -710,14 +757,18 @@ export default function BusesHomeSections() {
                       <CardContent className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-sm text-gray-600 line-through">{deal.originalPrice}</div>
-                            <div className="text-2xl font-bold text-green-600">{deal.salePrice}</div>
+                            <div className="text-sm text-gray-600 line-through">
+                              {deal.originalPrice}
+                            </div>
+                            <div className="text-2xl font-bold text-green-600">
+                              {deal.salePrice}
+                            </div>
                           </div>
                           <Badge variant="secondary">{deal.category}</Badge>
                         </div>
-                        
+
                         <Separator />
-                        
+
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center justify-between">
                             <span className="text-gray-600">Vehículo:</span>
@@ -729,35 +780,41 @@ export default function BusesHomeSections() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-gray-600">Capacidad:</span>
-                            <span className="font-medium text-blue-600">{deal.capacity} asientos</span>
+                            <span className="font-medium text-blue-600">
+                              {deal.capacity} asientos
+                            </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-gray-600">Incluye:</span>
-                            <span className="font-medium text-green-600">{deal.features}</span>
+                            <span className="font-medium text-green-600">
+                              {deal.features}
+                            </span>
                           </div>
                         </div>
                       </CardContent>
-                      <CardFooter className="space-y-2">
-                        <Button className="w-full bg-primary hover:bg-primary/80 text-white">
+                      <CardFooter className="flex flex-row gap-2 items-center">
+                        <Button className="w-full bg-primary hover:bg-primary/80 text-white h-12">
                           Reservar ahora
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="w-full border-primary text-primary hover:bg-primary/10"
+                        <Button
+                          variant="outline"
+                          className="w-full border-primary text-primary hover:bg-primary/10 h-12"
                           onClick={() => toggleCompare(deal.route)}
-                          disabled={compareBuses.length >= 3 && !compareBuses.includes(deal.route)}
+                          disabled={
+                            compareBuses.length >= 3 &&
+                            !compareBuses.includes(deal.route)
+                          }
                         >
                           {compareBuses.includes(deal.route) ? (
-                            <>
-                              <Minus className="w-4 h-4 mr-2" />
-                              Quitar comparación
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="w-4 h-4 mr-2" />
-                              Comparar ({compareBuses.length}/3)
-                            </>
+                             <>
+                                                         <Minus className="w-4 h-4 mr-2" />
+                                                         Quitar
+                                                       </>
+                                                     ) : (
+                                                       <>
+                                                         <ListPlus className="w-4 h-4 mr-2" />
+                                                         Comparar
+                                                       </>
                           )}
                         </Button>
                       </CardFooter>
@@ -765,7 +822,7 @@ export default function BusesHomeSections() {
                   ))}
                 </div>
               </div>
-            )
+            ),
           },
           {
             value: "experiences",
@@ -774,22 +831,31 @@ export default function BusesHomeSections() {
             content: (
               <div className="space-y-6">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-start mb-2">Experiencias de Viaje</h2>
+                  <h2 className="text-3xl font-bold text-start mb-2">
+                    Experiencias de Viaje
+                  </h2>
                   <p className="text-muted-foreground text-start mb-10">
-                    Desde buses VIP premium hasta opciones económicas, 
-                    encuentra la experiencia perfecta para tu viaje.
+                    Desde buses VIP premium hasta opciones económicas, encuentra
+                    la experiencia perfecta para tu viaje.
                   </p>
                 </div>
-            
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {busExperiences.map((experience, index) => (
-                    <Card key={index} className="overflow-hidden hover:shadow-xl transition-all duration-300 rounded-tr-2xl">
-                      <div className={`h-24 bg-gradient-to-br ${experience.color} relative`}>
+                    <Card
+                      key={index}
+                      className="overflow-hidden hover:shadow-xl transition-all duration-300 rounded-tr-2xl"
+                    >
+                      <div
+                        className={`h-24 bg-gradient-to-br ${experience.color} relative`}
+                      >
                         <div className="absolute inset-0 bg-black/20"></div>
                         <div className="absolute bottom-6 left-4 text-white">
-                          <div className='flex items-center gap-2'>
+                          <div className="flex items-center gap-2">
                             <experience.icon className="w-8 h-8 mb-2" />
-                            <h3 className="text-xl font-bold">{experience.type}</h3>
+                            <h3 className="text-xl font-bold">
+                              {experience.type}
+                            </h3>
                           </div>
                         </div>
                         <div className="absolute top-4 right-4 text-white font-bold text-sm">
@@ -797,14 +863,17 @@ export default function BusesHomeSections() {
                         </div>
                       </div>
                       <CardContent className="p-6">
-                        <img 
-                          src={experience.image} 
+                        <img
+                          src={experience.image}
                           alt={experience.type}
                           className="w-full h-32 object-cover rounded-lg mb-4 border-0"
                         />
                         <ul className="space-y-2">
                           {experience.features.map((feature, featureIndex) => (
-                            <li key={featureIndex} className="flex items-center gap-2 text-sm">
+                            <li
+                              key={featureIndex}
+                              className="flex items-center gap-2 text-sm"
+                            >
                               <CheckCircle className="w-4 h-4 text-green-500" />
                               {feature}
                             </li>
@@ -812,7 +881,10 @@ export default function BusesHomeSections() {
                         </ul>
                       </CardContent>
                       <CardFooter>
-                        <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary/10 hover:text-primary">
+                        <Button
+                          variant="outline"
+                          className="w-full border-primary text-primary hover:bg-primary/10 hover:text-primary"
+                        >
                           Explorar {experience.type}
                         </Button>
                       </CardFooter>
@@ -820,8 +892,8 @@ export default function BusesHomeSections() {
                   ))}
                 </div>
               </div>
-            )
-          }
+            ),
+          },
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -830,15 +902,117 @@ export default function BusesHomeSections() {
         useMobileSelect={true}
       />
 
+           {/* Comparador Rápido */}
+      {compareBuses.length > 0 && (
+        <section className="bg-primary/5 rounded-2xl p-6 border-2 border-primary/20">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Scale className="w-6 h-6 text-primary" />
+              <h3 className="text-3xl font-bold text-start mb-2">
+                Comparar Buses
+              </h3>
+              <Badge variant="secondary" className="bg-primary text-white">
+                {compareBuses.length}/3
+              </Badge>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCompareBuses([])}
+            >
+              <Minus className="w-4 h-4 mr-2" />
+              Limpiar todo
+            </Button>
+          </div>
+
+          <p className="text-muted-foreground mb-4">
+            Compara hasta 3 opciones para encontrar el mejor viaje para ti
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {compareBuses.map((busId, index) => {
+              const route = popularRoutes.find((r) => r.route === busId);
+              const deal = busDeals.find((d) => d.route === busId);
+              const item = route || deal;
+
+              return (
+                <div key={index} className="bg-white rounded-lg p-4 border">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium">
+                      {route?.route || deal?.route || `Bus ${index + 1}`}
+                    </h4>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => toggleCompare(busId)}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Precio:</span>
+                      <span className="font-bold text-primary">
+                        {route?.price || deal?.salePrice || "$280"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Duración:</span>
+                      <span>
+                        {route?.duration || deal?.duration || "2h 30m"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{route ? "Rating:" : "Operador:"}</span>
+                      <div className="flex items-center gap-1">
+                        {route ? (
+                          <>
+                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                            <span className="text-green-600">
+                              {route.rating}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-primary">
+                            {deal?.operator || "Metro Bus"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{route ? "Frecuencia:" : "Categoría:"}</span>
+                      <span className="text-gray-600">
+                        {route?.frequency || deal?.category || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {compareBuses.length === 3 && (
+            <div className="mt-4 text-center">
+              <Button className="bg-primary hover:bg-primary/80">
+                Ver Comparación Detallada
+              </Button>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* CustomBusCard Showcase */}
       <section className="space-y-6">
         <div className="text-start mb-8 pl-10">
-          <h2 className="text-3xl font-bold text-start mb-2">Viajes Destacados</h2>
+          <h2 className="text-3xl font-bold text-start mb-2">
+            Viajes Destacados
+          </h2>
           <p className="text-muted-foreground text-start mb-10">
-            Información detallada de nuestros mejores viajes con todas las comodidades
+            Información detallada de nuestros mejores viajes con todas las
+            comodidades
           </p>
         </div>
-        
+
         <div className="space-y-6">
           {sampleBusTrips.map((trip) => (
             <CustomBusCard
@@ -847,10 +1021,12 @@ export default function BusesHomeSections() {
               variant="featured"
               showSaveButton={true}
               showShareButton={true}
-              onSave={(tripId) => console.log('Saved trip:', tripId)}
-              onShare={(tripId) => console.log('Shared trip:', tripId)}
-              onClick={(tripId) => console.log('Clicked trip:', tripId)}
-              onClassSelect={(tripId, classType) => console.log('Selected class:', classType, 'for trip:', tripId)}
+              onSave={(tripId) => console.log("Saved trip:", tripId)}
+              onShare={(tripId) => console.log("Shared trip:", tripId)}
+              onClick={(tripId) => console.log("Clicked trip:", tripId)}
+              onClassSelect={(tripId, classType) =>
+                console.log("Selected class:", classType, "for trip:", tripId)
+              }
             />
           ))}
         </div>
@@ -861,28 +1037,43 @@ export default function BusesHomeSections() {
         <div className="text-start mb-8 pl-10">
           <div className="flex items-center inline-flex gap-2 mb-4">
             <Brain className="w-8 h-8 text-primary" />
-            <h2 className="text-3xl font-bold text-start mb-2">Sugerencias Inteligentes</h2>
+            <h2 className="text-3xl font-bold text-start mb-2">
+              Sugerencias Inteligentes
+            </h2>
           </div>
-          <p className="text-muted-foreground text-start mb-10">Nuestro algoritmo de IA predice las mejores oportunidades para viajar</p>
+          <p className="text-muted-foreground text-start mb-10">
+            Nuestro algoritmo de IA predice las mejores oportunidades para
+            viajar
+          </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {aiBusSuggestions.map((suggestion, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow rounded-tr-2xl">
+            <Card
+              key={index}
+              className="overflow-hidden hover:shadow-lg transition-shadow rounded-tr-2xl"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start gap-3 mb-4">
                   <span className="text-2xl">{suggestion.icon}</span>
                   <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-900">{suggestion.destination}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{suggestion.message}</p>
+                    <h3 className="font-bold text-lg text-gray-900">
+                      {suggestion.destination}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {suggestion.message}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
-                  <Badge 
+                  <Badge
                     className={`${
-                      suggestion.color === 'green' ? 'bg-green-500' :
-                      suggestion.color === 'orange' ? 'bg-secondary' : 'bg-primary'
+                      suggestion.color === "green"
+                        ? "bg-green-500"
+                        : suggestion.color === "orange"
+                        ? "bg-secondary"
+                        : "bg-primary"
                     } text-white`}
                   >
                     {suggestion.action}
@@ -897,121 +1088,52 @@ export default function BusesHomeSections() {
         </div>
       </section>
 
-      {/* Comparador Rápido */}
-      {compareBuses.length > 0 && (
-        <section className="bg-primary/5 rounded-2xl p-6 border-2 border-primary/20">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Scale className="w-6 h-6 text-primary" />
-              <h3 className="text-3xl font-bold text-start mb-2">Comparar Buses</h3>
-              <Badge variant="secondary" className="bg-primary text-white">
-                {compareBuses.length}/3
-              </Badge>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => setCompareBuses([])}>
-              <Minus className="w-4 h-4 mr-2" />
-              Limpiar todo
-            </Button>
-          </div>
-          
-          <p className="text-muted-foreground mb-4">
-            Compara hasta 3 opciones para encontrar el mejor viaje para ti
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {compareBuses.map((busId, index) => {
-              const route = popularRoutes.find(r => r.route === busId);
-              const deal = busDeals.find(d => d.route === busId);
-              const item = route || deal;
-              
-              return (
-                <div key={index} className="bg-white rounded-lg p-4 border">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">
-                      {route?.route || deal?.route || `Bus ${index + 1}`}
-                    </h4>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => toggleCompare(busId)}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Precio:</span>
-                      <span className="font-bold text-primary">
-                        {route?.price || deal?.salePrice || '$280'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Duración:</span>
-                      <span>{route?.duration || deal?.duration || '2h 30m'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{route ? 'Rating:' : 'Operador:'}</span>
-                      <div className="flex items-center gap-1">
-                        {route ? (
-                          <>
-                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-green-600">{route.rating}</span>
-                          </>
-                        ) : (
-                          <span className="text-primary">{deal?.operator || 'Metro Bus'}</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{route ? 'Frecuencia:' : 'Categoría:'}</span>
-                      <span className="text-gray-600">
-                        {route?.frequency || deal?.category || 'N/A'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          {compareBuses.length === 3 && (
-            <div className="mt-4 text-center">
-              <Button className="bg-primary hover:bg-primary/80">
-                Ver Comparación Detallada
-              </Button>
-            </div>
-          )}
-        </section>
-      )}
+ 
 
       {/* Explorar por Región */}
       <section className="space-y-6">
         <div className="flex items-center justify-between pl-10">
-          <h2 className="text-3xl font-bold text-start mb-2">Explorar por Región</h2>
+          <h2 className="text-3xl font-bold text-start mb-2">
+            Explorar por Región
+          </h2>
           <div className="flex gap-2">
             {busInspiration.map((inspiration, index) => (
-              <Button key={index} variant="outline" size="sm" className="flex items-center gap-1">
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+              >
                 <span>{inspiration.icon}</span>
                 {inspiration.type}
-                <Badge variant="secondary" className="ml-1">{inspiration.routes}</Badge>
+                <Badge variant="secondary" className="ml-1">
+                  {inspiration.routes}
+                </Badge>
               </Button>
             ))}
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {busDestinations.map((destination, index) => (
-            <Card key={index} className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+            <Card
+              key={index}
+              className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+            >
               <div className="relative">
-                <img 
-                  src={destination.image} 
+                <img
+                  src={destination.image}
                   alt={destination.region}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 border-0"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-xl font-bold mb-1">{destination.region}</h3>
-                  <p className="text-sm opacity-90">Desde {destination.minPrice}</p>
+                  <h3 className="text-xl font-bold mb-1">
+                    {destination.region}
+                  </h3>
+                  <p className="text-sm opacity-90">
+                    Desde {destination.minPrice}
+                  </p>
                 </div>
                 <Badge className="absolute top-4 right-4 bg-white/20 text-white backdrop-blur-sm">
                   {destination.destinations.length} destinos
@@ -1019,11 +1141,17 @@ export default function BusesHomeSections() {
               </div>
               <CardContent className="p-4">
                 <div className="flex flex-wrap gap-1">
-                  {destination.destinations.slice(0, 3).map((dest, destIndex) => (
-                    <Badge key={destIndex} variant="outline" className="text-xs">
-                      {dest}
-                    </Badge>
-                  ))}
+                  {destination.destinations
+                    .slice(0, 3)
+                    .map((dest, destIndex) => (
+                      <Badge
+                        key={destIndex}
+                        variant="outline"
+                        className="text-xs"
+                      >
+                        {dest}
+                      </Badge>
+                    ))}
                   {destination.destinations.length > 3 && (
                     <Badge variant="outline" className="text-xs">
                       +{destination.destinations.length - 3} más
@@ -1040,20 +1168,27 @@ export default function BusesHomeSections() {
       <section className="space-y-6">
         <div className="flex items-center gap-3 mb-6 pl-10">
           <div>
-            <div className='flex items-center inline-flex gap-2 mb-2'>
+            <div className="flex items-center inline-flex gap-2 mb-2">
               <Timer className="w-8 h-8 text-secondary" />
-              <h2 className="text-3xl font-bold text-start mb-2">Buses de Último Minuto</h2>
+              <h2 className="text-3xl font-bold text-start mb-2">
+                Buses de Último Minuto
+              </h2>
             </div>
-            <p className="text-muted-foreground text-start mb-10">Para viajeros espontáneos que necesitan partir hoy mismo</p>
+            <p className="text-muted-foreground text-start mb-10">
+              Para viajeros espontáneos que necesitan partir hoy mismo
+            </p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {lastMinuteBuses.map((bus, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card
+              key={index}
+              className="overflow-hidden hover:shadow-lg transition-shadow"
+            >
               <div className="relative">
-                <img 
-                  src={bus.image} 
+                <img
+                  src={bus.image}
                   alt={bus.destination}
                   className="w-full h-32 object-cover border-0"
                 />
@@ -1069,11 +1204,21 @@ export default function BusesHomeSections() {
                 <p className="text-sm text-gray-600 mb-2">{bus.operator}</p>
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <div className="text-sm text-gray-600 line-through">{bus.originalPrice}</div>
-                    <div className="text-xl font-bold text-green-600">{bus.salePrice}</div>
+                    <div className="text-sm text-gray-600 line-through">
+                      {bus.originalPrice}
+                    </div>
+                    <div className="text-xl font-bold text-green-600">
+                      {bus.salePrice}
+                    </div>
                   </div>
                   <Badge className="bg-green-100 text-green-700">
-                    {Math.round(((parseInt(bus.originalPrice.replace(/[$,]/g, '')) - parseInt(bus.salePrice.replace(/[$,]/g, ''))) / parseInt(bus.originalPrice.replace(/[$,]/g, ''))) * 100)}% OFF
+                    {Math.round(
+                      ((parseInt(bus.originalPrice.replace(/[$,]/g, "")) -
+                        parseInt(bus.salePrice.replace(/[$,]/g, ""))) /
+                        parseInt(bus.originalPrice.replace(/[$,]/g, ""))) *
+                        100
+                    )}
+                    % OFF
                   </Badge>
                 </div>
               </CardContent>
@@ -1091,14 +1236,18 @@ export default function BusesHomeSections() {
       <section className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl p-10">
         <div className="flex items-center gap-3 mb-6">
           <div>
-            <div className='flex items-center inline-flex gap-2 mb-2'>
+            <div className="flex items-center inline-flex gap-2 mb-2">
               <Building2 className="w-8 h-8 text-primary" />
-              <h2 className="text-3xl font-bold text-start mb-2">Terminales Principales</h2>
+              <h2 className="text-3xl font-bold text-start mb-2">
+                Terminales Principales
+              </h2>
             </div>
-            <p className="text-muted-foreground text-start mb-6">Principales puntos de salida en el Gran Santo Domingo</p>
+            <p className="text-muted-foreground text-start mb-6">
+              Principales puntos de salida en el Gran Santo Domingo
+            </p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="text-center p-4">
             <h3 className="font-bold text-primary">Terminal del Este</h3>
@@ -1128,10 +1277,14 @@ export default function BusesHomeSections() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Gift className="w-8 h-8 text-secondary" />
-            <h2 className="text-3xl font-bold text-start mb-2">Programa ViajeRewards</h2>
+            <h2 className="text-3xl font-bold text-start mb-2">
+              Programa ViajeRewards
+            </h2>
           </div>
-          <p className="text-muted-foreground text-start mb-10">Acumula kilómetros en cada viaje y desbloquea beneficios exclusivos</p>
-          
+          <p className="text-muted-foreground text-start mb-10">
+            Acumula kilómetros en cada viaje y desbloquea beneficios exclusivos
+          </p>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -1140,7 +1293,7 @@ export default function BusesHomeSections() {
               <h3 className="font-bold text-gray-900 mb-2">10 km por $</h3>
               <p className="text-sm text-gray-600">Por cada peso gastado</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <CheckCircle className="w-8 h-8 text-primary" />
@@ -1148,7 +1301,7 @@ export default function BusesHomeSections() {
               <h3 className="font-bold text-gray-900 mb-2">Descuentos VIP</h3>
               <p className="text-sm text-gray-600">Con 5,000 km acumulados</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Award className="w-8 h-8 text-secondary" />
@@ -1157,7 +1310,7 @@ export default function BusesHomeSections() {
               <p className="text-sm text-gray-600">Con 20,000 km acumulados</p>
             </div>
           </div>
-          
+
           <Button className="bg-secondary hover:bg-secondary/80 text-white">
             Únete al Programa ViajeRewards
           </Button>
@@ -1167,18 +1320,28 @@ export default function BusesHomeSections() {
       {/* Preguntas Frecuentes */}
       <section className="space-y-6">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-start mb-2">Preguntas Frecuentes</h2>
-          <p className="text-muted-foreground text-start mb-10">Todo lo que necesitas saber sobre viajes en bus</p>
+          <h2 className="text-3xl font-bold text-start mb-2">
+            Preguntas Frecuentes
+          </h2>
+          <p className="text-muted-foreground text-start mb-10">
+            Todo lo que necesitas saber sobre viajes en bus
+          </p>
         </div>
-        
+
         <div className="space-y-4 max-w-7xl mx-auto">
           {busFaqs.map((faq, index) => (
-            <Collapsible key={index} open={openFaq === index} onOpenChange={() => toggleFaq(index)}>
+            <Collapsible
+              key={index}
+              open={openFaq === index}
+              onOpenChange={() => toggleFaq(index)}
+            >
               <CollapsibleTrigger asChild>
                 <Card className="cursor-pointer hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-900">{faq.question}</h3>
+                      <h3 className="font-medium text-gray-900">
+                        {faq.question}
+                      </h3>
                       {openFaq === index ? (
                         <ChevronUp className="w-5 h-5 text-gray-500" />
                       ) : (
@@ -1203,33 +1366,50 @@ export default function BusesHomeSections() {
       {/* Trust Indicators */}
       <section className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-start mb-2">¿Por qué elegir Asfales para buses?</h2>
-          <p className="text-muted-foreground text-start mb-10">Conectamos el país con los mejores operadores de transporte</p>
+          <h2 className="text-3xl font-bold text-start mb-2">
+            ¿Por qué elegir Asfales para buses?
+          </h2>
+          <p className="text-muted-foreground text-start mb-10">
+            Conectamos el país con los mejores operadores de transporte
+          </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Shield className="w-8 h-8 text-primary" />
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Viajes Seguros</h3>
-            <p className="text-gray-600 text-sm">Solo trabajamos con operadores certificados con los más altos estándares de seguridad</p>
+            <p className="text-gray-600 text-sm">
+              Solo trabajamos con operadores certificados con los más altos
+              estándares de seguridad
+            </p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Clock className="w-8 h-8 text-secondary" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Puntualidad Garantizada</h3>
-            <p className="text-gray-600 text-sm">Monitoreo en tiempo real de todos los viajes para garantizar horarios precisos</p>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Puntualidad Garantizada
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Monitoreo en tiempo real de todos los viajes para garantizar
+              horarios precisos
+            </p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <DollarSign className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Mejores Tarifas</h3>
-            <p className="text-gray-600 text-sm">Comparamos precios de todos los operadores para ofrecerte las mejores tarifas del mercado</p>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Mejores Tarifas
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Comparamos precios de todos los operadores para ofrecerte las
+              mejores tarifas del mercado
+            </p>
           </div>
         </div>
       </section>

@@ -513,10 +513,10 @@ export default function CruisesHomeSections() {
                         />
                         <div
                           role="button"
-                          className="absolute top-2 right-2 text-red-500 hover:text-red-600"
+                          className="absolute h-8 w-8 flex items-center justify-center top-2 right-2 text-red-500 hover:text-red-600 bg-white rounded-full p-1 shadow-md transition-colors duration-300 cursor-pointer"
                           onClick={() => toggleLike(cruise.id)}
                         >
-                          <Heart size={24}
+                          <Heart size={20}
                             className={`stroke-2 ${likedCruises.includes(cruise.id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500'} hover:fill-red-500`} 
                           />
                         </div>

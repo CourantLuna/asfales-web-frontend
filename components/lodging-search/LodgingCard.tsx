@@ -104,7 +104,10 @@ interface LodgingCardListProps {
   showMoreLabel?: string; // Texto personalizable del botón
   showLessLabel?: string; // Texto para colapsar (opcional)
   enableShowLess?: boolean; // Si permitir colapsar
-  // ...agrega más si necesitas
+  // Props para comparación externa
+  onCompareChange?: (hotelTitle: string, checked: boolean) => void; // Callback para notificar cambios
+  compareList?: string[]; // Lista externa de hoteles en comparación
+  maxCompareItems?: number; // Máximo número de items a comparar
 }
 
 export default function LodgingCardList({
@@ -126,9 +129,13 @@ export default function LodgingCardList({
   showMoreLabel = "Mostrar más",
   showLessLabel = "Mostrar menos",
   enableShowLess = true, // Por defecto true
+  // Props para comparación externa
+  onCompareChange,
+  compareList = [],
+  maxCompareItems = 3
 }: LodgingCardListProps) {
 
-  // Estado de checks (índice => boolean)
+  // Estado de checks (índice => boolean) - solo se usa si no hay comparación externa
   const [compareChecked, setCompareChecked] = useState<{[idx: number]: boolean}>({});
   
   // Hook de paginación
@@ -147,9 +154,33 @@ export default function LodgingCardList({
 
   // Handler para cada card
   const handleCompareChecked = (idx: number, checked: boolean) => {
-    setCompareChecked(prev => ({ ...prev, [idx]: checked }));
+    const hotelTitle = rows[idx]?.title;
+    
+    // Si hay comparación externa, usar esa función
+    if (onCompareChange && hotelTitle) {
+      // Verificar si se puede agregar más elementos
+      if (checked && compareList.length >= maxCompareItems) {
+        toast("Máximo de hoteles alcanzado", {
+          description: `Solo puedes comparar hasta ${maxCompareItems} hoteles`,
+          duration: 2000,
+          icon: <XCircle className="text-red-500 w-6 h-6" />,
+          style: {
+            backgroundColor: "#FEE2E2",
+            color: "#232323",
+            fontWeight: 500,
+          },
+        });
+        return;
+      }
+      
+      onCompareChange(hotelTitle, checked);
+    } else {
+      // Usar estado interno si no hay comparación externa
+      setCompareChecked(prev => ({ ...prev, [idx]: checked }));
+    }
+    
     toast(checked ? "Añadido a comparar" : "Removido de comparar", {
-      description: rows[idx]?.title,
+      description: hotelTitle,
       duration: 1800,
       icon: (
         <span className="flex items-center justify-center">
@@ -190,7 +221,7 @@ export default function LodgingCardList({
             onClick={() => onCardClick?.(idx, rowData)}
             // --- Control del compare checkbox ---
             showCompareCheckbox={showCompareCheckbox}
-            compareChecked={!!compareChecked[idx]}
+            compareChecked={onCompareChange ? compareList.includes(rowData.title) : !!compareChecked[idx]}
             onCompareCheckedChange={checked => handleCompareChecked(idx, checked)}
             // -------------------------------------
             content={

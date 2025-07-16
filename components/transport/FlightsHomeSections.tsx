@@ -52,7 +52,7 @@ const popularDestinations = [
     id: 1,
     city: "París",
     country: "Francia",
-    image: "https://andorreandoporelmundo.com/wp-content/uploads/2022/09/0T7A4073-1160x969.jpeg",
+    image: "https://res.cloudinary.com/dtljonz0f/image/upload/c_auto,ar_1:1,w_3840,g_auto/f_auto/q_auto/v1/gc-v1/paris/3%20giorni%20a%20Parigi%20Tour%20Eiffel?_a=BAVAZGE70",
     price: "$1,299",
     discount: "25% OFF",
     description: "La ciudad del amor te espera",
@@ -453,11 +453,11 @@ export default function FlightsHomeSections() {
                         />
                         <div
                          role="button"
-                          className="absolute top-2 right-2 text-red-500 hover:text-red-600"
+                          className="absolute h-8 w-8 flex items-center justify-center top-2 right-2 text-red-500 hover:text-red-600 bg-white rounded-full p-1 shadow-md transition-colors duration-300 cursor-pointer"
                           onClick={() => toggleLike(destination.id)}
                         
                         >
-                          <Heart size={24}
+                          <Heart size={20}
                             className={` stroke-2 ${likedDestinations.includes(destination.id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500'} hover:fill-red-500`} 
                           />
                         </div>
