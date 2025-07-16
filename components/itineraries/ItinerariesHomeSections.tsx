@@ -40,7 +40,7 @@ export default function ItinerariesHomeSections() {
     {
       id: "1",
       title: "Aventura en los Andes Colombianos",
-      coverImage: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&h=600&fit=crop",
+      coverImage: "https://wp.aviaturdmc.com/wp-content/uploads/2023/11/impresionante-vista-montanas-nevadas-1024x680.webp",
       startDate: "15 Mar",
       endDate: "22 Mar",
       price: "$1,200,000",

@@ -3,6 +3,7 @@
 import React, { Suspense, useState } from 'react';
 import CruisesResultsTemplate from './CruisesResultsTemplate';
 import { useSearchParams } from 'next/navigation';
+import CruisesHomeSections from './CruisesHomeSections';
 
 interface ICruisesHomeAndResultsProps {}
 
@@ -23,7 +24,7 @@ export default function CruisesHomeAndResults() {
                     ) : (
                       <>
                       {/*Secciones de Home de Experiences*/}
-                    <h1>Buses Home Sections </h1>
+                      <CruisesHomeSections />
                       </>
                     )}
             
