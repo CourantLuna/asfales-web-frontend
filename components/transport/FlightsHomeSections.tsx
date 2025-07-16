@@ -41,7 +41,8 @@ import {
   Target,
   Timer,
   MapPin as Location,
-  CreditCard
+  CreditCard,
+  ListPlus
 } from 'lucide-react';
 
 interface IFlightsHomeSectionsProps {}
@@ -378,7 +379,7 @@ export default function FlightsHomeSections() {
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-white to-secondary/10 rounded-3xl p-8 md:p-12">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-secondary/20 rounded-full blur-3xl"></div>
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             
             <div>
               <h1 className="text-3xl font-bold text-start mb-4">
@@ -390,7 +391,7 @@ export default function FlightsHomeSections() {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
             {travelStats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="flex justify-center mb-2">
@@ -488,9 +489,28 @@ export default function FlightsHomeSections() {
                           <div className="text-2xl font-bold text-primary">{destination.price}</div>
                         </div>
                       </CardContent>
-                      <CardFooter className="p-4 pt-0 h-hull flex-end mt-auto">
+                      <CardFooter className="p-4 pt-0 h-full mt-auto  gap-2">
                         <Button className="w-full bg-primary hover:bg-primary/80 text-white h-12">
                           Buscar vuelos
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          
+                          className="w-full h-12 border-primary text-primary hover:bg-primary/10"
+                          onClick={() => toggleCompare(destination.city)}
+                          disabled={compareFlights.length >= 3 && !compareFlights.includes(destination.city)}
+                        >
+                          {compareFlights.includes(destination.city) ? (
+                            <>
+                              <Minus className="w-4 h-4 mr-2" />
+                              Quitar
+                            </>
+                          ) : (
+                            <>
+                              <ListPlus  className="w-4 h-4 mr-2" />
+                              Comparar
+                            </>
+                          )}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -553,9 +573,28 @@ export default function FlightsHomeSections() {
                           </div>
                         </div>
                       </CardContent>
-                      <CardFooter>
+                      <CardFooter className="flex flex-row gap-2">
                         <Button className="w-full bg-primary hover:bg-primary/80 text-white">
                           Reservar ahora
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          
+                          className="w-full border-primary text-primary hover:bg-primary/10"
+                          onClick={() => toggleCompare(deal.route)}
+                          disabled={compareFlights.length >= 3 && !compareFlights.includes(deal.route)}
+                        >
+                          {compareFlights.includes(deal.route) ? (
+                            <>
+                              <Minus className="w-4 h-4 mr-2" />
+                              Quitar
+                            </>
+                          ) : (
+                            <>
+                              <ListPlus className="w-4 h-4 mr-2" />
+                              Comparar
+                            </>
+                          )}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -624,7 +663,96 @@ export default function FlightsHomeSections() {
         useMobileSelect={true}
       />
 
-      {/* Sugerencias Basadas en IA */}
+  
+
+      {/* Comparador Rápido */}
+      {compareFlights.length > 0 && (
+        <section className="bg-primary/5 rounded-2xl p-6 border-2 border-primary/20">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Scale className="w-6 h-6 text-primary" />
+              <h3 className="text-3xl font-bold text-start mb-2">Comparar Vuelos</h3>
+              <Badge variant="secondary" className="bg-primary text-white">
+                {compareFlights.length}/3
+              </Badge>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setCompareFlights([])}>
+              <Minus className="w-4 h-4 mr-2" />
+              Limpiar todo
+            </Button>
+          </div>
+          
+          <p className="text-muted-foreground mb-4">
+            Compara hasta 3 opciones para encontrar el mejor vuelo para ti
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {compareFlights.map((flightId, index) => {
+              const destination = popularDestinations.find(dest => dest.city === flightId);
+              const deal = flightDeals.find(d => d.route === flightId);
+              const item = destination || deal;
+              
+              return (
+                <div key={index} className="bg-white rounded-lg p-4 border">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium">
+                      {destination?.city || deal?.route || `Vuelo ${index + 1}`}
+                    </h4>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => toggleCompare(flightId)}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Precio:</span>
+                      <span className="font-bold text-primary">
+                        {destination?.price || deal?.salePrice || '$399'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Duración:</span>
+                      <span>{destination?.duration || deal?.duration || '8h 30m'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{destination ? 'Rating:' : 'Clase:'}</span>
+                      <div className="flex items-center gap-1">
+                        {destination ? (
+                          <>
+                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                            <span className="text-green-600">{destination.rating}</span>
+                          </>
+                        ) : (
+                          <span className="text-primary">{deal?.class || 'Economy'}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{destination ? 'País:' : 'Aerolínea:'}</span>
+                      <span className="text-gray-600">
+                        {destination?.country || deal?.airline || 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {compareFlights.length === 3 && (
+            <div className="mt-4 text-center">
+              <Button className="bg-primary hover:bg-primary/80">
+                Ver Comparación Detallada
+              </Button>
+            </div>
+          )}
+        </section>
+      )}
+
+          {/* Sugerencias Basadas en IA */}
       <section className="space-y-6">
         <div className="text-start mb-8 pl-10">
           <div className="flex items-center inline-flex gap-2 mb-4">
@@ -664,61 +792,6 @@ export default function FlightsHomeSections() {
           ))}
         </div>
       </section>
-
-      {/* Comparador Rápido */}
-      {compareFlights.length > 0 && (
-        <section className="bg-primary/5 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Scale className="w-6 h-6 text-primary" />
-              <h3 className="text-3xl font-bold text-start mb-2">Comparar Vuelos</h3>
-              <Badge variant="secondary">{compareFlights.length}/3</Badge>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => setCompareFlights([])}>
-              Limpiar
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {compareFlights.map((flightId, index) => (
-              <div key={index} className="bg-white rounded-lg p-4 border">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium">Vuelo {index + 1}</h4>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => toggleCompare(flightId)}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Precio:</span>
-                    <span className="font-bold text-primary">$399</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Duración:</span>
-                    <span>8h 30m</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Escalas:</span>
-                    <span className="text-green-600">Directo</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {compareFlights.length === 3 && (
-            <div className="mt-4 text-center">
-              <Button className="bg-primary hover:bg-primary/80">
-                Ver Comparación Detallada
-              </Button>
-            </div>
-          )}
-        </section>
-      )}
 
       {/* Explorar por Destino */}
       <section className="space-y-6">
