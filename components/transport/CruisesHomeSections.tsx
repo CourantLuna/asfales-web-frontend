@@ -67,7 +67,7 @@ const popularCruises = [
     title: "Mediterráneo Clásico",
     cruiseLine: "Royal Caribbean",
     ship: "Symphony of the Seas",
-    image: "https://cdn.royalcaribbean.com/content/shared_assets/images/ships/hero/symphony-of-the-seas/symphony-of-the-seas-hero-1.jpg",
+    image: "https://cruisepanda.com/storage/ships/cGzgYqXa47vpgzIj3WaZF57potJCuWhlbiM8ByPL.jpg",
     price: "$2,899",
     originalPrice: "$3,499",
     discount: "17% OFF",
@@ -87,7 +87,7 @@ const popularCruises = [
     title: "Caribe Oriental",
     cruiseLine: "Norwegian Cruise Line",
     ship: "Norwegian Breakaway",
-    image: "https://www.ncl.com/sites/default/files/BreakawayAerial.jpg",
+    image: "https://cruisespotlight.com/wp-content/uploads/2021/11/Norwegian-Breakaway-Ship.jpg",
     price: "$1,999",
     originalPrice: "$2,299",
     discount: "13% OFF",
@@ -107,7 +107,7 @@ const popularCruises = [
     title: "Fiordos Noruegos",
     cruiseLine: "MSC Cruises",
     ship: "MSC Preziosa",
-    image: "https://www.msccruises.com/content/dam/msc/inventory/ships/msc-preziosa/photo-gallery/Esterni/MSC-Preziosa-aerial-view.jpg",
+    image: "https://thumbs.dreamstime.com/b/olden-norway-th-june-msc-preziosa-anchor-fjord-msc-preziosa-anchor-fjord-301011839.jpg",
     price: "$3,299",
     originalPrice: "$3,899",
     discount: "15% OFF",
@@ -127,7 +127,7 @@ const popularCruises = [
     title: "Alaska Salvaje",
     cruiseLine: "Princess Cruises",
     ship: "Majestic Princess",
-    image: "https://www.princess.com/ships-and-experience/ships/ma-majestic-princess/images/majestic-princess-hero.jpg",
+    image: "https://cruisemaven.com/wp-content/uploads/2021/09/Majestic-Princess-Glacier-Bay.jpg",
     price: "$2,599",
     originalPrice: "$2,999",
     discount: "13% OFF",
@@ -191,27 +191,43 @@ const cruiseExperiences = [
     type: "Suite Presidential",
     icon: Crown,
     color: "from-secondary to-secondary/80",
-    features: ["Balcón privado", "Mayordomo personal", "Restaurante exclusivo", "Spa privado"],
-    image: "https://www.royalcaribbean.com/content/dam/royal/ships/class/quantum/anthem-of-the-seas/staterooms/owners-suite/anthem-of-the-seas-owners-suite-living-room.jpg",
+    features: [
+      "Balcón privado",
+      "Mayordomo personal",
+      "Restaurante exclusivo",
+      "Spa privado"
+    ],
+    image: "https://www.cruisedeckplans.com/DP/cabinpics/215/reg/CarPre-85163-1555026747.jpg", // imagen tipo suite presidencial :contentReference[oaicite:2]{index=2}
     price: "Desde $8,999"
   },
   {
     type: "Balcón Premium",
     icon: Eye,
     color: "from-primary to-primary/80",
-    features: ["Vista al mar", "Balcón espacioso", "Servicio de habitaciones", "Amenidades premium"],
-    image: "https://www.ncl.com/sites/default/files/Balcony-Stateroom_0.jpg",
+    features: [
+      "Vista al mar",
+      "Balcón espacioso",
+      "Servicio de habitaciones",
+      "Amenidades premium"
+    ],
+    image: "https://cruise.blog/sites/default/files/inline-images/RCI_AL_AquaTheaterSuiteDeck9-Balcony1R.jpg", // balcón amplio :contentReference[oaicite:3]{index=3}
     price: "Desde $3,299"
   },
   {
     type: "Interior Plus",
     icon: BedDouble,
     color: "from-gray-500 to-gray-600",
-    features: ["Camarote cómodo", "Smart TV", "Baño privado", "Aire acondicionado"],
-    image: "https://www.msccruises.com/content/dam/msc/inventory/ships/msc-seaside/photo-gallery/Cabine/MSC-Seaside-Interior-stateroom.jpg",
+    features: [
+      "Camarote cómodo",
+      "Smart TV",
+      "Baño privado",
+      "Aire acondicionado"
+    ],
+    image: "https://cruise.blog/sites/default/files/styles/fb_style/public/inline-images/owner-suite-livingroom.jpg?itok=A1Fpt8SF", // camarote interior :contentReference[oaicite:4]{index=4}
     price: "Desde $1,599"
   }
 ];
+
 
 const cruiseStats = [
   { label: "Destinos disponibles", value: "300+", icon: Globe },
@@ -255,29 +271,30 @@ const aiCruiseSuggestions = [
 const cruiseRegions = [
   {
     region: "Caribe",
-    image: "https://www.royalcaribbean.com/content/dam/royal/data/destinations/caribbean/hero/caribbean-destination-hero.jpg",
+    image: "https://cdn.aarp.net/content/dam/aarp/travel/cruises/2019/01/1140-cruise-ship-in-caribbean-esp.jpg",
     minPrice: "$649",
     cruises: ["Caribe Oriental", "Caribe Occidental", "Caribe Sur", "Bahamas"]
   },
   {
     region: "Mediterráneo",
-    image: "https://www.ncl.com/sites/default/files/mediterranean-santorini-greece.jpg",
+    image: "https://es.ncl.com/sites/default/files/2092692_Flex_Pay_Promo_Assets_700x475_FLEET_EU.jpg",
     minPrice: "$1,299",
     cruises: ["Italia y Francia", "Grecia e Islas", "España y Portugal", "Turquía"]
   },
   {
     region: "Alaska",
-    image: "https://www.princess.com/cruise-destinations/alaska/images/alaska-cruise-destinations-hero.jpg",
+    image: "https://deluxetravel.com.co/wp-content/uploads/2021/05/RCI_OV_Alaska_2013-006_RET.jpg",
     minPrice: "$1,899",
     cruises: ["Pasaje Interior", "Golfo de Alaska", "Glaciar Bay", "Fiordos Kenai"]
   },
   {
     region: "Norte de Europa",
-    image: "https://www.msccruises.com/content/dam/msc/destinations/northern-europe/hero-northern-europe.jpg",
+    image: "https://manzanaresvaldepenas.ayeryhoyrevista.com/wp-content/uploads/sites/3/2019/03/Crucero-en-Fiordos-Noruegos.jpg",
     minPrice: "$2,299",
     cruises: ["Fiordos Noruegos", "Báltico", "Islandia", "Groenlandia"]
   }
 ];
+
 
 // Inspiración de cruceros
 const cruiseInspiration = [
@@ -296,7 +313,7 @@ const lastMinuteCruises = [
     salePrice: "$799",
     type: "4 noches",
     ship: "Norwegian Sky",
-    image: "https://www.ncl.com/sites/default/files/NCLSky_Bahamas.jpg"
+    image: "https://es.ncl.com/sites/default/files/1000px-2021-weekend-cruises-norwegian-sky.jpg"
   },
   {
     destination: "Caribe Occidental",
@@ -305,7 +322,7 @@ const lastMinuteCruises = [
     salePrice: "$1,299",
     type: "7 noches",
     ship: "Carnival Vista",
-    image: "https://www.carnival.com/content/dam/carnival/ships/carnival-vista/carnival-vista-at-sea.jpg"
+    image: "https://www.carnival.com/-/media/images/ships/vs/carnival-vista-ship-aerial-mobile2.jpg"
   },
   {
     destination: "Mediterráneo",
@@ -314,7 +331,7 @@ const lastMinuteCruises = [
     salePrice: "$1,899",
     type: "10 noches",
     ship: "MSC Grandiosa",
-    image: "https://www.msccruises.com/content/dam/msc/inventory/ships/msc-grandiosa/photo-gallery/Esterni/MSC-Grandiosa-aerial-view.jpg"
+    image: "https://www.expreso.info/files/styles/large/public/2021-06/msc_grandiosa2.jpg?itok=J-QKePmG"
   }
 ];
 
@@ -343,49 +360,49 @@ const featuredCruiseLines = [
   {
     id: 1,
     name: "Royal Caribbean",
-    logo: "https://www.royalcaribbean.com/content/dam/royal/logos/rci-logo.png",
+    logo: "https://logos-world.net/wp-content/uploads/2023/08/Royal-Caribbean-Emblem.png",
     rating: 4.8
   },
   {
     id: 2,
     name: "Norwegian Cruise Line",
-    logo: "https://www.ncl.com/sites/default/files/ncl-logo.png",
+    logo: "https://book.cruisesit.com/images/home-based/websites/supplier-logos/34.png",
     rating: 4.6
   },
   {
     id: 3,
     name: "Celebrity Cruises",
-    logo: "https://www.celebritycruises.com/content/dam/celebrity/logos/celebrity-cruises-logo.png",
+    logo: "https://images.seeklogo.com/logo-png/49/2/celebrity-cruises-logo-png_seeklogo-497602.png",
     rating: 4.7
   },
   {
     id: 4,
     name: "MSC Cruises",
-    logo: "https://www.msccruises.com/content/dam/msc/common/logos/msc-cruises-logo.png",
+    logo: "https://www.ttgmedia.com/AcuCustom/Sitename/DAM/291/msc_cruises_logo-2023.jpg",
     rating: 4.5
   },
   {
     id: 5,
     name: "Princess Cruises",
-    logo: "https://www.princess.com/images/logos/princess-cruises-logo.png",
+    logo: "https://www.drupal.org/files/Princess_Cruises_Corp_3line_RGB_2016.jpg",
     rating: 4.6
   },
   {
     id: 6,
     name: "Carnival Cruise Line",
-    logo: "https://www.carnival.com/-/media/Images/PreSales/Logos/carnival-logo.png",
+    logo: "https://logos-world.net/wp-content/uploads/2024/01/Carnival-Cruise-Emblem.png",
     rating: 4.4
   },
   {
     id: 7,
     name: "Virgin Voyages",
-    logo: "https://assets.virginvoyages.com/virgin-voyages-logo.png",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiuLXXDnC5kkbVmao1sHsZoSRNreL9cOOwBA&s",
     rating: 4.8
   },
   {
     id: 8,
     name: "Disney Cruise Line",
-    logo: "https://disneycruise.disney.go.com/content/dam/disney-cruise-line/logos/dcl-logo.png",
+    logo: "https://secure.cdn3.wdpromedia.com/media/pep/live/media/site/img/style/ui-global-components/global-nav-bar/eb63e68cecdc8a886dd26c6e433e52ee-disney-cruise-line-logo.png",
     rating: 4.9
   }
 ];
@@ -874,7 +891,7 @@ export default function CruisesHomeSections() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {cruiseRegions.map((region, index) => (
-            <Card key={index} className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+            <Card key={index} className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer rounded-lg">
               <div className="relative">
                 <img 
                   src={region.image} 
@@ -923,7 +940,7 @@ export default function CruisesHomeSections() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {lastMinuteCruises.map((cruise, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow rounded-lg">
               <div className="relative">
                 <img 
                   src={cruise.image} 
