@@ -297,14 +297,13 @@ export default function ExperienceCard({
             {/* Botones de acción */}
             <div className="flex gap-2">
               {showSaveButton && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-md p-2"
+                <div
+                  role="button"
+                  className="bg-white/20 text-white backdrop-blur-md p-2 hover:text-red-500 hover:fill-red-500 pointer-events-auto"
                   onClick={handleSaveClick}
                 >
-                  <Bookmark className="w-4 h-4" />
-                </Button>
+                  <Heart className="w-4 h-4 hover:fill-red-500" />
+                </div>
               )}
               {showShareButton && (
                 <Button
@@ -330,7 +329,7 @@ export default function ExperienceCard({
           <div className="absolute bottom-0 left-0 right-0 p-5 text-white space-y-3">
             {/* Título y descripción */}
             <div className="space-y-2">
-              <h2 className="text-xl font-bold line-clamp-2">{experience.title}</h2>
+              <h2 className="text-xl font-bold whitespace-nowrap overflow-hidden text-ellipsis">{experience.title}</h2>
               <p className="text-sm text-white/90 line-clamp-2">{experience.description}</p>
             </div>
 
@@ -360,8 +359,9 @@ export default function ExperienceCard({
         </div>
 
         {/* Contenido inferior */}
-        <div className="p-5 space-y-4">
-          {/* Host y rating */}
+        <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
+          <div className='flex flex-col gap-3 mb-auto'>
+            {/* Host y rating */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
@@ -385,22 +385,23 @@ export default function ExperienceCard({
 
           {/* Tags */}
           {experience.tags && experience.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {experience.tags.slice(0, 3).map((tag, index) => (
+            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide">
+              {experience.tags.slice(0, 2).map((tag, index) => (
                 <Badge key={index} variant="outline" className="text-xs">
                   {tag}
                 </Badge>
               ))}
-              {experience.tags.length > 3 && (
+              {experience.tags.length > 2 && (
                 <Badge variant="outline" className="text-xs">
-                  +{experience.tags.length - 3}
+                  +{experience.tags.length - 2}
                 </Badge>
               )}
             </div>
           )}
+          </div>
 
           {/* Precio y cupos */}
-          <div className="flex items-center justify-between pt-2 border-t mt-auto">
+          <div className="flex items-center justify-between pt-2 border-t flex-row">
             <div className="flex items-center gap-2">
               <DollarSign className="w-4 h-4 text-primary" />
               <span className="text-lg font-bold text-primary">

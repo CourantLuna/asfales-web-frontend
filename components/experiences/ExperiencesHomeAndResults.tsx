@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useState } from 'react';
+import ExperiencesResultsTemplate from './ExperiencesResultsTemplate';
 
 interface IExperiencesHomeAndResultsProps {}
 
@@ -17,7 +18,8 @@ export default function ExperiencesHomeAndResults() {
                     
                     {showResultsFromUrl ? (
                     //   <ExperiencesResults/>
-                      <h1>ExperiencesResults</h1>
+                      
+                      <ExperiencesResultsTemplate />
                     ) : (
                       <>
                       {/*Secciones de Home de Experiences*/}

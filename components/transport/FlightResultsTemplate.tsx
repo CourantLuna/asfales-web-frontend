@@ -469,6 +469,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
             titleOn: "Comparando vuelos",
             subtitleOn: "Selecciona vuelos para comparar lado a lado",
           }}
+           showToggleShowFilters= {true}
           onCardClick={handleCardClick}
           onFiltersChange={onFiltersChange}
           searchPlaceholder="Buscar vuelos por aerolínea, aeropuerto..."
@@ -480,84 +481,100 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
             filteredRows,
             compareMode,
             onCardClick: cardClickHandler,
-          }) =>
-            loading ? (
-              <div className="container max-w-7xl">
-                <div className="text-center mb-5 mt-1">
-                  <EventDrivenProgress ref={progressRef} />
-                  <p className="text-gray-600 mt-4">
-                    Buscando los mejores vuelos...
-                  </p>
-                </div>
-              </div>
-            ) : (
+          }) => {
+            const flightsToShow = filteredRows.slice(0, visibleFlights);
+            
+            return (
               <div className="space-y-4">
-                {filteredRows.slice(0, visibleFlights).map((row, index) => {
-                  // Usar el vuelo original para obtener todos los datos
-                  const originalFlight = currentResultSet?.flights[index];
-                  
-                  // Convertir RowData de vuelta a FlightData para mostrar
-                  const flight: FlightData = originalFlight || {
-                    id: row.title || `flight-${index}`,
-                    airline: row.title || "Aerolínea",
-                    departureTime: row.feature1 || "",
-                    arrivalTime: row.feature2 || "",
-                    departureAirport: row.location?.split(" → ")[0] || "",
-                    arrivalAirport: row.location?.split(" → ")[1] || "",
-                    duration: row.descMain || "",
-                    stops: row.descSub || "",
-                    price: row.afterPrice?.value || 0,
-                    currency: row.afterPrice?.currency || "USD",
-                    priceLabel: "Por pasajero",
-                    logo: row.images?.[0] || "/placeholder-logo.svg",
-                    badge: row.badge1 || "",
-                    travelClass: 'economy' as const,
-                    travelClassDetails: {
-                      name: 'Económica',
-                      description: 'Asiento estándar con servicios básicos'
-                    },
-                    baggage: {
-                      personalItem: { included: true, dimensions: '40cm x 20cm x 25cm' },
-                      carryOn: { included: false, dimensions: '55cm x 40cm x 20cm', weight: '8kg', price: 144 },
-                      checkedBag: { included: false, weight: '23kg', price: 116, count: 1 }
-                    },
-                    flexibility: {
-                      refundable: false,
-                      changeable: false
-                    }
-                  };
+                {loading ? (
+                  // Skeleton loading
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="animate-pulse">
+                      <div className="bg-gray-200 rounded-lg h-48 w-full"></div>
+                    </div>
+                  ))
+                ) : flightsToShow.length > 0 ? (
+                  <>
+                    {flightsToShow.map((row, index) => {
+                      // Usar el vuelo original para obtener todos los datos
+                      const originalFlight = currentResultSet?.flights[index];
+                      
+                      // Convertir RowData de vuelta a FlightData para mostrar
+                      const flight: FlightData = originalFlight || {
+                        id: row.title || `flight-${index}`,
+                        airline: row.title || "Aerolínea",
+                        departureTime: row.feature1 || "",
+                        arrivalTime: row.feature2 || "",
+                        departureAirport: row.location?.split(" → ")[0] || "",
+                        arrivalAirport: row.location?.split(" → ")[1] || "",
+                        duration: row.descMain || "",
+                        stops: row.descSub || "",
+                        price: row.afterPrice?.value || 0,
+                        currency: row.afterPrice?.currency || "USD",
+                        priceLabel: "Por pasajero",
+                        logo: row.images?.[0] || "/placeholder-logo.svg",
+                        badge: row.badge1 || "",
+                        travelClass: 'economy' as const,
+                        travelClassDetails: {
+                          name: 'Económica',
+                          description: 'Asiento estándar con servicios básicos'
+                        },
+                        baggage: {
+                          personalItem: { included: true, dimensions: '40cm x 20cm x 25cm' },
+                          carryOn: { included: false, dimensions: '55cm x 40cm x 20cm', weight: '8kg', price: 144 },
+                          checkedBag: { included: false, weight: '23kg', price: 116, count: 1 }
+                        },
+                        flexibility: {
+                          refundable: false,
+                          changeable: false
+                        }
+                      };
 
-                  return (
-                    <CustomFlightCard
-                      key={flight.id}
-                      flight={convertToFlightCardData(flight)}
-                      onDetailsClick={handleDetailsClickWrapper}
-                      onClick={() => cardClickHandler(index, row)}
-                      showCompareCheckbox={compareMode} // para mostrar el checkbox
-                      className="hover:bg-blue-50 transition-colors cursor-pointer"
-                    />
-                  );
-                })}
+                      return (
+                        <CustomFlightCard
+                          key={flight.id}
+                          flight={convertToFlightCardData(flight)}
+                          onDetailsClick={handleDetailsClickWrapper}
+                          onClick={() => cardClickHandler(index, row)}
+                          showCompareCheckbox={compareMode} // para mostrar el checkbox
+                          className="hover:bg-blue-50 transition-colors cursor-pointer"
+                        />
+                      );
+                    })}
 
-                {/* Controles de paginación con componente reutilizable */}
-                <PaginationCard
-                  totalItems={filteredRows.length}
-                  visibleItems={visibleFlights}
-                  initialVisibleItems={initialVisibleFlights}
-                  itemsPerStep={flightsPerStep}
-                  onShowMore={handleShowMore}
-                  onShowLess={handleShowLess}
-                  itemLabel="vuelos"
-                  showMoreText="Mostrar más vuelos"
-                  showLessText="Mostrar menos vuelos"
-                  allItemsMessage="✈️ Has visto todos los vuelos disponibles"
-                  className=""
-                  showProgressBar={true}
-                  progressColor="bg-primary"
-                />
+                    {/* Controles de paginación con componente reutilizable */}
+                    {filteredRows.length > 3 && (
+                      <PaginationCard
+                        totalItems={filteredRows.length}
+                        visibleItems={visibleFlights}
+                        initialVisibleItems={initialVisibleFlights}
+                        itemsPerStep={flightsPerStep}
+                        onShowMore={handleShowMore}
+                        onShowLess={handleShowLess}
+                        itemLabel="vuelos"
+                        showMoreText="Mostrar más vuelos"
+                        showLessText="Mostrar menos vuelos"
+                        allItemsMessage="✈️ Has visto todos los vuelos disponibles"
+                        className="mt-8"
+                        showProgressBar={true}
+                        progressColor="bg-primary"
+                      />
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <Plane className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No se encontraron vuelos
+                    </h3>
+                    <p className="text-gray-600">
+                      Intenta ajustar tus filtros para encontrar más opciones.
+                    </p>
+                  </div>
+                )}
               </div>
-            )
-          }
+            );
+          }}
         />
       );
     }

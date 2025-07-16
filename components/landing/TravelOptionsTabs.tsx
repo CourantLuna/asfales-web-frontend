@@ -155,7 +155,7 @@ export default function TravelOptionsTabs({
         containerClassName="hidden lg:flex"
       />
 
-      <div className="w-full lg:hidden">
+      <div className="w-full md:hidden">
       <TravelSearchBarMobile/>
       </div>
     </div>

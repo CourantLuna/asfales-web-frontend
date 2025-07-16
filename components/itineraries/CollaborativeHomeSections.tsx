@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 
-interface IBusesResultsProps {}
+interface ICollaborativeHomeSectionsProps {}
 
-export default function BusesResults() {
+export default function CollaborativeHomeSections() {
    const [state, setState] = useState();
    return (
        <div>
-           <h1>BusesResults</h1>
+           <h1>CollaborativeHomeSections</h1>
        </div>
    );
 }

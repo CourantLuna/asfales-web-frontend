@@ -26,6 +26,7 @@ import {
   Heart,
   ChevronRight,
   Gift,
+  CalendarCheck,
 
 } from "lucide-react";
 import Image from "next/image";
@@ -295,6 +296,18 @@ const handleLogout = () => {
                       Perfil
                     </DropdownMenuItem>
 
+
+                    <DropdownMenuItem>
+                      <div className="w-full flex  justify-between items-center">
+                        <div className="w-full inline-flex items-center gap-2">
+                          <CalendarCheck className="mr-2 h-4 w-4" />
+                          Mis Reservas
+                        </div>
+
+
+                        <ChevronRight className="mr-2 h- w-4 inline-flex items-center" />
+                      </div>
+                    </DropdownMenuItem>
 
                     <DropdownMenuItem>
                       <div className="w-full flex  justify-between items-center">

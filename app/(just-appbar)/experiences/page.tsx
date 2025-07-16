@@ -1,10 +1,11 @@
-import React from 'react';
+import ExperiencesHomeAndResults from '@/components/experiences/ExperiencesHomeAndResults';
+import React, { Suspense } from 'react';
 export const dynamic = "force-dynamic";
 
 export default function Page() {
    return (
-       <div>
-           <h1>pagina de experiencias</h1>
-       </div>
+       <Suspense fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}>
+        <ExperiencesHomeAndResults />
+        </Suspense>
    );
 }

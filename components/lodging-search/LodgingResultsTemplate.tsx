@@ -98,6 +98,7 @@ useEffect(() => {
         // Nueva API genérica - usando filtros dinámicos
         filters={filters}
         filterOptions={getFilterOptionsForLodgingTypeLocal}
+        showToggleShowFilters={true}
         // Configuración
         sortOptions={sortOptions}
         enableCompareMode={true}

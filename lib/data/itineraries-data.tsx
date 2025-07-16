@@ -87,7 +87,7 @@ export interface DataItinerary {
   creatorBio?: string;
   
   // Colaboradores y participantes (unificado)
-  collaborators: ItineraryUser[]; // Usuarios con permisos de edición
+  collaborators?: ItineraryUser[]; // Usuarios con permisos de edición
   participants: ItineraryUser[]; 
   maxParticipants?: number;
   availableSpots?: number;
@@ -1576,3 +1576,960 @@ export const sortMyItineraries = (
       return sorted;
   }
 };
+
+// Mock data para itinerarios donde el usuario está colaborando (al menos 10)
+export const mockCollaborativeItineraries: DataItinerary[] = [
+  {
+    id: 'collab-001',
+    title: 'Aventura Familiar en Punta Cana',
+    description: 'Unas vacaciones familiares en uno de los mejores resorts todo incluido de Punta Cana.',
+    destinations: ['Punta Cana', 'Bávaro'],
+    startDate: '2025-09-15',
+    endDate: '2025-09-22',
+    duration: '7 días',
+    status: 'active',
+    visibility: 'private', // Privado pero compartido con familia
+    totalBudget: 3500,
+    currency: 'USD',
+    coverImage: 'https://www.viajacontufamilia.com/Punta%20Cana/Impressive/familias-impressive-2.jpg',
+    isShared: true,
+    tags: ['Familiar', 'Playa', 'Relajación'],
+    creator: {
+      id: 'user-002',
+      name: 'María González',
+      userName: 'maria_gonzalez',
+      avatarUrl: 'https://i.pravatar.cc/150?img=25'
+    },
+    participants: [
+      { id: 'part-001', name: 'María González', userName: 'maria_gonzalez', avatarUrl: 'https://i.pravatar.cc/150?img=1' },
+      { id: 'part-002', name: 'Juan Pérez', userName: 'juan_perez', avatarUrl: 'https://i.pravatar.cc/150?img=2' },
+      { id: 'part-003', name: 'Ana López', userName: 'ana_lopez', avatarUrl: 'https://i.pravatar.cc/150?img=3' }
+    ],
+    maxParticipants: 8,
+    accommodations: [
+      { 
+        id: 'acc-001',
+        name: 'Dreams Resort Punta Cana',
+        type: 'resort',
+        rating: 4.5,
+        pricePerNight: 350,
+        currency: 'USD',
+        nights: 7,
+        image: 'https://images.unsplash.com/photo-1565109927662-32d3a261fa4f?q=80&w=1470&auto=format&fit=crop',
+        location: 'Punta Cana, República Dominicana'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-001',
+        type: 'flight',
+        from: 'Santo Domingo',
+        to: 'Punta Cana',
+        date: '2025-09-15',
+        price: 120,
+        currency: 'USD',
+        duration: '45 minutos',
+        company: 'Air Century'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-001',
+        name: 'Catamaran Tour',
+        type: 'Excursión marítima',
+        date: '2025-09-17',
+        price: 85,
+        currency: 'USD',
+        duration: '4 horas',
+        location: 'Playa Bávaro',
+        image: 'https://images.unsplash.com/photo-1544551763-92ab472cad5d?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.7
+      },
+      {
+        id: 'exp-002',
+        name: 'Spa Day',
+        type: 'Bienestar',
+        date: '2025-09-19',
+        price: 120,
+        currency: 'USD',
+        duration: '3 horas',
+        location: 'Dreams Resort Spa',
+        image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.8
+      }
+    ],
+    createdAt: '2025-07-01T10:30:00Z',
+    updatedAt: '2025-07-10T14:45:00Z'
+  },
+  {
+    id: 'collab-002',
+    title: 'Expedición Cultural Santo Domingo',
+    description: 'Recorrido histórico por la primera ciudad de América, visitando sus principales monumentos y museos.',
+    destinations: ['Santo Domingo', 'La Romana'],
+    startDate: '2025-08-05',
+    endDate: '2025-08-10',
+    duration: '5 días',
+    status: 'active',
+    visibility: 'public',
+    totalBudget: 1800,
+    currency: 'USD',
+    coverImage: 'https://static.wixstatic.com/media/e58663_2b8588482c684e10849a8ba509ae1c64~mv2.png/v1/fill/w_1000,h_800,al_c,q_90,usm_0.66_1.00_0.01/e58663_2b8588482c684e10849a8ba509ae1c64~mv2.png',
+    isShared: true,
+    tags: ['Cultural', 'Historia', 'Gastronomía'],
+    creator: {
+      id: 'user-003',
+      name: 'Carlos Mendoza',
+      userName: 'carlos_mendoza',
+      avatarUrl: 'https://i.pravatar.cc/150?img=40'
+    },
+    collaborators: [
+    
+      {
+        id: 'user-004',
+        name: 'Ana Martínez',
+        userName: 'ana_martinez',
+        avatarUrl: 'https://i.pravatar.cc/150?img=29',
+        role: 'collaborator'
+      }
+    ],
+    participants: [
+      { id: 'part-004', name: 'Carlos Mendoza', userName: 'carlos_mendoza', avatarUrl: 'https://i.pravatar.cc/150?img=4' },
+      { id: 'part-005', name: 'Ana Martínez', userName: 'ana_martinez', avatarUrl: 'https://i.pravatar.cc/150?img=5' }
+    ],
+    maxParticipants: 12,
+    accommodations: [
+      {
+        id: 'acc-003',
+        name: 'Hotel Colonial',
+        type: 'hotel',
+        rating: 4.2,
+        pricePerNight: 130,
+        currency: 'USD',
+        nights: 5,
+        image: 'https://images.unsplash.com/photo-1630493758530-e1ce7c439825?q=80&w=1470&auto=format&fit=crop',
+        location: 'Zona Colonial, Santo Domingo'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-003',
+        type: 'bus',
+        from: 'Santiago',
+        to: 'Santo Domingo',
+        date: '2025-08-05',
+        price: 15,
+        currency: 'USD',
+        duration: '2 horas',
+        company: 'Caribe Tours'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-004',
+        name: 'Tour Zona Colonial',
+        type: 'Recorrido histórico',
+        date: '2025-08-06',
+        price: 40,
+        currency: 'USD',
+        duration: '3 horas',
+        location: 'Ciudad Colonial, Santo Domingo',
+        image: 'https://images.unsplash.com/photo-1591977733880-c48286d4aaff?q=80&w=1374&auto=format&fit=crop',
+        rating: 4.9
+      },
+      {
+        id: 'exp-005',
+        name: 'Museo del Alcázar',
+        type: 'Cultural',
+        date: '2025-08-07',
+        price: 10,
+        currency: 'USD',
+        duration: '2 horas',
+        location: 'Santo Domingo',
+        image: 'https://images.unsplash.com/photo-1591977052339-2186000a0cf7?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.7
+      },
+      {
+        id: 'exp-006',
+        name: 'Cena Gastronómica',
+        type: 'Gastronomía',
+        date: '2025-08-08',
+        price: 55,
+        currency: 'USD',
+        duration: '2 horas',
+        location: "Pat'e Palo, Santo Domingo",
+        image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.8
+      }
+    ],
+    createdAt: '2025-06-20T09:00:00Z',
+    updatedAt: '2025-07-05T16:30:00Z'
+  },
+  {
+    id: 'collab-003',
+    title: 'Ecoturismo en Jarabacoa',
+    description: 'Aventura ecológica en las montañas de Jarabacoa, disfrutando de actividades al aire libre.',
+    destinations: ['Jarabacoa', 'Constanza'],
+    startDate: '2025-07-28',
+    endDate: '2025-08-02',
+    duration: '5 días',
+    status: 'done',
+    visibility: 'private',
+    totalBudget: 1200,
+    currency: 'USD',
+    coverImage: 'https://i0.wp.com/thesunsetjarabacoa.com/wp-content/uploads/2020/09/salto-jimenoa.jpg?resize=750%2C500&ssl=1',
+    isShared: true,
+    tags: ['Ecoturismo', 'Aventura', 'Naturaleza'],
+    creator: {
+      id: 'user-005',
+      name: 'Roberto Silva',
+      userName: 'roberto_silva',
+      avatarUrl: 'https://i.pravatar.cc/150?img=51'
+    },
+    participants: [
+      { id: 'part-006', name: 'Roberto Silva', userName: 'roberto_silva', avatarUrl: 'https://i.pravatar.cc/150?img=6' }
+    ],
+    maxParticipants: 6,
+    accommodations: [
+      {
+        id: 'acc-004',
+        name: 'Cabaña Ecológica',
+        type: 'house',
+        rating: 4.6,
+        pricePerNight: 95,
+        currency: 'USD',
+        nights: 5,
+        image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=1470&auto=format&fit=crop',
+        location: 'Jarabacoa, República Dominicana'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-004',
+        type: 'bus',
+        from: 'Santo Domingo',
+        to: 'Jarabacoa',
+        date: '2025-07-28',
+        price: 12,
+        currency: 'USD',
+        duration: '2.5 horas',
+        company: 'Expreso Vegano'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-007',
+        name: 'Rafting Río Yaque',
+        type: 'Deporte extremo',
+        date: '2025-07-29',
+        price: 75,
+        currency: 'USD',
+        duration: '4 horas',
+        location: 'Río Yaque del Norte',
+        image: 'https://images.unsplash.com/photo-1530866495561-507c9faab2fa?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.9
+      },
+      {
+        id: 'exp-008',
+        name: 'Senderismo Pico Duarte',
+        type: 'Excursión',
+        date: '2025-07-30',
+        price: 60,
+        currency: "USD",
+        duration: "8 horas",
+        location: "Parque Nacional José Armando Bermúdez",
+        image: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=1470&auto=format&fit=crop",
+        rating: 4.8
+      }
+    ],
+    createdAt: '2025-05-15T11:20:00Z',
+    updatedAt: '2025-06-02T13:40:00Z'
+  },
+  {
+    id: 'collab-004',
+    title: 'Crucero del Caribe Grupal',
+    description: 'Crucero con múltiples paradas por las islas del Caribe, ideal para grupos.',
+    destinations: ['Puerto Plata', 'Cozumel', 'Jamaica'],
+    startDate: '2025-10-15',
+    endDate: '2025-10-22',
+    duration: '7 días',
+    status: 'draft',
+    visibility: 'public',
+    totalBudget: 2800,
+    currency: 'USD',
+    coverImage: 'https://images.unsplash.com/photo-1599640842225-85d111c60e6b?q=80&w=1374&auto=format&fit=crop',
+    isShared: true,
+    tags: ['Crucero', 'Grupal', 'Internacional'],
+    creator: {
+      id: 'user-006',
+      name: 'Isabel Rodríguez',
+      userName: 'isabel_rodriguez',
+      avatarUrl: 'https://i.pravatar.cc/150?img=41'
+    },
+    collaborators: [
+     
+      {
+        id: 'user-007',
+        name: 'David Kim',
+        userName: 'david_kim',
+        avatarUrl: 'https://i.pravatar.cc/150?img=65',
+        role: 'collaborator'
+      }
+    ],
+    participants: [
+      { id: 'part-007', name: 'Isabel Rodríguez', userName: 'isabel_rodriguez', avatarUrl: 'https://i.pravatar.cc/150?img=7' },
+      { id: 'part-008', name: 'David Kim', userName: 'david_kim', avatarUrl: 'https://i.pravatar.cc/150?img=8' }
+    ],
+    maxParticipants: 16,
+    accommodations: [
+      {
+        id: 'acc-005',
+        name: 'Royal Caribbean Symphony',
+        type: 'resort',
+        rating: 4.7,
+        pricePerNight: 350,
+        currency: 'USD',
+        nights: 7,
+        image: 'https://images.unsplash.com/photo-1548574505-5e239809ee19?q=80&w=1384&auto=format&fit=crop',
+        location: 'Crucero Internacional'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-005',
+        type: 'cruise',
+        from: 'Puerto Plata',
+        to: 'Crucero Internacional',
+        date: '2025-10-15',
+        price: 1800,
+        currency: 'USD',
+        duration: '7 días',
+        company: 'Royal Caribbean'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-009',
+        name: 'Shows en Vivo',
+        type: 'Entretenimiento',
+        date: '2025-10-16',
+        price: 0,
+        currency: 'USD',
+        duration: '2 horas',
+        location: 'Crucero Symphony',
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.6,
+        included: true
+      },
+      {
+        id: 'exp-010',
+        name: 'Excursiones en Puertos',
+        type: 'Aventura',
+        date: '2025-10-17',
+        price: 120,
+        currency: 'USD',
+        duration: '6 horas',
+        location: 'Varios Puertos',
+        image: 'https://images.unsplash.com/photo-1518639192441-8fce0a366e2e?q=80&w=1471&auto=format&fit=crop',
+        rating: 4.5
+      }
+    ],
+    createdAt: '2025-06-10T14:30:00Z',
+    updatedAt: '2025-07-08T10:15:00Z'
+  },
+  {
+    id: 'collab-005',
+    title: 'Retiro de Yoga en Samaná',
+    description: 'Retiro holístico en la península de Samaná, combinando yoga, meditación y naturaleza.',
+    destinations: ['Samaná', 'Las Terrenas'],
+    startDate: '2025-11-10',
+    endDate: '2025-11-15',
+    duration: '5 días',
+    status: 'draft',
+    visibility: 'private',
+    totalBudget: 1500,
+    currency: 'USD',
+    coverImage: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1498&auto=format&fit=crop',
+    isShared: true,
+    tags: ['Bienestar', 'Yoga', 'Naturaleza'],
+    creator: {
+      id: 'user-008',
+      name: 'Laura Pérez',
+      userName: 'laura_perez',
+      avatarUrl: 'https://i.pravatar.cc/150?img=20'
+    },
+
+    participants: [
+      { id: 'part-009', name: 'Laura Pérez', userName: 'laura_perez', avatarUrl: 'https://i.pravatar.cc/150?img=9' }
+    ],
+    maxParticipants: 10,
+    accommodations: [
+      {
+        id: 'acc-006',
+        name: 'Eco Lodge Las Terrenas',
+        type: 'resort',
+        rating: 4.9,
+        pricePerNight: 180,
+        currency: 'USD',
+        nights: 5,
+        image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=1480&auto=format&fit=crop',
+        location: 'Las Terrenas, Samaná'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-006',
+        type: 'bus',
+        from: 'Santo Domingo',
+        to: 'Samaná',
+        date: '2025-11-10',
+        price: 25,
+        currency: 'USD',
+        duration: '3 horas',
+        company: 'Expreso Samaná'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-011',
+        name: 'Sesiones de Yoga',
+        type: 'Bienestar',
+        date: '2025-11-11',
+        price: 120,
+        currency: 'USD',
+        duration: '2 horas diarias',
+        location: 'Eco Lodge Las Terrenas',
+        image: 'https://images.unsplash.com/photo-1545389336-cf090694435e?q=80&w=1374&auto=format&fit=crop',
+        rating: 5.0
+      },
+      {
+        id: 'exp-012',
+        name: 'Excursión Cascada El Limón',
+        type: 'Aventura',
+        date: '2025-11-13',
+        price: 60,
+        currency: 'USD',
+        duration: '5 horas',
+        location: 'Samaná',
+        image: 'https://images.unsplash.com/photo-1550236520-7050f3582da0?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.8
+      }
+    ],
+    createdAt: '2025-06-25T16:45:00Z',
+    updatedAt: '2025-07-12T09:30:00Z'
+  },
+  {
+    id: 'collab-006',
+    title: 'Road Trip Montañas del Norte',
+    description: 'Recorrido en coche por las principales montañas del Cibao, visitando Santiago, Constanza y Jarabacoa.',
+    destinations: ['Santiago', 'Constanza', 'Jarabacoa'],
+    startDate: '2025-12-20',
+    endDate: '2025-12-27',
+    duration: '7 días',
+    status: 'draft',
+    visibility: 'shared',
+    totalBudget: 1700,
+    currency: 'USD',
+    coverImage: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1421&auto=format&fit=crop',
+    isShared: true,
+    tags: ['Road Trip', 'Montañas', 'Aventura'],
+    creator: {
+      id: 'user-009',
+      name: 'Miguel Fernández',
+      userName: 'miguel_fernandez',
+      avatarUrl: 'https://i.pravatar.cc/150?img=10'
+    },
+    collaborators: [
+      
+      {
+        id: 'user-010',
+        name: 'Lucía Morales',
+        userName: 'lucia_morales',
+        avatarUrl: 'https://i.pravatar.cc/150?img=11',
+        role: 'collaborator'
+      }
+    ],
+    participants: [
+      { id: 'part-010', name: 'Miguel Fernández', avatarUrl: 'https://i.pravatar.cc/150?img=12' },
+      { id: 'part-011', name: 'Lucía Morales', avatarUrl: 'https://i.pravatar.cc/150?img=13' }
+    ],
+    maxParticipants: 4,
+    accommodations: [
+      {
+        id: 'acc-007',
+        name: 'Hotel Gran Almirante',
+        type: 'hotel',
+        rating: 4.3,
+        pricePerNight: 110,
+        currency: 'USD',
+        nights: 2,
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1470&auto=format&fit=crop',
+        location: 'Santiago de los Caballeros'
+      },
+      {
+        id: 'acc-008',
+        name: 'Cabaña Vista Montaña',
+        type: 'house',
+        rating: 4.5,
+        pricePerNight: 120,
+        currency: 'USD',
+        nights: 2,
+        image: 'https://images.unsplash.com/photo-1609881142760-298c2e76725b?q=80&w=1470&auto=format&fit=crop',
+        location: 'Constanza'
+      },
+      {
+        id: 'acc-009',
+        name: 'Rancho Jarabacoa',
+        type: 'resort',
+        rating: 4.6,
+        pricePerNight: 140,
+        currency: 'USD',
+        nights: 3,
+        image: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=1470&auto=format&fit=crop',
+        location: 'Jarabacoa'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-007',
+        type: 'car',
+        from: 'Santo Domingo',
+        to: 'Santiago',
+        date: '2025-12-20',
+        price: 40,
+        currency: 'USD',
+        duration: '2.5 horas',
+        company: 'Alquiler propio'
+      },
+      {
+        id: 'trans-008',
+        type: 'car',
+        from: 'Santiago',
+        to: 'Constanza',
+        date: '2025-12-22',
+        price: 25,
+        currency: 'USD',
+        duration: '2 horas',
+        company: 'Alquiler propio'
+      },
+      {
+        id: 'trans-009',
+        type: 'car',
+        from: 'Constanza',
+        to: 'Jarabacoa',
+        date: '2025-12-24',
+        price: 15,
+        currency: 'USD',
+        duration: '1 hora',
+        company: 'Alquiler propio'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-013',
+        name: 'Monumento Santiago',
+        type: 'Cultural',
+        date: '2025-12-21',
+        price: 5,
+        currency: 'USD',
+        duration: '2 horas',
+        location: 'Santiago',
+        image: 'https://images.unsplash.com/photo-1521336575822-6da63fb45455?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.4
+      },
+      {
+        id: 'exp-014',
+        name: 'Valle de Constanza',
+        type: 'Natural',
+        date: '2025-12-23',
+        price: 30,
+        currency: 'USD',
+        duration: '4 horas',
+        location: 'Constanza',
+        image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1632&auto=format&fit=crop',
+        rating: 4.7
+      },
+      {
+        id: 'exp-015',
+        name: 'Salto Jimenoa',
+        type: 'Natural',
+        date: '2025-12-25',
+        price: 15,
+        currency: 'USD',
+        duration: '3 horas',
+        location: 'Jarabacoa',
+        image: 'https://images.unsplash.com/photo-1506260408121-e353d10b87c7?q=80&w=1528&auto=format&fit=crop',
+        rating: 4.9
+      }
+    ],
+    createdAt: '2025-05-20T10:15:00Z',
+    updatedAt: '2025-07-01T16:20:00Z'
+  },
+  {
+    id: 'collab-007',
+    title: 'Viaje Fotográfico Barahona y Pedernales',
+    description: 'Recorrido por el suroeste de la isla para fotógrafos amateurs y profesionales.',
+    destinations: ['Barahona', 'Pedernales', 'Bahía de las Águilas'],
+    startDate: '2025-09-05',
+    endDate: '2025-09-10',
+    duration: '5 días',
+    status: 'draft',
+    visibility: 'public',
+    totalBudget: 1600,
+    currency: 'USD',
+    coverImage: 'https://images.prismic.io/prismic-rd-2/Z46w5pbqstJ99p3d_bahia-de-las-aguilas-pedernales_793f5316-903e-f723-01ddf544d587e064.jpg?auto=format,compress',
+    isShared: true,
+    tags: ['Fotografía', 'Naturaleza', 'Playas'],
+    creator: {
+      id: 'user-011',
+      name: 'Javier Santos',
+      avatarUrl: 'https://i.pravatar.cc/150?img=2',
+      userName: 'javier_santos'
+    },
+    collaborators: [
+    
+      {
+        id: 'user-012',
+        name: 'Patricia Linares',
+        avatarUrl: 'https://i.pravatar.cc/150?img=3',
+        role: 'collaborator',
+        userName: 'patricia_linares'
+      }
+    ],
+    participants: [
+      { id: 'part-012', name: 'Javier Santos', avatarUrl: 'https://i.pravatar.cc/150?img=5' },
+      { id: 'part-013', name: 'Patricia Linares', avatarUrl: 'https://i.pravatar.cc/150?img=6' }
+    ],
+    maxParticipants: 8,
+    accommodations: [
+      {
+        id: 'acc-010',
+        name: 'Casa Grande Barahona',
+        type: 'hotel',
+        rating: 4.2,
+        pricePerNight: 90,
+        currency: 'USD',
+        nights: 3,
+        image: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=1474&auto=format&fit=crop',
+        location: 'Barahona'
+      },
+      {
+        id: 'acc-011',
+        name: 'Eco Lodge Pedernales',
+        type: 'house',
+        rating: 4.4,
+        pricePerNight: 110,
+        currency: 'USD',
+        nights: 2,
+        image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=1470&auto=format&fit=crop',
+        location: 'Pedernales'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-010',
+        type: 'car',
+        from: 'Santo Domingo',
+        to: 'Barahona',
+        date: '2025-09-05',
+        price: 50,
+        currency: 'USD',
+        duration: '3 horas',
+        company: 'Alquiler propio'
+      },
+      {
+        id: 'trans-011',
+        type: 'car',
+        from: 'Barahona',
+        to: 'Pedernales',
+        date: '2025-09-08',
+        price: 30,
+        currency: 'USD',
+        duration: '1.5 horas',
+        company: 'Alquiler propio'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-016',
+        name: 'Workshop Fotografía Paisajes',
+        type: 'Educativo',
+        date: '2025-09-06',
+        price: 80,
+        currency: 'USD',
+        duration: '4 horas',
+        location: 'Los Patos, Barahona',
+        image: 'https://images.unsplash.com/photo-1516407658011-811a1b084434?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.8
+      },
+      {
+        id: 'exp-017',
+        name: 'Excursión Bahía de las Águilas',
+        type: 'Aventura',
+        date: '2025-09-09',
+        price: 120,
+        currency: 'USD',
+        duration: '6 horas',
+        location: 'Pedernales',
+        image: 'https://images.unsplash.com/photo-1596449064430-f7038559abc9?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.9
+      }
+    ],
+    createdAt: '2025-06-15T09:20:00Z',
+    updatedAt: '2025-07-10T11:30:00Z'
+  },
+  {
+    id: 'collab-008',
+    title: 'Escapada Gastronómica Santiago',
+    description: 'Descubriendo los sabores de Santiago de los Caballeros, capital de la gastronomía dominicana.',
+    destinations: ['Santiago'],
+    startDate: '2025-08-15',
+    endDate: '2025-08-18',
+    duration: '3 días',
+    status: 'draft',
+    visibility: 'shared',
+    totalBudget: 950,
+    currency: 'USD',
+    coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1470&auto=format&fit=crop',
+    isShared: true,
+    tags: ['Gastronomía', 'Cultural', 'City Break'],
+    creator: {
+      id: 'user-013',
+      name: 'Carmen Jiménez',
+      avatarUrl: 'https://i.pravatar.cc/150?img=14',
+      userName: 'carmen_jimenez',
+      role: 'creator'
+    },
+    
+    participants: [
+      { id: 'part-014', name: 'Carmen Jiménez', avatarUrl: 'https://i.pravatar.cc/150?img=15' }
+    ],
+    maxParticipants: 6,
+    accommodations: [
+      {
+        id: 'acc-012',
+        name: 'Hotel Platino',
+        type: 'hotel',
+        rating: 4.5,
+        pricePerNight: 125,
+        currency: 'USD',
+        nights: 3,
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1470&auto=format&fit=crop',
+        location: 'Santiago'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-012',
+        type: 'bus',
+        from: 'Santo Domingo',
+        to: 'Santiago',
+        date: '2025-08-15',
+        price: 15,
+        currency: 'USD',
+        duration: '2 horas',
+        company: 'Metro Tours'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-018',
+        name: 'Tour Gastronómico Urbano',
+        type: 'Gastronomía',
+        date: '2025-08-16',
+        price: 65,
+        currency: 'USD',
+        duration: '4 horas',
+        location: 'Santiago Centro',
+        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.7
+      },
+      {
+        id: 'exp-019',
+        name: 'Visita a Fábrica de Tabaco',
+        type: 'Cultural',
+        date: '2025-08-17',
+        price: 35,
+        currency: 'USD',
+        duration: '2 horas',
+        location: 'Zona Franca, Santiago',
+        image: 'https://images.unsplash.com/photo-1599590984817-0c15f31b1fa5?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.6
+      }
+    ],
+    createdAt: '2025-06-05T14:20:00Z',
+    updatedAt: '2025-07-02T10:40:00Z'
+  },
+  {
+    id: 'collab-009',
+    title: 'Festival de Jazz de Puerto Plata',
+    description: 'Viaje para disfrutar del Festival Internacional de Jazz de Puerto Plata con alojamiento de lujo.',
+    destinations: ['Puerto Plata', 'Sosúa'],
+    startDate: '2026-01-15',
+    endDate: '2026-01-19',
+    duration: '4 días',
+    status: 'draft',
+    visibility: 'public',
+    totalBudget: 1900,
+    currency: 'USD',
+    coverImage: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=1470&auto=format&fit=crop',
+    isShared: true,
+    tags: ['Música', 'Cultural', 'Lujo'],
+    creator: {
+      id: 'user-014',
+      name: 'Rafael Medina',
+      avatarUrl: 'https://i.pravatar.cc/150?img=10',
+      userName: 'rafael_medina',
+      role: 'creator'
+    },
+    collaborators: [
+    
+      {
+        id: 'user-015',
+        name: 'Sofía Acosta',
+        avatarUrl: 'https://i.pravatar.cc/150?img=12',
+        role: 'collaborator',
+        userName: 'sofia_acosta'
+      }
+    ],
+    participants: [
+      { id: 'part-015', name: 'Rafael Medina', avatarUrl: 'https://i.pravatar.cc/150?img=10' },
+      { id: 'part-016', name: 'Sofía Acosta', avatarUrl: 'https://i.pravatar.cc/150?img=12' }
+    ],
+    maxParticipants: 8,
+    accommodations: [
+      {
+        id: 'acc-013',
+        name: 'Casa Colonial Beach & Spa',
+        type: 'resort',
+        rating: 4.8,
+        pricePerNight: 280,
+        currency: 'USD',
+        nights: 4,
+        image: 'https://images.unsplash.com/photo-1610641818989-865b28851334?q=80&w=1470&auto=format&fit=crop',
+        location: 'Playa Dorada, Puerto Plata'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-013',
+        type: 'flight',
+        from: 'Santo Domingo',
+        to: 'Puerto Plata',
+        date: '2026-01-15',
+        price: 120,
+        currency: 'USD',
+        duration: '35 minutos',
+        company: 'Arajet'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-020',
+        name: 'Pase VIP Festival de Jazz',
+        type: 'Musical',
+        date: '2026-01-16',
+        price: 180,
+        currency: 'USD',
+        duration: '3 días',
+        location: 'Anfiteatro Puerto Plata',
+        image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.9
+      },
+      {
+        id: 'exp-021',
+        name: 'Cena de Gala con Músicos',
+        type: 'Gastronomía',
+        date: '2026-01-17',
+        price: 95,
+        currency: 'USD',
+        duration: '3 horas',
+        location: 'Casa Colonial',
+        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.7
+      }
+    ],
+    createdAt: '2025-07-01T11:20:00Z',
+    updatedAt: '2025-07-10T13:45:00Z'
+  },
+  {
+    id: 'collab-010',
+    title: 'Retiro de Escritores en Bayahibe',
+    description: 'Retiro para escritores y creativos en un entorno tranquilo junto al mar en Bayahibe.',
+    destinations: ['Bayahibe', 'Isla Saona'],
+    startDate: '2025-10-05',
+    endDate: '2025-10-12',
+    duration: '7 días',
+    status: 'draft',
+    visibility: 'private',
+    totalBudget: 1400,
+    currency: 'USD',
+    coverImage: 'https://images.unsplash.com/photo-1513436539083-9d2127e742f1?q=80&w=1374&auto=format&fit=crop',
+    isShared: true,
+    tags: ['Escritura', 'Creativo', 'Playa'],
+    creator: {
+      id: 'user-016',
+      name: 'Elena Castro',
+      userName: 'elena_castro',
+      avatarUrl: 'https://i.pravatar.cc/150?img=11'
+    },
+    participants: [      
+      { id: 'part-015', name: 'Rafael Medina', userName: 'rafael_medina', avatarUrl: 'https://i.pravatar.cc/150?img=10' },
+      { id: 'part-016', name: 'Elena Castro', userName: 'elena_castro', avatarUrl: 'https://i.pravatar.cc/150?img=11' }
+    ],
+    maxParticipants: 12,
+    accommodations: [
+      {
+        id: 'acc-014',
+        name: 'Cadaques Caribe Resort',
+        type: 'resort',
+        rating: 4.6,
+        pricePerNight: 150,
+        currency: 'USD',
+        nights: 7,
+        image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?q=80&w=1449&auto=format&fit=crop',
+        location: 'Bayahibe'
+      }
+    ],
+    transport: [
+      {
+        id: 'trans-014',
+        type: 'car',
+        from: 'Santo Domingo',
+        to: 'Bayahibe',
+        date: '2025-10-05',
+        price: 45,
+        currency: 'USD',
+        duration: '1.5 horas',
+        company: 'Alquiler propio'
+      }
+    ],
+    experiences: [
+      {
+        id: 'exp-022',
+        name: 'Workshops de Escritura',
+        type: 'Educativo',
+        date: '2025-10-06',
+        price: 100,
+        currency: 'USD',
+        duration: '3 horas diarias',
+        location: 'Cadaques Resort',
+        image: 'https://images.unsplash.com/photo-1518981331117-f0312e4e2702?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.8
+      },
+      {
+        id: 'exp-023',
+        name: 'Excursión a Isla Saona',
+        type: 'Aventura',
+        date: '2025-10-09',
+        price: 85,
+        currency: 'USD',
+        duration: '7 horas',
+        location: 'Isla Saona',
+        image: 'https://images.unsplash.com/photo-1596704017243-8270f14e4486?q=80&w=1470&auto=format&fit=crop',
+        rating: 4.9
+      }
+    ],
+    createdAt: '2025-06-28T15:30:00Z',
+    updatedAt: '2025-07-14T09:15:00Z'
+  }
+];

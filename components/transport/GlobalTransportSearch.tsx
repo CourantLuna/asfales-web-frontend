@@ -4,7 +4,8 @@ import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import FlightsResults from './FlightsResults';
 import CruisesResults from './CruisesResults';
-import BusesResults from './BusesResults';
+import BusesResultsTemplate from './BusesResultsTemplate';
+import CruisesResultsTemplate from './CruisesResultsTemplate';
 
 interface IGlobalTransportSearchProps {}
 
@@ -30,7 +31,7 @@ export default function GlobalTransportSearch() {
             <h1 className="hidden lg:block text-4xl text-secondary mx-auto max-w-7xl w-full mb-4">
               ¡Te llevamos a navegar!
             </h1>
-            <CruisesResults />
+            <CruisesResultsTemplate />
           </>
         );
       case 'buses':
@@ -39,7 +40,7 @@ export default function GlobalTransportSearch() {
             <h1 className="hidden lg:block text-4xl text-secondary mx-auto max-w-7xl w-full mb-4">
               ¡Te llevamos en carretera!
             </h1>
-            <BusesResults />
+            <BusesResultsTemplate />
           </>
         );
       default:
