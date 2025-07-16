@@ -651,14 +651,15 @@ export default function CustomBusCard({
 
               {/* Ver detalles link */}
               <div className="text-center mb-4">
-                <button className="text-red-500 text-sm hover:underline">
+                <button className="text-primary text-sm hover:underline">
                   Ver Detalles
                 </button>
               </div>
 
               {/* Botón de reservar */}
               <Button 
-                className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold"
+              variant={"default"}
+                className="w-full text-white py-3 rounded-lg font-semibold"
                 onClick={() => {
                   // Aquí iría la lógica de reserva
                   console.log('Reservando asientos:', selectedSeatIds);

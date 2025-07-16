@@ -3,7 +3,6 @@
 import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import FlightsResults from './FlightsResults';
-import CruisesResults from './CruisesResults';
 import BusesResultsTemplate from './BusesResultsTemplate';
 import CruisesResultsTemplate from './CruisesResultsTemplate';
 

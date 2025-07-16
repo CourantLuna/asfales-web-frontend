@@ -250,6 +250,7 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
       cities: itinerary.destinations,
       lodgingCount: itinerary.accommodations.length,
       experienceCount: itinerary.experiences.length,
+      transport: itinerary.transport,
       transportSummary,
       isPriceEstimated: true, // Por defecto true para mock data
       showwRowColaborators: itinerary.visibility === 'shared'
@@ -523,6 +524,7 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
                               {...transformedData}
                               showwRowColaborators={true}
                               ownerBadge={true}
+                              currentUserRole='creator'
                             />
                           </div>
                         );

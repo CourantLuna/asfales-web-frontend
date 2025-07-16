@@ -123,7 +123,7 @@ export function ItinerariesResultsTemplate({
                   >
     <div className={`space-y-6 ${className}`}>
       {/* Header con información de búsqueda */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border">
+      {/* <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">
               Itinerarios de {formatCityName(origin)} a {formatCityName(destination)}
@@ -145,7 +145,7 @@ export function ItinerariesResultsTemplate({
           </div>
           
          
-      </div>
+      </div> */}
 
       {/* SearchWithFilters */}
       <SearchWithFilters
@@ -155,6 +155,7 @@ export function ItinerariesResultsTemplate({
         sortOptions={sortOptions}
         onFiltersChange={handleFiltersChange}
         onCardClick={handleCardClick}
+        showToggleShowFilters={true}
         renderResults={({ filteredRows, compareMode, onCardClick: onCardClickFromRender }) => {
         
 

@@ -31,6 +31,8 @@ import { ShowIfAuth } from '../ShowIfAuth';
 import MyItinerariesHomeSections from './MyItinerariesHomeSections';
 import { StandardTabs, TabItem } from '../shared/standard-fields-component/StandardTabs';
 import { ItinerarySharedCard } from './ItinerarySharedCard';
+import { tr } from 'date-fns/locale';
+import CollaborativeHomeSections from './CollaborativeHomeSections';
 
 // Tipos para RowData de itinerarios colaborativos
 export interface CollaborativeItineraryRowData extends RowData {
@@ -244,6 +246,7 @@ export default function CollaborativeItineraries({ className = "" }: ICollaborat
       lodgingCount: itinerary.accommodations.length,
       experienceCount: itinerary.experiences.length,
       transportSummary,
+      transport: itinerary.transport,
       isPriceEstimated: true,
       showwRowColaborators: false, // No mostrar colaboradores
       ownerBadge: false // No mostrar badge de propietario
@@ -449,7 +452,7 @@ export default function CollaborativeItineraries({ className = "" }: ICollaborat
               const tabsWithCounts: TabItem[] = [
                 {
                   value: 'private-shared',
-                  label: `Privados/Compartidos (${categorizedData.privateShared.length})`,
+                  label: `Itinerarios Cerrados (${categorizedData.privateShared.length})`,
                   icon: <Users className="w-4 h-4" />,
                   content: <></>,
                 },
@@ -547,7 +550,9 @@ export default function CollaborativeItineraries({ className = "" }: ICollaborat
           />
         </ShowIfAuth>
 
-        <MyItinerariesHomeSections />
+
+        {/* Sección de itinerarios en colab */}
+        <CollaborativeHomeSections />
       </div>
     </Suspense>
   );

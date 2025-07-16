@@ -29,8 +29,12 @@ import {
   Ship,
   Building2,
   HeartHandshake,
+  Edit,
+  Delete,
+  Edit2,
 } from "lucide-react";
 import { Suspense } from "react";
+import { ItineraryTransport } from "@/lib/data/itineraries-data";
 
 type Participant = {
   id: string;
@@ -55,6 +59,8 @@ type ItinerarySharedCardProps = {
   cities?: string[]; // ejemplo: ["Roma", "Florencia", "Venecia"]
   lodgingCount: number; // total de alojamientos
   experienceCount: number; // excursiones, tours,
+  transport?: ItineraryTransport[];
+  currentUserRole?: "creator" | "collaborator" | "participant"; // rol del usuario actual
   transportSummary?: {
     mode: "flight" | "bus" | "cruise";
     count: number;
@@ -82,7 +88,9 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
     maxParticipants,
     colaborators,
     showwRowColaborators = false,
-    ownerBadge = false
+    ownerBadge = false,
+    transport = [],
+    currentUserRole = "participant", // por defecto es participante
   } = props;
 
  
@@ -129,7 +137,51 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
                   </span>
                 </div>
                 <div className="flex flex-row gap-2 text-sm">
-                  {transportSummary?.map(({ mode, count }) => (
+                  {transport && transport.length > 0 ? (
+                    (() => {
+                      // Count transport types
+                      const counts = {
+                        flight: 0,
+                        bus: 0,
+                        cruise: 0
+                      };
+                      
+                      // Count each type
+                      transport.forEach(t => {
+                        if (t.type === "flight") counts.flight++;
+                        if (t.type === "bus") counts.bus++;
+                        if (t.type === "cruise") counts.cruise++;
+                      });
+                      
+                      // Display counts with icons
+                      return (
+                        <div className="flex gap-2">
+                          {counts.flight > 0 && (
+                            <span className="flex items-center gap-1">
+                              <Plane className="w-4 h-4 text-amber-300" />
+                              {counts.flight}
+                            </span>
+                          )}
+                          {counts.bus > 0 && (
+                            <span className="flex items-center gap-1">
+                              <BusFront className="w-4 h-4 text-yellow-300" />
+                              {counts.bus}
+                            </span>
+                          )}
+                          {counts.cruise > 0 && (
+                            <span className="flex items-center gap-1">
+                              <Ship className="w-4 h-4 text-blue-300" />
+                              {counts.cruise}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    null
+                  )}
+
+                  {/* {transportSummary?.map(({ mode, count }) => (
                     <div
                       key={mode}
                       className="flex flex-row items-center gap-1"
@@ -145,7 +197,7 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
                       )}
                       <span className="text-white/90">{count}</span>
                     </div>
-                  ))}
+                  ))} */}
                 </div>
               </div>
             </div>
@@ -331,9 +383,31 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
               <span className="text-xs text-muted-foreground">Por persona</span>
             </div>
 
-            <Link href={`/viajes/${id}`}>
-              <Button size="sm">Unirme</Button>
+            <div className="flex items-end gap-2 justify-end flex-row ml-auto">
+              { currentUserRole === "participant" && (
+                <Link href={`/viajes/${id}`}>
+              <Button >Unirme</Button>
             </Link>
+              )}
+              { currentUserRole === "collaborator" && (
+                <Link href={`/viajes/${id}/editar`}>
+                  <Button className=""><Edit2 className="w-8 h-8" /> Editar</Button>
+                </Link>
+              )}
+              { currentUserRole === "creator" && (
+                <>
+                <Link href={`/viajes/${id}/eliminar`}>
+                  <Button variant={"destructive"}> <Delete size={32} />Eliminar</Button>
+                </Link>
+                 <Link href={`/viajes/${id}/editar`}>
+                  <Button variant={"secondary"}><Edit2 size={32} /> Editar</Button>
+                </Link>
+                </>
+              )}
+
+            
+           
+            </div>
           </CardFooter>
         </Card>
       </TooltipProvider>

@@ -1,13 +1,12 @@
 
 
+import GlobalItinerarySearch from '@/components/itineraries/GlobalItinerarySearch';
 import React, { Suspense } from 'react';
 export const dynamic = "force-dynamic";
 
 function GlobalItinerariesSearchContent() {
    return (
-       <div>
-           <h1>globalItinerariesSearch</h1>
-       </div>
+       <GlobalItinerarySearch />
    );
 }
 

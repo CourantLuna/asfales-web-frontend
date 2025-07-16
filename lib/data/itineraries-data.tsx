@@ -20,7 +20,7 @@ export interface ItineraryAccommodation {
 
 export interface ItineraryTransport {
   id?: string;
-  type: 'flight' | 'bus' | 'cruise' | 'train' | 'car';
+  type: 'flight' | 'bus' | 'cruise' ;
   from: string;
   to: string;
   date: string;
@@ -104,7 +104,7 @@ export interface DataItinerary {
   lodgingCount?: number; // Calculado automáticamente
   transport: ItineraryTransport[];
   transportSummary?: Array<{
-    mode: 'flight' | 'bus' | 'cruise' | 'train' | 'car';
+    mode: 'flight' | 'bus' | 'cruise' ;
     count: number;
   }>; // Calculado automáticamente
   experiences: ItineraryExperience[];
@@ -857,7 +857,7 @@ export const myPrivateItineraries: DataItinerary[] = [
     lodgingCount: 1,
     transport: [
       {
-        type: "train",
+        type: "bus",
         from: "Santa Marta",
         to: "Machete Pelao",
         date: "2025-01-15",
@@ -868,7 +868,7 @@ export const myPrivateItineraries: DataItinerary[] = [
       }
     ],
     transportSummary: [
-      { mode: "train", count: 1 }
+      { mode: "bus", count: 1 }
     ],
     experiences: [
       {
@@ -2091,7 +2091,7 @@ export const mockCollaborativeItineraries: DataItinerary[] = [
     transport: [
       {
         id: 'trans-007',
-        type: 'car',
+        type: 'bus',
         from: 'Santo Domingo',
         to: 'Santiago',
         date: '2025-12-20',
@@ -2102,7 +2102,7 @@ export const mockCollaborativeItineraries: DataItinerary[] = [
       },
       {
         id: 'trans-008',
-        type: 'car',
+        type: 'bus',
         from: 'Santiago',
         to: 'Constanza',
         date: '2025-12-22',
@@ -2113,7 +2113,7 @@ export const mockCollaborativeItineraries: DataItinerary[] = [
       },
       {
         id: 'trans-009',
-        type: 'car',
+        type: 'bus',
         from: 'Constanza',
         to: 'Jarabacoa',
         date: '2025-12-24',
@@ -2121,6 +2121,12 @@ export const mockCollaborativeItineraries: DataItinerary[] = [
         currency: 'USD',
         duration: '1 hora',
         company: 'Alquiler propio'
+      }
+    ],
+    transportSummary:[
+      {
+        mode: 'bus', count: 1,
+        
       }
     ],
     experiences: [
@@ -2227,7 +2233,7 @@ export const mockCollaborativeItineraries: DataItinerary[] = [
     transport: [
       {
         id: 'trans-010',
-        type: 'car',
+        type: 'bus',
         from: 'Santo Domingo',
         to: 'Barahona',
         date: '2025-09-05',
@@ -2238,7 +2244,7 @@ export const mockCollaborativeItineraries: DataItinerary[] = [
       },
       {
         id: 'trans-011',
-        type: 'car',
+        type: 'bus',
         from: 'Barahona',
         to: 'Pedernales',
         date: '2025-09-08',
@@ -2493,7 +2499,7 @@ export const mockCollaborativeItineraries: DataItinerary[] = [
     transport: [
       {
         id: 'trans-014',
-        type: 'car',
+        type: 'bus',
         from: 'Santo Domingo',
         to: 'Bayahibe',
         date: '2025-10-05',
