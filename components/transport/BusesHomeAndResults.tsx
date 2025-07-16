@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useState } from 'react';
 import BusesResultsTemplate from './BusesResultsTemplate';
+import BusesHomeSections from './BusesHomeSections';
 
 interface IBusesHomeAndResultsProps {}
 
@@ -24,7 +25,7 @@ const searchParams = useSearchParams();
                     ) : (
                       <>
                       {/*Secciones de Home de Experiences*/}
-                    <h1>Buses Home Sections </h1>
+                    <BusesHomeSections />
                       </>
                     )}
             

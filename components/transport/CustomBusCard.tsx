@@ -184,7 +184,20 @@ const tabs: TabConfig[] = [
 
 // Función para formatear tiempo
 const formatTime = (dateString: string) => {
-  return format(new Date(dateString), 'H:mm', { locale: es });
+  try {
+    if (!dateString) return '--:--';
+    
+    const date = new Date(dateString);
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return '--:--';
+    }
+    
+    return format(date, 'H:mm', { locale: es });
+  } catch (error) {
+    console.error('Error formatting time:', error, dateString);
+    return '--:--';
+  }
 };
 
 // Función para formatear duración

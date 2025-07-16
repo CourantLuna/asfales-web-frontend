@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import CustomCard from "@/components/shared/CustomCard";
+import InfiniteCarousel from '../shared/InfiniteCarousel';
 
 interface ILodgingHomeSectionsProps {}
 
@@ -13,12 +14,70 @@ export default function LodgingHomeSections() {
     console.log(`Clicked on ${cardType} card`);
   };
 
+
+  // Hoteles partners para demostrar reutilización del carrusel
+  const featuredHotels = [
+    {
+      id: 1,
+      name: "Marriott Hotels",
+      logo: "https://via.placeholder.com/200x100/ffffff/333333?text=Marriott",
+      rating: 4.6
+    },
+    {
+      id: 2,
+      name: "Hilton Worldwide",
+      logo: "https://via.placeholder.com/200x100/ffffff/333333?text=Hilton",
+      rating: 4.5
+    },
+    {
+      id: 3,
+      name: "Hyatt Hotels",
+      logo: "https://via.placeholder.com/200x100/ffffff/333333?text=Hyatt",
+      rating: 4.7
+    },
+    {
+      id: 4,
+      name: "InterContinental",
+      logo: "https://via.placeholder.com/200x100/ffffff/333333?text=IHG",
+      rating: 4.4
+    },
+    {
+      id: 5,
+      name: "Radisson Hotels",
+      logo: "https://via.placeholder.com/200x100/ffffff/333333?text=Radisson",
+      rating: 4.3
+    },
+    {
+      id: 6,
+      name: "Wyndham Hotels",
+      logo: "https://via.placeholder.com/200x100/ffffff/333333?text=Wyndham",
+      rating: 4.2
+    }
+  ];
+  
+
   return (
       <Suspense
                     fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
                   >
     <div className="w-full py-8 h-[auto]">
       <h2 className="text-2xl font-bold mb-6">Ideas para tu próximo viaje</h2>
+
+       {/* Hoteles Partners - Ejemplo de reutilización */}
+      <InfiniteCarousel
+        title="Hoteles Partners"
+        subtitle="Encuentra el alojamiento perfecto para tu viaje"
+        items={featuredHotels}
+        animationDuration={25}
+        showRating={true}
+        showBenefits={true}
+        benefits={[
+          { text: "Cancelación gratuita", icon: "check" },
+          { text: "Precio garantizado", icon: "shield" },
+          { text: "Reserva sin tarjeta", icon: "award" }
+        ]}
+        className="bg-gray-50"
+      />
       
       <div className="flex flex-col lg:flex-row gap-6 w-full">
         {/* Card Principal - Más grande - 70% en lg */}

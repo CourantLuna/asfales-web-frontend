@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
 import FlightsResults from "./FlightsResults";
+import FlightsHomeSections from "./FlightsHomeSections";
 
 interface IFlightsHomeAndResultsProps {
     
@@ -25,7 +26,7 @@ const searchParams = useSearchParams();
         ) : (
           <>
           {/*Secciones de Home de Flights*/}
-        <h1>Flights Home </h1>
+            <FlightsHomeSections />
           </>
         )}
 
