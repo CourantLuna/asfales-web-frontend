@@ -6,6 +6,8 @@ export const ROUTE_CONFIG = {
   '/favorites': 'Favoritos',
   '/bookings': 'Reservas',
   '/notifications': 'Notificaciones',
+  '/alerts': 'Alertas',
+
   
   // Rutas de búsqueda global
   '/global-lodging-search': 'Opciones de Alojamiento',

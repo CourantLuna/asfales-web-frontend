@@ -110,17 +110,17 @@ export default function LoginPage() {
 
 
       {/* Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-6">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4" >
+        <div className="w-full max-w-md flex flex-col items-center">
+          <div className="text-center mb-0">
             <img
               src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/asfales_logo_con_eslogan_light-wins3zVUDNTHXhhG0C9wkRMM8ABG0M.png"
               alt="Asfales Logo"
-              className="mx-auto w-48"
+             className="w-auto h-[15vh] mb-0"
             />
           </div>
-          <Card className="shadow-lg border-none rounded-lg">
-            <CardContent className="space-y-6 pt-6">
+          <Card className="shadow-lg border-none rounded-lg lg:h-[80vh] flex flex-col">
+            <CardContent className="space-y-6 pt-6 overflow-y-auto">
               <div className="text-center space-y-1">
                 <h2 className="text-2xl font-bold">Bienvenido a Asfales</h2>
                 <p className="text-sm text-muted-foreground">

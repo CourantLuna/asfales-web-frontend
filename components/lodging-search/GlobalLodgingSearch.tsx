@@ -38,7 +38,7 @@ export default function GlobalLodgingSearch() {
         return (
           <>
             <h1 className="hidden lg:block text-4xl text-secondary mx-auto max-w-7xl w-full mb-4">
-              ¡Te llevamos en carretera!
+              ¡Te alojamos donde quieras!
             </h1>
             <HostelsGuesthousesResults />
           </>

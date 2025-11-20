@@ -117,16 +117,16 @@ export default function RegisterPage() {
       </div>
 
       {/* Formulario de registro */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 ">
         <div className="w-full max-w-md flex flex-col items-center">
           <img
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/asfales_logo_con_eslogan_light-wins3zVUDNTHXhhG0C9wkRMM8ABG0M.png"
             alt="Logo Asfales"
-            className="w-[200px] mb-6"
+            className="w-auto h-[15vh] mb-0"
           />
 
-          <Card className="w-full shadow-lg border-none rounded-lg">
-            <CardContent className="pt-6">
+          <Card className="w-full shadow-lg border-none rounded-lg h-[80vh] flex flex-col">
+            <CardContent className="pt-6 overflow-y-auto">
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold">Crea tu cuenta</h2>
                 <p className="text-sm text-muted-foreground">
