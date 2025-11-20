@@ -8,8 +8,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   
   return (
     <>
-      {/* Header Mobile con botón de retorno */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 flex items-center p-8 mt-5">
+      {/* Header con botón de retorno */}
+      <div className=" fixed top-0 left-0 right-0 z-50 h-16 flex items-center p-8 mt-5">
         <div 
                   className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10  backdrop-blur-sm hover:bg-white/20 transition-colors"
 
