@@ -117,7 +117,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Formulario de registro */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 ">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 h-full">
         <div className="w-full max-w-md flex flex-col items-center">
           <img
             src="https://wfcc6kelz9zexsot.public.blob.vercel-storage.com/asfales_logo_con_eslogan_light-wins3zVUDNTHXhhG0C9wkRMM8ABG0M.png"

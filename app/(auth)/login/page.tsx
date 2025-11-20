@@ -110,7 +110,7 @@ export default function LoginPage() {
 
 
       {/* Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4" >
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 h-full" >
         <div className="w-full max-w-md flex flex-col items-center">
           <div className="text-center mb-0">
             <img
