@@ -170,7 +170,7 @@ const tabs: TabConfig[] = [
   { id: 'amenidades', label: 'Amenidades', icon: <Sparkles className="w-4 h-4" /> },
   { id: 'itinerario', label: 'Itinerario', icon: <MapPinIcon className="w-4 h-4" /> },
   { id: 'politicas', label: 'Políticas', icon: <Shield className="w-4 h-4" /> },
-  { id: 'cabinas', label: 'VER CABINAS', icon: <BedDouble className="w-4 h-4" /> }
+  { id: 'cabinas', label: 'RESERVAR CABINA/S', icon: <BedDouble className="w-4 h-4" /> }
 ];
 
 // Función para formatear tiempo
