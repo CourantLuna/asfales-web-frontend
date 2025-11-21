@@ -1,5 +1,5 @@
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
-import CruisesSearchBar from "@/components/transport/CruisesSearchBar";
+import CruisesSearchBar from "@/components/transport/Cruises/CruisesSearchBar";
 export const dynamic = "force-dynamic";
 
 export default function Layout({

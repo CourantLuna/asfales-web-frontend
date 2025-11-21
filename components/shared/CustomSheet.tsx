@@ -98,7 +98,7 @@ role="button"                  onClick={() => onOpenChange?.(false)}
         </div>
 
         {/* Contenido principal scrolleable */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 pt-0">
           {children}
         </div>
       </SheetContent>

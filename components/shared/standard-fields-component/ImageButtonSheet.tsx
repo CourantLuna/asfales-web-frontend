@@ -249,7 +249,7 @@ const ImageButtonSheet = React.forwardRef<HTMLDivElement, ImageButtonSheetProps>
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 overflow-y-auto p-4">
+                  <div className="flex-1 overflow-y-auto p-4 pt-0">
                     {item.sheetContent}
                   </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { BusTrip } from '@/components/transport/CustomBusCard';
+import { BusTrip } from '@/components/transport/Buses/CustomBusCard';
 
 // Mock data de viajes en bus
 export const mockBusTrips: BusTrip[] = [

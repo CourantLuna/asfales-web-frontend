@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import CustomCruiseCard from '@/components/transport/CustomCruiseCard';
+import CustomCruiseCard from '@/components/transport/Cruises/CustomCruiseCard';
 import { mockCruises } from '@/lib/data/cruises-data';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

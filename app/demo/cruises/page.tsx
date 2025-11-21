@@ -1,4 +1,4 @@
-import CruiseCardDemo from '@/components/transport/CruiseCardDemo';
+import CruiseCardDemo from '@/components/transport/Cruises/CruiseCardDemo';
 import { Suspense } from 'react';
 export const dynamic = "force-dynamic";
 

@@ -566,7 +566,7 @@ export default function FlightsSearchBar({
       <Suspense
                     fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
                   >
-    <div className=" py-4 lg:p-0">
+    <div className="pt-0 lg:p-0">
         <StandardTabs
           items={tabItems}
           activeTab={activeTab}

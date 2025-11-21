@@ -1,4 +1,4 @@
-import BusesHomeAndResults from '@/components/transport/BusesHomeAndResults';
+import BusesHomeAndResults from '@/components/transport/Buses/BusesHomeAndResults';
 import React from 'react';
 export const dynamic = "force-dynamic";
 

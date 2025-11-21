@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { StandardTabs, type TabItem } from '@/components/shared/standard-fields-component/StandardTabs';
 import { ImageButtonSheet, ImageButtonSheetItem } from '@/components/shared/standard-fields-component/ImageButtonSheet';
-import FlightsSearchBar from './FlightsSearchBar';
-import CruisesSearchBar from './CruisesSearchBar';
-import BusesSearchBar from './BusesSearchBar';
+import FlightsSearchBar from './Fligths/FlightsSearchBar';
+import CruisesSearchBar from './Cruises/CruisesSearchBar';
+import BusesSearchBar from './Buses/BusesSearchBar';
 import { Plane, Ship, Bus } from 'lucide-react';
 
 

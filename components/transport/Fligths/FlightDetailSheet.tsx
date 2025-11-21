@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { Plane } from 'lucide-react';
 import {
   Sheet,
@@ -9,7 +9,7 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "../ui/sheet";
+} from "../../ui/sheet";
 
 // Interfaces para los datos del vuelo
 interface FlightData {

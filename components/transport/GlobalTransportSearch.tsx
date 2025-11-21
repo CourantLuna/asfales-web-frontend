@@ -2,9 +2,9 @@
 
 import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import FlightsResults from './FlightsResults';
-import BusesResultsTemplate from './BusesResultsTemplate';
-import CruisesResultsTemplate from './CruisesResultsTemplate';
+import FlightsResults from './Fligths/FlightsResults';
+import BusesResultsTemplate from './Buses/BusesResultsTemplate';
+import CruisesResultsTemplate from './Cruises/CruisesResultsTemplate';
 
 interface IGlobalTransportSearchProps {}
 

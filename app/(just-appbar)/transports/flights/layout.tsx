@@ -1,5 +1,5 @@
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
-import FlightsSearchBar from "@/components/transport/FlightsSearchBar";
+import FlightsSearchBar from "@/components/transport/Fligths/FlightsSearchBar";
 import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 

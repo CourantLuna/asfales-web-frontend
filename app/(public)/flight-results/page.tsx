@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import FlightResultsTemplate from "@/components/transport/FlightResultsTemplate";
+import FlightResultsTemplate from "@/components/transport/Fligths/FlightResultsTemplate";
 
 export const dynamic = 'force-dynamic'
 

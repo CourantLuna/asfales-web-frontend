@@ -570,7 +570,7 @@ export default function CruisesHomeSections() {
                         <Button 
                           variant="outline" 
                           
-                          className="w-full h-10 border-primary text-primary hover:bg-primary/10 h-12"
+                          className="w-full border-primary text-primary hover:bg-primary/10 h-12"
                           onClick={() => toggleCompare(cruise.title)}
                           disabled={compareCruises.length >= 3 && !compareCruises.includes(cruise.title)}
                         >

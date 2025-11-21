@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import CustomFlightCard from './CustomFlightCard';
-import { Breadcrumb, useFlightBreadcrumbSteps } from '../shared/Breadcrumb';
-import { Button } from '../ui/button';
+import { Breadcrumb, useFlightBreadcrumbSteps } from '../../shared/Breadcrumb';
+import { Button } from '../../ui/button';
 
 const CustomFlightCardDemo: React.FC = () => {
   // Estados para el demo

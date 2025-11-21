@@ -1,4 +1,4 @@
-import CruisesHomeAndResults from "@/components/transport/CruisesHomeAndResults";
+import CruisesHomeAndResults from "@/components/transport/Cruises/CruisesHomeAndResults";
 
 export const dynamic = "force-dynamic";
 

@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import CustomBusCard from '@/components/transport/CustomBusCard';
+import CustomBusCard from '@/components/transport/Buses/CustomBusCard';
 import { mockBusTrips } from '@/lib/data/bus-trips-data';
 
 export default function BusCardDemoPage() {

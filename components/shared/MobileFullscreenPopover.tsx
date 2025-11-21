@@ -150,7 +150,7 @@ export function MobileFullscreenPopover({
             </DialogHeader>
 
             {/* Contenido scrolleable */}
-            <div className={cn("flex-1 overflow-y-auto p-4", contentClassName)}>
+            <div className={cn("flex-1 overflow-y-auto p-4 pt-0", contentClassName)}>
               {children}
             </div>
 

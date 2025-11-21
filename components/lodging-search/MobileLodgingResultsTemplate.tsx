@@ -6,7 +6,6 @@ import LodgingSearchMedellinDemo from "./LodgingSearchMedellinDemo";
 import ApartmentsAndLongstaysLayout from "@/app/(just-appbar)/lodgings/apartments-and-longstays/layout";
 import HostelsGuesthousesResults from "./HostelsGueshousesResults";
 import ApartmentsLongstaysResults from "./ApartmentsLongstaysResults";
-import { Hotel } from "lucide-react";
 import HotelsResortsResultSimple from "./HotelsResortsResultSimple";
 
 interface MobileLodgingResultsTemplateProps {

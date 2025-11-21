@@ -1,6 +1,6 @@
 'use client';
 
-import { CruiseTrip } from '@/components/transport/CustomCruiseCard';
+import { CruiseTrip } from '@/components/transport/Cruises/CustomCruiseCard';
 
 // Mock data de cruceros del Caribe y Mediterráneo
 export const mockCruises: CruiseTrip[] = [

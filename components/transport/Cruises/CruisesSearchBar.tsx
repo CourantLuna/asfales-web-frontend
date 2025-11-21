@@ -8,7 +8,7 @@ import { DurationSelector, type DurationRange } from '@/components/shared/standa
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Anchor } from 'lucide-react';
 import { getTransportDataSources } from '@/lib/data/mock-datavf';
-import { PassengerGroup } from '../shared/standard-fields-component/PassengerSelector';
+import { PassengerGroup } from '../../shared/standard-fields-component/PassengerSelector';
 
 interface CruisesSearchBarProps {
   /**

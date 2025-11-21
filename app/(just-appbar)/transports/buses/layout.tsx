@@ -1,5 +1,5 @@
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
-import BusesSearchBar from "@/components/transport/BusesSearchBar";
+import BusesSearchBar from "@/components/transport/Buses/BusesSearchBar";
 export const dynamic = "force-dynamic";
 
 export default function Layout({
