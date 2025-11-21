@@ -224,7 +224,6 @@ export default function FlightsResults({
   return (
     <div>
       {/* Header con información de búsqueda */}
-      {renderSearchHeader()}
       
       {/* Componente de resultados */}
       <FlightResultsTemplate

@@ -4,7 +4,7 @@ import { CustomSheet } from '@/components/shared/CustomSheet';
 import React, { useState } from 'react';
 
 interface IMobileFlightResultsTemplateProps {
-     open?: boolean;
+  open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 

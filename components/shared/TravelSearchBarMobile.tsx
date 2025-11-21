@@ -14,6 +14,8 @@ import CruisesSearchBar from "@/components/transport/Cruises/CruisesSearchBar";
 import { MobileLodgingResultsTemplate } from "@/components/lodging-search/MobileLodgingResultsTemplate";
 import { defaultPassengers } from "@/lib/data/mock-datavf";
 import MobileFlightResultsTemplate from "../transport/Fligths/Mobile/MobileFlightResultsTemplate";
+import MobileCruiseResultsTemplate from "../transport/Cruises/mobile/MobileCruiseResultsTemplate";
+import MobileBusResultsTemplate from "../transport/Buses/mobile/MobileBusResultsTemplate";
 
 interface TravelSearchBarMobileProps {
   /**
@@ -63,6 +65,8 @@ export default function TravelSearchBarMobile({
 }: TravelSearchBarMobileProps) {
   const [showLodgingResults, setShowLodgingResults] = useState(false);
   const [showFlightResults, setShowFlightResults] = useState(false);
+  const [showCruiseResults, setShowCruiseResults] = useState(false);
+  const [showBusResults, setShowBusResults] = useState(false);
 
   const [selectedLodgingType, setSelectedLodgingType] =
     useState<string>("hotels-and-resorts");
@@ -112,7 +116,10 @@ export default function TravelSearchBarMobile({
       sheetContent: <BusesSearchBar showSearchButton={false} />,
       sheetTitle: "Búsqueda de Buses",
       btnLabel: "Buscar Buses",
-      btnAction: onBusSearch,
+       btnAction: () => {
+        onBusSearch();
+        setShowBusResults(true);
+      },
       key: "buses",
     },
 
@@ -148,7 +155,10 @@ export default function TravelSearchBarMobile({
       sheetContent: <CruisesSearchBar showSearchButton={false} />,
       sheetTitle: "Búsqueda de Cruceros",
       btnLabel: "Buscar Cruceros",
-      btnAction: onCruisesSearch,
+       btnAction: () => {
+        onCruisesSearch();
+        setShowCruiseResults(true);
+      },
       key: "cruises",
     },
   ];
@@ -177,6 +187,15 @@ export default function TravelSearchBarMobile({
       <MobileFlightResultsTemplate  
       open={showFlightResults}
       onOpenChange={setShowFlightResults} />
+
+      <MobileCruiseResultsTemplate
+      open={showCruiseResults}
+      onOpenChange={setShowCruiseResults} />
+
+      <MobileBusResultsTemplate
+      open={showBusResults}
+      onOpenChange={setShowBusResults} />
+
     </>
   );
 }

@@ -48,7 +48,7 @@
     "input-otp": "1.4.1",
     "jspdf": "^3.0.1",
     "lucide-react": "^0.454.0",
-    "next": "^15.3.5",
+    "next": "^16.0.3",
     "next-themes": "latest",
     "react": "^19.1.0",
     "react-day-picker": "latest",
@@ -67,8 +67,6 @@
     "@types/node": "^22",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
-    "eslint": "9.39.1",
-    "eslint-config-next": "16.0.3",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3"
