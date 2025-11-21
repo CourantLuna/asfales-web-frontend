@@ -1,9 +1,8 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { Button } from '../ui/button';
-import { useIsMobile } from '../ui/use-mobile';
-import { Checkbox } from '../ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
