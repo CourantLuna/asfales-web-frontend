@@ -1,5 +1,4 @@
 import FlightsHomeAndResults from '@/components/transport/Fligths/FlightsHomeAndResults';
-import FlightsResults from '@/components/transport/FlightsResults';
 import React, { Suspense } from 'react';
 
 export default function Page() {

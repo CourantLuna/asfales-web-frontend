@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   ImageButtonSheet,
   ImageButtonSheetItem,
@@ -53,7 +53,10 @@ interface TravelSearchBarMobileProps {
    */
   className?: string;
 }
-
+function onFlightsSearch()
+{
+console.log("Búsqueda de vuelos ejecutada x2")
+}
 export default function TravelSearchBarMobile({
   onFlightsSearch = () => console.log("Búsqueda de vuelos ejecutada"),
   onLodgingSearch = () => console.log("Búsqueda de alojamiento ejecutada"),
@@ -70,7 +73,14 @@ export default function TravelSearchBarMobile({
 
   const [selectedLodgingType, setSelectedLodgingType] =
     useState<string>("hotels-and-resorts");
+    const searchBarRef = useRef<any>(null);
 
+    const handleExternalSearch = () => {
+    if (searchBarRef.current) {
+      //quiero que aca pues se añada a la ruta //transports
+      searchBarRef.current.executeSearch(); // 🔥 Llama al handleSearch del hijo
+    }
+  };
   // Configuración de los items para ImageButtonSheet
   const sheetItems: ImageButtonSheetItem[] = [
     // 1. Vuelos
@@ -78,11 +88,12 @@ export default function TravelSearchBarMobile({
       label: "Vuelos",
       src: "/menu-icons/plane-icon.svg",
       size: 64,
-      sheetContent: <FlightsSearchBar showSearchButton={false} />,
+      sheetContent: <FlightsSearchBar showSearchButton={false} ref={searchBarRef} />,
       sheetTitle: "Búsqueda de Vuelos",
       btnLabel: "Buscar Vuelos",
       btnAction: () => {
         onFlightsSearch();
+        handleExternalSearch();
         setShowFlightResults(true);
       },
       key: "flights",

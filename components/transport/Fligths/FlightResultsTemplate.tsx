@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useIsMobile } from "../../ui/use-mobile";
 import CustomFlightCard from './CustomFlightCard';
 import FlightDetailSheet from './FlightDetailSheet';
 import { Breadcrumb, useFlightBreadcrumbSteps } from '../../shared/Breadcrumb';
@@ -48,6 +49,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   // Estados para el sheet de detalles
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedFlightForDetails, setSelectedFlightForDetails] = useState<FlightData | null>(null);
+  const isMobile = useIsMobile();
 
 
   // Hook de paginación
@@ -457,7 +459,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
           filterOptions={getFilterOptionsForFlights()}
           sortOptions={sortOptions}
           ads={flightAds}
-          adsDirection="col"
+          adsDirection={isMobile ? "row" : "col"}
           showAds={true}
           enableCompareMode={true}
           compareConfig={{

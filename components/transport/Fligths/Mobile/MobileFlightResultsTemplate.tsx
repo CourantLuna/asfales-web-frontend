@@ -2,6 +2,7 @@
 
 import { CustomSheet } from '@/components/shared/CustomSheet';
 import React, { useState } from 'react';
+import FlightsResults from '../FlightsResults';
 
 interface IMobileFlightResultsTemplateProps {
   open?: boolean;
@@ -33,7 +34,7 @@ export default function MobileFlightResultsTemplate({
          className="[&_.sidebar]:hidden" // Ocultar sidebar en mobile
        >
             {/* Aquí irían los resultados de vuelos */}
-   
+            <FlightsResults/>
        </CustomSheet>
      );
 }

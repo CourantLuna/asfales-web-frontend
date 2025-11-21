@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useImperativeHandle, forwardRef } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 
@@ -15,6 +15,7 @@ import { Plus, Search, Plane, MapPin, Trash, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTransportDataSources, defaultPassengers } from '@/lib/data/mock-datavf';
 import path from 'path';
+import { useIsMobile } from '@/components/ui/use-mobile';
 
 interface FlightsSearchBarProps {
   /**
@@ -44,15 +45,19 @@ const CABIN_CLASS_OPTIONS: StandardSelectOption[] = [
   { value: 'first', label: 'Primera Clase' },
 ];
 
-export default function FlightsSearchBar({ 
-  showSearchButton = true,
-  travelingFrom,
-  setTravelingFrom,
-  goingTo,
-  setGoingTo,
-  onSwapLocations,
-  searchDataSources,
-}: FlightsSearchBarProps) {
+const FlightsSearchBar = forwardRef(function FlightsSearchBar(
+  {
+    showSearchButton = true,
+    travelingFrom,
+    setTravelingFrom,
+    goingTo,
+    setGoingTo,
+    onSwapLocations,
+    searchDataSources,
+  }: FlightsSearchBarProps,
+  ref
+) {
+  const isMobile = useIsMobile();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -286,7 +291,8 @@ export default function FlightsSearchBar({
     params.append("transportType", "flights");
 
     // Navegar con la URL construida
-    const finalUrl = (pathname === '/' || pathname === '/global-transport-search')  ? `${basePath}?${params.toString()}` : `${basePath}/flights?${params.toString()}`;
+    var finalUrl = (pathname === '/' || pathname === '/global-transport-search')  ? `${basePath}?${params.toString()}` : `${basePath}/flights?${params.toString()}`;
+    finalUrl = (isMobile? `?${params.toString()}`: finalUrl);
     console.log("🌐 Final URL:", finalUrl);
     router.push(finalUrl);
   };
@@ -562,6 +568,10 @@ export default function FlightsSearchBar({
     },
   ];
 
+  useImperativeHandle(ref, () => ({
+  executeSearch: handleSearch
+}));
+
   return (
       <Suspense
                     fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
@@ -578,5 +588,11 @@ export default function FlightsSearchBar({
         />
     </div>
     </Suspense>
+
+
   );
-}
+});
+
+
+
+export default FlightsSearchBar;
