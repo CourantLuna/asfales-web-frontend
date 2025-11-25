@@ -7,6 +7,9 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { useIsMobile } from "../ui/use-mobile";
 import PaginationCard from "../shared/PaginationCard";
 import { usePagination } from "../../hooks/usePagination";
+import { useCompare } from "@/hooks/use-compare";
+import { CompareSheet } from "../CompareSheet";
+import { ro } from "date-fns/locale";
 
 const column1row1: ColField[] = [
   {
@@ -151,59 +154,125 @@ export default function LodgingCardList({
   });
   
   const isMobile = useIsMobile();
+   const compare = useCompare({ max: 4, keyName: "title", rowName: "item" });
 
-  // Handler para cada card
-  const handleCompareChecked = (idx: number, checked: boolean) => {
-    const hotelTitle = rows[idx]?.title;
-    
-    // Si hay comparación externa, usar esa función
-    if (onCompareChange && hotelTitle) {
-      // Verificar si se puede agregar más elementos
-      if (checked && compareList.length >= maxCompareItems) {
-        toast("Máximo de hoteles alcanzado", {
-          description: `Solo puedes comparar hasta ${maxCompareItems} hoteles`,
-          duration: 2000,
-          icon: <XCircle className="text-red-500 w-6 h-6" />,
-          style: {
-            backgroundColor: "#FEE2E2",
-            color: "#232323",
-            fontWeight: 500,
-          },
-        });
-        return;
-      }
-      
-      onCompareChange(hotelTitle, checked);
-    } else {
-      // Usar estado interno si no hay comparación externa
-      setCompareChecked(prev => ({ ...prev, [idx]: checked }));
+   const onCancelCompare = () => {
+    compare.reset();
+    setCompareChecked({}); // Resetea los checks
+    resetPagination(); // Resetea la paginación al cerrar la comparación
+  }
+
+const handleCompareChecked = (idx: number, checked: boolean) => {
+  const hotel = rows[idx];
+  const hotelTitle = hotel?.title;
+
+  // ➤ AGREGAR
+  if (checked) {
+    // validar límite ANTES de agregar
+    if (compare.selected.length >= compare.getMax()) {
+      toast("Máximo alcanzado", {
+        description: `Solo puedes comparar hasta ${compare.getMax()} elementos`,
+        duration: 2000,
+        icon: <XCircle className="text-red-500 w-6 h-6" />,
+        style: {
+          backgroundColor: "#FEE2E2",
+          color: "#232323",
+          fontWeight: 500,
+        },
+      });
+      return; // ⛔ parar aquí
     }
-    
-    toast(checked ? "Añadido a comparar" : "Removido de comparar", {
+
+    // ahora sí agregar
+    compare.add(hotel);
+
+    toast("Añadido a comparar", {
       description: hotelTitle,
       duration: 1800,
-      icon: (
-        <span className="flex items-center justify-center">
-          {checked
-            ? <CheckCircle className="text-green-500 w-6 h-6" />
-            : <XCircle className="text-red-500 w-6 h-6" />}
-        </span>
-      ),
+      icon: <CheckCircle className="text-green-500 w-6 h-6" />,
       style: {
-        backgroundColor: checked ? "#D1FADF" : "#FEE2E2",
+        backgroundColor: "#D1FADF",
         color: "#232323",
         fontWeight: 500,
-        gap: "20px",
-        width: "300px",
       },
     });
-  };
+  }
+
+  // ➤ REMOVER
+  else {
+    compare.remove(hotel.title);
+
+    toast("Removido de comparar", {
+      description: hotelTitle,
+      duration: 1800,
+      icon: <XCircle className="text-red-500 w-6 h-6" />,
+      style: {
+        backgroundColor: "#FEE2E2",
+        color: "#232323",
+        fontWeight: 500,
+      },
+    });
+  }
+
+  // estados externos / internos
+  if (onCompareChange && hotelTitle) {
+    onCompareChange(hotelTitle, checked);
+  } else {
+    setCompareChecked(prev => ({ ...prev, [idx]: checked }));
+  }
+};
+
 
   // Calcular cards visibles
   const visibleRows = rows.slice(0, visibleCards);
 
+const handleRemoveFromCompare = (title: string) => {
+  // Remover del hook compare
+  compare.remove(title);
+
+  // Buscar el índice del row según el título
+  const idx = rows.findIndex(r => r.title === title);
+
+  if (idx !== -1) {
+    setCompareChecked(prev => ({
+      ...prev,
+      [idx]: false
+    }));
+  }
+
+  toast("Removido de comparar", {
+    description: title,
+    duration: 1800,
+    icon: <XCircle className="text-red-500 w-6 h-6" />,
+    style: {
+      backgroundColor: "#FEE2E2",
+      color: "#232323",
+      fontWeight: 500,
+    },
+  });
+};
+
+
   return (
     <div className="space-y-4">
+      {/* Bottom Sheet */}
+   
+{compare.selected.length > 0 && (
+  <CompareSheet
+    items={compare.selected}
+    max={4}
+    itemName="Alojamientos"
+    keyName="title"
+    rowName="row"
+    isOpen={compare.isOpen}
+    onToggle={compare.toggle}
+    onRemove={handleRemoveFromCompare}
+    onCancel={() => onCancelCompare()}
+    onCompare={() => console.log("Comparar")}
+    imageSelector={(row) => row.images?.[1]}
+  />
+)}
+
       {/* Lista de cards */}
       <div className="space-y-4">
         {visibleRows.map((rowData, idx) => (

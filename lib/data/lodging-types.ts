@@ -46,6 +46,8 @@ export interface LodgingResultsTemplateProps {
   onCardClick?: (idx: number, row: any) => void;
   LodgingData?: RowData[];
   LodgingType?: LodgingType;
+  onCompareChange?: (compareList: any[]) => void;
+  maxItemsInCompare?: number;
 }
 
 // Configuración de rango de precios por tipo
