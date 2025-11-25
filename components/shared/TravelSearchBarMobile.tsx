@@ -16,6 +16,8 @@ import { defaultPassengers } from "@/lib/data/mock-datavf";
 import MobileFlightResultsTemplate from "../transport/Fligths/Mobile/MobileFlightResultsTemplate";
 import MobileCruiseResultsTemplate from "../transport/Cruises/mobile/MobileCruiseResultsTemplate";
 import MobileBusResultsTemplate from "../transport/Buses/mobile/MobileBusResultsTemplate";
+import MobileExperiencesResultsTemplate from "../experiences/mobile/MobileExperiencesResultsTemplate";
+import MobileItinerariesResultsTemplate from "../itineraries/mobile/MobileItinerariesResultsTemplate";
 
 interface TravelSearchBarMobileProps {
   /**
@@ -70,17 +72,20 @@ export default function TravelSearchBarMobile({
   const [showFlightResults, setShowFlightResults] = useState(false);
   const [showCruiseResults, setShowCruiseResults] = useState(false);
   const [showBusResults, setShowBusResults] = useState(false);
+  const [showItinerariesResults, setShowItinerariesResults] = useState(false);
+  const [showExperiencesResults, setShowExperiencesResults] = useState(false);
+
 
   const [selectedLodgingType, setSelectedLodgingType] =
     useState<string>("hotels-and-resorts");
     const searchBarRef = useRef<any>(null);
 
-    const handleExternalSearch = () => {
-    if (searchBarRef.current) {
-      //quiero que aca pues se añada a la ruta //transports
-      searchBarRef.current.executeSearch(); // 🔥 Llama al handleSearch del hijo
-    }
-  };
+  //   const handleExternalSearch = () => {
+  //   if (searchBarRef.current) {
+  //     //quiero que aca pues se añada a la ruta //transports
+  //     searchBarRef.current.executeSearch(); // 🔥 Llama al handleSearch del hijo
+  //   }
+  // };
   // Configuración de los items para ImageButtonSheet
   const sheetItems: ImageButtonSheetItem[] = [
     // 1. Vuelos
@@ -93,7 +98,6 @@ export default function TravelSearchBarMobile({
       btnLabel: "Buscar Vuelos",
       btnAction: () => {
         onFlightsSearch();
-        handleExternalSearch();
         setShowFlightResults(true);
       },
       key: "flights",
@@ -142,7 +146,10 @@ export default function TravelSearchBarMobile({
       sheetContent: <ItinerariesSearchBar showSearchButton={false} />,
       sheetTitle: "Búsqueda de Itinerarios",
       btnLabel: "Buscar Itinerarios",
-      btnAction: onItinerariesSearch,
+      btnAction: () => {
+        onItinerariesSearch();
+        setShowItinerariesResults(true);
+      },
       key: "itineraries",
     },
 
@@ -154,7 +161,11 @@ export default function TravelSearchBarMobile({
       sheetContent: <ExperiencesSearchBar showSearchButton={false} />,
       sheetTitle: "Búsqueda de Experiencias",
       btnLabel: "Buscar Experiencias",
-      btnAction: onExperiencesSearch,
+      btnAction: () => {
+        onExperiencesSearch();
+        setShowExperiencesResults(true);
+
+      },
       key: "experiences",
     },
 
@@ -206,6 +217,15 @@ export default function TravelSearchBarMobile({
       <MobileBusResultsTemplate
       open={showBusResults}
       onOpenChange={setShowBusResults} />
+
+      <MobileExperiencesResultsTemplate
+      open={showExperiencesResults}
+      onOpenChange={setShowExperiencesResults} />
+      
+      <MobileItinerariesResultsTemplate
+      open={showItinerariesResults}
+      onOpenChange={setShowItinerariesResults} />
+
 
     </>
   );

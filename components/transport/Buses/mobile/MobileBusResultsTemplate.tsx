@@ -2,6 +2,7 @@
 
 import { CustomSheet } from '@/components/shared/CustomSheet';
 import React, { useState } from 'react';
+import BusesResultsTemplate from '../BusesResultsTemplate';
 
 interface IMobileBusResultsTemplateProps {
   open?: boolean;
@@ -31,7 +32,7 @@ const [isFavorite, setIsFavorite] = useState(false);
                 className="[&_.sidebar]:hidden" // Ocultar sidebar en mobile
               >
                    {/* Aquí irían los resultados de buses */}
-          
+            <BusesResultsTemplate/>
         </CustomSheet>
    );
 }

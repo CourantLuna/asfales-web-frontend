@@ -1,7 +1,9 @@
 'use client';
 
+import CruisesDemo from '@/app/demo/cruises/page';
 import { CustomSheet } from '@/components/shared/CustomSheet';
 import React, { useState } from 'react';
+import CruisesResultsTemplate from '../CruisesResultsTemplate';
 
 interface IMobileCruiseResultsTemplateProps {
     open?: boolean;
@@ -31,6 +33,7 @@ export default function MobileCruiseResultsTemplate({
                 className="[&_.sidebar]:hidden" // Ocultar sidebar en mobile
               >
                    {/* Aquí irían los resultados de Cruceros */}
+                   <CruisesResultsTemplate/>
           
               </CustomSheet>
    );
