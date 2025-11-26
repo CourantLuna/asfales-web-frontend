@@ -269,7 +269,7 @@ const handleRemoveFromCompare = (title: string) => {
     onRemove={handleRemoveFromCompare}
     onCancel={() => onCancelCompare()}
     onCompare={() => console.log("Comparar")}
-    imageSelector={(row) => row.images?.[1]}
+    imageSelector={(row) => row.images?.[0]}
   />
 )}
 

@@ -2,18 +2,18 @@
 import ExperiencesSearchBar from "@/components/experiences/ExperiencesSearchBar";
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
 import { ThemeProvider } from "next-themes";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 export default function Layout({
    children,
 }: {
    children: React.ReactNode;
 }) {
    return (
-    <div className={inter.className + " flex flex-col"}>
+    <div className={ " flex flex-col"}>
       <ThemeProvider
         attribute="class"
         defaultTheme="light"

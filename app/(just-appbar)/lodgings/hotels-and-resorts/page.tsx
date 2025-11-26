@@ -1,18 +1,22 @@
-import React from 'react';
-import HotelsResortsResultSimple from '@/components/lodging-search/HotelsResortsResultSimple';
+"use server";
+
+import React from "react";
+import HostelsGueshousesResults from "@/components/lodging-search/HostelsGueshousesResults";
 
 interface PageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function Page({ searchParams }: PageProps) {
-   // Debug: Imprimir los searchParams para verificar que lleguen
-   console.log('searchParams en page.tsx:', searchParams);
-   
-   return (
-       <div>
-           {/* Versión que usa window.location.search directamente */}
-           <HotelsResortsResultSimple initialSearchParams={searchParams} />
-       </div>
-   );
+export default async function Page({ searchParams }: PageProps) {
+  // ✔️ Resolver el promise
+  const params = await searchParams;
+
+  console.log("searchParams en page.tsx:", params);
+
+  return (
+    <div>
+      <HostelsGueshousesResults initialSearchParams={params} />
+    </div>
+  );
 }
+  

@@ -31,7 +31,7 @@ export function CompareSheet({
   onRemove,
   onCancel,
   onCompare,
-  imageSelector ,
+  imageSelector,
 }: CompareSheetProps) {
   return (
     <div
@@ -70,19 +70,20 @@ export function CompareSheet({
           {/* LISTA */}
           <div className="flex gap-3 overflow-x-auto py-2 flex-1">
             {Array.from({ length: max }).map((_, index) => {
+              console.log("items", index);
               const itemWrapper = items[index];
-
+              console.log("itemWrapper", itemWrapper);
               if (itemWrapper) {
-              const keyValue = itemWrapper[keyName];
-  const row = itemWrapper[rowName] ?? {};  // <-- PROTECCIÓN
+                const keyValue = itemWrapper[keyName];
+                const row = itemWrapper.item  // <-- PROTECCIÓN
 
                 // Imagen dinámica POR ITEM
-const imageUrl =
-    (row && imageSelector?.(row)) ||
-    row?.image ||
-    row?.images?.[0] ||
-    undefined;
-
+                const imageUrl =
+                  (row && imageSelector?.(row)) ||
+                  row?.image ||
+                  row?.images?.[0] ||
+                  undefined;
+                console.log("imageUrl", imageUrl);
 
                 return (
                   <div
@@ -92,12 +93,17 @@ const imageUrl =
                     {imageUrl ? (
                       <Image
                         src={imageUrl}
-                        alt={ "item"}
+                        alt={"item"}
                         fill
                         className="object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-200" />
+                      <Image
+                        src={`https://placehold.co/600x400?text=${keyValue}`}
+                        alt={"item"}
+                        fill
+                        className="object-cover"
+                      />
                     )}
 
                     {/* QUITAR */}
