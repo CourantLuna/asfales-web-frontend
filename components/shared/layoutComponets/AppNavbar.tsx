@@ -3,7 +3,7 @@
 import {  useRouter } from "next/navigation"
 import { useAuth } from "@/lib/hooks/useAuth";
 
-import { NavigationMenuDemo } from "./NavigationMenu";
+import { NavigationMenuDemo } from "../NavigationMenu";
 
 import {
   DropdownMenu,
@@ -31,8 +31,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Separator } from "../ui/separator";
-import { SettingsDialog } from "./standard-fields-component/SettingsDialog";
+import { Separator } from "../../ui/separator";
+import { SettingsDialog } from "../standard-fields-component/SettingsDialog";
 
 interface AppNavbarProps {
   showShawdowBox?: boolean; // Añadido para manejar el shawdowBox

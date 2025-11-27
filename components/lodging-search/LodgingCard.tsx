@@ -8,7 +8,7 @@ import { useIsMobile } from "../ui/use-mobile";
 import PaginationCard from "../shared/PaginationCard";
 import { usePagination } from "../../hooks/usePagination";
 import { useCompare } from "@/hooks/use-compare";
-import { CompareSheet } from "../CompareSheet";
+import { CompareSheet } from "../comparator/CompareSheet";
 import { ro } from "date-fns/locale";
 
 const column1row1: ColField[] = [
@@ -186,16 +186,16 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
     // ahora sí agregar
     compare.add(hotel);
 
-    toast("Añadido a comparar", {
-      description: hotelTitle,
-      duration: 1800,
-      icon: <CheckCircle className="text-green-500 w-6 h-6" />,
-      style: {
-        backgroundColor: "#D1FADF",
-        color: "#232323",
-        fontWeight: 500,
-      },
-    });
+    // toast("Añadido a comparar", {
+    //   description: hotelTitle,
+    //   duration: 1800,
+    //   icon: <CheckCircle className="text-green-500 w-6 h-6" />,
+    //   style: {
+    //     backgroundColor: "#D1FADF",
+    //     color: "#232323",
+    //     fontWeight: 500,
+    //   },
+    // });
   }
 
   // ➤ REMOVER
@@ -255,7 +255,7 @@ const handleRemoveFromCompare = (title: string) => {
 
   return (
     <div className="space-y-4">
-      {/* Bottom Sheet */}
+      {/* Bottom Sheet */}Añadido a compara
    
 {compare.selected.length > 0 && (
   <CompareSheet
@@ -263,7 +263,6 @@ const handleRemoveFromCompare = (title: string) => {
     max={4}
     itemName="Alojamientos"
     keyName="title"
-    rowName="row"
     isOpen={compare.isOpen}
     onToggle={compare.toggle}
     onRemove={handleRemoveFromCompare}

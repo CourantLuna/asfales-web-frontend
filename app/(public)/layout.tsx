@@ -4,14 +4,14 @@ import type React from "react";
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "next-themes";
-import { AppNavbar } from "@/components/shared/AppNavbar";
+import { AppNavbar } from "@/components/shared/layoutComponets/AppNavbar";
 import Footer from "@/components/shared/Footer";
-import ChatWidget from "@/components/shared/ChatWidget";
+import ChatWidget from "@/components/shared/layoutComponets/ChatWidget";
 import LandingSkeleton from "@/components/landing/LandingSkeleton";
 import BreadcrumbNav from "@/components/shared/BreadcrumbNav";
 import { useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { TopBarTabs } from "@/components/shared/TopBarTabs";
+import { TopBarTabs } from "@/components/shared/layoutComponets/TopBarTabs";
 import FooterMobile from "@/components/shared/FooterMobile";
 import { ScrollToTopFAB } from "@/components/shared/ScrollToTopFAB";
 
