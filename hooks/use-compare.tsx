@@ -1,6 +1,5 @@
 "use client";
 
-import { get } from "http";
 import { useState } from "react";
 
 export function useCompare({
@@ -16,7 +15,6 @@ export function useCompare({
   const [isOpen, setIsOpen] = useState(false);
 
   const getMax = () => max;
-
   const toggle = () => setIsOpen((prev) => !prev);
 
   const add = (row: any) => {
@@ -50,5 +48,9 @@ export function useCompare({
     toggle,
     reset,
     getMax,
+
+    // 👉 Estos eran los que faltaban
+    keyName,
+    rowName,
   };
 }

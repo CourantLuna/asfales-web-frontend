@@ -139,16 +139,8 @@ export default function LodgingCardList({
   ref,
 }: LodgingCardListProps) {
 
-  // Estado de checks (índice => boolean) - solo se usa si no hay comparación externa
-  const [compareChecked, setCompareChecked] = useState<{[idx: number]: boolean}>({});
-  const [compareList, setCompareList] = useState<string[]>([]);
-
-  function getCompareItemsInternal() {
-    return compareList;
-  }
 
   useImperativeHandle(ref, () => ({
-  getCompareItems: () => getCompareItemsInternal(),
   reset: () =>onCancelCompare(),
 }));
 
@@ -170,18 +162,19 @@ export default function LodgingCardList({
 
    const onCancelCompare = () => {
     compare.reset();
-    compareList.splice(0, compareList.length); // Vacía el array externo
-    setCompareChecked({}); // Resetea los checks
     resetPagination(); // Resetea la paginación al cerrar la comparación
   }
+  // Calcular cards visibles
+  const visibleRows = rows.slice(0, visibleCards);
+
 
 const handleCompareChecked = (idx: number, checked: boolean) => {
   const hotel = rows[idx];
   const hotelTitle = hotel?.title;
 
-  // ➤ AGREGAR
+  if (!hotelTitle) return;
+
   if (checked) {
-    // validar límite ANTES de agregar
     if (compare.selected.length >= compare.getMax()) {
       toast("Máximo alcanzado", {
         description: `Solo puedes comparar hasta ${compare.getMax()} elementos`,
@@ -193,91 +186,35 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
           fontWeight: 500,
         },
       });
-      return; // ⛔ parar aquí
+      return;
     }
 
-    // ahora sí agregar
     compare.add(hotel);
-    compareList.push(hotel.title);
-    console.log("Compare List:", compareList);
-  
-  }
-
-  // ➤ REMOVER
-  else {
+  } else {
     compare.remove(hotel.title);
-    const indexInCompareList = compareList.indexOf(hotel.title);
-    if (indexInCompareList > -1) {
-      compareList.splice(indexInCompareList, 1);
-    }
-
-    toast("Removido de comparar", {
-      description: hotelTitle,
-      duration: 1800,
-      icon: <XCircle className="text-red-500 w-6 h-6" />,
-      style: {
-        backgroundColor: "#FEE2E2",
-        color: "#232323",
-        fontWeight: 500,
-      },
-    });
   }
 
-  // estados externos / internos
-  if (onCompareChange && hotelTitle) {
+  // Estado externo opcional
+  if (onCompareChange) {
     onCompareChange(hotelTitle, checked);
   } else {
-    setCompareChecked(prev => ({ ...prev, [idx]: checked }));
   }
 };
-
-
-  // Calcular cards visibles
-  const visibleRows = rows.slice(0, visibleCards);
-
-const handleRemoveFromCompare = (title: string) => {
-  // Remover del hook compare
-  compare.remove(title);
-  compareList.splice(compareList.indexOf(title), 1);
-
-  // Buscar el índice del row según el título
-  const idx = rows.findIndex(r => r.title === title);
-
-  if (idx !== -1) {
-    setCompareChecked(prev => ({
-      ...prev,
-      [idx]: false
-    }));
-  }
-
-  toast("Removido de comparar", {
-    description: title,
-    duration: 1800,
-    icon: <XCircle className="text-red-500 w-6 h-6" />,
-    style: {
-      backgroundColor: "#FEE2E2",
-      color: "#232323",
-      fontWeight: 500,
-    },
-  });
-};
-
 
   return (
     <div className="space-y-4">
       {/* Bottom Sheet */}Añadido a compara
-   
-{compare.selected.length > 0 && (
+   {compare.selected.length > 0 && (
   <CompareSheet
     items={compare.selected}
-    max={4}
+    max={compare.getMax()}
     itemName="Alojamientos"
-    keyName="title"
+    keyName={compare.keyName}
     isOpen={compare.isOpen}
     onToggle={compare.toggle}
-    onRemove={handleRemoveFromCompare}
-    onCancel={() => onCancelCompare()}
-    onCompare={(comparelist: any[]) => console.log("Comparando desde lodgingcardlist", comparelist)}
+    onRemove={compare.remove}
+    onCancel={compare.reset}
+    onCompare={(comparelist) => console.log("Comparando", comparelist)}
     imageSelector={(row) => row.images?.[0]}
   />
 )}
@@ -299,7 +236,7 @@ const handleRemoveFromCompare = (title: string) => {
             onClick={() => onCardClick?.(idx, rowData)}
             // --- Control del compare checkbox ---
             showCompareCheckbox={showCompareCheckbox}
-            compareChecked={onCompareChange ? compareList.includes(rowData.title) : !!compareChecked[idx]}
+            compareChecked={compare.selected.some(i => i[compare.keyName] === rowData.title)}
             onCompareCheckedChange={checked => handleCompareChecked(idx, checked)}
             // -------------------------------------
             content={

@@ -7,7 +7,7 @@ interface PageProps {
 
 export default function Page({ searchParams }: PageProps) {
    // Debug: Imprimir los searchParams para verificar que lleguen
-   console.log('searchParams en page.tsx:', searchParams);
+  //  console.log('searchParams en page.tsx:', searchParams);
    
    return (
        <div>

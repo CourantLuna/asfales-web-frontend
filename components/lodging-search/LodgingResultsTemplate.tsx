@@ -136,7 +136,6 @@ useEffect(() => {
         renderResults={({ filteredRows, compareMode, onCardClick: internalOnCardClick }) => (
           console.log("filteredRows", ) ,
         
-console.log("Comparar:", listRef.current.getCompareItems()),
 listRef.current && listRef.current.reset(),
 
           <LodgingCardList
