@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { Suspense } from "react";
 import { ItineraryTransport } from "@/lib/data/itineraries-data";
+import { tr } from "date-fns/locale";
 
 type Participant = {
   id: string;
@@ -61,6 +62,7 @@ type ItinerarySharedCardProps = {
   experienceCount: number; // excursiones, tours,
   transport?: ItineraryTransport[];
   currentUserRole?: "creator" | "collaborator" | "participant"; // rol del usuario actual
+  showDeleteBtn?: boolean; // si se muestra el botón de eliminar
   transportSummary?: {
     mode: "flight" | "bus" | "cruise";
     count: number;
@@ -90,6 +92,7 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
     showwRowColaborators = false,
     ownerBadge = false,
     transport = [],
+    showDeleteBtn = true,
     currentUserRole = "participant", // por defecto es participante
   } = props;
 
@@ -396,9 +399,12 @@ export function ItinerarySharedCard(props: ItinerarySharedCardProps) {
               )}
               { currentUserRole === "creator" && (
                 <>
-                <Link href={`/viajes/${id}/eliminar`}>
+                 {showDeleteBtn ? (
+                   <Link  href={`/viajes/${id}/eliminar`}>
                   <Button variant={"destructive"}> <Delete size={32} />Eliminar</Button>
                 </Link>
+                ) : null}
+                
                  <Link href={`/viajes/${id}/editar`}>
                   <Button variant={"secondary"}><Edit2 size={32} /> Editar</Button>
                 </Link>

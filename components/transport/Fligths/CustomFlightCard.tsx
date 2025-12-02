@@ -28,7 +28,7 @@ interface CustomFlightCardProps {
   flight: FlightCardData;
   onDetailsClick?: (flight: FlightCardData) => void;
   onClick?: (flight: FlightCardData) => void;
-  onCompareChecked?: (id: string, checked: boolean) => void;
+  onCompareChecked?: (checked: boolean) => void;
   showCompareCheckbox?: boolean;
   isCompareChecked?: boolean;
   className?: string;
@@ -52,28 +52,7 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
     onClick?.(flight);
   };
 
-  const handleCompareChange = (e: React.MouseEvent, checked: boolean) => {
-    e.stopPropagation();
-    onCompareChecked?.(flight.id, checked);
-     toast(checked ? "Añadido a comparar" : "Removido de comparar", {
-      description: flight?.airline,
-      duration: 1800,
-      icon: (
-        <span className="flex items-center justify-center">
-          {checked
-            ? <CheckCircle className="text-green-500 w-6 h-6" />
-            : <XCircle className="text-red-500 w-6 h-6" />}
-        </span>
-      ),
-      style: {
-        backgroundColor: checked ? "#D1FADF" : "#FEE2E2",
-        color: "#232323",
-        fontWeight: 500,
-        gap: "20px",
-        width: "300px",
-      },
-  });
-  };
+  
 
   return (
     <Suspense
@@ -105,8 +84,10 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
           >
             <Checkbox
             id={flight.id}
-              // checked={isCompareChecked}
-              onCheckedChange={(checked) => handleCompareChange(event as any, checked as boolean)}
+              checked={isCompareChecked}
+              onCheckedChange={(checked) => {
+                onCompareChecked && onCompareChecked( Boolean(checked));
+              }}
               className="w-4 h-4 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 "
             />
           </div>

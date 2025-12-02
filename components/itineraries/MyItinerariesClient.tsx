@@ -525,6 +525,8 @@ export default function MyItinerariesClient({ className = "" }: IMyItinerariesCl
                               showwRowColaborators={true}
                               ownerBadge={true}
                               currentUserRole='creator'
+                              showDeleteBtn={activeTab === 'shared'}
+
                             />
                           </div>
                         );

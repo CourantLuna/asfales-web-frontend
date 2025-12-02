@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useImperativeHandle } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useIsMobile } from "../../ui/use-mobile";
 import CustomFlightCard from './CustomFlightCard';
 import FlightDetailSheet from './FlightDetailSheet';
 import { Breadcrumb, useFlightBreadcrumbSteps } from '../../shared/Breadcrumb';
 import { Button } from '../../ui/button';
-import { Plus, Minus, Plane, Clock, MapPin, DollarSign, Users, Briefcase, Star, Building2, Clock4, Clock7, Clock9, Clock6, Clock5, Clock8 } from 'lucide-react';
+import { Plus, Minus, Plane, Clock, MapPin, DollarSign, Users, Briefcase, Star, Building2, Clock4, Clock7, Clock9, Clock6, Clock5, Clock8, XCircle } from 'lucide-react';
 import PaginationCard from '../../shared/PaginationCard';
 import { usePagination } from '../../../hooks/usePagination';
 import SearchWithFilters, { GenericFilterConfig, GenericFilterOption } from '../../shared/SearchWithFilters';
@@ -18,6 +18,10 @@ import { FilterDefaults, FlightData, FlightResultSet, SelectedFlight } from '@/l
 import { convertToFlightCardData, getFlightResultSets, mapFlightsToRowData } from '@/lib/data/flight-utils';
 import { getFilterOptionsForFlights, sortOptions } from '@/lib/data/flight-filter-options';
 import { flightAds } from '@/lib/data/flight-filter-options';
+import { CompareSheet } from '@/components/comparator/CompareSheet';
+import { useCompare } from '@/hooks/use-compare';
+import { toast } from 'sonner';
+import { id } from 'date-fns/locale';
 
 interface FlightResultsTemplateProps {
   filterDefaults?: FilterDefaults;
@@ -27,6 +31,7 @@ interface FlightResultsTemplateProps {
   flightData?: RowData[];
   flightType?: 'roundtrip' | 'oneway' | 'multicity';
   destinations?: string[];
+  ref?: any;
 }
 
 const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
@@ -37,6 +42,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   flightData,
   flightType: propFlightType,
   destinations: propDestinations,
+  ref,
 }) => {
   
   // Estados principales - Usar propFlightType directamente en lugar de estado local
@@ -77,15 +83,7 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
   // Generar steps del breadcrumb
   const breadcrumbSteps = useFlightBreadcrumbSteps(flightType, currentStep, multiDestinations);
 
-  // Debug breadcrumb steps
-  useEffect(() => {
-    console.log('🔍 DEBUG breadcrumbSteps actualizado:', {
-      flightType,
-      currentStep,
-      breadcrumbSteps,
-      multiDestinations
-    });
-  }, [breadcrumbSteps, flightType, currentStep, multiDestinations]);
+
 
   // Efecto para sincronizar cuando cambia propFlightType desde searchParams
   useEffect(() => {
@@ -446,6 +444,63 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     }
   };
 
+const compare = useCompare({ max: 2, keyName: "id", rowName: "item" });
+const [localCompareMode, setLocalCompareMode] = useState(false);
+
+
+// 🔥 Resetear todo cuando compareMode se apague
+useEffect(() => {
+  if (!localCompareMode) {
+    compare.reset();      // limpia selected
+    resetPagination();    // resetea las páginas
+  }
+}, [localCompareMode]);
+
+
+   const onCancelCompare = () => {
+    compare.reset();
+    resetPagination(); // Resetea la paginación al cerrar la comparación
+  }
+
+   useImperativeHandle(ref, () => ({
+    reset: () =>onCancelCompare(),
+  }));
+  
+  
+const handleCompareChecked = (idx: number, checked: boolean) => {
+
+const originalFlight = currentResultSet?.flights[idx];
+const flight = convertToFlightCardData( originalFlight! );
+
+
+  if (!flight) return;
+
+  if (checked) {
+    if (compare.selected.length >= compare.getMax()) {
+      toast("Máximo alcanzado", {
+        description: `Solo puedes comparar hasta ${compare.getMax()} elementos`,
+        duration: 2000,
+        icon: <XCircle className="text-red-500 w-6 h-6" />,
+        style: {
+          backgroundColor: "#FEE2E2",
+          color: "#232323",
+          fontWeight: 500,
+        },
+      });
+      return;
+    }
+
+    compare.add(flight);
+  } else {
+    compare.remove(flight.id);
+  }
+
+  // // Estado externo opcional
+  // if (onCompareChange) {
+  //   onCompareChange(hotelTitle, checked);
+  // } else {
+  // }
+};
 
 
   // Renderizar contenido de vuelos con SearchWithFilters
@@ -453,7 +508,23 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
     // Mostrar SearchWithFilters para selección de vuelos
     if (currentResultSet) {
       return (
-        <SearchWithFilters
+        <div>
+           {compare.selected.length > 0 && (
+                  <CompareSheet
+                    items={compare.selected}
+                    max={compare.getMax()}
+                    itemName="vuelos"
+                    keyName={compare.keyName}
+                    isOpen={compare.isOpen}
+                    onToggle={compare.toggle}
+                    onRemove={compare.remove}
+                    onCancel={compare.reset}
+                    onCompare={(comparelist) => console.log("Comparando vuelos", comparelist)}
+                    imageSelector={(row) => row.logo}
+                  />
+                )}
+
+                 <SearchWithFilters
           rows={rows}
           filters={getFiltersForFlights}
           filterOptions={getFilterOptionsForFlights()}
@@ -481,10 +552,17 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
             compareMode,
             onCardClick: cardClickHandler,
           }) => {
+            // Sincronizar estado interno
+if (localCompareMode !== compareMode) {
+  setLocalCompareMode(compareMode);
+}
+
             const flightsToShow = filteredRows.slice(0, visibleFlights);
-            
+          
             return (
               <div className="space-y-4">
+
+                
                 {loading ? (
                   // Skeleton loading
                   Array.from({ length: 3 }).map((_, index) => (
@@ -530,14 +608,21 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
                       };
 
                       return (
-                        <CustomFlightCard
-                          key={flight.id}
-                          flight={convertToFlightCardData(flight)}
-                          onDetailsClick={handleDetailsClickWrapper}
-                          onClick={() => cardClickHandler(index, row)}
-                          showCompareCheckbox={compareMode} // para mostrar el checkbox
-                          className="hover:bg-blue-50 transition-colors cursor-pointer"
-                        />
+                        
+                       <CustomFlightCard
+  key={flight.id}
+  flight={convertToFlightCardData(flight)}
+  onDetailsClick={handleDetailsClickWrapper}
+  onClick={() => cardClickHandler(index, row)}
+  showCompareCheckbox={compareMode}
+ onCompareChecked={(checked) => {
+  handleCompareChecked(index, checked);
+   }}
+
+  isCompareChecked={compare.selected.some(i => i.id == flight.id)}
+  className="hover:bg-blue-50 transition-colors cursor-pointer"
+/>
+
                       );
                     })}
 
@@ -575,6 +660,9 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
             );
           }}
         />
+        </div>
+        
+       
       );
     }
 
@@ -608,6 +696,8 @@ const FlightResultsTemplate: React.FC<FlightResultsTemplateProps> = ({
         flight={selectedFlightForDetails}
         onSelectFlight={handleSelectFromSheet}
       />
+
+     
     </div>
   );
 };

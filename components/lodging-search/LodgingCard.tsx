@@ -215,7 +215,7 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
     onRemove={compare.remove}
     onCancel={compare.reset}
     onCompare={(comparelist) => console.log("Comparando", comparelist)}
-    imageSelector={(row) => row.images?.[0]}
+    imageSelector={(row) => row.logo?.[0]}
   />
 )}
 

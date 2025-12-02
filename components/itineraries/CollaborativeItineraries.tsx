@@ -495,6 +495,7 @@ export default function CollaborativeItineraries({ className = "" }: ICollaborat
                               {...transformedData}
                               showwRowColaborators={false} // No mostrar colaboradores
                               ownerBadge={false} // No mostrar badge de propietario
+                              currentUserRole="collaborator"
                             />
                           </div>
                         );
