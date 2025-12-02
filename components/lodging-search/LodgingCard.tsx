@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useImperativeHandle, useState } from "react";
 import CustomCard from "../shared/CustomCard";
 import { OverlayCarrusel, OverlayValue } from "../shared/ImageCarouselv2";
 import { ColField, MultiColumnFields, RenderFields, RowData } from "../shared/RenderFields";
@@ -10,6 +10,7 @@ import { usePagination } from "../../hooks/usePagination";
 import { useCompare } from "@/hooks/use-compare";
 import { CompareSheet } from "../comparator/CompareSheet";
 import { ro } from "date-fns/locale";
+import { get } from 'http';
 
 const column1row1: ColField[] = [
   {
@@ -109,8 +110,8 @@ interface LodgingCardListProps {
   enableShowLess?: boolean; // Si permitir colapsar
   // Props para comparación externa
   onCompareChange?: (hotelTitle: string, checked: boolean) => void; // Callback para notificar cambios
-  compareList?: string[]; // Lista externa de hoteles en comparación
   maxCompareItems?: number; // Máximo número de items a comparar
+  ref: any;
 }
 
 export default function LodgingCardList({
@@ -134,12 +135,23 @@ export default function LodgingCardList({
   enableShowLess = true, // Por defecto true
   // Props para comparación externa
   onCompareChange,
-  compareList = [],
-  maxCompareItems = 3
+  maxCompareItems = 3,
+  ref,
 }: LodgingCardListProps) {
 
   // Estado de checks (índice => boolean) - solo se usa si no hay comparación externa
   const [compareChecked, setCompareChecked] = useState<{[idx: number]: boolean}>({});
+  const [compareList, setCompareList] = useState<string[]>([]);
+
+  function getCompareItemsInternal() {
+    return compareList;
+  }
+
+  useImperativeHandle(ref, () => ({
+  getCompareItems: () => getCompareItemsInternal(),
+  reset: () =>onCancelCompare(),
+}));
+
   
   // Hook de paginación
   const {
@@ -158,6 +170,7 @@ export default function LodgingCardList({
 
    const onCancelCompare = () => {
     compare.reset();
+    compareList.splice(0, compareList.length); // Vacía el array externo
     setCompareChecked({}); // Resetea los checks
     resetPagination(); // Resetea la paginación al cerrar la comparación
   }
@@ -185,22 +198,18 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
 
     // ahora sí agregar
     compare.add(hotel);
-
-    // toast("Añadido a comparar", {
-    //   description: hotelTitle,
-    //   duration: 1800,
-    //   icon: <CheckCircle className="text-green-500 w-6 h-6" />,
-    //   style: {
-    //     backgroundColor: "#D1FADF",
-    //     color: "#232323",
-    //     fontWeight: 500,
-    //   },
-    // });
+    compareList.push(hotel.title);
+    console.log("Compare List:", compareList);
+  
   }
 
   // ➤ REMOVER
   else {
     compare.remove(hotel.title);
+    const indexInCompareList = compareList.indexOf(hotel.title);
+    if (indexInCompareList > -1) {
+      compareList.splice(indexInCompareList, 1);
+    }
 
     toast("Removido de comparar", {
       description: hotelTitle,
@@ -229,6 +238,7 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
 const handleRemoveFromCompare = (title: string) => {
   // Remover del hook compare
   compare.remove(title);
+  compareList.splice(compareList.indexOf(title), 1);
 
   // Buscar el índice del row según el título
   const idx = rows.findIndex(r => r.title === title);
@@ -267,7 +277,7 @@ const handleRemoveFromCompare = (title: string) => {
     onToggle={compare.toggle}
     onRemove={handleRemoveFromCompare}
     onCancel={() => onCancelCompare()}
-    onCompare={() => console.log("Comparar")}
+    onCompare={(comparelist: any[]) => console.log("Comparando desde lodgingcardlist", comparelist)}
     imageSelector={(row) => row.images?.[0]}
   />
 )}

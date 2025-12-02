@@ -16,7 +16,7 @@ interface CompareSheetProps {
   onToggle: () => void;
   onRemove: (key: any) => void;
   onCancel: () => void;
-  onCompare: () => void;
+  onCompare: (items: any[]) => void;
 
   imageSelector?: (row: any) => string | undefined;
 }
@@ -35,10 +35,12 @@ export function CompareSheet({
 }: CompareSheetProps) {
   const [compareOpen, setCompareOpen] = useState(false);
 
-  const compareThis = () => {
-    onCompare();
-    setCompareOpen(true)
-  };
+const compareThis = () => {
+  onCompare(items);
+  setCompareOpen(true);
+  console.log("Comparando items desde comparesheet", items);
+  return items;
+};
 
 
   return (
@@ -84,9 +86,9 @@ export function CompareSheet({
               {/* LISTA */}
               <div className="flex gap-3 overflow-x-auto py-2 flex-1">
                 {Array.from({ length: max }).map((_, index) => {
-                  console.log("items", index);
+                  // console.log("items", index);
                   const itemWrapper = items[index];
-                  console.log("itemWrapper", itemWrapper);
+                  // console.log("itemWrapper", itemWrapper);
                   if (itemWrapper) {
                     const keyValue = itemWrapper[keyName];
                     const row = itemWrapper.item  // <-- PROTECCIÓN
@@ -97,7 +99,7 @@ export function CompareSheet({
                       row?.image ||
                       row?.images?.[0] ||
                       undefined;
-                    console.log("imageUrl", imageUrl);
+                    // console.log("imageUrl", imageUrl);
 
                     return (
                       <div

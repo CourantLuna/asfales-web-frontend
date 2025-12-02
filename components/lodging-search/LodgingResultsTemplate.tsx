@@ -19,6 +19,8 @@ import { LodgingResultsTemplateProps } from "@/lib/data/lodging-types";
 import { createDataSourcesLodging } from "@/lib/data/lodging-config";
 import { getFilterOptionsForLodgingType, getFiltersForLodgingType, getPriceRangeForType } from "@/lib/data/lodging-utils";
 import { lodgingAds, sortOptions } from "@/lib/data/lodging-filter-options";
+import { get } from 'http';
+import { list } from "postcss";
 
 
 export default function LodgingResultsTemplate({
@@ -31,6 +33,8 @@ export default function LodgingResultsTemplate({
 }: LodgingResultsTemplateProps) {
   const [rows, setRows] = useState<RowData[]>([]);
   const [loading, setLoading] = React.useState(true);
+const listRef:any = useRef();
+
   const progressRef = useRef<EventDrivenProgressRef>(null);
 
   // Configuración del data source para búsqueda de propiedades
@@ -65,6 +69,12 @@ export default function LodgingResultsTemplate({
      return getFilterOptionsForLodgingType(LodgingType || "hotels-and-resorts")
   }, [LodgingType]);
 
+
+  function getCompareItems (items: string[]) {
+    console.log("Obteniendo items de comparación...", items);
+
+  }
+
 // Dispara la barra de progreso siempre que loading sea distinto de false
   useEffect(() => {
     if (loading !== false) {
@@ -75,6 +85,8 @@ export default function LodgingResultsTemplate({
       progressRef.current?.finish();
     }
   }, [loading]);
+
+
 
 // Efecto separado para manejar cambios en LodgingData
 useEffect(() => {
@@ -122,7 +134,13 @@ useEffect(() => {
         howItWorksText="¿Cómo funciona nuestro orden?"
         resultsCountText={(count) => `${count}+ alojamientos`}
         renderResults={({ filteredRows, compareMode, onCardClick: internalOnCardClick }) => (
+          console.log("filteredRows", ) ,
+        
+console.log("Comparar:", listRef.current.getCompareItems()),
+listRef.current && listRef.current.reset(),
+
           <LodgingCardList
+            ref={listRef}
             onCardClick={onCardClick || internalOnCardClick}
             rows={filteredRows}
             showCompareCheckbox={compareMode}
@@ -131,6 +149,7 @@ useEffect(() => {
             showMoreLabel="Mostrar más alojamientos"
             showLessLabel="Mostrar menos"
             enableShowLess={true}
+            
           />
         )}
         onCardClick={onCardClick || ((idx, row) => alert(`¡Click en card #${idx}: ${row.title} ubicado en ${row.location}!`))}
