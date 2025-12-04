@@ -34,11 +34,11 @@ const handleLogout = () => {
     logout(); // limpia localStorage y setUser(null)
   };
 
-    const { user, logout } = useAuth();
+    const { user, logout, token } = useAuth();
 
      useEffect(() => {
   // Solo ejecuta logout si hay usuario, pero su token es falso o vacío
-  if (user && !user.token) {
+  if (user && !token) {
     logout();
     setActiveSection(null); // Limpia la sección activa al hacer logout
   }

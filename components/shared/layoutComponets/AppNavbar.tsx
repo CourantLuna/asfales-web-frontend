@@ -40,7 +40,7 @@ interface AppNavbarProps {
 }
 export function AppNavbar({ showShawdowBox=false, scrollThreshold = 500 }: AppNavbarProps) {
   
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -74,8 +74,9 @@ const handleLogout = () => {
 
  useEffect(() => {
   // Solo ejecuta logout si hay usuario, pero su token es falso o vacío
-  if (user && !user.token) {
-    logout();
+  if (user && !token) {
+    // logout();
+    console.log("user and token appnavbar", user, token);
   }
   // Si user ya es null, no vuelve a entrar aquí
 }, [user, logout]);

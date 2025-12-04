@@ -111,7 +111,7 @@ interface LodgingCardListProps {
   // Props para comparación externa
   onCompareChange?: (hotelTitle: string, checked: boolean) => void; // Callback para notificar cambios
   maxCompareItems?: number; // Máximo número de items a comparar
-  ref: any;
+  ref?: any;
 }
 
 export default function LodgingCardList({

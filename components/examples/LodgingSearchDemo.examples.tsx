@@ -427,6 +427,7 @@ export default function LodgingSearchExample() {
           showMoreLabel="Mostrar más alojamientos"
           showLessLabel="Mostrar menos"
           enableShowLess={true}
+          
         />
       )}
       onCardClick={(idx, row) => alert(`¡Click en card #${idx}: ${row.title}!`)}

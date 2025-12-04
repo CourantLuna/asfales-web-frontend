@@ -20,11 +20,11 @@ import { useAuth } from "@/lib/hooks/useAuth";
 export default function Profile() {
   const router = useRouter();
 
-    const { user, logout } = useAuth();
+    const { user, logout, token } = useAuth();
 
      useEffect(() => {
   // Solo ejecuta logout si hay usuario, pero su token es falso o vacío
-  if (user && !user.token) {
+  if (user && !token) {
     logout();
   }
   // Si user ya es null, no vuelve a entrar aquí

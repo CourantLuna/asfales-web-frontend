@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { register as apiRegister } from "@/lib/api/auth";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { registerUser } from "@/lib/services/authService";
+
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaApple } from "react-icons/fa";
 import {
@@ -54,7 +55,7 @@ type RegisterForm = {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { user, login: saveAuth } = useAuth();
+  const { user, login: saveAuth, token } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirm, setShowConfirm] = React.useState(false);
 
@@ -77,27 +78,22 @@ export default function RegisterPage() {
   } = form;
 
   React.useEffect(() => {
-    if (user?.token) router.push("/");
+    if (user && token) router.push("/");
   }, [user, router]);
 
-  const onSubmit = async (values: RegisterForm) => {
-    if (values.password !== values.confirm) {
-      setError("confirm", { message: "Las contraseñas no coinciden." });
-      return;
-    }
-    const fullName = `${values.firstName.trim()} ${values.lastName.trim()}`;
-    const result = await apiRegister({
-      name: fullName,
+const onSubmit = async (values: RegisterForm) => {
+  try {
+    await registerUser({
+      firstName: values.firstName,
+      lastName: values.lastName,
       email: values.email,
       password: values.password,
     });
-    if (!result) {
-      setError("email", { message: "Error al registrarse." });
-      return;
-    }
-    saveAuth(result);
-    router.push("/");
-  };
+    router.push("/login"); // registro exitoso
+  } catch (error: any) {
+    setError("email", { message: error.message });
+  }
+};
 
   return (
    <div className="lg:h-screen  h-auto flex flex-col lg:flex-row">

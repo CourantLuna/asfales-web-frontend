@@ -1,6 +1,9 @@
 // asfales-web-frontend/app/(auth)/Login/page.tsx
 "use client";
 
+import { loginUser } from "@/lib/services/authService";
+
+
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -8,22 +11,10 @@ import SlidesShow from "@/components/ui/slides-show";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 
 
 import Link from "next/link";
-import { login as apiLogin } from "@/lib/api/auth";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaApple } from "react-icons/fa";
@@ -37,6 +28,7 @@ import {
 } from "@/components/ui/form";
 import { Eye, EyeOff } from "lucide-react";
 import { ForgotPasswordDialog } from "@/components/ForgotPasswordDialog";
+import { AuthUser } from "@/types/User";
 
 const slides = [
   {
@@ -58,7 +50,7 @@ const slides = [
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login: saveAuth, user } = useAuth();
+const { login: saveAuth, user, token } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
 
   const form = useForm<{
@@ -74,21 +66,26 @@ export default function LoginPage() {
     formState: { isValid },
   } = form;
 
-  React.useEffect(() => {
-    if (user?.token) {
-      router.push("/");
-    }
-  }, [user, router]);
 
-  const onSubmit = async (values: any) => {
-    const result = await apiLogin(values);
-    if (!result) {
-      form.setError("password", { message: "Credenciales inválidas." });
-      return;
-    }
-    saveAuth(result);
+const onSubmit = async (values: any) => {
+  try {
+    const { token, user } = await loginUser(values.email, values.password);
+    saveAuth({ token, user });
     router.push("/");
-  };
+  } catch (error: any) {
+    let message = "Ocurrió un error, intenta de nuevo.";
+    console.log("Login error:", error);
+
+    if (error.code === "auth/invalid-credential") {
+      message = "Credenciales inválidas.";
+    } else if (error.code === "auth/too-many-requests") {
+      message = "Demasiados intentos fallidos. Intenta más tarde.";
+    }
+
+    form.setError("email", { message });
+  }
+};
+
 
   return (
     <div className="h-screen flex flex-col lg:flex-row">

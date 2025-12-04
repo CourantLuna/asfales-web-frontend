@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
+import { resetPassword } from "@/lib/services/authService"; // <- importa tu servicio
 
 import {
   Form,
@@ -22,6 +23,8 @@ import { GenericDialog } from "@/components/shared/GenericDialog";
 type ForgotForm = { email: string };
 
 export function ForgotPasswordDialog() {
+  const [loading, setLoading] = React.useState(false);
+
   const form = useForm<ForgotForm>({
     defaultValues: { email: "" },
     mode: "onChange",
@@ -32,11 +35,25 @@ export function ForgotPasswordDialog() {
     formState: { isValid },
   } = form;
 
-  const onSubmit = (vals: ForgotForm) => {
-    // Aquí tu llamada a la API de recuperación
-    console.log("Enviar enlace a:", vals.email);
-    toast.success("Hemos enviado un enlace a tu correo", { duration: 5000 });
-    setOpen(false);
+  const onSubmit = async (vals: ForgotForm) => {
+        setLoading(true);
+  try {
+    const result = await resetPassword(vals.email);
+    if (result.success) {
+      toast.success(result.message, { duration: 5000 });
+      setOpen(false);
+    } else {
+      toast.error(result.message, { duration: 5000 });
+    }
+  } catch (err: any) {
+    toast.error(err.message || "Ocurrió un error inesperado");
+  } finally {
+    setLoading(false);
+  }
+    // // Aquí tu llamada a la API de recuperación
+    // console.log("Enviar enlace a:", vals.email);
+    // toast.success("Hemos enviado un enlace a tu correo", { duration: 5000 });
+    // setOpen(false);
   };
 
 const [open, setOpen] = React.useState(false);
@@ -84,10 +101,11 @@ const [open, setOpen] = React.useState(false);
           />
           <Button
             type="submit"
-            disabled={!isValid}
+            disabled={!isValid || loading}
             className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Enviar enlace
+             {loading ? "Enviando..." : "Enviar enlace"}
+
           </Button>
         </form>
       </Form>

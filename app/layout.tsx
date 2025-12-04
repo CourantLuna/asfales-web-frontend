@@ -7,6 +7,9 @@ import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import { ScrollbarControl } from "../components/shared/ClientScrollHandler"
 import { Toaster } from "@/components/ui/sonner"; // exportado por shadcn
+import { LoadingProvider } from "@/context/LoadingContext";
+import GlobalLoader from "@/components/GlobalLoader";
+import GlobalFetchWrapper from "@/components/GlobalFetchWrapper";
 
 
 const inter = Inter({ subsets: ["latin"] })
@@ -45,6 +48,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <LoadingProvider>
+          <GlobalFetchWrapper>
+            <GlobalLoader />
                   <Toaster  position="bottom-center"  richColors />
 
           <ScrollbarControl /> 
@@ -52,7 +58,8 @@ export default function RootLayout({
           {children}
         </div>
           
-               
+               </GlobalFetchWrapper>
+        </LoadingProvider>
         </ThemeProvider>
       </body>
     </html>
