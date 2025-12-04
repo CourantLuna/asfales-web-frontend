@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { ShowIfAuth } from "../ShowIfAuth";
 import Profile from "./Profile";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 interface ProfileInfoProps {
   className?: string;
@@ -30,17 +31,20 @@ interface ProfileInfoProps {
 
 export default function ProfileInfo({ className }: ProfileInfoProps) {
   const [showAdditionalTravelers, setShowAdditionalTravelers] = useState(false);
-  
+    const { user, login: saveAuth, token } = useAuth();
+  if (!user) {
+    return     <Profile/>
+  }
   // Datos del usuario (esto vendría de tu API/estado)
   const userData = {
-    name: "Ana Rodríguez",
-    email: "ana.rodriguez@gmail.com",
-    phone: "Not provided",
-    dateOfBirth: "Not provided",
-    gender: "Not provided",
-    bio: "Not provided",
-    address: "Not provided",
-    emergencyContact: "Not provided",
+    name: user.name? user.name : "Nombre de Usuario",
+    email:  user.email? user.email : "username@asfales.com",
+    phone: user.phoneNumber? user.phoneNumber : "No proporcionada",
+    dateOfBirth: "No proporcionada",
+    gender: "No proporcionada",
+    bio: "No proporcionada",
+    address: "No proporcionada",
+    emergencyContact: "No proporcionada",
     accessibilityNeeds: "No, no tengo necesidades de accesibilidad",
     tsaPreCheck: "TSA PreCheck y número Redress",
     passport: "Pasaporte",

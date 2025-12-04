@@ -1,5 +1,7 @@
 // asfales-web-frontend/lib/services/authService.ts
-import { signInWithEmailAndPassword, sendPasswordResetEmail  } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail,
+    GoogleAuthProvider, FacebookAuthProvider, OAuthProvider, signInWithPopup
+ } from "firebase/auth";
 import { auth } from "../firebase";
 import { AuthUser } from "@/types/User";
 
@@ -69,3 +71,49 @@ export const resetPassword = async (email: string) => {
     return { success: false, message: error.message };
   }
 };  
+
+export async function loginWithGoogle(): Promise<AuthUser> {
+  const provider = new GoogleAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+  return {
+    id: result.user.uid,
+    email: result.user.email!,
+    name: result.user.displayName!,
+    avatar: result.user.photoURL || "",
+    firebaseUid: result.user.uid,
+    createdAt: result.user.metadata.creationTime || "",
+    phoneNumber:result.user.phoneNumber
+  };
+}
+
+export async function loginWithFacebook(): Promise<AuthUser> {
+  const provider = new FacebookAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+  return {
+    id: result.user.uid,
+    email: result.user.email!,
+    name: result.user.displayName!,
+    avatar: result.user.photoURL || "",
+    firebaseUid: result.user.uid,
+    createdAt: result.user.metadata.creationTime || "",
+    phoneNumber:result.user.phoneNumber
+
+  };
+}
+
+export async function loginWithApple(): Promise<AuthUser> {
+  const provider = new OAuthProvider("apple.com");
+  provider.addScope("email");
+  provider.addScope("name");
+  const result = await signInWithPopup(auth, provider);
+  return {
+    id: result.user.uid,
+    email: result.user.email!,
+    name: result.user.displayName!,
+    avatar: result.user.photoURL || "",
+    firebaseUid: result.user.uid,
+    createdAt: result.user.metadata.creationTime || "",
+        phoneNumber:result.user.phoneNumber
+
+  };
+}

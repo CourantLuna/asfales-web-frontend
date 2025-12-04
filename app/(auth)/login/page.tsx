@@ -2,6 +2,8 @@
 "use client";
 
 import { loginUser } from "@/lib/services/authService";
+import { loginWithGoogle, loginWithFacebook, loginWithApple } from "@/lib/services/authService";
+import { auth } from "@/lib/firebase";
 
 
 import * as React from "react";
@@ -12,7 +14,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-
+import { toast } from "sonner";
 
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -85,6 +87,40 @@ const onSubmit = async (values: any) => {
     form.setError("email", { message });
   }
 };
+
+const handleLogin = async (provider: "google" | "facebook" | "apple") => {
+    try {
+    let firebaseUser;
+    if (provider === "google") firebaseUser = await loginWithGoogle();
+    if (provider === "facebook") firebaseUser = await loginWithFacebook();
+    if (provider === "apple") firebaseUser = await loginWithApple();
+
+    // Obtener token de Firebase
+    const userCred = auth.currentUser;
+    if (!userCred) throw new Error("No se pudo obtener el usuario autenticado");
+    const token = await userCred.getIdToken();
+      if (!firebaseUser) throw new Error("No se pudo obtener la información del usuario");
+    // Construir el objeto de usuario
+    const user: AuthUser = {
+      id: firebaseUser.id,
+      email: firebaseUser.email,
+      name: firebaseUser.name,
+      avatar: firebaseUser.avatar,
+      firebaseUid: firebaseUser.firebaseUid,
+      createdAt: firebaseUser.createdAt,
+      phoneNumber: firebaseUser.phoneNumber,
+    };
+
+    // Guardar en estado global
+    saveAuth({ token, user });
+
+    // Redirigir
+    router.push("/");
+  } catch (error: any) {
+    console.error("Error login social:", error);
+    toast.error(error.message || "Error al iniciar sesión con el proveedor");
+  }
+  };
 
 
   return (
@@ -210,15 +246,15 @@ const onSubmit = async (values: any) => {
                 O inicia con:
               </div>
               <div className="flex items-center gap-4">
-                <Button variant="outline" className="flex-1">
+                <Button variant="outline" className="flex-1" onClick={() => handleLogin("google")}>
                   <FcGoogle className="w-5 h-5 mr-2" />
                   <span className="hidden md:inline">Google</span>
                 </Button>
-                <Button variant="outline" className="flex-1">
+                <Button variant="outline" disabled className="flex-1" onClick={() => handleLogin("facebook")}>
                   <FaFacebook className="w-5 h-5 mr-2 text-[#1877F2]" />
                   <span className="hidden md:inline">Facebook</span>
                 </Button>
-                <Button variant="outline" className="flex-1">
+                <Button variant="outline" disabled className="flex-1" onClick={() => handleLogin("apple")}>
                   <FaApple className="w-5 h-5 mr-2" />
                   <span className="hidden md:inline">Apple</span>
                 </Button>
