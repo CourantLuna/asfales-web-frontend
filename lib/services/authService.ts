@@ -61,7 +61,6 @@ export async function registerUser({
 
 export const resetPassword = async (email: string) => {
   try {
-    console.log("Enviando correo de restablecimiento a:", email);
     await sendPasswordResetEmail(auth, email, {
       url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`, // URL a la que será redirigido el usuario después de resetear
       handleCodeInApp: false, // true si quieres manejar el link dentro de la app
