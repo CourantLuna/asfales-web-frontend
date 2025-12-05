@@ -152,7 +152,7 @@ const handleLogin = async (provider: "google" | "facebook" | "apple") => {
              className="w-auto h-[15vh] mb-0"
             />
           </div>
-          <Card className="shadow-lg border-none rounded-lg lg:h-[80vh] flex flex-col">
+          <Card className="shadow-lg border-none rounded-lg h-auto flex flex-col">
             <CardContent className="space-y-6 pt-6 overflow-y-auto">
               <div className="text-center space-y-1">
                 <h2 className="text-2xl font-bold">Bienvenido a Asfales</h2>
