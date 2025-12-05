@@ -31,7 +31,7 @@ export default function ProfileSideBar() {
   const isInSpecificSection = pathname?.includes('/profile/') && pathname !== '/profile';
 
 const handleLogout = () => {
-    logout(); // limpia localStorage y setUser(null)
+    logout(); // limpia sessionStorage y setUser(null)
   };
 
     const { user, logout, token } = useAuth();

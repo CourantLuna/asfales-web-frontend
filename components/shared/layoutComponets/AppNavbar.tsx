@@ -45,7 +45,7 @@ export function AppNavbar({ showShawdowBox=false, scrollThreshold = 500 }: AppNa
   const [isScrolled, setIsScrolled] = useState(false);
 
 const handleLogout = () => {
-    logout(); // limpia localStorage y setUser(null)
+    logout(); // limpia sessionStorage y setUser(null)
   };
   
 

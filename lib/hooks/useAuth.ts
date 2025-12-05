@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { AuthUser } from "@/types/User";
 
 /**
- * Lo que guardamos en localStorage
+ * Lo que guardamos en sessionStorage
  */
 interface AuthState {
   token: string | null;
@@ -35,7 +35,7 @@ function isNewPayload(obj: any): obj is { token: string | null; user: AuthUser }
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = sessionStorage.getItem(STORAGE_KEY);
       if (!stored) {
         setUser(null);
         setToken(null);
@@ -79,9 +79,9 @@ function login(payload: LoginPayload) {
     state = { token: null, user: payload ?? null };
   }
 
-  // Guardar en localStorage
+  // Guardar en sessionStorage
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (error) {
   }
   setToken(state.token);
@@ -93,7 +93,7 @@ function login(payload: LoginPayload) {
 
 
   function logout() {
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
     setUser(null);
     setToken(null);
     router.refresh();
