@@ -121,7 +121,7 @@ const onSubmit = async (values: RegisterForm) => {
             className="w-auto h-[15vh] mb-0"
           />
 
-          <Card className="w-full shadow-lg border-none rounded-lg h-[80vh] flex flex-col">
+          <Card className="w-full shadow-lg border-none rounded-lg flex flex-col">
             <CardContent className="pt-6 overflow-y-auto">
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold">Crea tu cuenta</h2>
@@ -265,23 +265,6 @@ const onSubmit = async (values: RegisterForm) => {
                   </Button>
                 </form>
               </Form>
-
-              <Separator className="my-6" />
-
-              <div className="flex items-center gap-4">
-                <Button variant="outline" className="flex-1">
-                  <FcGoogle className="w-5 h-5 mr-2" /> 
-                  <span className="hidden md:inline">Google</span>
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  <FaFacebook className="w-5 h-5 mr-2 text-[#1877F2]" />
-                  <span className="hidden md:inline">Facebook</span>
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  <FaApple className="w-5 h-5 mr-2" />
-                  <span className="hidden md:inline">Apple</span>
-                </Button>
-              </div>
 
               <Separator className="my-6" />
 
