@@ -6,6 +6,8 @@ import PaginationCard from '@/components/shared/PaginationCard';
 import { usePagination } from '@/hooks/usePagination';
 import CustomBusCard, { BusTrip } from './CustomBusCard';
 import { Bus, Clock, MapPin, Users } from 'lucide-react';
+import { TransportTrip } from '../types/transport.types';
+import { da } from 'date-fns/locale';
 
 interface FilterDefaults {
   search?: string;
@@ -28,240 +30,28 @@ interface BusesResultsTemplateProps {
   onClassSelect?: (tripId: string, classType: string) => void;
 }
 
-// Datos simulados de buses
-const mockBusData: BusTrip[] = [
-  {
-    id: 'bus-001',
-    routeCode: 'SDQ-STI-001',
-    operator: {
-      id: 'caribe-tours',
-      name: 'Caribe Tours',
-      logoUrl: '/placeholder-logo.png',
-      rating: 4.5,
-      contact: {
-        phone: '+1-809-221-4422',
-        email: 'info@caribetours.com.do',
-        website: 'www.caribetours.com.do'
-      }
-    },
-    origin: {
-      city: 'Santo Domingo',
-      terminal: 'Terminal Caribe Tours Centro',
-      countryCode: 'DO',
-      departureDateTime: '2025-07-20T08:00:00'
-    },
-    destination: {
-      city: 'Santiago',
-      terminal: 'Terminal Santiago',
-      countryCode: 'DO',
-      arrivalDateTime: '2025-07-20T11:30:00'
-    },
-    durationMinutes: 210,
-    distanceKm: 155,
-    stops: [
-      { city: 'La Vega', terminal: 'Terminal La Vega', arrivalTime: '09:45:00', departureTime: '10:00:00' }
-    ],
-    prices: [
-      { class: 'Económica', price: 450, currency: 'DOP', refundable: false },
-      { class: 'Premium', price: 650, currency: 'DOP', refundable: true, includesMeal: true },
-      { class: 'VIP', price: 850, currency: 'DOP', refundable: true, includesMeal: true, seatSelectionIncluded: true }
-    ],
-    amenities: {
-      wifi: true,
-      usbPorts: true,
-      ac: true,
-      onboardToilet: true,
-      recliningSeats: true,
-      entertainment: true,
-      reading_light: true,
-      gps_tracking: true,
-      emergency_exit: true
-    },
-    policies: {
-      baggage: { includedKg: 20, carryOnKg: 8, extraKgPrice: 50 },
-      cancellation: 'Cancelación gratuita hasta 24h antes',
-      changes: 'Cambios permitidos con cargo de RD$100',
-      minors: 'Menores viajan con descuento del 15%',
-      pets: 'Mascotas pequeñas permitidas en transportadora'
-    },
-    availability: { seatsAvailable: 28, totalCapacity: 45 },
-    images: ['/placeholder.jpg'],
-    ratings: {
-      overall: 4.5,
-      comfort: 4.3,
-      punctuality: 4.7,
-      service: 4.4,
-      cleanliness: 4.6,
-      totalReviews: 234
-    },
-    isDirect: false,
-    recurring: {
-      frequency: 'Diario',
-      nextDates: ['2025-07-21', '2025-07-22', '2025-07-23']
-    },
-    updatedAt: '2025-07-16T10:00:00'
-  },
-  {
-    id: 'bus-002',
-    routeCode: 'SDQ-STI-002',
-    operator: {
-      id: 'metro-bus',
-      name: 'Metro Bus',
-      logoUrl: '/placeholder-logo.png',
-      rating: 4.2,
-      contact: {
-        phone: '+1-809-227-0101',
-        email: 'contacto@metrobus.com.do',
-        website: 'www.metrobus.com.do'
-      }
-    },
-    origin: {
-      city: 'Santo Domingo',
-      terminal: 'Terminal Metro Parque Enriquillo',
-      countryCode: 'DO',
-      departureDateTime: '2025-07-20T14:30:00'
-    },
-    destination: {
-      city: 'Santiago',
-      terminal: 'Terminal Metro Santiago',
-      countryCode: 'DO',
-      arrivalDateTime: '2025-07-20T17:45:00'
-    },
-    durationMinutes: 195,
-    distanceKm: 155,
-    stops: [],
-    prices: [
-      { class: 'Económica', price: 380, currency: 'DOP', refundable: false },
-      { class: 'Premium', price: 580, currency: 'DOP', refundable: true }
-    ],
-    amenities: {
-      wifi: true,
-      usbPorts: true,
-      ac: true,
-      onboardToilet: true,
-      recliningSeats: true,
-      entertainment: false,
-      reading_light: true,
-      gps_tracking: true,
-      emergency_exit: true
-    },
-    policies: {
-      baggage: { includedKg: 15, carryOnKg: 5, extraKgPrice: 75 },
-      cancellation: 'Cancelación con cargo del 10%',
-      changes: 'Cambios permitidos con cargo de RD$150',
-      minors: 'Menores viajan con descuento del 10%'
-    },
-    availability: { seatsAvailable: 15, totalCapacity: 42 },
-    images: ['/placeholder.jpg'],
-    ratings: {
-      overall: 4.2,
-      comfort: 4.0,
-      punctuality: 4.5,
-      service: 4.1,
-      cleanliness: 4.3,
-      totalReviews: 156
-    },
-    isDirect: true,
-    recurring: {
-      frequency: 'Cada 2 horas',
-      nextDates: ['2025-07-20', '2025-07-21', '2025-07-22']
-    },
-    updatedAt: '2025-07-16T09:30:00'
-  },
-  {
-    id: 'bus-003',
-    routeCode: 'SDQ-POP-001',
-    operator: {
-      id: 'expreso-bavaro',
-      name: 'Expreso Bávaro',
-      logoUrl: '/placeholder-logo.png',
-      rating: 4.7,
-      contact: {
-        phone: '+1-809-552-1670',
-        email: 'reservas@expresobavaro.com',
-        website: 'www.expresobavaro.com'
-      }
-    },
-    origin: {
-      city: 'Santo Domingo',
-      terminal: 'Terminal Expreso Bávaro',
-      countryCode: 'DO',
-      departureDateTime: '2025-07-20T09:00:00'
-    },
-    destination: {
-      city: 'Puerto Plata',
-      terminal: 'Terminal Puerto Plata',
-      countryCode: 'DO',
-      arrivalDateTime: '2025-07-20T13:00:00'
-    },
-    durationMinutes: 240,
-    distanceKm: 215,
-    stops: [
-      { city: 'Santiago', terminal: 'Terminal Santiago', arrivalTime: '11:30:00', departureTime: '11:45:00' }
-    ],
-    prices: [
-      { class: 'Premium', price: 750, currency: 'DOP', refundable: true, includesMeal: true },
-      { class: 'VIP', price: 950, currency: 'DOP', refundable: true, includesMeal: true, seatSelectionIncluded: true }
-    ],
-    amenities: {
-      wifi: true,
-      usbPorts: true,
-      ac: true,
-      onboardToilet: true,
-      recliningSeats: true,
-      entertainment: true,
-      reading_light: true,
-      gps_tracking: true,
-      emergency_exit: true
-    },
-    policies: {
-      baggage: { includedKg: 25, carryOnKg: 10, extraKgPrice: 40 },
-      cancellation: 'Cancelación gratuita hasta 12h antes',
-      changes: 'Cambios gratuitos hasta 2h antes',
-      minors: 'Menores viajan con descuento del 20%',
-      pets: 'Mascotas permitidas con cargo adicional'
-    },
-    availability: { seatsAvailable: 8, totalCapacity: 35 },
-    images: ['/placeholder.jpg'],
-    ratings: {
-      overall: 4.7,
-      comfort: 4.8,
-      punctuality: 4.6,
-      service: 4.7,
-      cleanliness: 4.9,
-      totalReviews: 89
-    },
-    isDirect: false,
-    recurring: {
-      frequency: 'Diario',
-      nextDates: ['2025-07-21', '2025-07-22', '2025-07-23']
-    },
-    updatedAt: '2025-07-16T08:45:00'
-  }
-];
-
-// Convertir buses a formato RowData para SearchWithFilters
-const convertBusesToRowData = (buses: BusTrip[]) => {
-  return buses.map(bus => ({
-    id: bus.id,
-    title: `${bus.origin.city} → ${bus.destination.city}`,
-    descMain: bus.operator.name,
-    descSub: `${bus.durationMinutes} min • ${bus.stops.length === 0 ? 'Directo' : `${bus.stops.length} parada${bus.stops.length > 1 ? 's' : ''}`}`,
-    price: bus.prices[0]?.price || 0,
-    currency: bus.prices[0]?.currency || 'DOP',
-    rating: bus.ratings?.overall || 0,
-    reviews: bus.ratings?.totalReviews || 0,
-    availability: bus.availability.seatsAvailable,
-    operator: bus.operator.name,
-    departureTime: bus.origin.departureDateTime,
-    arrivalTime: bus.destination.arrivalDateTime,
-    duration: bus.durationMinutes,
-    stops: bus.stops.length,
-    amenities: Object.values(bus.amenities).filter(Boolean).length,
-    busClass: bus.prices.map(p => p.class).join(', '),
-    busData: bus
-  }));
-};
+// // Convertir buses a formato RowData para SearchWithFilters
+// const convertBusesToRowData = (buses: TransportTrip[]) => {
+//   return buses.map(bus => ({
+//     id: bus.id,
+//     title: `${bus.origin.city} → ${bus.destination.city}`,
+//     descMain: bus.operator.name,
+//     descSub: `${bus.durationMinutes} min • ${bus.stops.length === 0 ? 'Directo' : `${bus.stops.length} parada${bus.stops.length > 1 ? 's' : ''}`}`,
+//     price: bus.prices[0]?.price || 0,
+//     currency: bus.prices[0]?.currency || 'DOP',
+//     rating: bus.ratings?.overall || 0,
+//     reviews: bus.ratings?.totalReviews || 0,
+//     availability: bus.availability.seatsAvailable,
+//     operator: bus.operator.name,
+//     departureTime: bus.origin.departureDateTime,
+//     arrivalTime: bus.destination.arrivalDateTime,
+//     duration: bus.durationMinutes,
+//     stops: bus.stops.length,
+//     amenities: Object.values(bus.amenities).filter(Boolean).length,
+//     busClass: bus.prices.map(p => p.class).join(', '),
+//     busData: bus
+//   }));
+// };
 
 const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
   filterDefaults = {},
@@ -294,8 +84,8 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       icon: <Bus className="h-4 w-4" />,
       type: "custom" as const,
       nameLabelField: "title",
-      nameValueField: "title",
-      nameDescriptionField: "descMain",
+      nameValueField: "id",
+      nameDescriptionField: "operatorName",
       options: rows
     }
   ], [rows]);
@@ -331,11 +121,11 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       id: "priceRange",
       type: "range",
       label: "Rango de precio",
-      min: 300,
+      min: 0,
       max: 1000,
       step: 25,
       currency: "DOP",
-      defaultValue: filterDefaults.priceRange || [300, 1000]
+      defaultValue: filterDefaults.priceRange || [0, 1000]
     },
     { id: "separator-3", type: "separator" },
     {
@@ -375,6 +165,7 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
     { id: "separator-6", type: "separator" },
     {
       id: "amenities",
+      keyname: "amenities",
       type: "checkbox",
       label: "Amenidades",
       showCounts: true,
@@ -405,7 +196,8 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       id: "busClass",
       type: "radio",
       label: "Clase de bus",
-      defaultValue: filterDefaults.busClass || ""
+      defaultValue: filterDefaults.busClass || "",
+      dataSources: dataSourcesBuses
     }
   ], [dataSourcesBuses, filterDefaults]);
 
@@ -470,18 +262,83 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
     { key: 'availability-desc', label: 'Más disponibilidad' }
   ];
 
-  // Simular carga de datos
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      const dataToUse = busData || mockBusData;
-      const convertedData = convertBusesToRowData(dataToUse);
-      setRows(convertedData);
-      setLoading(false);
-    }, 1000);
+useEffect(() => {
+  setLoading(true);
 
-    return () => clearTimeout(timer);
-  }, [busData]);
+  const fetchBusData = async () => {
+    try {
+      const res = await fetch(
+        'https://sheets.googleapis.com/v4/spreadsheets/1qcdbiCekt3GKoaQJGrYbigcL987PNEIklocKq6CuMzA/values/A1:Z?key=AIzaSyDj0h9wnuOB5OyKH4yfgFHB2SG1IKpGrsA'
+      );
+      const data = await res.json();
+
+      // data.values es un array de filas, la primera fila es el header
+      const [header, ...rows] = data.values;
+      console.log("headers: ", header);
+
+      const buses: TransportTrip[] = rows.map((row: any[]) => {
+        const rowObj: Record<string, any> = {};
+        header.forEach((key: string, idx: number) => {
+          rowObj[key] = row[idx];
+        });
+
+
+        return {
+          id: rowObj.id,
+          title: `${rowObj.originCity} → ${rowObj.destinationCity}`,
+          operatorName: rowObj.operatorName,
+          operator: {
+            id: rowObj.operatorId,
+            name: rowObj.operatorName,
+            logoUrl: rowObj.operatorLogoUrl,
+            rating: rowObj.operatorRating ? parseFloat(rowObj.operatorRating) : undefined,
+            contact: {
+              phone: rowObj.operatorPhone,
+              email: rowObj.operatorEmail,
+              website: rowObj.operatorWebsite
+            }
+          },
+          origin: {
+            name: rowObj.originCity,
+            terminal: rowObj.originTerminal,
+            countryCode: rowObj.originCountryCode,
+            dateTime: rowObj.originDepartureDateTime
+          },
+          destination: {
+            name: rowObj.destinationCity,
+            terminal: rowObj.destinationTerminal,
+            countryCode: rowObj.destinationCountryCode,
+            dateTime: rowObj.destinationArrivalDateTime
+          },
+          durationMinutes: rowObj.durationMinutes ? parseInt(rowObj.durationMinutes) : undefined,
+          distanceKm: rowObj.distanceKm ? parseFloat(rowObj.distanceKm) : undefined,
+          isDirect: rowObj.isDirect === 'true',
+          stops: rowObj.stops ? JSON.parse(rowObj.stops) : undefined,
+          prices: rowObj.prices ? JSON.parse(rowObj.prices) : undefined,
+          amenities: rowObj.amenities ? JSON.parse(rowObj.amenities) : undefined,
+          policies: rowObj.policies ? JSON.parse(rowObj.policies) : undefined,
+          availability: rowObj.availability ? JSON.parse(rowObj.availability) : undefined,
+          recurring: rowObj.recurring ? JSON.parse(rowObj.recurring) : undefined,
+          images: rowObj.images ? JSON.parse(rowObj.images) : undefined,
+          ratings: rowObj.ratings ? JSON.parse(rowObj.ratings) : undefined,
+          updatedAt: rowObj.updatedAt
+        };
+      });
+
+      console.log("los buses transformados son: ", buses);
+
+      // const convertedData = convertBusesToRowData(buses);
+      setRows(buses);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching buses from Google Sheets', error);
+      setLoading(false);
+    }
+  };
+
+  fetchBusData();
+}, []);
+
 
   // Handler para click en tarjeta
   const handleCardClick = (idx: number, row: any) => {
@@ -507,7 +364,7 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
             {busesToShow.map((row: any, index: number) => (
               <CustomBusCard
                 key={row.id}
-                busTrip={row.busData}
+                busTrip={row}
                 onClick={() => handleCardClick(index, row)}
                 onClassSelect={onClassSelect}
               />

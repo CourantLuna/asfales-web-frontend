@@ -34,6 +34,7 @@ interface DataSource {
 // Configuración genérica para un filtro
 interface GenericFilterConfig {
   id: string;
+  keyname?: string;
   type: 'checkbox' | 'radio' | 'toggle' | 'range' | 'search' | 'custom' | 'separator';
   label?: string;
   placeholder?: string;
@@ -209,11 +210,63 @@ export default function SearchWithFilters({
     }));
   }, []);
 
+  const applyFilters = () => {
+//  const selectedValues = filterStates['amenities'] || []; // ejemplo
+//  const keyname = "amenities"
+// const filtered = rows.filter(row =>
+//   selectedValues.every((val: any) => row[keyname]?.[val]) // para objeto amenities
+// );
+let filtered = [...rows];
+
+  filters.forEach(filter => {
+    const keyname = filter.keyname; // fallback a id si no hay keyname
+    const selectedValues = filterStates[filter.id];
+    console.log("selectedValues: ", selectedValues, "del filter.id: ", filter.id)
+
+    if (!selectedValues ||!keyname || (Array.isArray(selectedValues) && selectedValues.length === 0)) return;
+
+    if (filter.type === 'checkbox' || filter.type === 'toggle') {
+      // Filtro OR: al menos un valor seleccionado coincide
+      filtered = filtered.filter(row => {
+        if (Array.isArray(row[keyname])) {
+          return selectedValues.some((val: string) => row[keyname].includes(val));
+        } else if (typeof row[keyname] === 'object' && row[keyname] !== null) {
+          return selectedValues.some((val: string) => row[keyname][val]);
+        } else {
+          return false;
+        }
+      });
+    } 
+    // Radio (valor único)
+    else if (filter.type === 'radio') {
+      filtered = filtered.filter(row =>
+        row[keyname] === selectedValues
+      );
+    } 
+    // Range
+    else if (filter.type === 'range' && Array.isArray(selectedValues)) {
+      const [min, max] = selectedValues;
+      filtered = filtered.filter(row =>
+        row[keyname] >= min && row[keyname] <= max
+      );
+    }  
+  });
+
+  setFilteredRows(filtered);
+};
+
+React.useEffect(() => {
+  applyFilters();
+}, [filterStates, rows, filters]);
+
+
+
   // Función helper para remover un valor específico de un filtro múltiple
   const removeFilterValue = useCallback((filterId: string, valueToRemove: string) => {
     setFilterStates(prev => {
       const currentValues = prev[filterId] || [];
       const newValue = currentValues.filter((v: string) => v !== valueToRemove);
+      setFilteredRows(rows);
       return {
         ...prev,
         [filterId]: newValue
@@ -247,6 +300,7 @@ export default function SearchWithFilters({
     filters.forEach(filter => {
       const values = filterStates[filter.id];
       const options = filterOptions[filter.id] || [];
+      console.log("filter options ahora, ", filterStates);
       
       // Chips para checkbox y toggle (múltiples valores)
       if ((filter.type === 'checkbox' || filter.type === 'toggle') && values && Array.isArray(values) && values.length > 0) {
@@ -401,6 +455,7 @@ export default function SearchWithFilters({
       resetFilter(filter.id);
     });
   }, [filters, resetFilter]);
+  
 
   // Configuración de filtros genérica - Memorizada para evitar re-creación innecesaria
   const filtersConfig: FilterConfig[] = useMemo(() => {

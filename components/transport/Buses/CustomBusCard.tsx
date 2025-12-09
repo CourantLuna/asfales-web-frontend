@@ -53,6 +53,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { TransportTrip } from '../types/transport.types';
 
 // Definición de tipos
 export type BusTrip = {
@@ -154,7 +155,7 @@ export type BusTrip = {
 };
 
 export interface CustomBusCardProps {
-  busTrip: BusTrip;
+  busTrip: TransportTrip;
   variant?: 'default' | 'compact' | 'featured';
   showSaveButton?: boolean;
   showShareButton?: boolean;
@@ -208,7 +209,7 @@ const formatDuration = (minutes: number) => {
 };
 
 // Función para obtener precio más barato
-const getCheapestPrice = (prices: BusTrip['prices']) => {
+const getCheapestPrice = (prices: TransportTrip['prices']) => {
   return prices.reduce((cheapest, price) => 
     price.price < cheapest.price ? price : cheapest
   );
@@ -278,7 +279,7 @@ export default function CustomBusCard({
   const [seats] = useState<Seat[]>(generateSeats());
 
   const cheapestPrice = getCheapestPrice(busTrip.prices);
-  const selectedPrice = busTrip.prices.find(p => p.class === selectedClass) || cheapestPrice;
+  const selectedPrice = cheapestPrice;
 
   const handleTabClick = (tabId: TabType) => {
     setExpandedTab(expandedTab === tabId ? null : tabId);
@@ -399,11 +400,11 @@ export default function CustomBusCard({
             <h4 className="font-semibold text-secondary">Terminal de Salida</h4>
           </div>
           <div className="bg-white p-4 rounded-lg border">
-            <p className="font-medium">{busTrip.origin.city}</p>
+            <p className="font-medium">{busTrip.origin.countryCode}</p>
             <p className="text-sm text-gray-600 mb-2">{busTrip.origin.terminal}</p>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
-              <span className="text-lg font-bold">{formatTime(busTrip.origin.departureDateTime)}</span>
+              <span className="text-lg font-bold">{formatTime(busTrip.origin.dateTime)}</span>
             </div>
           </div>
         </div>
@@ -415,18 +416,20 @@ export default function CustomBusCard({
             <h4 className="font-semibold text-primary">Terminal de Llegada</h4>
           </div>
           <div className="bg-white p-4 rounded-lg border">
-            <p className="font-medium">{busTrip.destination.city}</p>
+            <p className="font-medium">{busTrip.destination.countryCode}</p>
             <p className="text-sm text-gray-600 mb-2">{busTrip.destination.terminal}</p>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
-              <span className="text-lg font-bold">{formatTime(busTrip.destination.arrivalDateTime)}</span>
+              <span className="text-lg font-bold">{formatTime(busTrip.destination.dateTime)}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Paradas intermedias si existen */}
-      {busTrip.stops.length > 0 && (
+      {busTrip.stops && 
+      (
+         busTrip.stops.length > 0 && (
         <div className="mt-6">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
             <Route className="w-5 h-5 text-blue-600" />
@@ -436,7 +439,7 @@ export default function CustomBusCard({
             {busTrip.stops.map((stop, index) => (
               <div key={index} className="bg-white p-3 rounded-lg border flex justify-between items-center">
                 <div>
-                  <p className="font-medium">{stop.city}</p>
+                  <p className="font-medium">{stop.name}</p>
                   {stop.terminal && <p className="text-sm text-gray-600">{stop.terminal}</p>}
                 </div>
                 {stop.arrivalTime && (
@@ -446,7 +449,9 @@ export default function CustomBusCard({
             ))}
           </div>
         </div>
+      )
       )}
+     
     </div>
   );
 
@@ -459,7 +464,7 @@ export default function CustomBusCard({
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xl font-bold">{busTrip.ratings.overall.toFixed(1)}</span>
+                  <span className="text-xl font-bold">{busTrip.ratings.overall?.toFixed(1)}</span>
                 </div>
                 <span className="text-gray-600">({busTrip.ratings.totalReviews} reseñas)</span>
               </div>
@@ -467,19 +472,19 @@ export default function CustomBusCard({
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.comfort.toFixed(1)}</div>
+                <div className="text-lg font-semibold">{busTrip.ratings.comfort?.toFixed(1)}</div>
                 <div className="text-sm text-gray-600">Comodidad</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.punctuality.toFixed(1)}</div>
+                <div className="text-lg font-semibold">{busTrip.ratings.punctuality?.toFixed(1)}</div>
                 <div className="text-sm text-gray-600">Puntualidad</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.service.toFixed(1)}</div>
+                <div className="text-lg font-semibold">{busTrip.ratings.service?.toFixed(1)}</div>
                 <div className="text-sm text-gray-600">Servicio</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.cleanliness.toFixed(1)}</div>
+                <div className="text-lg font-semibold">{busTrip.ratings.cleanliness?.toFixed(1)}</div>
                 <div className="text-sm text-gray-600">Limpieza</div>
               </div>
             </div>
@@ -496,6 +501,8 @@ export default function CustomBusCard({
 
   const renderPoliticasTab = () => (
     <div className="p-4 bg-gray-50 border-t">
+                {busTrip.policies && (
+
       <div className="space-y-4">
         {/* Política de Equipaje */}
         <div className="bg-white p-4 rounded-lg border">
@@ -503,13 +510,14 @@ export default function CustomBusCard({
             <Luggage className="w-5 h-5 text-blue-600" />
             Política de equipaje
           </h4>
-          <div className="text-sm text-gray-600 space-y-1">
-            <p>• Equipaje incluido: {busTrip.policies.baggage.includedKg} kg</p>
-            <p>• Equipaje de mano: {busTrip.policies.baggage.carryOnKg} kg</p>
-            {busTrip.policies.baggage.extraKgPrice && (
+            <div className="text-sm text-gray-600 space-y-1">
+            <p>• Equipaje incluido: {busTrip.policies.baggage?.includedKg} kg</p>
+            <p>• Equipaje de mano: {busTrip.policies.baggage?.carryOnKg} kg</p>
+            {busTrip.policies.baggage?.extraKgPrice && (
               <p>• Kg adicional: {formatPrice(busTrip.policies.baggage.extraKgPrice, busTrip.prices[0].currency)}</p>
             )}
           </div>
+          
         </div>
 
         {/* Política de Cancelación */}
@@ -551,6 +559,7 @@ export default function CustomBusCard({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 
@@ -612,8 +621,8 @@ export default function CustomBusCard({
                 <div className="flex items-start gap-3">
                   <div className="w-3 h-3 bg-green-500 rounded-full mt-1"></div>
                   <div className="flex-1">
-                    <div className="font-semibold text-lg">{formatTime(busTrip.origin.departureDateTime)}</div>
-                    <div className="font-medium">{busTrip.origin.city}</div>
+                    <div className="font-semibold text-lg">{formatTime(busTrip.origin.dateTime)}</div>
+                    <div className="font-medium">{busTrip.origin.countryCode}</div>
                     <div className="text-sm text-gray-600">{busTrip.origin.terminal}</div>
                   </div>
                 </div>
@@ -624,8 +633,8 @@ export default function CustomBusCard({
                 <div className="flex items-start gap-3">
                   <div className="w-3 h-3 bg-red-500 rounded-full mt-1"></div>
                   <div className="flex-1">
-                    <div className="font-semibold text-lg">{formatTime(busTrip.destination.arrivalDateTime)}</div>
-                    <div className="font-medium">{busTrip.destination.city}</div>
+                    <div className="font-semibold text-lg">{formatTime(busTrip.destination.dateTime)}</div>
+                    <div className="font-medium">{busTrip.destination.countryCode}</div>
                     <div className="text-sm text-gray-600">{busTrip.destination.terminal}</div>
                   </div>
                 </div>
@@ -654,7 +663,7 @@ export default function CustomBusCard({
                   </div>
                   <div className="flex justify-between text-sm font-semibold border-t pt-2">
                     <span>Monto total</span>
-                    <span>{formatPrice((selectedPrice.price + 1100) * selectedSeatIds.length, selectedPrice.currency)}</span>
+                    <span>{formatPrice((selectedPrice.price) * selectedSeatIds.length, selectedPrice.currency)}</span>
                   </div>
                 </div>
                 {/* <div className="text-xs text-gray-500 mt-2">
@@ -734,7 +743,7 @@ export default function CustomBusCard({
                   {busTrip.operator.rating && (
                     <div className="flex items-center gap-1">
                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      <span className="text-xs text-gray-600">{busTrip.operator.rating}</span>
+                      <span className="text-xs text-gray-600">{busTrip.operator.rating || 4.0}</span>
                     </div>
                   )}
                   <span className="text-xs text-gray-500">Reembolsable</span>
@@ -750,7 +759,7 @@ export default function CustomBusCard({
                 {busTrip.availability.seatsAvailable} sillas disponibles
               </div>
               <div className="text-xs text-gray-500">
-                Cargo {formatPrice(1100, selectedPrice.currency)} / Asiento
+                Cargo {formatPrice(selectedPrice.price, selectedPrice.currency)} / Asiento
               </div>
             </div>
           </div>
@@ -760,14 +769,14 @@ export default function CustomBusCard({
             <div className="flex items-center gap-6">
               {/* Horario de salida */}
               <div>
-                <div className="text-2xl font-bold">{formatTime(busTrip.origin.departureDateTime)}</div>
-                <div className="text-sm text-gray-600">{busTrip.origin.city}</div>
+                <div className="text-2xl font-bold">{formatTime(busTrip.origin.dateTime)}</div>
+                <div className="text-sm text-gray-600">{busTrip.origin.name}</div>
                 <div className="text-xs text-gray-500">{busTrip.origin.terminal}</div>
               </div>
 
               {/* Duración y ruta */}
               <div className="flex-1 text-center">
-                <div className="text-sm text-gray-600 mb-1">{formatDuration(busTrip.durationMinutes)}</div>
+                <div className="text-sm text-gray-600 mb-1">{formatDuration(busTrip?.durationMinutes? busTrip.durationMinutes :0)}</div>
                 <div className="flex items-center justify-center">
                   <div className="flex-1 h-px bg-gray-300"></div>
                   <Bus className="w-4 h-4 text-gray-400 mx-2" />
@@ -775,15 +784,15 @@ export default function CustomBusCard({
                 </div>
                 {!busTrip.isDirect && (
                   <div className="text-xs text-gray-500 mt-1">
-                    {busTrip.stops.length} parada{busTrip.stops.length > 1 ? 's' : ''}
+                    {busTrip.stops?.length} parada {busTrip.stops? busTrip.stops?.length > 1 ? 's' : '' : 0}
                   </div>
                 )}
               </div>
 
               {/* Horario de llegada */}
               <div>
-                <div className="text-2xl font-bold">{formatTime(busTrip.destination.arrivalDateTime)}</div>
-                <div className="text-sm text-gray-600">{busTrip.destination.city}</div>
+                <div className="text-2xl font-bold">{formatTime(busTrip.destination.dateTime)}</div>
+                <div className="text-sm text-gray-600">{busTrip.destination.name}</div>
                 <div className="text-xs text-gray-500">{busTrip.destination.terminal}</div>
               </div>
             </div>
