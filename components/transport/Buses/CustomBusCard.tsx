@@ -7,50 +7,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import SeatMap, { Seat, SeatMapConfig } from '@/components/shared/SeatMap';
 import { 
-  Bus, 
-  Star, 
-  Clock,
-  MapPin,
-  Heart,
-  Share2,
-  Bookmark,
-  Wifi,
-  Utensils,
-  Zap,
-  Wind,
-  Armchair,
-  Monitor,
-  CircleDollarSign,
-  ShieldCheck,
-  ArrowRight,
-  Timer,
-  CheckCircle2,
-  Phone,
-  Mail,
-  Globe,
-  Award,
-  Luggage,
-  Briefcase,
-  AlertCircle,
-  Building2,
-  Crown,
-  Layers,
-  Camera,
-  MessageSquare,
-  Shield,
-  CreditCard,
-  Info,
-  ChevronDown,
-  ChevronUp,
-  MapPinIcon,
-  ClockIcon,
-  X,
-  Check,
-  Users,
-  Navigation,
-  Route,
-  RefreshCw
+  Bus,  Star, Clock, MapPin, Heart, Share2,Bookmark,Wifi, Utensils, Zap, Wind, Armchair, Monitor, CircleDollarSign,
+  ShieldCheck, ArrowRight, Timer, CheckCircle2, Phone, Mail, Globe, Award, Luggage, Briefcase, AlertCircle, Building2,
+  Crown, Layers, Camera, MessageSquare, Shield, CreditCard, Info, ChevronDown, ChevronUp, MapPinIcon, ClockIcon,
+  X,Check, Users, Navigation, Route, RefreshCw,
+  Usb,
+  Lightbulb,
+  DoorOpen,
+  Ticket,
+  Dumbbell,
+  Fish,
+  Baby
 } from 'lucide-react';
+
+
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { TransportTrip } from '../types/transport.types';
@@ -106,7 +76,7 @@ export type BusTrip = {
 
   amenities: {
     wifi: boolean;
-    usbPorts: boolean;
+    usb: boolean;
     ac: boolean;
     onboardToilet: boolean;
     recliningSeats: boolean;
@@ -183,6 +153,38 @@ const tabs: TabConfig[] = [
   { id: 'sillas', label: 'RESERVAR SILLA/S', icon: <Armchair className="w-4 h-4" /> }
 ];
 
+const AMENITIES_MAP: any= {
+  wifi: { icon: Wifi, label: "Wi-Fi" },
+  usb: { icon: Usb, label: "USB" },
+  ac: { icon: Wind, label: "A/C" },
+  onboardToilet: { icon: Building2, label: "Baño" },
+  recliningSeats: { icon: Armchair, label: "Asientos reclinables" },
+  entertainment: { icon: Monitor, label: "Entretenimiento" },
+  readingLight: { icon: Lightbulb, label: "Luz lectura" },
+  reading_light: { icon: Lightbulb, label: "Luz lectura" },
+  gpsTracking: { icon: Navigation, label: "GPS" },
+  gps_tracking: { icon: Navigation, label: "GPS" },
+  emergencyExit: { icon: DoorOpen, label: "Salida emergencia" },
+  emergency_exit: { icon: DoorOpen, label: "Salida emergencia" },
+  pools: { icon: Map, label: "Piscinas" },
+  restaurants: { icon: Ticket, label: "Restaurantes" },
+  gym: { icon: Dumbbell, label: "Gimnasio" },
+  casino: { icon: Fish, label: "Casino" },
+  kidsClub: { icon: Baby, label: "Club niños" },
+  showsIncluded: { icon: Ticket, label: "Shows incluidos" },
+  excursionsIncluded: { icon: Map, label: "Excursiones" },
+};
+
+const RATINGS_MAP = {
+  comfort: "Comodidad",
+  punctuality: "Puntualidad",
+  service: "Servicio",
+  cleanliness: "Limpieza",
+} as const;
+
+type RatingKey = keyof typeof RATINGS_MAP;
+
+
 // Función para formatear tiempo
 const formatTime = (dateString: string) => {
   try {
@@ -245,41 +247,56 @@ export default function CustomBusCard({
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
   
   // Generar asientos una sola vez
-  const generateSeats = (): Seat[] => {
-    const seats: Seat[] = [];
-    const columnLabels = ['A', 'B', 'C', 'D'];
-    const seatMapConfig = {
-      rows: 12,
-      columnsPerRow: 4
-    };
-    
-    for (let row = 1; row <= seatMapConfig.rows; row++) {
-      for (let colIndex = 0; colIndex < 4; colIndex++) {
-        const column = columnLabels[colIndex];
-        const seatNumber = (row - 1) * 4 + colIndex + 1;
-        
-        // Determinar estado del asiento basado en disponibilidad
-        const isAvailable = seatNumber <= busTrip.availability.seatsAvailable + 
-          (busTrip.availability.totalCapacity - busTrip.availability.seatsAvailable - 15);
-        
-        seats.push({
-          id: `${row}${column}`,
-          row,
-          column,
-          status: isAvailable ? 'available' : 'occupied',
-          class: 'economy', // Los buses generalmente tienen una sola clase
-          price: busTrip.prices[0]?.price || 0
-        });
-      }
+const generateSeats = (): Seat[] => {
+  // 1. Si el backend envía seatMap real → úsalo
+  if (busTrip.seatMap && busTrip.seatMap.length > 0) {
+    return busTrip.seatMap.map((s) => ({
+      id: s.id,
+      row: s.row,
+      column: s.column,
+      status: s.status,               // YA viene como 'available' | 'occupied' | 'disabled'
+      class: s.class || "economy",    // fallback
+      price: s.price ? s.price :(busTrip.prices[0]?.price) || 0,
+      features: s.features || []
+    }));
+  }
+
+  // 2. Fallback si no existe seatMap real
+  const seats: Seat[] = [];
+  const columnLabels = ['A', 'B', 'C', 'D'];
+  const totalRows = Math.ceil(busTrip.availability.totalCapacity / 4);
+
+  for (let row = 1; row <= totalRows; row++) {
+    for (let colIndex = 0; colIndex < 4; colIndex++) {
+      const column = columnLabels[colIndex];
+      const seatIndex = (row - 1) * 4 + colIndex + 1;
+
+      seats.push({
+        id: `${row}${column}`,
+        row,
+        column,
+        status: seatIndex <= busTrip.availability.seatsAvailable 
+          ? "available" 
+          : "occupied",
+        class: "economy",
+        price: busTrip.prices[0]?.price || 0,
+        features: []
+      });
     }
-    
-    return seats;
-  };
+  }
+
+  return seats;
+};
+
 
   const [seats] = useState<Seat[]>(generateSeats());
 
   const cheapestPrice = getCheapestPrice(busTrip.prices);
   const selectedPrice = cheapestPrice;
+  const totalPrice = selectedSeatIds
+  .map(id => seats.find(s => s.id === id)?.price ?? 0)
+  .reduce((acc, curr) => acc + curr, 0);
+
 
   const handleTabClick = (tabId: TabType) => {
     setExpandedTab(expandedTab === tabId ? null : tabId);
@@ -310,56 +327,23 @@ export default function CustomBusCard({
 
   const renderServiciosTab = () => (
     <div className="p-4 bg-gray-50 border-t">
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-        {busTrip.amenities.wifi && (
-          <div className="flex flex-col items-center text-center">
-            <Wifi className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Wi-Fi</span>
-          </div>
-        )}
-        {busTrip.amenities.ac && (
-          <div className="flex flex-col items-center text-center">
-            <Wind className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Aire Acondicionado</span>
-          </div>
-        )}
-        {busTrip.amenities.usbPorts && (
-          <div className="flex flex-col items-center text-center">
-            <Zap className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Puerto USB</span>
-          </div>
-        )}
-        {busTrip.amenities.onboardToilet && (
-          <div className="flex flex-col items-center text-center">
-            <Building2 className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Baño a bordo</span>
-          </div>
-        )}
-        {busTrip.amenities.recliningSeats && (
-          <div className="flex flex-col items-center text-center">
-            <Armchair className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Asientos reclinables</span>
-          </div>
-        )}
-        {busTrip.amenities.reading_light && (
-          <div className="flex flex-col items-center text-center">
-            <Award className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Luz de lectura</span>
-          </div>
-        )}
-        {busTrip.amenities.gps_tracking && (
-          <div className="flex flex-col items-center text-center">
-            <Navigation className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Sistema GPS</span>
-          </div>
-        )}
-        {busTrip.amenities.emergency_exit && (
-          <div className="flex flex-col items-center text-center">
-            <ShieldCheck className="w-6 h-6 text-secondary mb-1" />
-            <span className="text-xs text-gray-600">Salida de emergencia</span>
-          </div>
-        )}
-      </div>
+    <div className="flex items-center gap-4 mb-4">
+  {Object.entries(busTrip.amenities)
+    .filter(([key, value]) => value && AMENITIES_MAP[key])
+    .map(([key]) => {
+      const { icon: Icon, label } = AMENITIES_MAP[key];
+      return (
+        <div
+          key={key}
+          className="flex items-center gap-1 text-sm text-gray-600"
+        >
+          <Icon className="w-4 h-4" />
+          <span>{label}</span>
+        </div>
+      );
+    })}
+</div>
+
     </div>
   );
 
@@ -455,49 +439,51 @@ export default function CustomBusCard({
     </div>
   );
 
-  const renderComentariosTab = () => (
-    <div className="p-4 bg-gray-50 border-t">
-      {busTrip.ratings ? (
-        <div>
-          <div className="bg-white p-4 rounded-lg border mb-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xl font-bold">{busTrip.ratings.overall?.toFixed(1)}</span>
-                </div>
-                <span className="text-gray-600">({busTrip.ratings.totalReviews} reseñas)</span>
-              </div>
+const renderComentariosTab = () => (
+  <div className="p-4 bg-gray-50 border-t">
+    {busTrip.ratings ? (
+      <div className="bg-white p-4 rounded-lg border mb-4">
+
+        {/* Score general */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              <span className="text-xl font-bold">
+                {busTrip.ratings.overall?.toFixed(1)}
+              </span>
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.comfort?.toFixed(1)}</div>
-                <div className="text-sm text-gray-600">Comodidad</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.punctuality?.toFixed(1)}</div>
-                <div className="text-sm text-gray-600">Puntualidad</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.service?.toFixed(1)}</div>
-                <div className="text-sm text-gray-600">Servicio</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-semibold">{busTrip.ratings.cleanliness?.toFixed(1)}</div>
-                <div className="text-sm text-gray-600">Limpieza</div>
-              </div>
-            </div>
+            <span className="text-gray-600">
+              ({busTrip.ratings.totalReviews} reseñas)
+            </span>
           </div>
         </div>
-      ) : (
-        <div className="text-center py-8">
-          <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500">La calificación mostrada es la calificación agregada para este operador de bus.</p>
-        </div>
-      )}
+
+        {/* Ratings individuales dinámicos */}
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  {(Object.keys(RATINGS_MAP) as Array<keyof typeof RATINGS_MAP>).map((key) => (
+    <div key={key} className="text-center">
+      <div className="text-lg font-semibold">
+        {busTrip.ratings?.[key]?.toFixed(1)}
+      </div>
+      <div className="text-sm text-gray-600">{RATINGS_MAP[key]}</div>
     </div>
-  );
+  ))}
+</div>
+
+
+      </div>
+    ) : (
+      <div className="text-center py-8">
+        <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+        <p className="text-gray-500">
+          La calificación mostrada es la calificación agregada para este operador de bus.
+        </p>
+      </div>
+    )}
+  </div>
+);
+
 
   const renderPoliticasTab = () => (
     <div className="p-4 bg-gray-50 border-t">
@@ -567,7 +553,7 @@ export default function CustomBusCard({
     // Configuración del mapa de asientos para el bus
     const seatMapConfig: SeatMapConfig = {
       type: 'bus',
-      rows: 12,
+      rows: busTrip.availability.totalCapacity? (busTrip.availability.totalCapacity)/4: 12,
       columnsPerRow: 4,
       orientation: variant === 'compact' ? 'vertical' : 'horizontal',
       seatLayout: {
@@ -575,6 +561,31 @@ export default function CustomBusCard({
         right: 2
       },
     };
+
+    const seatSummary = Object.values(
+  selectedSeatIds.reduce((acc, seatId) => {
+    const seat = seats.find(s => s.id === seatId);
+    if (!seat) return acc;
+
+    const classType = seat.class || "economy";
+    const key = classType;
+
+    if (!acc[key]) {
+      acc[key] = {
+        class: classType,
+        count: 0,
+        price: seat.price ?? 0,
+        subtotal: 0
+      };
+    }
+
+    acc[key].count += 1;
+    acc[key].subtotal += seat.price ?? 0;
+
+    return acc;
+  }, {} as Record<string, { class: string; count: number; price: number; subtotal: number }>)
+);
+
 
     return (
       <div className="p-4 bg-gray-50 ">
@@ -653,23 +664,44 @@ export default function CustomBusCard({
                 </div>
               </div>
 
-              {/* Detalles del precio */}
-              <div className="border-t pt-4 mb-6">
-                <h4 className="font-semibold mb-3">Detalles del precio</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Moneda</span>
-                    <span>{formatPrice(selectedPrice.price * selectedSeatIds.length, selectedPrice.currency)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-semibold border-t pt-2">
-                    <span>Monto total</span>
-                    <span>{formatPrice((selectedPrice.price) * selectedSeatIds.length, selectedPrice.currency)}</span>
-                  </div>
-                </div>
-                {/* <div className="text-xs text-gray-500 mt-2">
-                  Incluye cargo de {formatPrice(1100, selectedPrice.currency)} por asiento
-                </div> */}
-              </div>
+{/* Detalles del precio */}
+<div className="border-t pt-4 mb-6">
+  <h4 className="font-semibold mb-3">Detalles del precio</h4>
+
+  <div className="space-y-2">
+   <div className="mt-4 border rounded-lg overflow-hidden">
+  <table className="w-full text-sm">
+    <thead className="bg-gray-100 border-b">
+      <tr>
+        <th className="py-2 px-3 text-left">Tipo de asiento</th>
+        <th className="py-2 px-3 text-center">Cantidad</th>
+        <th className="py-2 px-3 text-right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {seatSummary.map((item) => (
+        <tr key={item.class} className="border-b">
+          <td className="py-2 px-3 capitalize">{item.class}</td>
+          <td className="py-2 px-3 text-center">{item.count}</td>
+          <td className="py-2 px-3 text-right">
+            {formatPrice(item.subtotal, selectedPrice.currency)}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+
+    <div className="flex justify-between text-sm font-semibold border-t pt-2">
+      <span>Monto total</span>
+      <span>
+  {formatPrice(totalPrice, selectedPrice.currency)}
+      </span>
+    </div>
+  </div>
+</div>
+
 
               {/* Ver detalles link */}
               <div className="text-center mb-4">

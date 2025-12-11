@@ -437,7 +437,7 @@ const sampleBusTrips: BusTrip[] = [
     ],
     amenities: {
       wifi: true,
-      usbPorts: true,
+      usb: true,
       ac: true,
       onboardToilet: true,
       recliningSeats: true,

@@ -60,7 +60,7 @@ title?: string;
   // Amenities comunes
   amenities: {
     wifi?: boolean;
-    usbPorts?: boolean;
+    usb?: boolean;
     ac?: boolean;
     onboardToilet?: boolean;
     recliningSeats?: boolean;
@@ -102,6 +102,17 @@ title?: string;
     remainingCabins?: number;
     capacityCabins?: number;
   };
+
+  //Para vuelos y buses
+  seatMap?: {
+  id: string;
+  row: number;
+  column: string;
+  status: 'available' | 'occupied' | 'selected' | 'disabled';
+  class?: 'economy' | 'premium' | 'business' | 'first';
+  price?: number;
+  features?: string[];
+  }[];
 
   // Recurring
   recurring?: {

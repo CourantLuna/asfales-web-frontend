@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sheet";
 import { usePriceRangeOutputString } from "./standard-fields-component/PriceRangeFilter";
 import { de } from "date-fns/locale";
+import { normalize } from 'path';
 
 interface DataSource {
   id: string;
@@ -210,50 +211,166 @@ export default function SearchWithFilters({
     }));
   }, []);
 
-  const applyFilters = () => {
-//  const selectedValues = filterStates['amenities'] || []; // ejemplo
-//  const keyname = "amenities"
-// const filtered = rows.filter(row =>
-//   selectedValues.every((val: any) => row[keyname]?.[val]) // para objeto amenities
-// );
-let filtered = [...rows];
+
+
+function getByPath(obj: any, path: string) {
+  if (!obj || !path) return undefined;
+
+  // Debug:
+  console.log("[getByPath] SEARCH:", path, "IN:", obj);
+
+  // Si NO hay ".", usar directo row[keyname]
+  if (!path.includes(".")) return obj[path];
+
+  return path.split(".").reduce((acc, key) => {
+    console.log("   reducing:", key, "in:", acc);
+
+    if (acc && typeof acc === "object" && key in acc) {
+      return acc[key];
+    }
+    return undefined;
+  }, obj);
+}
+
+const normalize = (val: string) =>
+  val?
+val
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize("NFD") // separa acentos
+    .replace(/[\u0300-\u036f]/g, ""):
+    null; // elimina acentos
+
+ 
+ const applyFilters = () => {
+  console.log("ROW SAMPLE:", rows[0]);
+
+  const DEBUG = true; // cambia a false para desactivar logs
+  let filtered = [...rows];
+
+  // Para evitar logs enormes, limita filas inspeccionadas por filtro
+  const MAX_ROWS_TO_LOG = 50;
 
   filters.forEach(filter => {
-    const keyname = filter.keyname; // fallback a id si no hay keyname
+    const keyname = filter.keyname; // tu código lo usa así
     const selectedValues = filterStates[filter.id];
-    console.log("selectedValues: ", selectedValues, "del filter.id: ", filter.id)
 
-    if (!selectedValues ||!keyname || (Array.isArray(selectedValues) && selectedValues.length === 0)) return;
+    if (!selectedValues || !keyname || (Array.isArray(selectedValues) && selectedValues.length === 0)) {
+      if (DEBUG) console.log(`[DEBUG] Saltando filtro ${filter.id} (sin selección o keyname).`);
+      return;
+    }
 
-    if (filter.type === 'checkbox' || filter.type === 'toggle') {
-      // Filtro OR: al menos un valor seleccionado coincide
-      filtered = filtered.filter(row => {
-        if (Array.isArray(row[keyname])) {
-          return selectedValues.some((val: string) => row[keyname].includes(val));
-        } else if (typeof row[keyname] === 'object' && row[keyname] !== null) {
-          return selectedValues.some((val: string) => row[keyname][val]);
+    if (DEBUG) {
+      console.groupCollapsed(`[DEBUG] Aplicando filtro: ${filter.id} (keyname: ${keyname}, type: ${filter.type})`);
+      console.log('selectedValues:', selectedValues);
+    }
+
+    // Arrays para diagnóstico
+    let passedCount = 0;
+    let failedCount = 0;
+    const failedExamples: any[] = [];
+    const passedExamples: any[] = [];
+
+    
+
+    // Aplica el filtro conservando tu lógica
+    filtered = filtered.filter((row, rowIndex) => {
+      const rawValue = getByPath(row, keyname);
+      let matches = false;
+
+      if (filter.type === 'checkbox' || filter.type === 'toggle') {
+      if (Array.isArray(rawValue)) {
+  matches = selectedValues.some((val: string) =>
+    rawValue.map(v => normalize(v)).includes(normalize(val))
+  );
+} 
+else if (typeof rawValue === "object" && rawValue !== null) {
+  matches = selectedValues.some((val: string) =>
+    normalize(rawValue[val]) === "true"
+  );
+} 
+else if (typeof rawValue === "string") {
+  matches = selectedValues.some((val: string) =>
+    normalize(rawValue) === normalize(val)
+  );
+} 
+else {
+  matches = false;
+}
+
+      } else if (filter.type === 'radio') {
+        // matches = rawValue === selectedValues;
+       if (Array.isArray(rawValue)) {
+  matches = rawValue.some((v => normalize(v) === normalize(selectedValues))
+  );
+}else{
+  matches = normalize(rawValue) === normalize(selectedValues);
+}
+      } else if (filter.type === "range" && Array.isArray(selectedValues)) {
+  const [min, max] = selectedValues;
+
+  // Forzar conversión segura a número
+  const num = Number(rawValue);
+
+  matches = !isNaN(num) && num >= min && num <= max;
+}
+
+
+      // Diagnostics collection (limit to MAX_ROWS_TO_LOG)
+      if (rowIndex < MAX_ROWS_TO_LOG) {
+        const prettyValue = (() => {
+          try { return typeof rawValue === 'object' ? JSON.stringify(rawValue) : String(rawValue); }
+          catch { return String(rawValue); }
+        })();
+
+        const sample = {
+          rowIndex,
+          id: row.id ?? rowIndex,
+          keyname,
+          rawValue: prettyValue,
+          rawType: rawValue === null ? 'null' : Array.isArray(rawValue) ? 'array' : typeof rawValue,
+          selectedValues,
+          matches
+        };
+
+        if (matches) {
+          passedExamples.push(sample);
         } else {
-          return false;
+          failedExamples.push(sample);
         }
-      });
-    } 
-    // Radio (valor único)
-    else if (filter.type === 'radio') {
-      filtered = filtered.filter(row =>
-        row[keyname] === selectedValues
-      );
-    } 
-    // Range
-    else if (filter.type === 'range' && Array.isArray(selectedValues)) {
-      const [min, max] = selectedValues;
-      filtered = filtered.filter(row =>
-        row[keyname] >= min && row[keyname] <= max
-      );
-    }  
+      }
+
+      if (matches) passedCount++; else failedCount++;
+      return matches;
+    });
+
+    if (DEBUG) {
+      console.log(`Filtro ${filter.id}: passed=${passedCount}, failed=${failedCount}`);
+      if (failedExamples.length) {
+        console.groupCollapsed('Ejemplos no coincidentes (muestra limitada)');
+        failedExamples.slice(0, 8).forEach(e => console.log(e));
+        console.groupEnd();
+      }
+      if (passedExamples.length) {
+        console.groupCollapsed('Ejemplos coincidentes (muestra limitada)');
+        passedExamples.slice(0, 8).forEach(e => console.log(e));
+        console.groupEnd();
+      }
+      console.groupEnd();
+    }
   });
+
+  // Resumen final
+  if (process.env.NODE_ENV !== 'production' && filtered.length >= 0 && DEBUG) {
+    console.log(`[DEBUG] Resultado final: ${filtered.length} filas pasan todos los filtros.`);
+    // muestra hasta 10 ids de ejemplo
+    console.log('Ejemplos ids resultantes:', filtered.slice(0, 10).map(r => r.id ?? r));
+  }
 
   setFilteredRows(filtered);
 };
+
 
 React.useEffect(() => {
   applyFilters();

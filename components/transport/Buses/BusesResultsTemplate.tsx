@@ -8,6 +8,7 @@ import CustomBusCard, { BusTrip } from './CustomBusCard';
 import { Bus, Clock, MapPin, Users } from 'lucide-react';
 import { TransportTrip } from '../types/transport.types';
 import { da } from 'date-fns/locale';
+import SeatMap from '@/components/shared/SeatMap';
 
 interface FilterDefaults {
   search?: string;
@@ -105,29 +106,18 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       searchPlaceholder: "Escribe para buscar buses..."
     },
     { id: "separator-1", type: "separator" },
-    {
-      id: "popularFilters",
-      type: "checkbox",
-      label: "Filtros populares",
-      showCounts: true,
-      maxSelections: 5,
-      initialVisibleCount: 6,
-      showMoreText: "Ver más filtros",
-      showLessText: "Ver menos",
-      defaultValue: filterDefaults.popularFilters || []
-    },
-    { id: "separator-2", type: "separator" },
-    {
-      id: "priceRange",
-      type: "range",
-      label: "Rango de precio",
-      min: 0,
-      max: 1000,
-      step: 25,
-      currency: "DOP",
-      defaultValue: filterDefaults.priceRange || [0, 1000]
-    },
-    { id: "separator-3", type: "separator" },
+    // {
+    //   id: "popularFilters",
+    //   type: "checkbox",
+    //   label: "Filtros populares",
+    //   showCounts: true,
+    //   maxSelections: 5,
+    //   initialVisibleCount: 6,
+    //   showMoreText: "Ver más filtros",
+    //   showLessText: "Ver menos",
+    //   defaultValue: filterDefaults.popularFilters || []
+    // },
+    // { id: "separator-2", type: "separator" },
     {
       id: "operators",
       type: "checkbox",
@@ -137,9 +127,23 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       initialVisibleCount: 5,
       showMoreText: "Ver más operadores",
       showLessText: "Ver menos",
+      keyname: "operator.name",
       defaultValue: filterDefaults.operators || []
     },
     { id: "separator-4", type: "separator" },
+    {
+      id: "priceRange",
+      type: "range",
+      label: "Rango de precio",
+      min: 0,
+      max: 1000,
+      step: 25,
+      currency: "DOP",
+      defaultValue: filterDefaults.priceRange || [0, 1000],
+      keyname: "prices.0.price"
+    },
+    { id: "separator-3", type: "separator" },
+    
     {
       id: "departureTime",
       type: "toggle",
@@ -153,13 +157,15 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       toggleGroupClassName: "gap-3",
       toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
       maxSelections: 4,
-      defaultValue: filterDefaults.departureTime || []
+      defaultValue: filterDefaults.departureTime || [],
+      keyname: "departureTime"
     },
     { id: "separator-5", type: "separator" },
     {
       id: "stops",
       type: "radio",
       label: "Paradas",
+      keyname: "counterStops",
       defaultValue: filterDefaults.stops?.[0] || ""
     },
     { id: "separator-6", type: "separator" },
@@ -189,7 +195,8 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       toggleGroupClassName: "gap-3",
       toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
       maxSelections: 4,
-      defaultValue: filterDefaults.duration || []
+      defaultValue: filterDefaults.duration || [],
+      keyname: "durationTime"
     },
     { id: "separator-8", type: "separator" },
     {
@@ -197,9 +204,44 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       type: "radio",
       label: "Clase de bus",
       defaultValue: filterDefaults.busClass || "",
-      dataSources: dataSourcesBuses
+      keyname: "classesAvailable"
     }
   ], [dataSourcesBuses, filterDefaults]);
+
+
+  const dynamicFilterValues = useMemo(() => {
+  if (!rows || rows.length === 0) {
+    return {
+      operators: [],
+      departureTimes: []
+    };
+  }
+
+  // Operadores únicos
+  const operatorsMap: Record<string, number> = {};
+
+
+  rows.forEach(bus => {
+    // OPERADORES
+    const op = bus.operator?.name;
+    if (op) {
+      operatorsMap[op] = (operatorsMap[op] ?? 0) + 1;
+    }
+
+    
+  });
+
+  return {
+    operators: Object.entries(operatorsMap).map(([op, count]) => ({
+      value: op,
+      label: op,
+      count
+    }))
+
+   
+  };
+}, [rows]);
+
 
   // Opciones de filtros
   const filterOptions: { [filterId: string]: GenericFilterOption[] } = useMemo(() => ({
@@ -211,19 +253,14 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       { value: 'reembolsable', label: 'Reembolsable', count: 9 },
       { value: 'comida', label: 'Comida incluida', count: 4 }
     ],
-    operators: [
-      { value: 'caribe-tours', label: 'Caribe Tours', count: 8 },
-      { value: 'metro-bus', label: 'Metro Bus', count: 6 },
-      { value: 'expreso-bavaro', label: 'Expreso Bávaro', count: 4 },
-      { value: 'bavaro-express', label: 'Bávaro Express', count: 3 },
-      { value: 'transporte-del-cibao', label: 'Transporte del Cibao', count: 5 }
-    ],
+   operators: dynamicFilterValues.operators,
     departureTime: [
-      { value: 'madrugada', label: '00:00 - 06:00', icon: <Clock className="w-4 h-4" /> },
-      { value: 'mañana', label: '06:00 - 12:00', icon: <Clock className="w-4 h-4" /> },
-      { value: 'tarde', label: '12:00 - 18:00', icon: <Clock className="w-4 h-4" /> },
-      { value: 'noche', label: '18:00 - 00:00', icon: <Clock className="w-4 h-4" /> }
-    ],
+  { value: 'madrugada', label: '00:00 - 06:00', icon: <Clock className="w-4 h-4" /> },
+  { value: 'mañana', label: '06:00 - 12:00', icon: <Clock className="w-4 h-4" /> },
+  { value: 'tarde', label: '12:00 - 18:00', icon: <Clock className="w-4 h-4" /> },
+  { value: 'noche', label: '18:00 - 00:00', icon: <Clock className="w-4 h-4" /> }
+],
+
     stops: [
       { value: 'directo', label: 'Directo (sin paradas)', count: 8 },
       { value: '1-parada', label: '1 parada', count: 12 },
@@ -246,11 +283,11 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       { value: 'muy-largo', label: 'Más de 8h', icon: <Clock className="w-4 h-4" /> }
     ],
     busClass: [
-      { value: 'economica', label: 'Económica', count: 15 },
-      { value: 'premium', label: 'Premium', count: 8 },
-      { value: 'vip', label: 'VIP', count: 4 }
+      { value: 'Económica', label: 'Económica', count: 15 },
+      { value: 'Premium', label: 'Premium', count: 8 },
+      { value: 'vip', label: 'VIP', count: 4 },
     ]
-  }), []);
+  }), [dynamicFilterValues]);
 
   // Opciones de ordenamiento
   const sortOptions = [
@@ -282,11 +319,16 @@ useEffect(() => {
           rowObj[key] = row[idx];
         });
 
-
+        const pricesArray = rowObj.prices ? JSON.parse(rowObj.prices) : [];
+        const classesAvailable = [...new Set(
+                      pricesArray
+                        .map((p: any) => p.class)
+                        .filter((c: any) => !!c) // elimina null o undefined
+                    )];
         return {
           id: rowObj.id,
           title: `${rowObj.originCity} → ${rowObj.destinationCity}`,
-          operatorName: rowObj.operatorName,
+         operatorName: rowObj.operatorName,
           operator: {
             id: rowObj.operatorId,
             name: rowObj.operatorName,
@@ -298,6 +340,8 @@ useEffect(() => {
               website: rowObj.operatorWebsite
             }
           },
+          departureTime: rowObj.originDepartureDateTime? translateTime(rowObj.originDepartureDateTime) : '',
+          durationTime: rowObj.durationMinutes ? translateDuration(parseInt(rowObj.durationMinutes)) : 0,
           origin: {
             name: rowObj.originCity,
             terminal: rowObj.originTerminal,
@@ -314,8 +358,11 @@ useEffect(() => {
           distanceKm: rowObj.distanceKm ? parseFloat(rowObj.distanceKm) : undefined,
           isDirect: rowObj.isDirect === 'true',
           stops: rowObj.stops ? JSON.parse(rowObj.stops) : undefined,
+          counterStops: rowObj.stops ? translateStopsFilter(JSON.parse(rowObj.stops).length) : 0,
           prices: rowObj.prices ? JSON.parse(rowObj.prices) : undefined,
+          classesAvailable : classesAvailable,
           amenities: rowObj.amenities ? JSON.parse(rowObj.amenities) : undefined,
+          seatMap: rowObj.seatMap ?  JSON.parse(rowObj.seatMap) : undefined,
           policies: rowObj.policies ? JSON.parse(rowObj.policies) : undefined,
           availability: rowObj.availability ? JSON.parse(rowObj.availability) : undefined,
           recurring: rowObj.recurring ? JSON.parse(rowObj.recurring) : undefined,
@@ -426,3 +473,44 @@ useEffect(() => {
 };
 
 export default BusesResultsTemplate;
+
+function translateTime(datetime: string) {
+  if (!datetime) return "";
+
+  // Convertir la fecha ISO en objeto Date
+  const dateObj = new Date(datetime);
+
+  // Obtener la hora en formato 0–23
+  const hour = dateObj.getHours();
+
+  if (hour >= 6 && hour < 12) return "mañana";
+  if (hour >= 12 && hour < 18) return "tarde";
+  if (hour >= 18 && hour <= 23) return "noche";
+  if (hour >= 0 && hour < 6) return "madrugada";
+
+  return "";
+}
+
+function translateDuration(durationMinutes: number): string {
+  if (durationMinutes < 180) {
+    return "corto"; // Menos de 3 horas
+  } else if (durationMinutes >= 180 && durationMinutes < 300) {
+    return "medio"; // 3 a 5 horas
+  } else if (durationMinutes >= 300 && durationMinutes < 480) {
+    return "largo"; // 5 a 8 horas
+  } else if (durationMinutes >= 480) {
+    return "muy-largo"; // Más de 8 horas
+  }
+  return "";
+}
+function translateStopsFilter(stopsLength: number): string {
+  if (stopsLength === 0) {
+    return "directo";
+  } else if (stopsLength === 1) {
+    return "1-parada";
+  } else {
+    return "2-paradas";
+  }
+}
+
+
