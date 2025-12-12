@@ -1,8 +1,8 @@
-export type TransportTrip = {
+export interface TransportTrip {
   id: string;
-title?: string;
+  title?: string;
 
-  // Operador común para todos
+  // Operador
   operator: {
     id: string;
     name: string;
@@ -15,39 +15,45 @@ title?: string;
     };
   };
 
-  // Origen y destino genéricos
+  // Relación opcional con rutas
+  routeId?: string;
+
+  // Origen / destino usan TransportStop
   origin: {
-    name: string; // ciudad, puerto o aeropuerto
-    terminal?: string; // opcional
-    countryCode?: string;
+    stop: TransportStop;
     dateTime: string; // ISO
   };
 
   destination: {
-    name: string; // ciudad, puerto o aeropuerto
-    terminal?: string;
-    countryCode?: string;
+    stop: TransportStop;
     dateTime: string; // ISO
   };
 
-  // Duración
-  durationMinutes?: number; // bus/flight
-  durationNights?: number;  // cruise
-  distanceKm?: number;      // bus
-  isDirect?: boolean;
-  isRoundTrip?: boolean;
-
-  // Stops opcionales
+  // Paradas intermedias completas
   stops?: {
-    name: string;
-    terminal?: string;
+    stop: TransportStop;
     arrivalTime?: string;
     departureTime?: string;
   }[];
 
-  // Precios/cabins
+  // Duración
+  durationMinutes?: number;
+  durationNights?: number; // Para cruceros
+  distanceKm?: number;
+  isDirect?: boolean;
+  isRoundTrip?: boolean;
+
+  // Precios / Cabinas
   prices: {
-    class?: 'Económica' | 'Premium' | 'VIP' | 'Interior' | 'Exterior' | 'Balcón' | 'Suite';
+    class?: 
+      | 'Económica'
+      | 'Premium'
+      | 'VIP'
+      | 'Interior'
+      | 'Exterior'
+      | 'Balcón'
+      | 'Suite';
+
     price: number;
     currency: 'USD' | 'EUR' | 'DOP' | 'COP';
     refundable: boolean;
@@ -56,6 +62,9 @@ title?: string;
     inclusions?: string[];
     perks?: string[];
   }[];
+
+  // Nuevo campo auto-generado para filtros de clase
+  classesAvailable?: string[];
 
   // Amenities comunes
   amenities: {
@@ -68,6 +77,9 @@ title?: string;
     readingLight?: boolean;
     gpsTracking?: boolean;
     emergencyExit?: boolean;
+    gps_tracking?: boolean;
+
+    // Crucero
     pools?: number;
     restaurants?: number;
     gym?: boolean;
@@ -75,9 +87,6 @@ title?: string;
     kidsClub?: boolean;
     showsIncluded?: boolean;
     excursionsIncluded?: boolean;
-    reading_light?: boolean,
-    gps_tracking?: boolean,
-    emergency_exit?: boolean,
   };
 
   // Políticas generales
@@ -99,28 +108,30 @@ title?: string;
   availability: {
     seatsAvailable: number;
     totalCapacity: number;
+
+    // Solo crucero
     remainingCabins?: number;
     capacityCabins?: number;
   };
 
-  //Para vuelos y buses
+  // Seat map (vuelos + buses)
   seatMap?: {
-  id: string;
-  row: number;
-  column: string;
-  status: 'available' | 'occupied' | 'selected' | 'disabled';
-  class?: 'economy' | 'premium' | 'business' | 'first';
-  price?: number;
-  features?: string[];
+    id: string;
+    row: number;
+    column: string;
+    status: 'available' | 'occupied' | 'selected' | 'disabled';
+    class?: 'economy' | 'premium' | 'business' | 'first';
+    price?: number;
+    features?: string[];
   }[];
 
-  // Recurring
+  // Programación recurrente
   recurring?: {
     frequency: string;
     nextDates: string[];
   };
 
-  // Ship info opcional (solo cruise)
+  // Información de crucero opcional
   ship?: {
     name: string;
     model?: string;
@@ -130,10 +141,10 @@ title?: string;
     shipImageUrl?: string;
   };
 
-  // Images / media
+  // Imágenes
   images?: string[];
 
-  // Ratings opcionales
+  // Ratings detallados
   ratings?: {
     overall?: number;
     comfort?: number;
@@ -144,4 +155,35 @@ title?: string;
   };
 
   updatedAt: string;
-};
+}
+
+
+export interface TransportStop {
+  stopId: string;         // ID único global
+  stopCode: string;       // Código estilo aeropuerto (DOM-NOR, SDQ-TER, BCN-NOR)
+  stopName: string;       // Nombre del terminal
+  city: string;
+  countryCode: string;
+  latitude?: number;
+  longitude?: number;
+  isMajorHub?: boolean;
+}
+
+export interface TransportRoute {
+  routeId: string;
+  operatorId: string;
+
+  stops: {
+    stop: TransportStop;
+    arrivalTime?: string;      // usado para buses y cruceros
+    departureTime?: string;
+  }[];
+
+  totalDistanceKm?: number;
+  typicalDurationMinutes?: number;
+}
+
+
+
+
+

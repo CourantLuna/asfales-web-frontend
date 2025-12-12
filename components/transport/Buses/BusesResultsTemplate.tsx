@@ -6,9 +6,10 @@ import PaginationCard from '@/components/shared/PaginationCard';
 import { usePagination } from '@/hooks/usePagination';
 import CustomBusCard, { BusTrip } from './CustomBusCard';
 import { Bus, Clock, MapPin, Users } from 'lucide-react';
-import { TransportTrip } from '../types/transport.types';
-import { da } from 'date-fns/locale';
+import { TransportStop, TransportTrip } from '../types/transport.types';
+import { da, id } from 'date-fns/locale';
 import SeatMap from '@/components/shared/SeatMap';
+import { useSearchParams } from 'next/navigation';
 
 interface FilterDefaults {
   search?: string;
@@ -20,6 +21,7 @@ interface FilterDefaults {
   amenities?: string[];
   duration?: string[];
   busClass?: string;
+  operatorRating?: string;
 }
 
 interface BusesResultsTemplateProps {
@@ -62,7 +64,8 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
   busData,
   onClassSelect
 }) => {
-  const [rows, setRows] = useState<any[]>([]);
+const [rows, setRows] = useState<any[]>([]); // datos originales
+
   const [loading, setLoading] = useState(true);
 
   // Hook de paginación
@@ -86,7 +89,7 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       type: "custom" as const,
       nameLabelField: "title",
       nameValueField: "id",
-      nameDescriptionField: "operatorName",
+      nameDescriptionField: "descSub",
       options: rows
     }
   ], [rows]);
@@ -205,6 +208,14 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       label: "Clase de bus",
       defaultValue: filterDefaults.busClass || "",
       keyname: "classesAvailable"
+    },
+    { id: "separator-9", type: "separator" },
+    {
+      id: "operatorRating",
+      type: "checkbox",
+      label: "Calificación del operador",
+      defaultValue: filterDefaults.operatorRating || "",
+      keyname: "operatorRatingLabel"
     }
   ], [dataSourcesBuses, filterDefaults]);
 
@@ -286,8 +297,17 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
       { value: 'Económica', label: 'Económica', count: 15 },
       { value: 'Premium', label: 'Premium', count: 8 },
       { value: 'vip', label: 'VIP', count: 4 },
+    ],
+    operatorRating: [
+      { value: "excelente", label: 'Excelente +4.5', count: 15 },
+      { value: 'muy bueno', label: 'Muy bueno +4', count: 8 },
+      { value: 'bueno', label: 'Bueno +3', count: 4 },
+      { value: 'regular', label: 'Regular +2', count: 4 },
+      { value: 'basico', label: 'Básico', count: 4 },
+
     ]
   }), [dynamicFilterValues]);
+
 
   // Opciones de ordenamiento
   const sortOptions = [
@@ -299,19 +319,33 @@ const BusesResultsTemplate: React.FC<BusesResultsTemplateProps> = ({
     { key: 'availability-desc', label: 'Más disponibilidad' }
   ];
 
+const searchParams = useSearchParams();
+
+const params = {
+  from: searchParams.get("from"),
+  to: searchParams.get("to"),
+  departureDate: searchParams.get("departureDate"),
+  returnDate: searchParams.get("returnDate"),
+  adults: searchParams.get("adults"),
+  showresults: searchParams.get("showresults"),
+  transportType: searchParams.get("transportType"),
+};
 useEffect(() => {
   setLoading(true);
+
+  const safeParse = (val: any) => {
+    if (!val) return null;
+    try { return JSON.parse(val); } catch { return null; }
+  };
 
   const fetchBusData = async () => {
     try {
       const res = await fetch(
-        'https://sheets.googleapis.com/v4/spreadsheets/1qcdbiCekt3GKoaQJGrYbigcL987PNEIklocKq6CuMzA/values/A1:Z?key=AIzaSyDj0h9wnuOB5OyKH4yfgFHB2SG1IKpGrsA'
+        "https://sheets.googleapis.com/v4/spreadsheets/1qcdbiCekt3GKoaQJGrYbigcL987PNEIklocKq6CuMzA/values/BusProviders!A1:Z?key=AIzaSyDj0h9wnuOB5OyKH4yfgFHB2SG1IKpGrsA"
       );
-      const data = await res.json();
 
-      // data.values es un array de filas, la primera fila es el header
+      const data = await res.json();
       const [header, ...rows] = data.values;
-      console.log("headers: ", header);
 
       const buses: TransportTrip[] = rows.map((row: any[]) => {
         const rowObj: Record<string, any> = {};
@@ -319,16 +353,46 @@ useEffect(() => {
           rowObj[key] = row[idx];
         });
 
-        const pricesArray = rowObj.prices ? JSON.parse(rowObj.prices) : [];
-        const classesAvailable = [...new Set(
-                      pricesArray
-                        .map((p: any) => p.class)
-                        .filter((c: any) => !!c) // elimina null o undefined
-                    )];
+        // Parseo seguro
+        const stopsArray = safeParse(rowObj.stops) || [];
+        const pricesArray = safeParse(rowObj.prices) || [];
+        const amenitiesObj = safeParse(rowObj.amenities) || {};
+        const seatMap = safeParse(rowObj.seatMap) || [];
+        const availability = safeParse(rowObj.availability) || {};
+        const policies = safeParse(rowObj.policies) || {};
+        const recurring = safeParse(rowObj.recurring) || {};
+        const images = safeParse(rowObj.images) || [];
+        const ratings = safeParse(rowObj.ratings) || {};
+
+        // Clases
+        const classesAvailable = [
+          ...new Set(pricesArray.map((p: any) => p.class).filter(Boolean))
+        ];
+
+        // Amenities list para filtros
+        const amenitiesList = Object.entries(amenitiesObj)
+          .filter(([k, v]) => v === true)
+          .map(([k]) => k);
+
+        // Derived fields
+        const counterStops = translateStopsFilter(stopsArray.length);
+        const departureTime = translateTime(rowObj.originDepartureDateTime);
+        const durationTime = translateDuration(parseInt(rowObj.durationMinutes || "0"));
+        const priceMin = pricesArray.length
+          ? Math.min(...pricesArray.map((p: any) => p.price))
+          : 0;
+
+        // Origin & destination stops
+        const originStop = safeParse(rowObj.origin) || { stopCode: '', city: '', stopName: '' };
+        const destinationStop = safeParse(rowObj.destination) || { stopCode: '', city: '', stopName: '' };
+
+
+      
+
         return {
           id: rowObj.id,
-          title: `${rowObj.originCity} → ${rowObj.destinationCity}`,
-         operatorName: rowObj.operatorName,
+          title: `${originStop?.city} → ${destinationStop.city}`,
+          descSub: `${rowObj.operatorName} • ${rowObj.durationMinutes/60} h • ${stopsArray.length === 0 ? 'Directo' : `${stopsArray.length} parada${stopsArray.length > 1 ? 's' : ''}`}`,
           operator: {
             id: rowObj.operatorId,
             name: rowObj.operatorName,
@@ -337,54 +401,105 @@ useEffect(() => {
             contact: {
               phone: rowObj.operatorPhone,
               email: rowObj.operatorEmail,
-              website: rowObj.operatorWebsite
-            }
+              website: rowObj.operatorWebsite,
+            },
           },
-          departureTime: rowObj.originDepartureDateTime? translateTime(rowObj.originDepartureDateTime) : '',
-          durationTime: rowObj.durationMinutes ? translateDuration(parseInt(rowObj.durationMinutes)) : 0,
-          origin: {
-            name: rowObj.originCity,
-            terminal: rowObj.originTerminal,
-            countryCode: rowObj.originCountryCode,
-            dateTime: rowObj.originDepartureDateTime
-          },
-          destination: {
-            name: rowObj.destinationCity,
-            terminal: rowObj.destinationTerminal,
-            countryCode: rowObj.destinationCountryCode,
-            dateTime: rowObj.destinationArrivalDateTime
-          },
+          operatorRatingLabel: translateRatingLabel(rowObj.operatorRating),
+
+          routeId: rowObj.routeCode || undefined,
+
+          /** ESTA ES LA PARTE IMPORTANTE — ANIDADOS */
+  origin: {
+    stop: originStop || null,
+    dateTime: rowObj.dateTime_origin,
+  },
+
+  destination: {
+    stop: destinationStop || null,
+    dateTime: rowObj.dateTime_destination,
+  },
+          stops: stopsArray,
           durationMinutes: rowObj.durationMinutes ? parseInt(rowObj.durationMinutes) : undefined,
           distanceKm: rowObj.distanceKm ? parseFloat(rowObj.distanceKm) : undefined,
-          isDirect: rowObj.isDirect === 'true',
-          stops: rowObj.stops ? JSON.parse(rowObj.stops) : undefined,
-          counterStops: rowObj.stops ? translateStopsFilter(JSON.parse(rowObj.stops).length) : 0,
-          prices: rowObj.prices ? JSON.parse(rowObj.prices) : undefined,
-          classesAvailable : classesAvailable,
-          amenities: rowObj.amenities ? JSON.parse(rowObj.amenities) : undefined,
-          seatMap: rowObj.seatMap ?  JSON.parse(rowObj.seatMap) : undefined,
-          policies: rowObj.policies ? JSON.parse(rowObj.policies) : undefined,
-          availability: rowObj.availability ? JSON.parse(rowObj.availability) : undefined,
-          recurring: rowObj.recurring ? JSON.parse(rowObj.recurring) : undefined,
-          images: rowObj.images ? JSON.parse(rowObj.images) : undefined,
-          ratings: rowObj.ratings ? JSON.parse(rowObj.ratings) : undefined,
-          updatedAt: rowObj.updatedAt
+          isDirect: rowObj.isDirect === "true" || rowObj.isDirect === "TRUE",
+
+          prices: pricesArray,
+          classesAvailable,
+
+          amenities: amenitiesObj,
+          amenitiesList,
+
+          seatMap,
+          availability,
+          policies,
+          recurring,
+          images,
+          ratings,
+
+          // Derived fields for filters
+          counterStops,
+          departureTime,
+          durationTime,
+          priceMin,
+          departureDateTime: rowObj.originDepartureDateTime,
+          arrivalDateTime: rowObj.destinationArrivalDateTime,
+
+          updatedAt: rowObj.updatedAt,
         };
       });
 
-      console.log("los buses transformados son: ", buses);
-
-      // const convertedData = convertBusesToRowData(buses);
       setRows(buses);
+      console.log("✅ Bus data loaded:", buses);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching buses from Google Sheets', error);
+      console.error("Error fetching buses", error);
       setLoading(false);
     }
   };
 
   fetchBusData();
+      console.log("Buses to show:", SearchResultRows);
+
 }, []);
+
+const SearchResultRows = useMemo(() => {
+  if (!rows || rows.length === 0) return [];
+
+  let filtered = [...rows];
+
+  if (params.from) {
+    filtered = filtered.filter(r => r.origin?.stop?.stopCode === params.from);
+  }
+
+  if (params.to) {
+    filtered = filtered.filter(r => r.destination?.stop?.stopCode === params.to);
+  }
+
+  if (params.departureDate) {
+    filtered = filtered.filter(r => r.origin?.dateTime?.slice(0, 10) === params.departureDate);
+  }
+
+  if (params.returnDate) {
+    const returnFlights = rows.filter(r =>
+      r.origin?.stop?.stopCode === params.to &&
+      r.destination?.stop?.stopCode === params.from &&
+      r.origin?.dateTime?.slice(0, 10) === params.returnDate
+    );
+    filtered = [...filtered, ...returnFlights];
+  }
+
+  // Solo rutas con asientos
+  filtered = filtered.filter(r => Number(r.availability?.seatsAvailable) > 0);
+
+  // // Si el filtrado queda vacío, mostrar todos los buses
+  // if (filtered.length === 0) {
+  //   return rows;
+  // }
+
+  return filtered;
+}, [rows, params]);
+
+
 
 
   // Handler para click en tarjeta
@@ -396,7 +511,6 @@ useEffect(() => {
   // Renderizar resultados de buses
   const renderBusResults = ({ filteredRows, compareMode, onCardClick }: any) => {
     const busesToShow = filteredRows.slice(0, visibleBuses);
-    
     return (
       <div className="space-y-4">
         {loading ? (
@@ -453,7 +567,7 @@ useEffect(() => {
     <Suspense fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}>
       <div className={className}>
       <SearchWithFilters
-        rows={rows}
+        rows={SearchResultRows? SearchResultRows : rows}
         filters={filtersConfig}
         filterOptions={filterOptions}
         sortOptions={sortOptions}
@@ -511,6 +625,16 @@ function translateStopsFilter(stopsLength: number): string {
   } else {
     return "2-paradas";
   }
+}
+
+function translateRatingLabel(rating: string | number | undefined): string {
+  if (!rating) return "";
+  const ratingNum = typeof rating === "string" ? parseFloat(rating) : rating;
+  if (ratingNum >= 4.5) return "excelente";
+  if (ratingNum >= 4) return "muy bueno";
+  if (ratingNum >= 3) return "bueno";
+  if (ratingNum >= 2) return "regular";
+  return "basico";
 }
 
 

@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import { ButtonGroup } from "@/components/ui/button-group"
+
+
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SearchFieldsWithSwap } from '@/components/shared/SearchFieldsWithSwap';
 import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { PassengerSelector, type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Bus } from 'lucide-react';
-import { getTransportDataSources, defaultPassengers } from '@/lib/data/mock-datavf';
+import { Search, MapPin, Bus, X } from 'lucide-react';
+import { defaultPassengers } from '@/lib/data/mock-datavf';
+import { getBusesDataSources } from '../Data/BusesMockData';
 
 interface BusesSearchBarProps {
   /**
@@ -48,7 +52,23 @@ export default function BusesSearchBar(
   const [passengers, setPassengers] = useState<PassengerGroup>(defaultPassengers);
 
   // Obtener fuentes de datos para buses
-  const BUS_DATA_SOURCES = searchDataSources || getTransportDataSources('bus');
+  // const BUS_DATA_SOURCES = searchDataSources || getBusesDataSources();
+
+
+  const [dataSources, setDataSources] = useState<StandardSearchDataSource[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+      if (searchDataSources) {
+        setDataSources(searchDataSources);
+        return;
+      }
+      const sources = await getBusesDataSources();
+      setDataSources(sources);
+    }
+    loadData();
+  }, []);
+
 
   // Usar props sincronizados o estado local
   const currentOrigin = travelingFrom !== undefined ? travelingFrom : localOrigin;
@@ -164,6 +184,19 @@ export default function BusesSearchBar(
     router.push(finalUrl);
   };
 
+  // Función para resetear el buscador
+const handleReset = () => {
+  // Limpiar campos
+  handleOriginChange('');
+  handleDestinationChange('');
+  setDates({});
+  setPassengers(defaultPassengers);
+
+  // Limpiar URL (opcional)
+  router.push(pathname);
+};
+
+
   return (
       <Suspense
                     fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
@@ -182,7 +215,7 @@ export default function BusesSearchBar(
               destinationPlaceholder="Destino"
               destinationValue={currentDestination}
               onDestinationValueChange={handleDestinationChange}
-              dataSources={BUS_DATA_SOURCES}
+              dataSources={dataSources}
               onSwap={handleSwap}
               showSearchButton={false}
               containerClassName="-mr-4"
@@ -209,18 +242,30 @@ export default function BusesSearchBar(
           />
         </div>
 
-        {/* Search Button */}
-        {showSearchButton && (
-          <div className="flex justify-end">
-            <Button
-              onClick={handleSearch}
-              className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Buscar autobuses
-            </Button>
-          </div>
-        )}
+        {/* Search Button y Reset Button */}
+{showSearchButton && (
+  <ButtonGroup className="justify-end w-full md:w-auto">
+    {/* Botón de reset con icono X */}
+    <Button
+      onClick={handleReset}
+      variant="secondary"
+      aria-label="Reiniciar búsqueda"
+      className='w-auto'
+    >
+      <X className="w-4 h-4" />
+    </Button>
+
+    {/* Botón de búsqueda */}
+    <Button
+      onClick={handleSearch}
+      className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 w-full md:w-auto"
+    >
+      <Search className="w-4 h-4" />
+      Buscar autobuses
+    </Button>
+  </ButtonGroup>
+)}
+
       </div>
     </div>
     </Suspense>

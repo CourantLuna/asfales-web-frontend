@@ -217,13 +217,13 @@ function getByPath(obj: any, path: string) {
   if (!obj || !path) return undefined;
 
   // Debug:
-  console.log("[getByPath] SEARCH:", path, "IN:", obj);
+  // console.log("[getByPath] SEARCH:", path, "IN:", obj);
 
   // Si NO hay ".", usar directo row[keyname]
   if (!path.includes(".")) return obj[path];
 
   return path.split(".").reduce((acc, key) => {
-    console.log("   reducing:", key, "in:", acc);
+    // console.log("   reducing:", key, "in:", acc);
 
     if (acc && typeof acc === "object" && key in acc) {
       return acc[key];
@@ -246,7 +246,7 @@ val
  const applyFilters = () => {
   console.log("ROW SAMPLE:", rows[0]);
 
-  const DEBUG = true; // cambia a false para desactivar logs
+  const DEBUG = false; // cambia a false para desactivar logs
   let filtered = [...rows];
 
   // Para evitar logs enormes, limita filas inspeccionadas por filtro
@@ -417,7 +417,7 @@ React.useEffect(() => {
     filters.forEach(filter => {
       const values = filterStates[filter.id];
       const options = filterOptions[filter.id] || [];
-      console.log("filter options ahora, ", filterStates);
+      // console.log("filter options ahora, ", filterStates);
       
       // Chips para checkbox y toggle (múltiples valores)
       if ((filter.type === 'checkbox' || filter.type === 'toggle') && values && Array.isArray(values) && values.length > 0) {

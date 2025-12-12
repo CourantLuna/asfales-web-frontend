@@ -162,7 +162,6 @@ const AMENITIES_MAP: any= {
   entertainment: { icon: Monitor, label: "Entretenimiento" },
   readingLight: { icon: Lightbulb, label: "Luz lectura" },
   reading_light: { icon: Lightbulb, label: "Luz lectura" },
-  gpsTracking: { icon: Navigation, label: "GPS" },
   gps_tracking: { icon: Navigation, label: "GPS" },
   emergencyExit: { icon: DoorOpen, label: "Salida emergencia" },
   emergency_exit: { icon: DoorOpen, label: "Salida emergencia" },
@@ -384,8 +383,8 @@ const generateSeats = (): Seat[] => {
             <h4 className="font-semibold text-secondary">Terminal de Salida</h4>
           </div>
           <div className="bg-white p-4 rounded-lg border">
-            <p className="font-medium">{busTrip.origin.countryCode}</p>
-            <p className="text-sm text-gray-600 mb-2">{busTrip.origin.terminal}</p>
+            <p className="font-medium">{busTrip.origin?.stop.countryCode}</p>
+            <p className="text-sm text-gray-600 mb-2">{busTrip.origin?.stop?.stopName}</p>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
               <span className="text-lg font-bold">{formatTime(busTrip.origin.dateTime)}</span>
@@ -400,8 +399,8 @@ const generateSeats = (): Seat[] => {
             <h4 className="font-semibold text-primary">Terminal de Llegada</h4>
           </div>
           <div className="bg-white p-4 rounded-lg border">
-            <p className="font-medium">{busTrip.destination.countryCode}</p>
-            <p className="text-sm text-gray-600 mb-2">{busTrip.destination.terminal}</p>
+            <p className="font-medium">{busTrip.destination.stop.countryCode}</p>
+            <p className="text-sm text-gray-600 mb-2">{busTrip.destination.stop.stopName}</p>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
               <span className="text-lg font-bold">{formatTime(busTrip.destination.dateTime)}</span>
@@ -423,8 +422,8 @@ const generateSeats = (): Seat[] => {
             {busTrip.stops.map((stop, index) => (
               <div key={index} className="bg-white p-3 rounded-lg border flex justify-between items-center">
                 <div>
-                  <p className="font-medium">{stop.name}</p>
-                  {stop.terminal && <p className="text-sm text-gray-600">{stop.terminal}</p>}
+                  <p className="font-medium">{stop.stop.stopName}</p>
+                  {stop.stop.stopName && <p className="text-sm text-gray-600">{stop.stop.stopName}</p>}
                 </div>
                 {stop.arrivalTime && (
                   <span className="text-sm font-medium">{formatTime(stop.arrivalTime)}</span>
@@ -632,9 +631,9 @@ const renderComentariosTab = () => (
                 <div className="flex items-start gap-3">
                   <div className="w-3 h-3 bg-green-500 rounded-full mt-1"></div>
                   <div className="flex-1">
-                    <div className="font-semibold text-lg">{formatTime(busTrip.origin.dateTime)}</div>
-                    <div className="font-medium">{busTrip.origin.countryCode}</div>
-                    <div className="text-sm text-gray-600">{busTrip.origin.terminal}</div>
+                    <div className="font-semibold text-lg">{formatTime(busTrip.origin?.dateTime)}</div>
+                    <div className="font-medium">{busTrip.origin.stop?.countryCode}</div>
+                    <div className="text-sm text-gray-600">{busTrip.origin.stop?.stopName}</div>
                   </div>
                 </div>
               </div>
@@ -645,8 +644,8 @@ const renderComentariosTab = () => (
                   <div className="w-3 h-3 bg-red-500 rounded-full mt-1"></div>
                   <div className="flex-1">
                     <div className="font-semibold text-lg">{formatTime(busTrip.destination.dateTime)}</div>
-                    <div className="font-medium">{busTrip.destination.countryCode}</div>
-                    <div className="text-sm text-gray-600">{busTrip.destination.terminal}</div>
+                    <div className="font-medium">{busTrip.destination.stop.countryCode}</div>
+                    <div className="text-sm text-gray-600">{busTrip.destination.stop.stopName}</div>
                   </div>
                 </div>
               </div>
@@ -802,8 +801,8 @@ const renderComentariosTab = () => (
               {/* Horario de salida */}
               <div>
                 <div className="text-2xl font-bold">{formatTime(busTrip.origin.dateTime)}</div>
-                <div className="text-sm text-gray-600">{busTrip.origin.name}</div>
-                <div className="text-xs text-gray-500">{busTrip.origin.terminal}</div>
+                <div className="text-sm text-gray-600">{busTrip.origin?.stop?.stopName}</div>
+                <div className="text-xs text-gray-500">{busTrip.origin?.stop?.city}</div>
               </div>
 
               {/* Duración y ruta */}
@@ -824,8 +823,8 @@ const renderComentariosTab = () => (
               {/* Horario de llegada */}
               <div>
                 <div className="text-2xl font-bold">{formatTime(busTrip.destination.dateTime)}</div>
-                <div className="text-sm text-gray-600">{busTrip.destination.name}</div>
-                <div className="text-xs text-gray-500">{busTrip.destination.terminal}</div>
+                <div className="text-sm text-gray-600">{busTrip.destination.stop?.stopName}</div>
+                <div className="text-xs text-gray-500">{busTrip.destination.stop?.city}</div>
               </div>
             </div>
           </div>

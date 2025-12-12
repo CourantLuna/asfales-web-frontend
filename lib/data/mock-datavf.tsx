@@ -314,15 +314,15 @@ export const getTransportDataSources = (transportType?: string): StandardSearchD
   switch (transportType) {
     case "air":
       return searchDataSources.filter(source => 
-        source.type === "airport" || source.type === "city" || source.type === "recent"
+        source.type === "airport"
       );
     case "bus":
       return searchDataSources.filter(source => 
-        source.type === "bus" || source.type === "city" || source.type === "recent"
+        source.type === "bus"
       );
     case "cruise":
       return searchDataSources.filter(source => 
-        source.type === "cruise" || source.type === "city" || source.type === "recent"
+        source.type === "cruise"
       );
     default:
       return searchDataSources;
