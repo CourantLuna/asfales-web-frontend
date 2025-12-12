@@ -43,7 +43,7 @@ export async function getBusesDataSources(): Promise<StandardSearchDataSource[]>
       icon: <Bus className="h-4 w-4" />,
       type: "bus" as const,
       nameLabelField: "city",
-      nameValueField: "stopCode",
+      nameValueField: "cityCode",
       nameDescriptionField: "stopName",
       options: stops,
     },

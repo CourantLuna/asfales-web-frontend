@@ -468,11 +468,11 @@ const SearchResultRows = useMemo(() => {
   let filtered = [...rows];
 
   if (params.from) {
-    filtered = filtered.filter(r => r.origin?.stop?.stopCode === params.from);
+    filtered = filtered.filter(r => r.origin?.stop?.cityCode === params.from);
   }
 
   if (params.to) {
-    filtered = filtered.filter(r => r.destination?.stop?.stopCode === params.to);
+    filtered = filtered.filter(r => r.destination?.stop?.cityCode === params.to);
   }
 
   if (params.departureDate) {

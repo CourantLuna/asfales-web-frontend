@@ -163,6 +163,7 @@ export interface TransportStop {
   stopCode: string;       // Código estilo aeropuerto (DOM-NOR, SDQ-TER, BCN-NOR)
   stopName: string;       // Nombre del terminal
   city: string;
+  cityCode: string;
   countryCode: string;
   latitude?: number;
   longitude?: number;
