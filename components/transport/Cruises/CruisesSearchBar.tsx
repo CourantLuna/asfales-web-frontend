@@ -6,9 +6,10 @@ import { StandardSearchField, StandardSearchDataSource } from '@/components/shar
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { DurationSelector, type DurationRange } from '@/components/shared/standard-fields-component/DurationSelector';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Anchor } from 'lucide-react';
+import { Search, MapPin, Anchor, X } from 'lucide-react';
 import { getTransportDataSources } from '@/lib/data/mock-datavf';
 import { PassengerGroup } from '../../shared/standard-fields-component/PassengerSelector';
+import { ButtonGroup } from '@/components/ui/button-group';
 
 interface CruisesSearchBarProps {
   /**
@@ -117,6 +118,17 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
     router.push(finalUrl);
   };
 
+    // Función para resetear el buscador
+  const handleReset = () => {
+    // Limpiar campos
+    setDestination('');
+    setDepartureDate({});
+    setDuration({ minNights: 3, maxNights: 9 });
+  
+    // Limpiar URL (opcional)
+    router.push(pathname);
+  };
+
   return (
       <Suspense
                     fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
@@ -156,17 +168,32 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
           />
 
           {/* Search Button */}
-        {showSearchButton && (
-          <div className="flex justify-end items-end ml-auto">
-            <Button
-              onClick={handleSearch}
-              className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Buscar cruceros
-            </Button>
-          </div>
-        )}
+             {showSearchButton && (
+        <div className="flex justify-end items-end ml-auto">
+            {showSearchButton && (
+  <ButtonGroup className="justify-end w-full md:w-auto">
+    {/* Botón de reset con icono X */}
+    <Button
+      onClick={handleReset}
+      variant="secondary"
+      aria-label="Reiniciar búsqueda"
+      className='w-auto h-12 rounded-l-lg '
+    >
+      <X className="w-4 h-4" />
+    </Button>
+
+    {/* Botón de búsqueda */}
+    <Button
+      onClick={handleSearch}
+      className="bg-primary hover:bg-primary/90 text-white flex items-center px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+    >
+      <Search className="w-4 h-4" />
+      Buscar vuelo
+    </Button>
+  </ButtonGroup>
+)}
+        </div>
+      )}
         </div>
 
         

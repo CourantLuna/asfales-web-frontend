@@ -11,11 +11,13 @@ import { StandardSelect, type StandardSelectOption } from '@/components/shared/s
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
 import { PassengerSelector, type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Plane, MapPin, Trash, Trash2 } from 'lucide-react';
+import { Plus, Search, Plane, MapPin, Trash, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTransportDataSources, defaultPassengers } from '@/lib/data/mock-datavf';
 import path from 'path';
 import { useIsMobile } from '@/components/ui/use-mobile';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { set } from 'date-fns';
 
 interface FlightsSearchBarProps {
   /**
@@ -89,12 +91,12 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
   const [roundtripDates, setRoundtripDates] = useState<{ from?: Date; to?: Date }>({});
   const [onewayDate, setOnewayDate] = useState<{ from?: Date; to?: Date }>({});
 
+  const  defaultmulticityFligthts: FlightData[] = [
+    { id: '1', origin: '', destination: '', date: undefined },
+    { id: '2', origin: '', destination: '', date: undefined },
+  ];
   // Multi-city states
-  const [flights, setFlights] = useState<FlightData[]>(
-    [
-      { id: '1', origin: 'SDQ', destination: 'MDE', date: undefined },
-      { id: '2', origin: 'MDE', destination: 'MAD', date: undefined },
-    ]
+  const [flights, setFlights] = useState<FlightData[]>(defaultmulticityFligthts
   );
 
   // Efecto para cargar parámetros de la URL al inicializar el componente
@@ -297,6 +299,24 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
     router.push(finalUrl);
   };
 
+    // Función para resetear el buscador
+  const handleReset = () => {
+    // Limpiar campos
+    handleTravelingFromChange('');
+    handleGoingToChange('');
+    setOnewayDate({});
+    setOnewayDate({});
+    setRoundtripDates({});
+    setFlights(defaultmulticityFligthts);
+    setCabinClass('economy');
+
+    setPassengers(defaultPassengers);
+  
+    // Limpiar URL (opcional)
+    router.push(pathname);
+  };
+  
+
   // Roundtrip Tab Content
   const roundtripContent = (
     <div className="space-y-6">
@@ -350,13 +370,28 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
 
         {showSearchButton && (
         <div className="flex justify-end items-end ml-auto">
-          <Button
-            onClick={handleSearch}
-            className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Buscar vuelos
-          </Button>
+            {showSearchButton && (
+  <ButtonGroup className="justify-end w-full md:w-auto">
+    {/* Botón de reset con icono X */}
+    <Button
+      onClick={handleReset}
+      variant="secondary"
+      aria-label="Reiniciar búsqueda"
+      className='w-auto h-12 rounded-l-lg '
+    >
+      <X className="w-4 h-4" />
+    </Button>
+
+    {/* Botón de búsqueda */}
+    <Button
+      onClick={handleSearch}
+      className="bg-primary hover:bg-primary/90 text-white flex items-center px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+    >
+      <Search className="w-4 h-4" />
+      Buscar vuelo
+    </Button>
+  </ButtonGroup>
+)}
         </div>
       )}
       </div>
@@ -422,17 +457,33 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
           containerClassName="w-full md:w-[280px]"
         />
 
-         {showSearchButton && (
+            {showSearchButton && (
         <div className="flex justify-end items-end ml-auto">
-          <Button
-            onClick={handleSearch}
-            className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Buscar vuelo
-          </Button>
+            {showSearchButton && (
+  <ButtonGroup className="justify-end w-full md:w-auto">
+    {/* Botón de reset con icono X */}
+    <Button
+      onClick={handleReset}
+      variant="secondary"
+      aria-label="Reiniciar búsqueda"
+      className='w-auto h-12 rounded-l-lg '
+    >
+      <X className="w-4 h-4" />
+    </Button>
+
+    {/* Botón de búsqueda */}
+    <Button
+      onClick={handleSearch}
+      className="bg-primary hover:bg-primary/90 text-white flex items-center px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+    >
+      <Search className="w-4 h-4" />
+      Buscar vuelo
+    </Button>
+  </ButtonGroup>
+)}
         </div>
       )}
+         
       </div>
 
      
@@ -532,20 +583,34 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
           Añadir otro vuelo
         </Button>
 
-        {showSearchButton && (
-          <Button
-            onClick={handleSearch}
-            className="bg-primary hover:bg-primary text-white px-8 py-3 h-12 w-full md:w-[280px] rounded-lg font-medium"
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Buscar vuelos
-          </Button>
-        )}
+
+        
       </div>
 
       {/* Search Button */}
       <div className="flex justify-end">
-       
+       {showSearchButton && (
+  <ButtonGroup className="justify-end w-full md:w-auto">
+    {/* Botón de reset con icono X */}
+    <Button
+      onClick={handleReset}
+      variant="secondary"
+      aria-label="Reiniciar búsqueda"
+      className='w-auto h-12 rounded-l-lg '
+    >
+      <X className="w-4 h-4" />
+    </Button>
+
+    {/* Botón de búsqueda */}
+    <Button
+      onClick={handleSearch}
+      className="bg-primary hover:bg-primary/90 text-white flex items-center px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
+    >
+      <Search className="w-4 h-4" />
+      Buscar vuelos
+    </Button>
+  </ButtonGroup>
+)}
       </div>
     </div>
   );
