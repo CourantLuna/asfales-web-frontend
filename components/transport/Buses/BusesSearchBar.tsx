@@ -7,7 +7,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SearchFieldsWithSwap } from '@/components/shared/SearchFieldsWithSwap';
 import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
 import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom';
-import { PassengerSelector, type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Bus, X } from 'lucide-react';
 import { getBusesDataSources } from '../Data/StopsMockData';
@@ -47,12 +46,6 @@ export default function BusesSearchBar(
   const [localOrigin, setLocalOrigin] = useState('');
   const [localDestination, setLocalDestination] = useState('');
   const [dates, setDates] = useState<{ from?: Date; to?: Date }>({});
-  const [passengers, setPassengers] = useState<PassengerGroup>({
-  adults: 1,
-  children: [],
-  infantsOnLap: [],
-  infantsInSeat: []
-});
 
   // Obtener fuentes de datos para buses
   // const BUS_DATA_SOURCES = searchDataSources || getBusesDataSources();
@@ -103,22 +96,7 @@ export default function BusesSearchBar(
       handleDestinationChange(toParam);
     }
 
-    // Cargar pasajeros
-    const adultsParam = searchParams.get('adults');
-    const childrenParam = searchParams.get('children');
-    const infantsOnLapParam = searchParams.get('infantsOnLap');
-    const infantsInSeatParam = searchParams.get('infantsInSeat');
     
-    if (adultsParam || childrenParam || infantsOnLapParam || infantsInSeatParam) {
-      console.log('📊 Loading passengers:', { adultsParam, childrenParam, infantsOnLapParam, infantsInSeatParam });
-      setPassengers(prev => ({
-        adults: adultsParam ? parseInt(adultsParam) : prev.adults,
-        children: childrenParam ? Array(parseInt(childrenParam)).fill({ age: 12, id: `child-${Date.now()}` }) : prev.children,
-        infantsOnLap: infantsOnLapParam ? Array(parseInt(infantsOnLapParam)).fill({ age: 1, id: `infant-lap-${Date.now()}` }) : prev.infantsOnLap,
-        infantsInSeat: infantsInSeatParam ? Array(parseInt(infantsInSeatParam)).fill({ age: 1, id: `infant-seat-${Date.now()}` }) : prev.infantsInSeat,
-      }));
-    }
-
     // Cargar fechas
     const departureDateParam = searchParams.get('departureDate');
     const returnDateParam = searchParams.get('returnDate');
@@ -139,7 +117,6 @@ export default function BusesSearchBar(
       origin: currentOrigin,
       destination: currentDestination,
       dates,
-      passengers,
     });
 
     // Construir los parámetros de la URL de forma segura
@@ -151,20 +128,6 @@ export default function BusesSearchBar(
     }
     if (currentDestination) {
       params.append("to", currentDestination);
-    }
-
-    // Pasajeros
-    if (passengers) {
-      params.append("adults", passengers.adults.toString());
-      if (passengers.children.length > 0) {
-        params.append("children", passengers.children.length.toString());
-      }
-      const totalInfants = passengers.infantsOnLap.length + passengers.infantsInSeat.length;
-      if (totalInfants > 0) {
-        params.append("infants", totalInfants.toString());
-        params.append("infantsOnLap", passengers.infantsOnLap.length.toString());
-        params.append("infantsInSeat", passengers.infantsInSeat.length.toString());
-      }
     }
 
     // Fechas
@@ -193,12 +156,6 @@ const handleReset = () => {
   handleOriginChange('');
   handleDestinationChange('');
   setDates({});
-  setPassengers({
-  adults: 1,
-  children: [],
-  infantsOnLap: [],
-  infantsInSeat: []
-});
 
   // Limpiar URL (opcional)
   router.push(pathname);
@@ -241,13 +198,6 @@ const handleReset = () => {
             className="w-full lg:w-auto"
           />
           
-          {/* Passenger Selector */}
-          <PassengerSelector
-            label="Pasajeros"
-            initialPassengers={ passengers}
-            onPassengersChange={setPassengers}
-            containerClassName="w-full lg:w-auto"
-          />
         </div>
 
         {/* Search Button y Reset Button */}

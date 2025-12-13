@@ -391,8 +391,7 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
           containerClassName="w-full md:w-[280px]"
         />
 
-        {showSearchButton && (
-        <div className="flex justify-end items-end ml-auto">
+        <div className="flex justify-end w-full items-end md:w-auto md:ml-auto">
             {showSearchButton && (
   <ButtonGroup className="justify-end w-full md:w-auto">
     {/* Botón de reset con icono X */}
@@ -416,7 +415,7 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
   </ButtonGroup>
 )}
         </div>
-      )}
+      
       </div>
 
       
@@ -480,9 +479,9 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
           containerClassName="w-full md:w-[280px]"
         />
 
-            {showSearchButton && (
-        <div className="flex justify-end items-end ml-auto">
-            {showSearchButton && (
+       {/* Search Button */}
+      <div className="flex w-full justify-end items-end md:ml-auto md:w-auto">
+       {showSearchButton && (
   <ButtonGroup className="justify-end w-full md:w-auto">
     {/* Botón de reset con icono X */}
     <Button
@@ -500,12 +499,12 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
       className="bg-primary hover:bg-primary/90 text-white flex items-center px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
     >
       <Search className="w-4 h-4" />
-      Buscar vuelo
+      Buscar vuelos
     </Button>
   </ButtonGroup>
 )}
-        </div>
-      )}
+      </div>
+      
          
       </div>
 
