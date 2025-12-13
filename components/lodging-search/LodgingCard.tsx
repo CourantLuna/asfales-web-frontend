@@ -203,7 +203,7 @@ export default function LodgingCardList({
   });
   
   const isMobile = useIsMobile();
-   const compare = useCompare({ max: 4, keyName: "title", rowName: "item" });
+   const compare = useCompare({ max: 4, keyName: "title", rowName: 'item' });
 
    const onCancelCompare = () => {
     compare.reset();
@@ -216,7 +216,7 @@ export default function LodgingCardList({
 const handleCompareChecked = (idx: number, checked: boolean) => {
   const hotel = rows[idx];
   const hotelTitle = hotel?.title;
-
+console.log('hotel a añadir: ', hotel);
   if (!hotelTitle) return;
 
   if (checked) {

@@ -29,7 +29,7 @@ export async function fetchCruisesFromSheet(): Promise<TransportTrip[]> {
 export const getCruiseResultSets = async (
   filters: CruiseSearchFilters
 ): Promise<TransportTrip[]> => { // Cambiado any[] a TransportTrip[] para mejor tipado
-  console.log("🔍 Generando FlightResultSets con filtros:", filters);
+  // console.log("🔍 Generando ResultSets con filtros:", filters);
   
   // 1. Obtener TODOS los cruceros
   const allCruises = await fetchCruisesFromSheet();

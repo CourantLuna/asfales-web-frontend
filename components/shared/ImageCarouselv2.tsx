@@ -32,7 +32,7 @@ export type OverlayCarrusel = OverlayBadge | OverlayFavorite
 export type OverlayValue = Record<string, any>
 
 export type ImageCarouselProps = {
-  images: string[]
+  images: string | string[]
   overlayCarrusel?: OverlayCarrusel | OverlayCarrusel[]
   overlayValues?: OverlayValue         // <-- SOLO UN OBJETO
   heightClass?: string
@@ -122,6 +122,12 @@ export function ImageCarouselv2({
   const [api, setApi] = React.useState<CarouselApi | null>(null)
   const [current, setCurrent] = React.useState(0)
 
+  // 1. NORMALIZACIÓN: Aseguramos que siempre sea un array
+  const imageList = React.useMemo(() => {
+    if (!images) return [];
+    return Array.isArray(images) ? images : [images];
+  }, [images]);
+
   React.useEffect(() => {
     if (!api) return
     const onSelect = () => {
@@ -140,15 +146,17 @@ export function ImageCarouselv2({
       : [overlayCarrusel]
     : []
 
-  // overlayValues ahora es un solo objeto (no un array)
   const overlayValue = overlayValues || {};
-  const showControls = images.length > 1;
+  
+  // 2. USO: Usamos 'imageList' en lugar de 'images' para la lógica
+  const showControls = imageList.length > 1;
 
   return (
     <div className={`w-full ${heightClass} ${className} relative`}>
       <Carousel className="relative h-full w-full" setApi={setApi}>
         <CarouselContent className="h-full">
-          {images.map((imgUrl, idx) => (
+          {/* 3. RENDERIZADO: Mapeamos 'imageList' */}
+          {imageList.map((imgUrl, idx) => (
             <CarouselItem key={idx} className="h-full">
               <div className="p-0 h-full">
                 <Card className="h-full">

@@ -45,7 +45,7 @@ export const getFlightResultSets = async (
   flightType: 'roundtrip' | 'oneway' | 'multicity',
   filters: FlightSearchFilters
 ): Promise<FlightResultSet[]> => {
-  console.log("🔍 Generando FlightResultSets con filtros:", filters);
+  // console.log("🔍 Generando FlightResultSets con filtros:", filters);
   // 1. Obtener TODOS los vuelos del Sheet (Mock Data)
   const allFlights = await fetchFlightsFromSheet();
 

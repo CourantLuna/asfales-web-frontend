@@ -6,7 +6,6 @@ import { StandardToggleGroup } from '../shared/standard-fields-component/Standar
 import { Building2, Hotel } from 'lucide-react';
 import LodgingSearchBar from './LodgingSearchBar';
 import BreadcrumbNav from '../shared/BreadcrumbNav';
-import router from 'next/router';
 
 interface ILodgingHomeSearchBarProps {
   showSearchButtonLodging?: boolean,
@@ -57,13 +56,13 @@ onLodgingTypeChange,
     params.set("lodgingType",LodgingType );
     
     // Actualizar la URL manteniendo otros parámetros existentes
-    router.push(`${window.location.pathname}?${params.toString()}`);
+    //router.push(`${window.location.pathname}?${params.toString()}`);
   };
   
   // Función para manejar cambios y notificar al padre
   const handleLodgingTypeChange = (value: string) => {
     setSelectedLodgingType(value);
-    updateUrlWithLodgingType(value); // Actualizar la URL
+   // updateUrlWithLodgingType(value); // Actualizar la URL
     onLodgingTypeChange?.(value); // Notificar al padre
   };
 

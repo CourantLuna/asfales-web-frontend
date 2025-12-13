@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server"; // Importante para gene
 import CustomTable, { CustomTableProps } from "@/components/shared/CustomTable";
 import { Button } from "@/components/ui/button";
 import { FileText, Printer } from "lucide-react";
+import { openInNewTab } from '../../lib/utils/navigation';
 
 export interface HeaderField {
   label: string;
@@ -64,6 +65,7 @@ const ReportLayout = ({
         <CustomTable
           columns={columns}
           data={data}
+          
           // En modo reporte impreso, a veces es mejor quitar las acciones interactivas
           actions={actions} 
           rowHeader={rowHeader}
@@ -77,7 +79,11 @@ const ReportLayout = ({
 export default function ReportGenerator(props: ReportGeneratorProps) {
   const { openInNewTab } = props;
 
+
   const handleOpenReport = () => {
+      // console.log("data que entra en el reportGenerator", props.data);
+      // console.log("collums que entra en el reportGenerator", props.columns);
+
     // 1. Generamos el HTML estático usando los componentes de React reales
     const reportHtml = renderToStaticMarkup(<ReportLayout {...props} />);
 
@@ -125,7 +131,7 @@ export default function ReportGenerator(props: ReportGeneratorProps) {
         </body>
       </html>
     `;
-
+    
     popup.document.open();
     popup.document.write(content);
     popup.document.close();

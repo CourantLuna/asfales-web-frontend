@@ -42,6 +42,7 @@ export function CompareSheet({
   const compareThis = () => {
     onCompare(items);
     setCompareOpen(true);
+    console.log("items ahora compare", items);
     // return items; // No es estrictamente necesario retornar aquí
   };
 

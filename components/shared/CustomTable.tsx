@@ -7,29 +7,37 @@ import { format } from "date-fns";
 import { Check, X } from "lucide-react";
 // Cambia aquí la importación:
 import { ImageCarouselv2, OverlayCarrusel, OverlayValue } from "@/components/shared/ImageCarouselv2";
+import { departureTimeOptions } from '../transport/Fligths/lib/flight-filter-options';
 
 export type AspectRatio = "16:9" | "4:3" | "1:1" | "3:4" | "9:16";
 export type Fit = "cover" | "contain";
 
 export interface FieldGroup {
   field: string;
-  type: "text" | "badge" | "number" | "time" | "benefits";
+  type: "text" | "badge" | "number" | "time" | "benefits" | "rating" ;
   className?: string;
 }
+
+export type FieldType =
+ "text" | "images" | "rating" | "time" | "benefits" | "badge" | "image" | "currency" | "datetime" | "TransportStops"
 
 export interface Column {
   field?: string;
   fields?: FieldGroup[];
   structure?: string;
   header: string;
-  type: "text" | "images" | "rating" | "time" | "benefits";
+  type: FieldType;
   className?: string;
   aspectRatio?: AspectRatio;
+  variant?: "secondary" | "default" | "outline" | "destructive" | null | undefined
+  badgeClass?: string,
   fit?: Fit;
   height?: string;
   // Nuevos props:
   overlayCarrusel?: OverlayCarrusel | OverlayCarrusel[];
   overlayValuesKey?: string; // El nombre del campo en RowData donde están los overlays de esa celda
+  sufixText?: string,
+  prefixText?: string
 }
 
 export interface Action {
@@ -208,7 +216,32 @@ function renderCellContent(column: Column, row: RowData) {
 
   switch (column.type) {
     case "text":
-return String(getNestedValue(row, column.field || "") ?? "");
+    // Usamos el helper getNestedValue para obtener el dato, o string vacío si es null
+      const rawValue = getNestedValue(row, column.field || "") ?? "";
+      // Construimos el string: (prefijo o nada) + valor + (sufijo o nada)
+      return `${column.prefixText || ""}${String(rawValue)}${column.sufixText || ""}`;
+
+case "currency":
+      const valCurrency = getNestedValue(row, column.field || "");
+      
+      // Si es nulo o indefinido
+      if (valCurrency === undefined || valCurrency === null) return "-";
+
+      const numValue = Number(valCurrency);
+
+      // Si no es un número válido, lo mostramos como texto normal
+      if (isNaN(numValue)) {
+         return `${column.prefixText || ""}${String(valCurrency)}${column.sufixText || ""}`;
+      }
+
+      // Formateo estándar (ej: 1,234.56)
+      const formattedNumber = numValue.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+
+      return `${column.prefixText || ""}${formattedNumber}${column.sufixText || ""}`;
+
     case "images":
       return (
         <div className="flex items-start justify-center no-action-click">
@@ -222,7 +255,46 @@ return String(getNestedValue(row, column.field || "") ?? "");
         </div>
       );
     case "time":
-      return formatTime(row[column.field || ""]);
+      return  `${column.prefixText || ""}${formatTime(row[column.field || ""])} ${column.sufixText || ""}` ;
+
+      case "datetime":
+      const valDateTime = getNestedValue(row, column.field || "");
+      
+      if (!valDateTime) return "-";
+
+      let formattedDate = "";
+      try {
+        // Formato: "dd/MM/yyyy HH:mm" (Ej: 20/05/2026 14:30)
+        // Puedes cambiar el string de formato según tu preferencia
+        formattedDate = format(new Date(valDateTime), "dd/MM/yyyy HH:mm");
+      } catch (error) {
+        // Si falla el parseo, mostramos el valor original
+        formattedDate = String(valDateTime);
+      }
+
+      return `${column.prefixText || ""}${formattedDate}${column.sufixText || ""}`;
+
+    case "badge":
+      const valBadge = getNestedValue(row, column.field || "");
+      
+      // Si el valor no existe, no mostramos el badge (o puedes retornar "-")
+      if (valBadge === undefined || valBadge === null || valBadge === "") return null;
+
+      return (
+         <div className={column.className + "justify-center items-center py-1"}>
+          {column.prefixText || ""}
+        <Badge 
+          variant={column.variant} // 'secondary' es un buen estilo base, pero className lo sobreescribe
+          className={column.badgeClass || ""}
+        >
+         
+          {String(valBadge)}
+         
+        </Badge>
+         {column.sufixText || ""}
+         </div>
+      );
+        
     case "benefits":
       return (
         <div className="flex flex-col justify-center items-start gap-1">
@@ -240,6 +312,58 @@ return String(getNestedValue(row, column.field || "") ?? "");
           ))}
         </div>
       );
+
+      case "TransportStops":
+      const stopsData = row["stops"];
+
+      // Si no es un array o está vacío, asumimos que es directo
+      if (!Array.isArray(stopsData) || stopsData.length === 0) {
+        return (
+          <span className="text-muted-foreground text-xs italic flex items-center gap-1">
+             Sin escalas (Directo)
+          </span>
+        );
+      }
+
+      return (
+        <div className="flex flex-col gap-3 py-1">
+          {stopsData.map((item: any, idx: number) => (
+            <div key={idx} className="relative pl-3 border-l-2 border-gray-200 last:border-0">
+              {/* Punto visual de la línea de tiempo */}
+              <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-gray-400"></div>
+
+              {/* Cabecera: Código y Ciudad */}
+              <div className="flex items-center gap-2 mb-0.5">
+                <Badge variant="outline" className="h-5 px-1 text-[10px] font-mono bg-gray-50 text-gray-700 border-gray-300">
+                  {item.stop?.stopCode || "N/A"}
+                </Badge>
+                <span className="font-semibold text-xs text-gray-800">
+                  {item.stop?.city || "Desconocido"}
+                </span>
+              </div>
+
+              {/* Nombre del aeropuerto (opcional, pequeño) */}
+              <div className="text-[10px] text-gray-500 leading-tight mb-1 truncate max-w-[180px]" title={item.stop?.stopName}>
+                {item.stop?.stopName}
+              </div>
+
+              {/* Horarios */}
+              <div className="flex items-center gap-3 text-[10px] text-gray-600 bg-gray-50/50 p-1 rounded w-fit">
+                <div className="flex flex-col leading-none">
+                  <span className="text-[9px] text-gray-400 uppercase">Llegada</span>
+                  <span className="font-mono">{format(new Date(item.arrivalTime), "dd/MM/yyyy HH:mm")}</span>
+                </div>
+                <div className="h-4 w-px bg-gray-300 mx-1"></div> {/* Separador */}
+                <div className="flex flex-col leading-none">
+                  <span className="text-[9px] text-gray-400 uppercase">Salida</span>
+                  <span className="font-mono">{format(new Date(item.departureTime), "dd/MM/yyyy HH:mm")}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+
     default:
       return null;
   }
