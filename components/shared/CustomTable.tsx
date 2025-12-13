@@ -208,12 +208,12 @@ function renderCellContent(column: Column, row: RowData) {
 
   switch (column.type) {
     case "text":
-      return String(row[column.field || ""] ?? "");
+return String(getNestedValue(row, column.field || "") ?? "");
     case "images":
       return (
         <div className="flex items-start justify-center no-action-click">
           <ImageCarouselv2
-            images={row[column.field || ""]?.[0] || []}
+            images={row[column.field || ""]}
             heightClass={column.height || "h-[220px]"}
             className={column.className || ""}
             overlayCarrusel={column.overlayCarrusel}
@@ -298,4 +298,11 @@ function formatTime(value: any): string {
   } catch {
     return "-";
   }
+}
+
+
+// Helper para obtener valores anidados: "afterPrice.value" -> row["afterPrice"]["value"]
+function getNestedValue(obj: any, path: string): any {
+  if (!path) return undefined;
+  return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined) ? acc[part] : undefined, obj);
 }

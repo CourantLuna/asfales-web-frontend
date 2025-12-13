@@ -9,8 +9,7 @@ import PaginationCard from "../shared/PaginationCard";
 import { usePagination } from "../../hooks/usePagination";
 import { useCompare } from "@/hooks/use-compare";
 import { CompareSheet } from "../comparator/CompareSheet";
-import { ro } from "date-fns/locale";
-import { get } from 'http';
+import { Column } from "@/components/shared/CustomTable";
 
 const column1row1: ColField[] = [
   {
@@ -114,6 +113,52 @@ interface LodgingCardListProps {
   ref?: any;
 }
 
+const comparisonColumns: Column[] = [
+  // 1. Información Principal
+  { field: "title", header: "Alojamiento", type: "text", className: "font-bold min-w-[180px]" },
+  { field: "images", header: "Fotos", type: "images", height: "h-[120px]" },
+  
+  // 2. Ubicación y Capacidad (Datos directos)
+  { field: "location", header: "Ubicación", type: "text", className: "font-medium" },
+  { field: "descSub", header: "Capacidad / Baños", type: "text", className: "text-sm text-muted-foreground" },
+
+  // 3. Amenidades Destacadas (Agrupamos feature1 y feature2 usando 'structure')
+  { 
+    header: "Destacado", 
+    type: "text", 
+    structure: "feature1/feature2", // Muestra uno debajo del otro
+    fields: [
+      { field: "feature1", type: "badge", className: "bg-blue-50 text-blue-700 hover:bg-blue-100 mb-1 border-blue-200" },
+      { field: "feature2", type: "badge", className: "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200" }
+    ]
+  },
+          // 4. Calificación Completa (Score + Etiqueta + Cantidad de reseñas)
+  {
+    header: "Calificación",
+    type: "text",
+    structure: "rating-ratingLabel/ratingCount", // Score y Label en una línea, reseñas abajo
+    fields: [
+      { field: "rating", type: "badge", className: "bg-green-600 text-white font-bold text-sm mr-2" },
+      { field: "ratingLabel", type: "text", className: "font-semibold text-green-800 text-sm" },
+      { field: "ratingCount", type: "text", className: "text-xs text-gray-500 mt-1 block" }
+    ]
+  },
+
+  // 5. Precios (Usando la notación de punto para acceder a los objetos anidados)
+  { 
+    field: "afterPrice.value", 
+    header: "Precio Total", 
+    type: "text", 
+    className: "font-bold text-lg text-primary" 
+  },
+  { 
+    field: "nightlyPrice.value", 
+    header: "Por noche", 
+    type: "text", 
+    className: "text-sm text-gray-500" 
+  },
+];
+
 export default function LodgingCardList({
   rows,
   overlays = overlaysFormat,
@@ -203,21 +248,24 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
 
   return (
     <div className="space-y-4">
-      {/* Bottom Sheet */}Añadido a compara
-   {compare.selected.length > 0 && (
-  <CompareSheet
-    items={compare.selected}
-    max={compare.getMax()}
-    itemName="Alojamientos"
-    keyName={compare.keyName}
-    isOpen={compare.isOpen}
-    onToggle={compare.toggle}
-    onRemove={compare.remove}
-    onCancel={compare.reset}
-    onCompare={(comparelist) => console.log("Comparando", comparelist)}
-    imageSelector={(row) => row.logo?.[0]}
-  />
-)}
+ {/* Bottom Sheet */}
+     {/* SUSTITUIR EL BLOQUE CompareSheet POR ESTO: */}
+      {compare.selected.length > 0 && (
+        <CompareSheet
+          items={compare.selected}
+          columns={comparisonColumns} // <--- Aquí pasamos las columnas definidas arriba
+          max={compare.getMax()}
+          itemName="Alojamientos"
+          keyName={compare.keyName}
+          isOpen={compare.isOpen}
+          onToggle={compare.toggle}
+          onRemove={compare.remove}
+          onCancel={compare.reset}
+          onCompare={(comparelist) => console.log("Comparando", comparelist)}
+          // El hook devuelve { item: rowData }, CompareSheet extrae .item, así que aquí recibes rowData puro:
+          imageSelector={(row) => row.images?.[0]} 
+        />
+      )}
 
       {/* Lista de cards */}
       <div className="space-y-4">
@@ -288,3 +336,4 @@ const handleCompareChecked = (idx: number, checked: boolean) => {
     </div>
   );
 }
+
