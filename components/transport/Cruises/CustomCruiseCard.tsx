@@ -6,35 +6,27 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  Ship, 
-  Star, 
-  MapPin,
-  Waves,
-  Wind,
-  Utensils,
-  Timer,
-  Check,
-  Users,
-  Route,
+  Bus,  Star, Clock,Map as MapIcon, MapPin, Heart, Share2,Bookmark,Wifi, Utensils, Zap, Wind, Armchair, Monitor, CircleDollarSign,
+  ShieldCheck, ArrowRight, Timer, CheckCircle2, Phone, Mail, Globe, Award, Luggage, Briefcase, AlertCircle, Building2,
+  Crown, Layers, Camera, MessageSquare, Shield, CreditCard, Info, ChevronDown, ChevronUp, MapPinIcon, ClockIcon,
+  X,Check, Users, Navigation, Route, RefreshCw,
+  Usb,
+  Lightbulb,
+  DoorOpen,
+  Ticket,
+  Dumbbell,
+  Fish,
+  Baby, Ship, 
+ 
   BedDouble,
   Eye,
   Home,
   Anchor,
   Calendar,
   Gamepad2,
-  Baby,
-  Dumbbell,
+  
   Sparkles,
-  Info,
-  Shield,
-  Luggage,
-  AlertCircle,
-  Building2,
-  Crown,
-  ChevronDown,
-  ChevronUp,
-  MapPinIcon,
-  ShieldCheck
+  Waves,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -170,6 +162,28 @@ export default function CustomCruiseCard({
     return adultPrice + childPrice;
   };
 
+  const AMENITIES_MAP: any= {
+  wifi: { icon: Wifi, label: "Wi-Fi" },
+  usb: { icon: Usb, label: "USB" },
+  ac: { icon: Wind, label: "A/C" },
+  onboardToilet: { icon: Building2, label: "Baño" },
+  recliningSeats: { icon: Armchair, label: "Asientos reclinables" },
+  entertainment: { icon: Monitor, label: "Entretenimiento" },
+  readingLight: { icon: Lightbulb, label: "Luz lectura" },
+  reading_light: { icon: Lightbulb, label: "Luz lectura" },
+  gps_tracking: { icon: Navigation, label: "GPS" },
+  emergencyExit: { icon: DoorOpen, label: "Salida emergencia" },
+  emergency_exit: { icon: DoorOpen, label: "Salida emergencia" },
+  pools: { icon: MapPin, label: "Piscinas" },
+  restaurants: { icon: Ticket, label: "Restaurantes" },
+  gym: { icon: Dumbbell, label: "Gimnasio" },
+  casino: { icon: Fish, label: "Casino" },
+  kidsClub: { icon: Baby, label: "Club niños" },
+  showsIncluded: { icon: Ticket, label: "Shows incluidos" },
+  excursionsIncluded: { icon: MapPin, label: "Excursiones" },
+};
+
+
   // --- RENDERS DE TABS ---
 
   const renderInformacionTab = () => (
@@ -246,42 +260,20 @@ export default function CustomCruiseCard({
   const renderAmenidadesTab = () => (
     <div className="p-4 bg-gray-50 border-t">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {(cruise.amenities.pools || 0) > 0 && (
-          <div className="flex flex-col items-center text-center">
-            <Waves className="w-6 h-6 text-blue-500 mb-1" />
-            <span className="text-xs text-gray-600">{cruise.amenities.pools} Piscinas</span>
-          </div>
-        )}
-        {(cruise.amenities.restaurants || 0) > 0 && (
-          <div className="flex flex-col items-center text-center">
-            <Utensils className="w-6 h-6 text-blue-500 mb-1" />
-            <span className="text-xs text-gray-600">{cruise.amenities.restaurants} Restaurantes</span>
-          </div>
-        )}
-        {cruise.amenities.gym && (
-          <div className="flex flex-col items-center text-center">
-            <Dumbbell className="w-6 h-6 text-blue-500 mb-1" />
-            <span className="text-xs text-gray-600">Gimnasio</span>
-          </div>
-        )}
-        {cruise.amenities.casino && (
-          <div className="flex flex-col items-center text-center">
-            <Gamepad2 className="w-6 h-6 text-blue-500 mb-1" />
-            <span className="text-xs text-gray-600">Casino</span>
-          </div>
-        )}
-        {cruise.amenities.kidsClub && (
-          <div className="flex flex-col items-center text-center">
-            <Baby className="w-6 h-6 text-blue-500 mb-1" />
-            <span className="text-xs text-gray-600">Club Niños</span>
-          </div>
-        )}
-        {cruise.amenities.showsIncluded && (
-          <div className="flex flex-col items-center text-center">
-            <Sparkles className="w-6 h-6 text-blue-500 mb-1" />
-            <span className="text-xs text-gray-600">Shows en vivo</span>
-          </div>
-        )}
+        {Object.entries(cruise.amenities)
+    .filter(([key, value]) => value && AMENITIES_MAP[key])
+    .map(([key]) => {
+      const { icon: Icon, label } = AMENITIES_MAP[key];
+      return (
+        <div
+          key={key}
+          className="flex items-center gap-1 text-sm text-gray-600"
+        >
+          <Icon className="w-4 h-4" />
+          <span>{label}</span>
+        </div>
+      );
+    })}
       </div>
     </div>
   );

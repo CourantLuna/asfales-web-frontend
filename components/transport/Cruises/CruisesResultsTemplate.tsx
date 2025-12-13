@@ -41,7 +41,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
   cruiseData, // Si vienen datos pre-cargados (SSR)
   onCabinSelect
 }) => {
-  const [rows, setRows] = useState<TransportTrip[]>(cruiseData || []);
+  const [rows, setRows] = useState<any[]>(cruiseData || []);
   const [loading, setLoading] = useState(!cruiseData);
 
   const searchParams = useSearchParams();
@@ -70,10 +70,18 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
           maxNights: params.maxNights
         }; 
         console.log("🚢 Loading cruise data in CruiseResultsTemplate with filters:", filters);
-        const data = await getCruiseResultSets(filters);
+        let data = await getCruiseResultSets(filters);
+        data = data.map(cruise => ({
+          ...cruise,
+          // Añadimos un label legible para duración en noches
+          durationNightsLabel: translateDurationNights(cruise.durationNights),
+          amenitiesBoolean: Object.fromEntries(Object.entries(cruise.amenities || {}).map(([key, value]) => [key, Boolean(value)])),
+          departureDateMonth: cruise.origin?.dateTime ? new Date(cruise.origin.dateTime).toISOString().slice(5,7) : undefined
+        }));
         
-          console.log('🚢 Data loaded from Sheets:', data, 'records');
+         
           setRows(data);
+          console.log('🚢 Cruise rows set for SearchWithFilters:', data);
         
       } catch (error) {
         console.error("Error loading cruise data:", error);
@@ -131,27 +139,28 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       searchPlaceholder: "Escribe para buscar cruceros..."
     },
     { id: "separator-1", type: "separator" },
-    {
-      id: "popularFilters",
-      type: "checkbox",
-      label: "Filtros populares",
-      showCounts: true,
-      maxSelections: 5,
-      initialVisibleCount: 6,
-      showMoreText: "Ver más filtros",
-      showLessText: "Ver menos",
-      defaultValue: filterDefaults.popularFilters || []
-    },
-    { id: "separator-2", type: "separator" },
+    // {
+    //   id: "popularFilters",
+    //   type: "checkbox",
+    //   label: "Filtros populares",
+    //   showCounts: true,
+    //   maxSelections: 5,
+    //   initialVisibleCount: 6,
+    //   showMoreText: "Ver más filtros",
+    //   showLessText: "Ver menos",
+    //   defaultValue: filterDefaults.popularFilters || []
+    // },
+    // { id: "separator-2", type: "separator" },
     {
       id: "priceRange",
       type: "range",
       label: "Rango de precio",
-      min: 200, // Ajustado a valores reales de tu data
-      max: 5000,
-      step: 50,
+      min: 0, // Ajustado a valores reales de tu data
+      max: 2000,
+      step: 1,
       currency: "USD",
-      defaultValue: filterDefaults.priceRange || [200, 5000]
+      defaultValue: filterDefaults.priceRange || [0, 2000],
+      keyname: "prices.0.price" // Mapeo al primer precio disponible
     },
     { id: "separator-3", type: "separator" },
     {
@@ -163,7 +172,8 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       initialVisibleCount: 5,
       showMoreText: "Ver más navieras",
       showLessText: "Ver menos",
-      defaultValue: filterDefaults.cruiseLines || []
+      defaultValue: filterDefaults.cruiseLines || [],
+      keyname: "operator.id"
     },
     { id: "separator-4", type: "separator" },
     {
@@ -179,7 +189,8 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       toggleGroupClassName: "gap-3",
       toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
       maxSelections: 4,
-      defaultValue: filterDefaults.duration || []
+      defaultValue: filterDefaults.duration || [],
+      keyname: "durationNightsLabel"
     },
     { id: "separator-5", type: "separator" },
     {
@@ -191,7 +202,8 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       initialVisibleCount: 6,
       showMoreText: "Ver más destinos",
       showLessText: "Ver menos",
-      defaultValue: filterDefaults.destinations || []
+      defaultValue: filterDefaults.destinations || [],
+      keyname: "destination.stop.city"
     },
     { id: "separator-6", type: "separator" },
     {
@@ -203,14 +215,16 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       initialVisibleCount: 6,
       showMoreText: "Ver más amenidades",
       showLessText: "Ver menos",
-      defaultValue: filterDefaults.amenities || []
+      defaultValue: filterDefaults.amenities || [],
+      keyname: "amenitiesBoolean"
     },
     { id: "separator-7", type: "separator" },
     {
       id: "cabinTypes", // Esto mapeará contra prices[].class
       type: "radio",
       label: "Tipo de cabina preferida",
-      defaultValue: filterDefaults.cabinTypes?.[0] || ""
+      defaultValue: filterDefaults.cabinTypes?.[0] || "",
+      keyname: "classesAvailable",
     },
     { id: "separator-8", type: "separator" },
     {
@@ -226,18 +240,20 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       toggleGroupClassName: "gap-3",
       toggleItemClassName: "border-2 hover:border-primary/50 transition-colors",
       maxSelections: 6,
-      defaultValue: filterDefaults.departureTime || []
+      defaultValue: filterDefaults.departureTime || [],
+      keyname: "departureDateMonth"
+
     }
   ], [dataSourcesCruises, filterDefaults]);
 
   // Opciones de filtros (Valores estáticos para UI, SearchWithFilters calculará los counts reales)
   const filterOptions: { [filterId: string]: GenericFilterOption[] } = useMemo(() => ({
-    popularFilters: [
-      { value: 'balcon', label: 'Cabina con balcón', count: 0 },
-      { value: 'todo-incluido', label: 'Todo incluido', count: 0 },
-      { value: 'reembolsable', label: 'Reembolsable', count: 0 },
-      { value: 'kids-free', label: 'Niños gratis', count: 0 }
-    ],
+    // popularFilters: [
+    //   { value: 'balcon', label: 'Cabina con balcón', count: 0 },
+    //   { value: 'todo-incluido', label: 'Todo incluido', count: 0 },
+    //   { value: 'reembolsable', label: 'Reembolsable', count: 0 },
+    //   { value: 'kids-free', label: 'Niños gratis', count: 0 }
+    // ],
     cruiseLines: [
       { value: 'royal-caribbean', label: 'Royal Caribbean', count: 0 },
       { value: 'norwegian', label: 'Norwegian', count: 0 },
@@ -248,6 +264,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       { value: 'costa-cruises', label: 'Costa Cruceros', count: 0 },
       { value: 'disney', label: 'Disney Cruise Line', count: 0 },
       { value: 'virgin-voyages', label: 'Virgin Voyages', count: 0 },
+      { value: 'cunard', label: 'Cunard Line', count: 0 }
     ],
     duration: [
       { value: 'corto', label: '3-5 noches', icon: <Clock className="w-4 h-4" /> },
@@ -391,3 +408,17 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
 };
 
 export default CruisesResultsTemplate;
+
+function translateDurationNights(durationNights: number | undefined): any {
+  if (!durationNights || durationNights <= 0) return "Duración no especificada";
+
+  if (durationNights >= 3 && durationNights <= 5) {
+    return "corto"; // 3-5 noches
+  } else if (durationNights >= 6 && durationNights <= 8) {
+    return "medio"; // 6-8 noches
+  } else if (durationNights >= 9 && durationNights <= 14) {
+    return "largo"; // 9-14 noches
+  } else if (durationNights >= 15) {
+    return "muy-largo"; // 15+ noches
+  }
+}

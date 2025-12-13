@@ -236,7 +236,7 @@ val
  const applyFilters = () => {
   // console.log("ROW SAMPLE:", rows[0]);
 
-  const DEBUG = false; // cambia a false para desactivar logs
+  const DEBUG = true; // cambia a false para desactivar logs
   let filtered = [...rows];
 
   // Para evitar logs enormes, limita filas inspeccionadas por filtro

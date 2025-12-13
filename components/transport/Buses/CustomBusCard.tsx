@@ -165,13 +165,13 @@ const AMENITIES_MAP: any= {
   gps_tracking: { icon: Navigation, label: "GPS" },
   emergencyExit: { icon: DoorOpen, label: "Salida emergencia" },
   emergency_exit: { icon: DoorOpen, label: "Salida emergencia" },
-  pools: { icon: Map, label: "Piscinas" },
+  pools: { icon: MapPin, label: "Piscinas" },
   restaurants: { icon: Ticket, label: "Restaurantes" },
   gym: { icon: Dumbbell, label: "Gimnasio" },
   casino: { icon: Fish, label: "Casino" },
   kidsClub: { icon: Baby, label: "Club niños" },
   showsIncluded: { icon: Ticket, label: "Shows incluidos" },
-  excursionsIncluded: { icon: Map, label: "Excursiones" },
+  excursionsIncluded: { icon: MapPin, label: "Excursiones" },
 };
 
 const RATINGS_MAP = {
