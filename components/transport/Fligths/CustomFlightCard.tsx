@@ -62,9 +62,9 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
   
   const duration = formatDuration(flight.durationMinutes);
   
-  const stopsLabel = flight.isDirect 
+  const stopsLabel = (flight.stops?.length === 0 && flight.isDirect)
     ? "Directo" 
-    : `${flight.stops?.length || 1} Escala${(flight.stops?.length || 0) > 1 ? 's' : ''}`;
+    : `${flight.stops?.length} Escala${(flight.stops?.length || 0) > 1 ? 's' : ''}`;
 
   const airlineName = flight?.operator?.name;
   const airlineLogo = flight?.operator?.logoUrl;

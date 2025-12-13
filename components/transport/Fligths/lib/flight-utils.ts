@@ -147,13 +147,23 @@ export const getFlightResultSets = async (
 };
 // Función para convertir TransportTrip a RowData para la tabla genérica
 export const mapFlightsToRowData = (flights: TransportTrip[]): any[] => {
+
+  function translateStopsFilter(stopsLength: number): string {
+  if (stopsLength === 0) {
+    return "directo";
+  } else if (stopsLength === 1) {
+    return "1-parada";
+  } else {
+    return "2-paradas";
+  }
+}
   return flights.map((flight, index) => {
     // Tomamos el primer precio disponible como referencia base
     const basePrice = flight.prices?.[0];
 
     return {
-      id: flight.id,
-      title: flight.operator.name,
+      ...flights[index],
+      
       subtitle: flight.title || flight.routeId, // Usamos el título del viaje o ID de ruta
       location: `${flight.origin.stop.stopCode} → ${flight.destination.stop.stopCode}`,
       
@@ -161,7 +171,7 @@ export const mapFlightsToRowData = (flights: TransportTrip[]): any[] => {
       feature1: formatTime(flight.origin.dateTime),
       feature2: formatTime(flight.destination.dateTime),
       
-      descMain: formatDuration(flight.durationMinutes),
+      descMain: `${flight.destination.stop.stopName}`,
       descSub: getStopDescription(flight),
       
       // Badges basados en tags de precios si existen, o lógica custom
@@ -177,6 +187,8 @@ export const mapFlightsToRowData = (flights: TransportTrip[]): any[] => {
       images: [flight.operator.logoUrl || '/placeholder-logo.svg'],
       actions: ["Ver detalles", "Seleccionar vuelo"],
       isSponsored: false,
+      counterStops: translateStopsFilter(flight.stops?.length || 0),
+
       savings: null // O calcular si tienes un precio original vs oferta
     };
   });
@@ -184,149 +196,4 @@ export const mapFlightsToRowData = (flights: TransportTrip[]): any[] => {
 
 
 
-// 1. Definimos la interfaz de la data "cruda" (Raw) tal como viene de la tabla/CSV
-export interface RawFlightProvider {
-  id: string;
-  title: string;
-  routeCode: string;
-  operatorId: string;
-  operatorName: string;
-  operatorLogoUrl: string;
-  operatorRating: string | number; // Puede venir como string "4.5"
-  operatorPhone?: string;
-  operatorEmail?: string;
-  operatorWebsite?: string;
-  origin: string; // JSON String
-  dateTime_origin: string;
-  destination: string; // JSON String
-  dateTime_destination: string;
-  stops: string; // JSON String
-  durationMinutes: number;
-  durationNights: number;
-  distanceKm: number;
-  isDirect: boolean | string; // "TRUE" o true
-  isRoundTrip: boolean | string;
-  prices: string; // JSON String
-  classesAvailable: string; // JSON String
-  amenities: string; // JSON String
-  policies: string; // JSON String
-  availability: string; // JSON String
-  seatMap?: string; // JSON String
-  recurring?: string; // JSON String
-  images: string; // JSON String
-  ratings?: string; // JSON String
-  updatedAt: string;
-  transportType?: string;
-}
 
-// Helper para parsear JSON de forma segura y silenciosa
-const safeParse = <T>(input: string | any): T => {
-  // 1. Si no hay input (es null, undefined o string vacío ""), retorna objeto vacío
-  if (!input) return {} as T;
-
-  // 2. Si ya es un objeto, devuélvelo tal cual
-  if (typeof input === 'object') return input as T;
-
-  try {
-    // 3. Intenta parsear
-    return JSON.parse(input) as T;
-  } catch (e) {
-    // 4. Si falla (JSON inválido), retorna objeto vacío silenciosamente (sin console.error)
-    return {} as T;
-  }
-};
-
-// Helper para convertir booleans que pueden venir como string "TRUE"/"FALSE"
-const parseBoolean = (val: boolean | string): boolean => {
-  if (typeof val === 'boolean') return val;
-  return val?.toString().toUpperCase() === 'TRUE';
-};
-
-// 2. Función de Transformación Principal
-export const transformFlightData = (rawData: RawFlightProvider[]): TransportTrip[] => {
-  return rawData.map((row) => {
-    
-    // Parseamos los JSONs complejos
-    const originStop = safeParse<TransportStop>(row.origin);
-    const destinationStop = safeParse<TransportStop>(row.destination);
-    
-    // Parseamos arrays y objetos de configuración
-    const parsedStops = safeParse<TransportTrip['stops']>(row.stops) || [];
-    const parsedPrices = safeParse<TransportTrip['prices']>(row.prices) || [];
-    const parsedClasses = safeParse<string[]>(row.classesAvailable) || [];
-    const parsedAmenities = safeParse<TransportTrip['amenities']>(row.amenities) || {};
-    const parsedPolicies = safeParse<TransportTrip['policies']>(row.policies) || {};
-    const parsedAvailability = safeParse<TransportTrip['availability']>(row.availability) || { seatsAvailable: 0, totalCapacity: 0 };
-    const parsedImages = safeParse<string[]>(row.images) || [];
-    const parsedRecurring = row.recurring ? safeParse<TransportTrip['recurring']>(row.recurring) : undefined;
-    const parsedSeatMap = row.seatMap ? safeParse<TransportTrip['seatMap']>(row.seatMap) : undefined;
-    
-    // Parse ratings (si viene como JSON string extra, o usamos el rating simple del operador)
-    // Nota: Tu tabla tiene 'operatorRating' y un campo 'ratings' JSON.
-    // Aquí priorizamos el JSON si existe, si no, construimos uno básico con el operatorRating.
-    let finalRatings = row.ratings ? safeParse<TransportTrip['ratings']>(row.ratings) : undefined;
-    if (!finalRatings && row.operatorRating) {
-        finalRatings = { overall: Number(row.operatorRating) };
-    }
-
-    return {
-      id: row.id,
-      title: row.title,
-      routeId: row.routeCode,
-
-      // Mapeo del Operador
-      operator: {
-        id: row.operatorId,
-        name: row.operatorName,
-        logoUrl: row.operatorLogoUrl,
-        rating: Number(row.operatorRating),
-        contact: {
-          phone: row.operatorPhone,
-          email: row.operatorEmail,
-          website: row.operatorWebsite,
-        },
-      },
-
-      // Origen (Estructura { stop, dateTime })
-      origin: {
-        stop: originStop,
-        dateTime: row.dateTime_origin,
-      },
-
-      // Destino (Estructura { stop, dateTime })
-      destination: {
-        stop: destinationStop,
-        dateTime: row.dateTime_destination,
-      },
-
-      // Paradas intermedias
-      stops: parsedStops,
-
-      // Datos del viaje
-      durationMinutes: Number(row.durationMinutes),
-      durationNights: Number(row.durationNights),
-      distanceKm: Number(row.distanceKm),
-      isDirect: parseBoolean(row.isDirect),
-      isRoundTrip: parseBoolean(row.isRoundTrip),
-
-      // Precios y Clases
-      prices: parsedPrices,
-      classesAvailable: parsedClasses,
-
-      // Detalles y Políticas
-      amenities: parsedAmenities,
-      policies: parsedPolicies,
-      availability: parsedAvailability,
-      
-      // Opcionales
-      seatMap: parsedSeatMap,
-      recurring: parsedRecurring,
-      images: parsedImages,
-      ratings: finalRatings,
-
-      updatedAt: row.updatedAt,
-      
-      // Nota: 'ship' no está en la data cruda de vuelos, se queda undefined.
-    };
-  });
-};

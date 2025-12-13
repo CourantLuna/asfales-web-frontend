@@ -23,7 +23,7 @@ export async function getTransportsMockASFALESData(sheetFullName: string): Promi
   }
 }
 // Función que obtiene los stops desde Google Sheets
-async function getTransportStops(TransportStopsType: "Buses" | "Flights"| "Cruises"): Promise<any[]> {
+export async function getTransportStops(TransportStopsType: "Buses" | "Flights"| "Cruises"): Promise<any[]> {
   const SheetName = TransportStopsType || "Buses";
   try {
     const stops = await getTransportsMockASFALESData(`TransportStop-${SheetName}`);

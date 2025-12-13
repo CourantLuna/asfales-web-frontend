@@ -16,8 +16,8 @@ import { openInNewTab } from '../../../lib/utils/navigation';
 import { FilterDefaults, FlightResultSet } from '@/components/transport/Fligths/lib/flight-types'; // Mantengo FilterDefaults si es genérico
 import { TransportTrip } from '../types/transport.types'; // IMPORTANTE: Tu nuevo tipo
 import { getFlightResultSets, mapFlightsToRowData } from './lib/flight-utils'; // Tus nuevas utils
-import { getFilterOptionsForFlights, sortOptions } from '@/lib/data/flight-filter-options';
-import { flightAds } from '@/lib/data/flight-filter-options';
+import { getFilterOptionsForFlights, sortOptions } from '@/components/transport/Fligths/lib/flight-filter-options';
+import { flightAds } from '@/components/transport/Fligths/lib/flight-filter-options';
 import { CompareSheet } from '@/components/comparator/CompareSheet';
 import { useCompare } from '@/hooks/use-compare';
 import { toast } from 'sonner';
@@ -178,52 +178,60 @@ const searchFilters = useMemo(() => ({
         emptyMessage: "No se encontraron vuelos",
         searchPlaceholder: "Escribe para buscar vuelos..."
       },
-      // ... resto de filtros (separators, popularFilters, priceRange, etc.)
-      // He omitido el bloque largo de filtros por brevedad, asumiendo que es el mismo que tu input
-      // Si necesitas que lo incluya completo, avísame. La lógica no cambia.
+     
        {
         id: "separator-1",
         type: "separator"
       },
-      {
-        id: "popularFilters",
-        type: "checkbox",
-        label: "Filtros populares",
-        showCounts: true,
-        maxSelections: 5,
-        initialVisibleCount: 6,
-        showMoreText: "Ver más filtros",
-        showLessText: "Ver menos",
-        defaultValue: filterDefaults.popularFilters || []
-      },
+      // {
+      //   id: "popularFilters",
+      //   type: "checkbox",
+      //   label: "Filtros populares",
+      //   showCounts: true,
+      //   maxSelections: 5,
+      //   initialVisibleCount: 6,
+      //   showMoreText: "Ver más filtros",
+      //   showLessText: "Ver menos",
+      //   defaultValue: filterDefaults.popularFilters || []
+      // },
       {
         id: "priceRange",
         type: "range",
         label: "Rango de precio",
-        min: 50,
+        min: 0,
         max: 2000,
-        step: 25,
+        step: 1,
         currency: "USD",
-        defaultValue: filterDefaults.priceRange || [50, 2000]
+        defaultValue: filterDefaults.priceRange || [0, 2000],
+        keyname: "prices.0.price"
+
       },
       {
         id: "airlines",
         type: "checkbox",
         label: "Aerolíneas",
         showCounts: true,
-        defaultValue: filterDefaults.airlines || []
+      maxSelections: 5,
+      initialVisibleCount: 5,
+      showMoreText: "Ver más operadores",
+      showLessText: "Ver menos",
+        defaultValue: filterDefaults.airlines || [],
+        keyname: "operator.id",
+
       },
       {
         id: "stops",
         type: "radio",
         label: "Escalas",
-        defaultValue: filterDefaults.stops?.[0] || ""
+        defaultValue: filterDefaults.stops?.[0] || "",
+        keyname: "counterStops"
       },
       {
         id: "flightClass",
         type: "radio",
         label: "Clase de vuelo",
-        defaultValue: filterDefaults.flightClass || ""
+        defaultValue: filterDefaults.flightClass || "",
+        keyname: "classesAvailable"
       }
     ];
     return baseFilters;
@@ -242,7 +250,6 @@ const searchFilters = useMemo(() => ({
 
 const currentResultSet = flightResultSets.find(set => set.stepId === currentStep);
 
-// CARGA DE DATOS
   useEffect(() => {
     let mounted = true;
 

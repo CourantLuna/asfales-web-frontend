@@ -75,9 +75,9 @@ export const departureTimeOptions: OptionWithIcon[] = [
 ];
 
 export const stopsOptions: CheckboxOption[] = [
-  { value: "non-stop", label: "Sin escalas", count: 98 },
-  { value: "1-stop", label: "1 escala", count: 145 },
-  { value: "2-stops", label: "2+ escalas", count: 29 },
+  { value: 'directo', label: 'Directo (sin paradas)', count: 8 },
+      { value: '1-parada', label: '1 parada', count: 12 },
+      { value: '2-paradas', label: '2+ paradas', count: 6 }
 ];
 
 export const durationOptions: OptionWithIcon[] = [
@@ -88,10 +88,13 @@ export const durationOptions: OptionWithIcon[] = [
 ];
 
 export const flightClassOptions: CheckboxOption[] = [
-  { value: "economy", label: "Económica", count: 245 },
-  { value: "premium-economy", label: "Económica Premium", count: 89 },
-  { value: "business", label: "Business", count: 34 },
-  { value: "first", label: "Primera Clase", count: 12 },
+  { value: "Económica", label: "Económica", count: 245 },
+  { value: "Premium", label: "Económica Premium", count: 89 },
+  { value: "VIP", label: "Business", count: 34 },
+  { value: "Interior", label: "Primera Clase", count: 12 },
+  { value: "Exterior", label: "Exterior", count: 56 },
+  { value: "Balcón", label: "Balcón", count: 23 },
+  { value: "Suite", label: "Suite", count: 9 },
 ];
 
 export const baggageOptions: CheckboxOption[] = [
@@ -113,7 +116,7 @@ export const sortOptions: CustomSelectOption[] = [
 
 // Función helper para obtener todas las opciones de filtros
 export const getFilterOptionsForFlights = () => ({
-  popularFilters: popularFiltersOptions,
+  // popularFilters: popularFiltersOptions,
   airlines: airlinesOptions,
   departureTime: departureTimeOptions,
   stops: stopsOptions,

@@ -182,7 +182,7 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
 
           {/* Search Button */}
              {showSearchButton && (
-        <div className="flex justify-end items-end ml-auto">
+        <div className="flex justify-end items-end ml-auto w-full md:w-auto">
             {showSearchButton && (
   <ButtonGroup className="justify-end w-full md:w-auto">
     {/* Botón de reset con icono X */}
@@ -201,7 +201,7 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
       className="bg-primary hover:bg-primary/90 text-white flex items-center px-8 py-3 rounded-lg font-medium h-12 w-full md:w-[280px]"
     >
       <Search className="w-4 h-4" />
-      Buscar vuelo
+      Buscar cruceros
     </Button>
   </ButtonGroup>
 )}

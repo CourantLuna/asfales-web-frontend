@@ -1,7 +1,7 @@
 // asfales-web-frontend/components/transport/Fligths/lib/FlightsMockData.tsx
 import { getTransportsMockASFALESData } from "../../Data/StopsMockData";
 import { TransportTrip, TransportStop } from "../../types/transport.types";
-import { transformFlightData } from "./flight-utils";
+import { transformToTransportTrip } from "../../Data/TransportMockDataUtils"
 
 
 export async function fetchFlightsFromSheet(): Promise<TransportTrip[]> {
@@ -14,7 +14,7 @@ export async function fetchFlightsFromSheet(): Promise<TransportTrip[]> {
     // console.log("Fetched raw flight data:", rawData);
     // console.log("Flight data convertido:", );
 
-    return transformFlightData(rawData);
+    return transformToTransportTrip(rawData);
 
   } catch (error) {
     console.error("Error fetching flights from Google Sheets:", error);

@@ -168,8 +168,8 @@ const [rows, setRows] = useState<any[]>([]); // datos originales
       id: "stops",
       type: "radio",
       label: "Paradas",
+      defaultValue: filterDefaults.stops?.[0] || "",
       keyname: "counterStops",
-      defaultValue: filterDefaults.stops?.[0] || ""
     },
     { id: "separator-6", type: "separator" },
     {
@@ -440,7 +440,8 @@ useEffect(() => {
           counterStops,
           durationTime,
           priceMin,
-          departureTime,
+          departureTime: rowObj.dateTime_origin,
+          arrivalTime: rowObj.dateTime_destination,
 
           updatedAt: rowObj.updatedAt,
         };

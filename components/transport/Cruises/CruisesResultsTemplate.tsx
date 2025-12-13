@@ -4,8 +4,13 @@ import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import SearchWithFilters, { GenericFilterConfig, GenericFilterOption } from '@/components/shared/SearchWithFilters';
 import PaginationCard from '@/components/shared/PaginationCard';
 import { usePagination } from '@/hooks/usePagination';
-import CustomCruiseCard, { CruiseTrip } from './CustomCruiseCard';
-import { Ship, Clock, MapPin, Users, Star } from 'lucide-react';
+import CustomCruiseCard from './CustomCruiseCard';
+import { Ship, Clock } from 'lucide-react';
+import { TransportTrip } from '../types/transport.types';
+
+// IMPORTANTE: Ajusta esta ruta a donde guardaste el archivo del paso anterior
+import { getCruiseResultSets, CruiseSearchFilters } from '../Cruises/lib/CruisesMockData'; 
+import { useSearchParams } from 'next/navigation';
 
 interface FilterDefaults {
   search?: string;
@@ -24,360 +29,62 @@ interface CruisesResultsTemplateProps {
   className?: string;
   onFiltersChange?: (filters: Record<string, any>) => void;
   onCardClick?: (idx: number, row: any) => void;
-  cruiseData?: CruiseTrip[];
+  cruiseData?: TransportTrip[]; // Ajustado el tipo para evitar any[]
   onCabinSelect?: (cruiseId: string, cabinType: string) => void;
 }
-
-// Datos simulados de cruceros
-const mockCruiseData: CruiseTrip[] = [
-  {
-    id: 'cruise-001',
-    cruiseLine: {
-      id: 'royal-caribbean',
-      name: 'Royal Caribbean',
-      logoUrl: '/placeholder-logo.png',
-      rating: 4.6,
-      contact: {
-        phone: '+1-800-327-6700',
-        email: 'info@royalcaribbean.com',
-        website: 'www.royalcaribbean.com'
-      }
-    },
-    ship: {
-      name: 'Symphony of the Seas',
-      model: 'Oasis Class',
-      yearBuilt: 2018,
-      capacity: 6680,
-      decks: 18,
-      shipImageUrl: '/placeholder.jpg'
-    },
-    itinerary: {
-      startPort: 'Miami, FL',
-      endPort: 'Miami, FL',
-      departureDate: '2025-08-15T17:00:00',
-      returnDate: '2025-08-22T08:00:00',
-      durationNights: 7,
-      stops: [
-        {
-          port: 'Cozumel',
-          country: 'México',
-          arrivalDateTime: '2025-08-17T08:00:00',
-          departureDateTime: '2025-08-17T17:00:00'
-        },
-        {
-          port: 'Roatán',
-          country: 'Honduras',
-          arrivalDateTime: '2025-08-18T08:00:00',
-          departureDateTime: '2025-08-18T17:00:00'
-        },
-        {
-          port: 'Costa Maya',
-          country: 'México',
-          arrivalDateTime: '2025-08-19T08:00:00',
-          departureDateTime: '2025-08-19T17:00:00'
-        }
-      ]
-    },
-    cabinOptions: [
-      {
-        type: 'Interior',
-        price: 899,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: false,
-        inclusions: ['Comidas principales', 'Entretenimiento', 'Piscinas y jacuzzis']
-      },
-      {
-        type: 'Exterior',
-        price: 1199,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: false,
-        inclusions: ['Comidas principales', 'Entretenimiento', 'Vista al mar', 'Piscinas y jacuzzis']
-      },
-      {
-        type: 'Balcón',
-        price: 1599,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: true,
-        inclusions: ['Comidas principales', 'Entretenimiento', 'Balcón privado', 'Servicio prioritario']
-      },
-      {
-        type: 'Suite',
-        price: 2599,
-        currency: 'USD',
-        maxGuests: 6,
-        refundable: true,
-        inclusions: ['Comidas principales', 'Entretenimiento', 'Balcón grande', 'Mayordomía', 'Embarque prioritario']
-      }
-    ],
-    amenities: {
-      pools: 4,
-      restaurants: 23,
-      gym: true,
-      casino: true,
-      kidsClub: true,
-      showsIncluded: true,
-      excursionsIncluded: false
-    },
-    policies: {
-      baggage: {
-        includedKgPerPerson: 50
-      },
-      cancellation: 'Cancelación gratuita hasta 60 días antes',
-      healthAndVaccines: 'Pasaporte requerido. Consultar requisitos de vacunas por destino.'
-    },
-    availability: {
-      remainingCabins: 245,
-      capacityCabins: 2759
-    },
-    recurring: {
-      frequency: 'Semanal',
-      nextSailings: ['2025-08-22', '2025-08-29', '2025-09-05']
-    },
-    isRoundTrip: true,
-    updatedAt: '2025-07-16T10:00:00'
-  },
-  {
-    id: 'cruise-002',
-    cruiseLine: {
-      id: 'norwegian',
-      name: 'Norwegian Cruise Line',
-      logoUrl: '/placeholder-logo.png',
-      rating: 4.3,
-      contact: {
-        phone: '+1-866-234-7350',
-        email: 'info@ncl.com',
-        website: 'www.ncl.com'
-      }
-    },
-    ship: {
-      name: 'Norwegian Breakaway',
-      model: 'Breakaway Class',
-      yearBuilt: 2013,
-      capacity: 3963,
-      decks: 16,
-      shipImageUrl: '/placeholder.jpg'
-    },
-    itinerary: {
-      startPort: 'New York, NY',
-      endPort: 'New York, NY',
-      departureDate: '2025-08-20T16:00:00',
-      returnDate: '2025-08-27T07:00:00',
-      durationNights: 7,
-      stops: [
-        {
-          port: 'Bermuda',
-          country: 'Bermuda',
-          arrivalDateTime: '2025-08-22T10:00:00',
-          departureDateTime: '2025-08-24T17:00:00'
-        }
-      ]
-    },
-    cabinOptions: [
-      {
-        type: 'Interior',
-        price: 749,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: false,
-        inclusions: ['Comidas principales', 'Entretenimiento']
-      },
-      {
-        type: 'Exterior',
-        price: 999,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: false,
-        inclusions: ['Comidas principales', 'Entretenimiento', 'Vista al mar']
-      },
-      {
-        type: 'Balcón',
-        price: 1399,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: true,
-        inclusions: ['Comidas principales', 'Entretenimiento', 'Balcón privado']
-      }
-    ],
-    amenities: {
-      pools: 3,
-      restaurants: 18,
-      gym: true,
-      casino: true,
-      kidsClub: true,
-      showsIncluded: true,
-      excursionsIncluded: false
-    },
-    policies: {
-      baggage: {
-        includedKgPerPerson: 45
-      },
-      cancellation: 'Cancelación con penalidad según fecha',
-      healthAndVaccines: 'Pasaporte o REAL ID requerido.'
-    },
-    availability: {
-      remainingCabins: 156,
-      capacityCabins: 2014
-    },
-    recurring: {
-      frequency: 'Semanal',
-      nextSailings: ['2025-08-27', '2025-09-03', '2025-09-10']
-    },
-    isRoundTrip: true,
-    updatedAt: '2025-07-16T09:30:00'
-  },
-  {
-    id: 'cruise-003',
-    cruiseLine: {
-      id: 'celebrity',
-      name: 'Celebrity Cruises',
-      logoUrl: '/placeholder-logo.png',
-      rating: 4.8,
-      contact: {
-        phone: '+1-888-751-7804',
-        email: 'info@celebrity.com',
-        website: 'www.celebritycruises.com'
-      }
-    },
-    ship: {
-      name: 'Celebrity Edge',
-      model: 'Edge Class',
-      yearBuilt: 2018,
-      capacity: 2918,
-      decks: 16,
-      shipImageUrl: '/placeholder.jpg'
-    },
-    itinerary: {
-      startPort: 'Barcelona, España',
-      endPort: 'Roma, Italia',
-      departureDate: '2025-09-05T18:00:00',
-      returnDate: '2025-09-15T08:00:00',
-      durationNights: 10,
-      stops: [
-        {
-          port: 'Palma de Mallorca',
-          country: 'España',
-          arrivalDateTime: '2025-09-06T08:00:00',
-          departureDateTime: '2025-09-06T18:00:00'
-        },
-        {
-          port: 'Niza',
-          country: 'Francia',
-          arrivalDateTime: '2025-09-07T08:00:00',
-          departureDateTime: '2025-09-07T18:00:00'
-        },
-        {
-          port: 'Florencia',
-          country: 'Italia',
-          arrivalDateTime: '2025-09-08T08:00:00',
-          departureDateTime: '2025-09-08T18:00:00'
-        },
-        {
-          port: 'Nápoles',
-          country: 'Italia',
-          arrivalDateTime: '2025-09-09T08:00:00',
-          departureDateTime: '2025-09-09T18:00:00'
-        }
-      ]
-    },
-    cabinOptions: [
-      {
-        type: 'Interior',
-        price: 1599,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: false,
-        inclusions: ['Comidas principales', 'Entretenimiento de lujo']
-      },
-      {
-        type: 'Exterior',
-        price: 1999,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: false,
-        inclusions: ['Comidas principales', 'Entretenimiento de lujo', 'Vista al mar']
-      },
-      {
-        type: 'Balcón',
-        price: 2799,
-        currency: 'USD',
-        maxGuests: 4,
-        refundable: true,
-        inclusions: ['Comidas principales', 'Entretenimiento de lujo', 'Balcón privado', 'Servicio de conserjería']
-      },
-      {
-        type: 'Suite',
-        price: 4599,
-        currency: 'USD',
-        maxGuests: 6,
-        refundable: true,
-        inclusions: ['Comidas principales', 'Restaurantes especializados', 'Mayordomo personal', 'Spa incluido']
-      }
-    ],
-    amenities: {
-      pools: 2,
-      restaurants: 15,
-      gym: true,
-      casino: true,
-      kidsClub: true,
-      showsIncluded: true,
-      excursionsIncluded: false
-    },
-    policies: {
-      baggage: {
-        includedKgPerPerson: 55
-      },
-      cancellation: 'Cancelación gratuita hasta 90 días antes',
-      healthAndVaccines: 'Pasaporte requerido. Consultar requisitos específicos por país.'
-    },
-    availability: {
-      remainingCabins: 89,
-      capacityCabins: 1467
-    },
-    recurring: {
-      frequency: 'Quincenal',
-      nextSailings: ['2025-09-19', '2025-10-03', '2025-10-17']
-    },
-    isRoundTrip: false,
-    updatedAt: '2025-07-16T08:45:00'
-  }
-];
-
-// Convertir cruceros a formato RowData para SearchWithFilters
-const convertCruisesToRowData = (cruises: CruiseTrip[]) => {
-  return cruises.map(cruise => ({
-    id: cruise.id,
-    title: `${cruise.itinerary.startPort} → ${cruise.itinerary.endPort}`,
-    descMain: cruise.cruiseLine.name,
-    descSub: `${cruise.itinerary.durationNights} noches • ${cruise.itinerary.stops.length} paradas`,
-    price: Math.min(...cruise.cabinOptions.map(c => c.price)),
-    currency: cruise.cabinOptions[0]?.currency || 'USD',
-    rating: cruise.cruiseLine.rating || 0,
-    reviews: 0,
-    availability: cruise.availability.remainingCabins,
-    cruiseLine: cruise.cruiseLine.name,
-    departureDate: cruise.itinerary.departureDate,
-    returnDate: cruise.itinerary.returnDate,
-    duration: cruise.itinerary.durationNights,
-    stops: cruise.itinerary.stops.length,
-    amenities: Object.values(cruise.amenities).filter(Boolean).length,
-    cabinTypes: cruise.cabinOptions.map(c => c.type).join(', '),
-    cruiseData: cruise
-  }));
-};
 
 const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
   filterDefaults = {},
   className,
   onFiltersChange,
   onCardClick,
-  cruiseData,
+  cruiseData, // Si vienen datos pre-cargados (SSR)
   onCabinSelect
 }) => {
-  const [rows, setRows] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<TransportTrip[]>(cruiseData || []);
+  const [loading, setLoading] = useState(!cruiseData);
+
+  const searchParams = useSearchParams();
+  
+  const params = {
+    to: searchParams.get("to"),
+    departureDate: searchParams.get("departureDate"),
+    showresults: searchParams.get("showresults"),
+    transportType: searchParams.get("transportType"),
+    maxNights: searchParams.get("maxNights"),
+    minNights: searchParams.get("minNights"),
+  };
+
+  // 1. Cargar datos reales desde Google Sheets usando getCruiseResultSets
+  useEffect(() => {
+
+    async function loadData() {
+      setLoading(true);
+      try {
+        // Llamamos sin filtros para traer todo el dataset y dejar que SearchWithFilters filtre en cliente
+        // O podrías pasar filterDefaults aquí si quisieras filtrado en servidor.
+        const filters: CruiseSearchFilters = {
+          to: params.to,
+          departureDate: params.departureDate,
+          minNights: params.minNights,
+          maxNights: params.maxNights
+        }; 
+        console.log("🚢 Loading cruise data in CruiseResultsTemplate with filters:", filters);
+        const data = await getCruiseResultSets(filters);
+        
+          console.log('🚢 Data loaded from Sheets:', data, 'records');
+          setRows(data);
+        
+      } catch (error) {
+        console.error("Error loading cruise data:", error);
+      } finally {
+         setLoading(false);
+      }
+    }
+
+    loadData();
+
+  }, [cruiseData, params.to, params.departureDate, params.minNights, params.maxNights]);
 
   // Hook de paginación
   const {
@@ -391,7 +98,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
     totalItems: rows.length
   });
 
-  // Configuración del data source para búsqueda
+  // Configuración del data source para búsqueda (Search Bar)
   const dataSourcesCruises = useMemo(() => [
     {
       id: "cruises",
@@ -399,13 +106,17 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       icon: <Ship className="h-4 w-4" />,
       type: "custom" as const,
       nameLabelField: "title",
-      nameValueField: "title",
-      nameDescriptionField: "descMain",
-      options: rows
+      nameValueField: "id", // Usamos ID para selección única
+      nameDescriptionField: "descLabel",
+      // Mapeamos los rows para crear una descripción útil en el buscador
+      options: rows.map((cruise) => ({
+        ...cruise,
+        descLabel: `${cruise.operator.name} - ${cruise.destination.stop.city}`
+      })),
     }
   ], [rows]);
 
-  // Configuración de filtros
+  // Configuración de filtros (UI)
   const filtersConfig: GenericFilterConfig[] = useMemo(() => [
     {
       id: "search",
@@ -436,15 +147,15 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       id: "priceRange",
       type: "range",
       label: "Rango de precio",
-      min: 500,
+      min: 200, // Ajustado a valores reales de tu data
       max: 5000,
-      step: 100,
+      step: 50,
       currency: "USD",
-      defaultValue: filterDefaults.priceRange || [500, 5000]
+      defaultValue: filterDefaults.priceRange || [200, 5000]
     },
     { id: "separator-3", type: "separator" },
     {
-      id: "cruiseLines",
+      id: "cruiseLines", // Esto mapeará internamente contra operator.name o id
       type: "checkbox",
       label: "Navieras",
       showCounts: true,
@@ -472,7 +183,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
     },
     { id: "separator-5", type: "separator" },
     {
-      id: "destinations",
+      id: "destinations", // Esto mapeará contra destination.stop.city
       type: "checkbox",
       label: "Destinos",
       showCounts: true,
@@ -484,7 +195,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
     },
     { id: "separator-6", type: "separator" },
     {
-      id: "amenities",
+      id: "amenities", // Esto mapeará contra keys de amenities: { pools: true, etc }
       type: "checkbox",
       label: "Amenidades",
       showCounts: true,
@@ -496,14 +207,14 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
     },
     { id: "separator-7", type: "separator" },
     {
-      id: "cabinTypes",
+      id: "cabinTypes", // Esto mapeará contra prices[].class
       type: "radio",
       label: "Tipo de cabina preferida",
       defaultValue: filterDefaults.cabinTypes?.[0] || ""
     },
     { id: "separator-8", type: "separator" },
     {
-      id: "departureTime",
+      id: "departureTime", // Mapeo contra origin.dateTime
       type: "toggle",
       label: "Mes de salida",
       type_toggle: "multiple",
@@ -519,23 +230,24 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
     }
   ], [dataSourcesCruises, filterDefaults]);
 
-  // Opciones de filtros
+  // Opciones de filtros (Valores estáticos para UI, SearchWithFilters calculará los counts reales)
   const filterOptions: { [filterId: string]: GenericFilterOption[] } = useMemo(() => ({
     popularFilters: [
-      { value: 'balcon', label: 'Cabina con balcón', count: 15 },
-      { value: 'todo-incluido', label: 'Todo incluido', count: 8 },
-      { value: 'mediterraneo', label: 'Mediterráneo', count: 12 },
-      { value: 'caribe', label: 'Caribe', count: 18 },
-      { value: 'reembolsable', label: 'Reembolsable', count: 9 },
-      { value: 'kids-free', label: 'Niños gratis', count: 6 }
+      { value: 'balcon', label: 'Cabina con balcón', count: 0 },
+      { value: 'todo-incluido', label: 'Todo incluido', count: 0 },
+      { value: 'reembolsable', label: 'Reembolsable', count: 0 },
+      { value: 'kids-free', label: 'Niños gratis', count: 0 }
     ],
     cruiseLines: [
-      { value: 'royal-caribbean', label: 'Royal Caribbean', count: 12 },
-      { value: 'norwegian', label: 'Norwegian Cruise Line', count: 8 },
-      { value: 'celebrity', label: 'Celebrity Cruises', count: 6 },
-      { value: 'princess', label: 'Princess Cruises', count: 7 },
-      { value: 'carnival', label: 'Carnival Cruise Line', count: 10 },
-      { value: 'msc', label: 'MSC Cruises', count: 5 }
+      { value: 'royal-caribbean', label: 'Royal Caribbean', count: 0 },
+      { value: 'norwegian', label: 'Norwegian', count: 0 },
+      { value: 'celebrity', label: 'Celebrity Cruises', count: 0 },
+      { value: 'princess', label: 'Princess Cruises', count: 0 },
+      { value: 'carnival', label: 'Carnival', count: 0 },
+      { value: 'msc-cruises', label: 'MSC Cruises', count: 0 },
+      { value: 'costa-cruises', label: 'Costa Cruceros', count: 0 },
+      { value: 'disney', label: 'Disney Cruise Line', count: 0 },
+      { value: 'virgin-voyages', label: 'Virgin Voyages', count: 0 },
     ],
     duration: [
       { value: 'corto', label: '3-5 noches', icon: <Clock className="w-4 h-4" /> },
@@ -544,38 +256,44 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
       { value: 'muy-largo', label: '15+ noches', icon: <Clock className="w-4 h-4" /> }
     ],
     destinations: [
-      { value: 'caribe', label: 'Caribe', count: 18 },
-      { value: 'mediterraneo', label: 'Mediterráneo', count: 12 },
-      { value: 'alaska', label: 'Alaska', count: 6 },
-      { value: 'northern-europe', label: 'Europa del Norte', count: 8 },
-      { value: 'asia', label: 'Asia', count: 5 },
-      { value: 'transatlantico', label: 'Transatlántico', count: 3 },
-      { value: 'repositioning', label: 'Reposicionamiento', count: 4 },
-      { value: 'hawaii', label: 'Hawaii', count: 7 }
+      // Estos valores deben coincidir con tus datos (cityCode o nombre ciudad)
+      { value: 'Miami', label: 'Miami', count: 0 },
+      { value: 'Barcelona', label: 'Barcelona', count: 0 },
+      { value: 'Copenhague', label: 'Copenhague', count: 0 },
+      { value: 'La Romana', label: 'La Romana', count: 0 },
+      { value: 'Vancouver', label: 'Vancouver', count: 0 },
+      { value: 'San Juan', label: 'San Juan', count: 0 },
+      { value: 'Venecia', label: 'Venecia', count: 0 },
+      { value: 'Dubai', label: 'Dubai', count: 0 },
     ],
     amenities: [
-      { value: 'piscinas', label: 'Múltiples piscinas', count: 20 },
-      { value: 'restaurantes', label: 'Restaurantes especializados', count: 18 },
-      { value: 'gimnasio', label: 'Gimnasio', count: 22 },
-      { value: 'casino', label: 'Casino', count: 19 },
-      { value: 'kids-club', label: 'Club de niños', count: 16 },
-      { value: 'shows', label: 'Shows en vivo', count: 21 },
-      { value: 'spa', label: 'Spa y wellness', count: 15 },
-      { value: 'wifi', label: 'WiFi incluido', count: 8 }
+      { value: 'pools', label: 'Piscinas', count: 0 },
+      { value: 'restaurants', label: 'Multi-Restaurantes', count: 0 },
+      { value: 'gym', label: 'Gimnasio', count: 0 },
+      { value: 'casino', label: 'Casino', count: 0 },
+      { value: 'kidsClub', label: 'Club de niños', count: 0 },
+      { value: 'showsIncluded', label: 'Shows incluidos', count: 0 },
+      { value: 'wifi', label: 'WiFi incluido', count: 0 }
     ],
     cabinTypes: [
-      { value: 'interior', label: 'Interior', count: 22 },
-      { value: 'exterior', label: 'Exterior', count: 20 },
-      { value: 'balcon', label: 'Balcón', count: 15 },
-      { value: 'suite', label: 'Suite', count: 8 }
+      { value: 'Interior', label: 'Interior', count: 0 },
+      { value: 'Exterior', label: 'Exterior', count: 0 },
+      { value: 'Balcón', label: 'Balcón', count: 0 },
+      { value: 'Suite', label: 'Suite', count: 0 }
     ],
     departureTime: [
-      { value: 'agosto', label: 'Agosto 2025', icon: <Clock className="w-4 h-4" /> },
-      { value: 'septiembre', label: 'Septiembre 2025', icon: <Clock className="w-4 h-4" /> },
-      { value: 'octubre', label: 'Octubre 2025', icon: <Clock className="w-4 h-4" /> },
-      { value: 'noviembre', label: 'Noviembre 2025', icon: <Clock className="w-4 h-4" /> },
-      { value: 'diciembre', label: 'Diciembre 2025', icon: <Clock className="w-4 h-4" /> },
-      { value: 'enero', label: 'Enero 2026', icon: <Clock className="w-4 h-4" /> }
+      { value: '01', label: 'Enero', icon: <Clock className="w-4 h-4" /> },
+      { value: '02', label: 'Febrero', icon: <Clock className="w-4 h-4" /> },
+      { value: '03', label: 'Marzo', icon: <Clock className="w-4 h-4" /> },
+      { value: '04', label: 'Abril', icon: <Clock className="w-4 h-4" /> },
+      { value: '05', label: 'Mayo', icon: <Clock className="w-4 h-4" /> },
+      { value: '06', label: 'Junio', icon: <Clock className="w-4 h-4" /> },
+      { value: '07', label: 'Julio', icon: <Clock className="w-4 h-4" /> },
+      { value: '08', label: 'Agosto', icon: <Clock className="w-4 h-4" /> },
+      { value: '09', label: 'Septiembre', icon: <Clock className="w-4 h-4" /> },
+      { value: '10', label: 'Octubre', icon: <Clock className="w-4 h-4" /> },
+      { value: '11', label: 'Noviembre', icon: <Clock className="w-4 h-4" /> },
+      { value: '12', label: 'Diciembre', icon: <Clock className="w-4 h-4" /> },
     ]
   }), []);
 
@@ -585,22 +303,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
     { key: 'price-desc', label: 'Precio: mayor a menor' },
     { key: 'duration-asc', label: 'Duración: menor a mayor' },
     { key: 'departure-asc', label: 'Fecha de salida' },
-    { key: 'rating-desc', label: 'Mejor calificados' },
-    { key: 'availability-desc', label: 'Más disponibilidad' }
   ];
-
-  // Simular carga de datos
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      const dataToUse = cruiseData || mockCruiseData;
-      const convertedData = convertCruisesToRowData(dataToUse);
-      setRows(convertedData);
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [cruiseData]);
 
   // Handler para click en tarjeta
   const handleCardClick = (idx: number, row: any) => {
@@ -609,7 +312,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
   };
 
   // Renderizar resultados de cruceros
-  const renderCruiseResults = ({ filteredRows, compareMode, onCardClick }: any) => {
+  const renderCruiseResults = ({ filteredRows }: any) => {
     const cruisesToShow = filteredRows.slice(0, visibleCruises);
     
     return (
@@ -617,8 +320,8 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
         {loading ? (
           // Skeleton loading
           Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="animate-pulse">
-              <div className="bg-gray-200 rounded-lg h-48 w-full"></div>
+            <div key={index} className="animate-pulse bg-white rounded-xl shadow-md border border-gray-100 h-64 w-full p-4">
+               <div className="bg-gray-200 h-full w-full rounded-lg"></div>
             </div>
           ))
         ) : cruisesToShow.length > 0 ? (
@@ -626,9 +329,9 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
             {cruisesToShow.map((row: any, index: number) => (
               <CustomCruiseCard
                 key={row.id}
-                cruise={row.cruiseData}
-                onClick={() => handleCardClick(index, row)}
+                cruise={row as TransportTrip}
                 onCabinSelect={onCabinSelect}
+                onClick={() => handleCardClick(index, row)}
               />
             ))}
             
@@ -650,8 +353,8 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
             )}
           </>
         ) : (
-          <div className="text-center py-12">
-            <Ship className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+            <Ship className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No se encontraron cruceros
             </h3>
@@ -680,6 +383,7 @@ const CruisesResultsTemplate: React.FC<CruisesResultsTemplateProps> = ({
         clearFiltersText="Limpiar todos los filtros"
         sortByText="Ordenar por"
         resultsCountText={(count) => `${count}+ cruceros disponibles`}
+        showToggleShowFilters={true}
       />
     </div>
     </Suspense>

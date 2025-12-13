@@ -3,54 +3,19 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Ship, 
   Star, 
-  Clock,
   MapPin,
-  Heart,
-  Share2,
-  Bookmark,
-  Wifi,
-  Utensils,
   Waves,
   Wind,
-  Armchair,
-  Monitor,
-  CircleDollarSign,
-  ShieldCheck,
-  ArrowRight,
+  Utensils,
   Timer,
-  CheckCircle2,
-  Phone,
-  Mail,
-  Globe,
-  Award,
-  Luggage,
-  Briefcase,
-  AlertCircle,
-  Building2,
-  Crown,
-  Layers,
-  Camera,
-  MessageSquare,
-  Shield,
-  CreditCard,
-  Info,
-  ChevronDown,
-  ChevronUp,
-  MapPinIcon,
-  ClockIcon,
-  X,
   Check,
   Users,
-  Navigation,
   Route,
-  RefreshCw,
   BedDouble,
   Eye,
   Home,
@@ -60,93 +25,27 @@ import {
   Baby,
   Dumbbell,
   Sparkles,
-  DollarSign
+  Info,
+  Shield,
+  Luggage,
+  AlertCircle,
+  Building2,
+  Crown,
+  ChevronDown,
+  ChevronUp,
+  MapPinIcon,
+  ShieldCheck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+// Asegúrate de importar la interfaz desde tu archivo de tipos
+import { TransportTrip, TransportStop } from '../types/transport.types';
 
-// Definición de tipos según la estructura proporcionada
-export type CruiseTrip = {
-  id: string;
-  cruiseLine: {
-    id: string;
-    name: string;
-    logoUrl?: string;
-    rating?: number;
-    contact?: {
-      phone?: string;
-      email?: string;
-      website?: string;
-    };
-  };
-
-  ship: {
-    name: string;
-    model?: string;
-    yearBuilt?: number;
-    capacity?: number;
-    decks?: number;
-    shipImageUrl?: string;
-  };
-
-  itinerary: {
-    startPort: string;
-    endPort: string;
-    departureDate: string;
-    returnDate: string;
-    durationNights: number;
-    stops: {
-      port: string;
-      country: string;
-      arrivalDateTime?: string;
-      departureDateTime?: string;
-    }[];
-  };
-
-  cabinOptions: {
-    type: 'Interior' | 'Exterior' | 'Balcón' | 'Suite';
-    price: number;
-    currency: 'USD' | 'EUR' | 'DOP';
-    maxGuests: number;
-    refundable: boolean;
-    inclusions?: string[];
-    perks?: string[];
-  }[];
-
-  amenities: {
-    pools: number;
-    restaurants: number;
-    gym: boolean;
-    casino: boolean;
-    kidsClub: boolean;
-    showsIncluded: boolean;
-    excursionsIncluded?: boolean;
-  };
-
-  policies: {
-    baggage?: {
-      includedKgPerPerson?: number;
-    };
-    cancellation: string;
-    healthAndVaccines?: string;
-  };
-
-  availability: {
-    remainingCabins: number;
-    capacityCabins: number;
-  };
-
-  recurring?: {
-    frequency: string;
-    nextSailings: string[];
-  };
-
-  isRoundTrip: boolean;
-  updatedAt: string;
-};
+// Constante para mantener la lógica de huéspedes (ya que TransportTrip no tiene maxGuests en prices)
+const DEFAULT_MAX_GUESTS = 4;
 
 export interface CustomCruiseCardProps {
-  cruise: CruiseTrip;
+  cruise: TransportTrip; // Usamos la nueva interfaz
   variant?: 'default' | 'compact' | 'featured';
   showSaveButton?: boolean;
   showShareButton?: boolean;
@@ -156,7 +55,6 @@ export interface CustomCruiseCardProps {
   onCabinSelect?: (cruiseId: string, cabinType: string) => void;
 }
 
-// Tipos de tabs disponibles
 type TabType = 'informacion' | 'amenidades' | 'itinerario' | 'politicas' | 'cabinas';
 
 interface TabConfig {
@@ -183,37 +81,33 @@ const formatDate = (dateString: string) => {
   return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
 };
 
-// Función para obtener precio más barato
-const getCheapestCabin = (cabinOptions: CruiseTrip['cabinOptions']) => {
-  return cabinOptions.reduce((cheapest, cabin) => 
-    cabin.price < cheapest.price ? cabin : cheapest
+// Función para obtener precio más barato (adaptada a prices[])
+const getCheapestCabin = (prices: TransportTrip['prices']) => {
+  if (!prices || prices.length === 0) return { price: 0, currency: 'USD', class: 'N/A' };
+  
+  return prices.reduce((cheapest, current) => 
+    current.price < cheapest.price ? current : cheapest
   );
 };
 
-// Función para obtener el icono de cabina según el tipo
-const getCabinIcon = (type: string) => {
-  switch (type) {
-    case 'Interior':
-      return <BedDouble className="w-4 h-4" />;
-    case 'Exterior':
-      return <Eye className="w-4 h-4" />;
-    case 'Balcón':
-      return <Wind className="w-4 h-4" />;
-    case 'Suite':
-      return <Crown className="w-4 h-4" />;
-    default:
-      return <Home className="w-4 h-4" />;
-  }
+// Función para obtener el icono de cabina según la clase
+const getCabinIcon = (type: string = '') => {
+  const lowerType = type.toLowerCase();
+  if (lowerType.includes('interior')) return <BedDouble className="w-4 h-4" />;
+  if (lowerType.includes('exterior')) return <Eye className="w-4 h-4" />;
+  if (lowerType.includes('balc')) return <Wind className="w-4 h-4" />;
+  if (lowerType.includes('suite')) return <Crown className="w-4 h-4" />;
+  return <Home className="w-4 h-4" />;
 };
 
-// Función para formatear precio con símbolo de moneda
-const formatPrice = (price: number, currency: string) => {
+// Función para formatear precio
+const formatPrice = (price: number, currency: string = 'USD') => {
   const symbols: Record<string, string> = {
     USD: '$',
     EUR: '€',
-    DOP: 'RD$'
+    DOP: 'RD$',
+    COP: 'COP$'
   };
-  
   return `${symbols[currency] || '$'} ${price.toLocaleString()}`;
 };
 
@@ -227,45 +121,41 @@ export default function CustomCruiseCard({
   onClick,
   onCabinSelect
 }: CustomCruiseCardProps) {
+
+  if (!cruise) { return <div className="h-20 bg-gray-100 animate-pulse rounded-lg" />;  }
   const [expandedTab, setExpandedTab] = useState<TabType | null>(null);
-  const [selectedCabinType, setSelectedCabinType] = useState<string>(cruise.cabinOptions[0]?.type || '');
-  const [isSaved, setIsSaved] = useState(false);
+  
+  // Usamos 'class' en lugar de 'type' y prices en lugar de cabinOptions
+  const [selectedCabinClass, setSelectedCabinClass] = useState<string>(cruise.prices[0]?.class || '');
+  
   const [adults, setAdults] = useState<number>(1);
   const [children, setChildren] = useState<number>(0);
 
-  const cheapestCabin = getCheapestCabin(cruise.cabinOptions);
-  const selectedCabin = cruise.cabinOptions.find(cabin => cabin.type === selectedCabinType) || cheapestCabin;
+  const cheapestCabin = getCheapestCabin(cruise.prices);
+  const selectedCabin = cruise.prices.find(p => p.class === selectedCabinClass) || cheapestCabin;
+
+  // Determinar capacidad máxima (fallback a constante porque no está en la interfaz)
+  const maxGuests = DEFAULT_MAX_GUESTS; 
 
   const handleTabClick = (tabId: TabType) => {
     setExpandedTab(expandedTab === tabId ? null : tabId);
   };
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
-    onSave?.(cruise.id);
-  };
-
-  const handleShare = () => {
-    onShare?.(cruise.id);
-  };
-
-  const handleCabinSelect = (cabinType: string) => {
-    setSelectedCabinType(cabinType);
-    // Reset guests when changing cabin to ensure they don't exceed new cabin's capacity
-    const newCabin = cruise.cabinOptions.find(cabin => cabin.type === cabinType);
-    if (newCabin && (adults + children) > newCabin.maxGuests) {
+  const handleCabinSelect = (cabinClass: string) => {
+    setSelectedCabinClass(cabinClass);
+    // Resetear huéspedes si exceden la capacidad (usando la constante maxGuests)
+    if ((adults + children) > maxGuests) {
       setAdults(1);
       setChildren(0);
     }
-    onCabinSelect?.(cruise.id, cabinType);
+    onCabinSelect?.(cruise.id, cabinClass);
   };
 
   const handleAdultsChange = (value: string) => {
     const newAdults = Number(value);
     setAdults(newAdults);
-    // Adjust children if total exceeds max capacity
-    if (newAdults + children > selectedCabin.maxGuests) {
-      setChildren(Math.max(0, selectedCabin.maxGuests - newAdults));
+    if (newAdults + children > maxGuests) {
+      setChildren(Math.max(0, maxGuests - newAdults));
     }
   };
 
@@ -274,12 +164,13 @@ export default function CustomCruiseCard({
     setChildren(newChildren);
   };
 
-  // Función para calcular el precio total basado en huéspedes
   const calculateTotalPrice = () => {
     const adultPrice = adults * selectedCabin.price;
-    const childPrice = children * selectedCabin.price * 0.75; // 25% descuento para niños
+    const childPrice = children * selectedCabin.price * 0.75; 
     return adultPrice + childPrice;
   };
+
+  // --- RENDERS DE TABS ---
 
   const renderInformacionTab = () => (
     <div className="p-4 bg-gray-50 border-t">
@@ -292,23 +183,24 @@ export default function CustomCruiseCard({
           </h4>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="font-medium">{cruise.ship.name}</p>
-              {cruise.ship.model && <p className="text-gray-600">{cruise.ship.model}</p>}
+              {/* Acceso a cruise.ship */}
+              <p className="font-medium">{cruise.ship?.name || 'Barco Asignado'}</p>
+              {cruise.ship?.model && <p className="text-gray-600">{cruise.ship.model}</p>}
             </div>
             <div className="space-y-1">
-              {cruise.ship.capacity && (
+              {cruise.ship?.capacity && (
                 <p className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-gray-500" />
                   {cruise.ship.capacity.toLocaleString()} pasajeros
                 </p>
               )}
-              {cruise.ship.decks && (
+              {cruise.ship?.decks && (
                 <p className="flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-gray-500" />
                   {cruise.ship.decks} cubiertas
                 </p>
               )}
-              {cruise.ship.yearBuilt && (
+              {cruise.ship?.yearBuilt && (
                 <p className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-gray-500" />
                   Año {cruise.ship.yearBuilt}
@@ -318,17 +210,17 @@ export default function CustomCruiseCard({
           </div>
         </div>
 
-        {/* Información de la naviera */}
+        {/* Información de la naviera (operator) */}
         <div className="bg-white p-4 rounded-lg border">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <Award className="w-5 h-5 text-blue-600" />
+            <Crown className="w-5 h-5 text-blue-600" />
             Naviera
           </h4>
           <div className="flex items-center gap-3">
-            {cruise.cruiseLine.logoUrl ? (
+            {cruise.operator.logoUrl ? (
               <img 
-                src={cruise.cruiseLine.logoUrl} 
-                alt={cruise.cruiseLine.name}
+                src={cruise.operator.logoUrl} 
+                alt={cruise.operator.name}
                 className="w-12 h-12 object-contain"
               />
             ) : (
@@ -337,11 +229,11 @@ export default function CustomCruiseCard({
               </div>
             )}
             <div>
-              <p className="font-medium">{cruise.cruiseLine.name}</p>
-              {cruise.cruiseLine.rating && (
+              <p className="font-medium">{cruise.operator.name}</p>
+              {cruise.operator.rating && (
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm">{cruise.cruiseLine.rating}/5</span>
+                  <span className="text-sm">{cruise.operator.rating}/5</span>
                 </div>
               )}
             </div>
@@ -354,13 +246,13 @@ export default function CustomCruiseCard({
   const renderAmenidadesTab = () => (
     <div className="p-4 bg-gray-50 border-t">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {cruise.amenities.pools > 0 && (
+        {(cruise.amenities.pools || 0) > 0 && (
           <div className="flex flex-col items-center text-center">
             <Waves className="w-6 h-6 text-blue-500 mb-1" />
             <span className="text-xs text-gray-600">{cruise.amenities.pools} Piscinas</span>
           </div>
         )}
-        {cruise.amenities.restaurants > 0 && (
+        {(cruise.amenities.restaurants || 0) > 0 && (
           <div className="flex flex-col items-center text-center">
             <Utensils className="w-6 h-6 text-blue-500 mb-1" />
             <span className="text-xs text-gray-600">{cruise.amenities.restaurants} Restaurantes</span>
@@ -397,7 +289,7 @@ export default function CustomCruiseCard({
   const renderItinerarioTab = () => (
     <div className="p-4 bg-gray-50 border-t">
       <div className="space-y-4">
-        {/* Información general */}
+        {/* Información general (Origin / Destination) */}
         <div className="bg-white p-4 rounded-lg border">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
@@ -405,49 +297,52 @@ export default function CustomCruiseCard({
                 <MapPin className="w-4 h-4 text-green-600" />
                 <span className="font-medium text-green-800">Puerto de Salida</span>
               </div>
-              <p className="font-medium">{cruise.itinerary.startPort}</p>
-              <p className="text-gray-600">{formatDate(cruise.itinerary.departureDate)}</p>
+              {/* Acceso a cruise.origin.stop */}
+              <p className="font-medium">{cruise.origin.stop?.city} ({cruise.origin.stop.stopName})</p>
+              <p className="text-gray-600">{formatDate(cruise.origin.dateTime)}</p>
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Anchor className="w-4 h-4 text-red-600" />
                 <span className="font-medium text-red-800">Puerto de Llegada</span>
               </div>
-              <p className="font-medium">{cruise.itinerary.endPort}</p>
-              <p className="text-gray-600">{formatDate(cruise.itinerary.returnDate)}</p>
+              {/* Acceso a cruise.destination.stop */}
+              <p className="font-medium">{cruise.destination.stop?.city} ({cruise.destination.stop?.stopName})</p>
+              <p className="text-gray-600">{formatDate(cruise.destination.dateTime)}</p>
             </div>
           </div>
           <div className="mt-4 flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <Timer className="w-4 h-4 text-gray-500" />
-              <span>{cruise.itinerary.durationNights} noches</span>
+              <span>{cruise.durationNights} noches</span>
             </div>
             <div className="flex items-center gap-2">
               <Route className="w-4 h-4 text-gray-500" />
-              <span>{cruise.itinerary.stops.length} paradas</span>
+              <span>{cruise.stops?.length || 0} paradas</span>
             </div>
           </div>
         </div>
 
-        {/* Paradas del itinerario */}
+        {/* Paradas del itinerario (cruise.stops) */}
         <div className="bg-white p-4 rounded-lg border">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
             <Route className="w-5 h-5 text-blue-600" />
-            Paradas del Crucero
+            Escalas
           </h4>
           <div className="space-y-3">
-            {cruise.itinerary.stops.map((stop, index) => (
+            {cruise.stops?.map((stopItem, index) => (
               <div key={index} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
                 <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="font-medium text-sm">{stop.port}</p>
-                  <p className="text-xs text-gray-600">{stop.country}</p>
+                  {/* Acceso a stopItem.stop.stopName y city */}
+                  <p className="font-medium text-sm">{stopItem.stop.city} - {stopItem.stop.stopName}</p>
+                  <p className="text-xs text-gray-600">{stopItem.stop.countryCode}</p>
                 </div>
-                {stop.arrivalDateTime && (
+                {stopItem.arrivalTime && (
                   <div className="text-right text-xs text-gray-500">
-                    <p>Llegada: {formatTime(stop.arrivalDateTime)}</p>
-                    {stop.departureDateTime && (
-                      <p>Salida: {formatTime(stop.departureDateTime)}</p>
+                    <p>Llegada: {formatTime(stopItem.arrivalTime)}</p>
+                    {stopItem.departureTime && (
+                      <p>Salida: {formatTime(stopItem.departureTime)}</p>
                     )}
                   </div>
                 )}
@@ -462,30 +357,29 @@ export default function CustomCruiseCard({
   const renderPoliticasTab = () => (
     <div className="p-4 bg-gray-50 border-t">
       <div className="space-y-4">
-        {/* Política de Cancelación */}
-        <div className="bg-white p-4 rounded-lg border">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-blue-600" />
-            Política de Cancelación
-          </h4>
-          <p className="text-sm text-gray-600">{cruise.policies.cancellation}</p>
-        </div>
+        {cruise.policies?.cancellation && (
+          <div className="bg-white p-4 rounded-lg border">
+            <h4 className="font-semibold mb-3 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-blue-600" />
+              Política de Cancelación
+            </h4>
+            <p className="text-sm text-gray-600">{cruise.policies.cancellation}</p>
+          </div>
+        )}
 
-        {/* Política de Equipaje */}
-        {cruise.policies.baggage?.includedKgPerPerson && (
+        {cruise.policies?.baggage?.includedKg && (
           <div className="bg-white p-4 rounded-lg border">
             <h4 className="font-semibold mb-3 flex items-center gap-2">
               <Luggage className="w-5 h-5 text-blue-600" />
               Política de Equipaje
             </h4>
             <p className="text-sm text-gray-600">
-              Equipaje incluido: {cruise.policies.baggage.includedKgPerPerson} kg por persona
+              Equipaje incluido: {cruise.policies.baggage.includedKg} kg por persona
             </p>
           </div>
         )}
 
-        {/* Salud y Vacunas */}
-        {cruise.policies.healthAndVaccines && (
+        {cruise.policies?.healthAndVaccines && (
           <div className="bg-white p-4 rounded-lg border">
             <h4 className="font-semibold mb-3 flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-blue-600" />
@@ -501,24 +395,26 @@ export default function CustomCruiseCard({
   const renderCabinasTab = () => (
     <div className="p-4 bg-gray-50 border-t">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {cruise.cabinOptions.map((cabin, index) => (
+        {/* Mapeamos cruise.prices en lugar de cabinOptions */}
+        {cruise.prices.map((cabin, index) => (
           <div
             key={index}
             className={`p-4 rounded-lg border cursor-pointer transition-all ${
-              selectedCabinType === cabin.type
+              selectedCabinClass === cabin.class
                 ? 'border-primary bg-primary/5 shadow-md'
                 : 'border-gray-200 hover:border-gray-300 bg-white'
             }`}
-            onClick={() => handleCabinSelect(cabin.type)}
+            // Usamos cabin.class
+            onClick={() => handleCabinSelect(cabin.class || '')}
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {getCabinIcon(cabin.type)}
-                  <span className="font-semibold">{cabin.type}</span>
+                  {getCabinIcon(cabin.class)}
+                  <span className="font-semibold">{cabin.class}</span>
                 </div>
                 {cabin.refundable && (
-                  <Badge className="bg-green-100 text-green-800 text-xs">
+                  <Badge className="bg-green-100 text-green-800 text-xs hover:bg-green-200">
                     Reembolsable
                   </Badge>
                 )}
@@ -534,7 +430,8 @@ export default function CustomCruiseCard({
               <div className="text-sm text-gray-600 space-y-1 ">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  <span>Hasta {cabin.maxGuests} huéspedes</span>
+                  {/* Usamos constante maxGuests porque no viene en data */}
+                  <span>Hasta {maxGuests} huéspedes</span>
                 </div>
               </div>
 
@@ -555,23 +452,21 @@ export default function CustomCruiseCard({
       </div>
 
       {/* Información de reserva cuando hay cabina seleccionada */}
-      {selectedCabinType && (
+      {selectedCabinClass && (
         <div className="mt-6 bg-white rounded-lg border shadow-md p-4">
-          {/* Selección de huéspedes */}
           <div className="mb-6">
             <h4 className="font-semibold mb-3">Información de Huéspedes</h4>
             <div className="grid grid-cols-2 gap-4">
-              {/* Adultos */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Adultos
                 </label>
                 <Select value={adults.toString()} onValueChange={handleAdultsChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar adultos" />
+                    <SelectValue placeholder="Adultos" />
                   </SelectTrigger>
                   <SelectContent>
-                    {Array.from({ length: selectedCabin.maxGuests }, (_, i) => i + 1).map((num) => (
+                    {Array.from({ length: maxGuests }, (_, i) => i + 1).map((num) => (
                       <SelectItem key={num} value={num.toString()}>
                         {num} {num === 1 ? 'Adulto' : 'Adultos'}
                       </SelectItem>
@@ -581,7 +476,6 @@ export default function CustomCruiseCard({
                 <p className="text-xs text-gray-500 mt-1">(Edad 18+)</p>
               </div>
 
-              {/* Niños */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Niños
@@ -589,13 +483,13 @@ export default function CustomCruiseCard({
                 <Select 
                   value={children.toString()} 
                   onValueChange={handleChildrenChange}
-                  disabled={adults >= selectedCabin.maxGuests}
+                  disabled={adults >= maxGuests}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar niños" />
+                    <SelectValue placeholder="Niños" />
                   </SelectTrigger>
                   <SelectContent>
-                    {Array.from({ length: Math.max(0, selectedCabin.maxGuests - adults) + 1 }, (_, i) => i).map((num) => (
+                    {Array.from({ length: Math.max(0, maxGuests - adults) + 1 }, (_, i) => i).map((num) => (
                       <SelectItem key={num} value={num.toString()}>
                         {num} {num === 1 ? 'Niño' : 'Niños'}
                       </SelectItem>
@@ -606,19 +500,10 @@ export default function CustomCruiseCard({
               </div>
             </div>
             
-            {/* Validación del total de huéspedes */}
-            {(adults + children) > selectedCabin.maxGuests && (
+            {(adults + children) > maxGuests && (
               <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
                 <p className="text-xs text-red-600">
-                  El total de huéspedes ({adults + children}) excede la capacidad máxima de la cabina ({selectedCabin.maxGuests}).
-                </p>
-              </div>
-            )}
-            
-            {(adults + children) === 0 && (
-              <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
-                <p className="text-xs text-yellow-600">
-                  Debe seleccionar al menos un huésped.
+                  El total de huéspedes excede la capacidad de la cabina.
                 </p>
               </div>
             )}
@@ -627,12 +512,12 @@ export default function CustomCruiseCard({
           <h4 className="font-semibold mb-3">Resumen de tu selección</h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span>Cabina {selectedCabin.type}</span>
+              <span>Cabina {selectedCabin.class}</span>
               <span className="font-medium">{formatPrice(selectedCabin.price, selectedCabin.currency)} por persona</span>
             </div>
             <div className="flex justify-between">
               <span>Duración</span>
-              <span>{cruise.itinerary.durationNights} noches</span>
+              <span>{cruise.durationNights} noches</span>
             </div>
             <div className="flex justify-between">
               <span>Huéspedes</span>
@@ -642,7 +527,6 @@ export default function CustomCruiseCard({
               </span>
             </div>
             
-            {/* Desglose de precios */}
             <div className="border-t pt-2 mt-3">
               <div className="flex justify-between text-gray-600">
                 <span>Adultos ({adults} × {formatPrice(selectedCabin.price, selectedCabin.currency)})</span>
@@ -655,27 +539,22 @@ export default function CustomCruiseCard({
                 </div>
               )}
               
-              {/* Total */}
               <div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
                 <span>Total</span>
                 <span className="text-primary">
                   {formatPrice(calculateTotalPrice(), selectedCabin.currency)}
                 </span>
               </div>
-              
-              <div className="text-xs text-gray-500 mt-1">
-                *Los niños tienen 25% de descuento
-              </div>
             </div>
           </div>
           
           <Button 
-            className="w-full mt-4 bg-primary hover:bg-primary/90 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
-            disabled={(adults + children) === 0 || (adults + children) > selectedCabin.maxGuests}
+            className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled={(adults + children) === 0 || (adults + children) > maxGuests}
             onClick={() => {
-              // Lógica de reserva
               const totalPrice = calculateTotalPrice();
-              console.log('Reservando cabina:', selectedCabinType, 'Adultos:', adults, 'Niños:', children, 'Total:', totalPrice);
+              console.log('Reservando cabina:', selectedCabinClass, 'Adultos:', adults, 'Total:', totalPrice);
+              onClick?.(cruise.id);
             }}
           >
             Reservar por {formatPrice(calculateTotalPrice(), selectedCabin.currency)}
@@ -687,36 +566,29 @@ export default function CustomCruiseCard({
 
   const renderTabContent = (tabId: TabType) => {
     switch (tabId) {
-      case 'informacion':
-        return renderInformacionTab();
-      case 'amenidades':
-        return renderAmenidadesTab();
-      case 'itinerario':
-        return renderItinerarioTab();
-      case 'politicas':
-        return renderPoliticasTab();
-      case 'cabinas':
-        return renderCabinasTab();
-      default:
-        return null;
+      case 'informacion': return renderInformacionTab();
+      case 'amenidades': return renderAmenidadesTab();
+      case 'itinerario': return renderItinerarioTab();
+      case 'politicas': return renderPoliticasTab();
+      case 'cabinas': return renderCabinasTab();
+      default: return null;
     }
   };
 
   return (
     <Card className="w-full overflow-visible border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-      {/* Header principal del card */}
       <CardContent className="p-0 overflow-visible">
         <div className="p-4">
+          
           {/* Fila superior: Logo, naviera, fechas, precio */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              {/* Logo de la naviera */}
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                {cruise.cruiseLine.logoUrl ? (
+              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center overflow-hidden">
+                {cruise.operator.logoUrl ? (
                   <img 
-                    src={cruise.cruiseLine.logoUrl} 
-                    alt={cruise.cruiseLine.name}
-                    className="w-8 h-8 object-contain"
+                    src={cruise.operator.logoUrl} 
+                    alt={cruise.operator.name}
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <Ship className="w-6 h-6 text-white" />
@@ -724,17 +596,17 @@ export default function CustomCruiseCard({
               </div>
               
               <div>
-                <h3 className="font-bold text-lg">{cruise.cruiseLine.name}</h3>
+                <h3 className="font-bold text-lg">{cruise.operator.name}</h3>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">CRUCERO</Badge>
-                  {cruise.cruiseLine.rating && (
+                  {cruise.operator.rating && (
                     <div className="flex items-center gap-1">
                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      <span className="text-xs text-gray-600">{cruise.cruiseLine.rating}</span>
+                      <span className="text-xs text-gray-600">{cruise.operator.rating}</span>
                     </div>
                   )}
                   <span className="text-xs text-gray-500">
-                    {cruise.cabinOptions.some(cabin => cabin.refundable) ? 'Reembolsable' : 'No reembolsable'}
+                    {cruise.prices.some(p => p.refundable) ? 'Reembolsable' : 'No reembolsable'}
                   </span>
                 </div>
               </div>
@@ -745,85 +617,57 @@ export default function CustomCruiseCard({
                 {formatPrice(cheapestCabin.price, cheapestCabin.currency)}
               </div>
               <div className="text-sm text-gray-600">
-                {cruise.availability.remainingCabins} cabinas disponibles
+                {cruise.availability.remainingCabins || 0} cabinas disponibles
               </div>
               <div className="text-xs text-gray-500">
-                Desde cabina {cheapestCabin.type}
+                Desde cabina {cheapestCabin.class}
               </div>
             </div>
           </div>
 
           {/* Fila de fechas y duración */}
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-6">
-              {/* Fecha de salida */}
+            <div className="flex items-center gap-6 w-full">
+              {/* Fecha de salida (Origin) */}
               <div>
-                <div className="text-2xl font-bold">{formatDate(cruise.itinerary.departureDate)}</div>
-                <div className="text-sm text-gray-600">{cruise.itinerary.startPort}</div>
+                <div className="text-xl md:text-2xl font-bold">{formatDate(cruise.origin.dateTime)}</div>
+                <div className="text-sm text-gray-600">{cruise.origin.stop?.city}</div>
                 <div className="text-xs text-gray-500">Salida</div>
               </div>
 
               {/* Duración y tipo */}
               <div className="flex-1 text-center">
-                <div className="text-sm text-gray-600 mb-1">{cruise.itinerary.durationNights} noches</div>
+                <div className="text-sm text-gray-600 mb-1">{cruise.durationNights} noches</div>
                 <div className="flex items-center justify-center">
                   <div className="flex-1 h-px bg-gray-300"></div>
                   <Ship className="w-4 h-4 text-gray-400 mx-2" />
                   <div className="flex-1 h-px bg-gray-300"></div>
                 </div>
                 <div className="text-xs text-gray-500 mt-1">
-                  {cruise.itinerary.stops.length} paradas
+                  {cruise.stops?.length || 0} paradas
                 </div>
               </div>
 
-              {/* Fecha de regreso */}
-              <div>
-                <div className="text-2xl font-bold">{formatDate(cruise.itinerary.returnDate)}</div>
-                <div className="text-sm text-gray-600">{cruise.itinerary.endPort}</div>
+              {/* Fecha de regreso (Destination) */}
+              <div className="text-right">
+                <div className="text-xl md:text-2xl font-bold">{formatDate(cruise.destination.dateTime)}</div>
+                <div className="text-sm text-gray-600">{cruise.destination.stop?.city}</div>
                 <div className="text-xs text-gray-500">Regreso</div>
               </div>
             </div>
           </div>
 
-          {/* Amenidades destacadas */}
-          {/* <div className="flex items-center gap-4 mb-4">
-            {cruise.amenities.pools > 0 && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <Waves className="w-4 h-4" />
-                <span>{cruise.amenities.pools} Piscinas</span>
-              </div>
-            )}
-            {cruise.amenities.restaurants > 0 && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <Utensils className="w-4 h-4" />
-                <span>{cruise.amenities.restaurants} Restaurantes</span>
-              </div>
-            )}
-            {cruise.amenities.gym && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <Dumbbell className="w-4 h-4" />
-                <span>Gimnasio</span>
-              </div>
-            )}
-            {cruise.amenities.showsIncluded && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <Sparkles className="w-4 h-4" />
-                <span>Shows</span>
-              </div>
-            )}
-          </div> */}
-
-          {/* Información del barco */}
+          {/* Información del barco Resumida */}
           <div className="bg-gray-50 rounded-lg p-3 mb-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-semibold text-sm">{cruise.ship.name}</h4>
+                <h4 className="font-semibold text-sm">{cruise.ship?.name}</h4>
                 <p className="text-xs text-gray-600">
-                  {cruise.ship.capacity && `${cruise.ship.capacity.toLocaleString()} pasajeros`}
-                  {cruise.ship.yearBuilt && ` • Año ${cruise.ship.yearBuilt}`}
+                  {cruise.ship?.capacity && `${cruise.ship.capacity.toLocaleString()} pasajeros`}
+                  {cruise.ship?.yearBuilt && ` • Año ${cruise.ship.yearBuilt}`}
                 </p>
               </div>
-              {cruise.ship.shipImageUrl && (
+              {cruise.ship?.shipImageUrl && (
                 <img
                   src={cruise.ship.shipImageUrl}
                   alt={cruise.ship.name}
