@@ -1,3 +1,5 @@
+import { TransportTrip } from "../../types/transport.types";
+
 // Interfaces y tipos para vuelos
 export interface FlightData {
   id: string;
@@ -65,7 +67,7 @@ export interface FlightResultSet {
   stepId: string;
   title: string;
   subtitle: string;
-  flights: FlightData[];
+  flights: TransportTrip[];
 }
 
 export interface SelectedFlight {

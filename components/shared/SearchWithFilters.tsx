@@ -20,17 +20,7 @@ import {
 import { usePriceRangeOutputString } from "./standard-fields-component/PriceRangeFilter";
 import { de } from "date-fns/locale";
 import { normalize } from 'path';
-
-interface DataSource {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  type: "hotel" | "custom" | "recent" | "airport" | "city";
-  nameLabelField: string;
-  nameValueField: string;
-  nameDescriptionField: string;
-  options: RowData[];
-}
+import { StandardSearchDataSource } from "./standard-fields-component/StandardSearchField";
 
 // Configuración genérica para un filtro
 interface GenericFilterConfig {
@@ -66,7 +56,7 @@ interface GenericFilterConfig {
   minSearchLength?: number;
   disabled?: boolean;
   showClearButton?: boolean;
-  dataSources?: DataSource[];
+  dataSources?: StandardSearchDataSource[];
   onSelect?: (option: any, sourceType: string) => void;
   // Nuevo: valores por defecto
   defaultValue?: any; // Para checkbox/toggle: string[], para radio: string, para range: [number, number], para search: string
@@ -244,7 +234,7 @@ val
 
  
  const applyFilters = () => {
-  console.log("ROW SAMPLE:", rows[0]);
+  // console.log("ROW SAMPLE:", rows[0]);
 
   const DEBUG = false; // cambia a false para desactivar logs
   let filtered = [...rows];
@@ -880,6 +870,6 @@ React.useEffect(() => {
   );
 }
 
-export type { GenericFilterConfig, GenericFilterOption, DataSource };
+export type { GenericFilterConfig, GenericFilterOption };
 
 

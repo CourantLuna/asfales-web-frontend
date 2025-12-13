@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Users, Info } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Tipos para el mapa de asientos
 export type SeatStatus = 'available' | 'occupied' | 'selected' | 'disabled';
@@ -235,7 +236,8 @@ export default function SeatMap({
   showSelectedSeats = true
 }: SeatMapProps) {
   const [hoveredSeat, setHoveredSeat] = useState<string | null>(null);
-  const orientation = config.orientation || 'vertical';
+  const isMobile = useIsMobile();
+  const orientation = isMobile? 'vertical' : config.orientation || 'horizontal';
 
   // Generar la nomenclatura de columnas (A, B, C, D, etc.)
   const generateColumnLabels = (count: number): string[] => {

@@ -13,11 +13,11 @@ import { PassengerSelector, type PassengerGroup } from '@/components/shared/stan
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Plane, MapPin, Trash, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getTransportDataSources, defaultPassengers } from '@/lib/data/mock-datavf';
 import path from 'path';
 import { useIsMobile } from '@/components/ui/use-mobile';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { set } from 'date-fns';
+import { getFlightsDataSources } from '../Data/StopsMockData';
 
 interface FlightsSearchBarProps {
   /**
@@ -59,6 +59,12 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
   }: FlightsSearchBarProps,
   ref
 ) {
+  const defaultPassengers: PassengerGroup = {
+  adults: 1,
+  children: [],
+  infantsOnLap: [],
+  infantsInSeat: []
+};
   const isMobile = useIsMobile();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,7 +75,19 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
   const [passengers, setPassengers] = useState<PassengerGroup>(defaultPassengers);
 
   // Obtener fuentes de datos para vuelos
-  const TRANSPORT_DATA_SOURCES = searchDataSources || getTransportDataSources('air');
+  // const TRANSPORT_DATA_SOURCES = searchDataSources || getFlightsDataSources();
+  const [dataSources, setDataSources] = useState<StandardSearchDataSource[]>([]);
+   useEffect(() => {
+      async function loadData() {
+        if (searchDataSources) {
+          setDataSources(searchDataSources);
+          return;
+        }
+        const sources = await getFlightsDataSources();
+        setDataSources(sources);
+      }
+      loadData();
+    }, []);
 
   // Estados locales para origin/destination (fallback si no se pasan como props)
   const [localTravelingFrom, setLocalTravelingFrom] = useState('SDQ');
@@ -272,18 +290,23 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
         params.append("departureDate", onewayDate.from.toISOString().split("T")[0]);
       }
     } else if (activeTab === 'multicity') {
-      // Para multicity, serializar los vuelos como JSON
-      const validFlights = flights.filter(flight => 
-        flight.origin && flight.destination && flight.date
-      );
-      if (validFlights.length > 0) {
-        const flightsData = validFlights.map(flight => ({
-          from: flight.origin,
-          to: flight.destination,
-          date: flight.date?.toISOString().split("T")[0]
-        }));
-        params.append("flights", JSON.stringify(flightsData));
-      }
+// 1. Validar si hay campos vacíos ANTES de procesar
+  // const hasIncompleteFlights = flights.some(f => !f.origin || !f.destination || !f.date);
+  
+  // if (hasIncompleteFlights) {
+  //   // Aquí puedes usar un toast o una alerta
+  //   alert("Por favor, completa todas las fechas y destinos antes de buscar.");
+  //   return; // DETIENE la ejecución, así no se actualiza la URL ni se borra nada
+  // }
+
+  // 2. Si todo está bien, procedemos (ya no necesitas filtrar estrictamente si validaste arriba)
+  const flightsData = flights.map(flight => ({
+    from: flight.origin,
+    to: flight.destination,
+    date: flight.date?.toISOString().split("T")[0]
+  }));
+  
+  params.append("flights", JSON.stringify(flightsData));
     }
 
     // Agregar parámetro para mostrar resultados
@@ -333,7 +356,7 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
             destinationPlaceholder="Ir a"
             destinationValue={currentGoingTo}
             onDestinationValueChange={handleGoingToChange}
-            dataSources={TRANSPORT_DATA_SOURCES}
+            dataSources={dataSources}
             onSwap={handleSwapLocations}
             showSearchButton={false}
             containerClassName="-mr-4"
@@ -418,7 +441,7 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
             destinationPlaceholder="Ir a"
             destinationValue={currentGoingTo}
             onDestinationValueChange={handleGoingToChange}
-            dataSources={TRANSPORT_DATA_SOURCES}
+            dataSources={dataSources}
             onSwap={handleSwapLocations}
             showSearchButton={false}
             containerClassName="-mr-4"
@@ -545,7 +568,7 @@ const FlightsSearchBar = forwardRef(function FlightsSearchBar(
                   destinationPlaceholder="Ir a"
                   destinationValue={flight.destination}
                   onDestinationValueChange={(value) => updateFlight(flight.id, { destination: value })}
-                  dataSources={TRANSPORT_DATA_SOURCES}
+                  dataSources={dataSources}
                   onSwap={() => handleFlightSwap(flight.id)}
                   showSearchButton={false}
                   containerClassName="flex-1"

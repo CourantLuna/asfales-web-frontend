@@ -554,7 +554,7 @@ const renderComentariosTab = () => (
       type: 'bus',
       rows: busTrip.availability.totalCapacity? (busTrip.availability.totalCapacity)/4: 12,
       columnsPerRow: 4,
-      orientation: variant === 'compact' ? 'vertical' : 'horizontal',
+      orientation: 'vertical',
       seatLayout: {
         left: 2,
         right: 2
@@ -586,145 +586,144 @@ const renderComentariosTab = () => (
 );
 
 
-    return (
-      <div className="p-4 bg-gray-50 ">
-        <div className=" flex flex-row">
+   return (
+  <div className="p-4 bg-gray-50">
+    {/* CAMBIO AQUÍ: flex-col para móvil, md:flex-row para tablet/desktop */}
+    <div className="flex flex-col md:flex-row gap-6"> 
 
-          <div className='w-full flex-1 flex flex-col items-center justify-center gap-2'>
-            {/* Componente SeatMap reutilizable */}
-          <SeatMap
-            config={seatMapConfig}
-            seats={seats}
-            selectedSeats={selectedSeatIds}
-            onSeatSelect={handleSeatSelect}
-            onSeatDeselect={handleSeatDeselect}
-            maxSelections={6}
-            showLegend={true}
-            showClassInfo={false}
-            showSelectedSeats={false}
-          />
-          <div className="text-center text-sm text-gray-600 mb-4">
-                <p>{busTrip.availability.seatsAvailable} de {busTrip.availability.totalCapacity} sillas disponibles</p>
-               
-              </div>
-          </div>
-
-          {/* Información de selección de asientos */}
-          {selectedSeatIds.length === 0 ? (
-            null
-          ) : (
-            /* Resumen de reserva cuando hay asientos seleccionados */
-            <div className="bg-white rounded-lg border shadow-md p-6 min-w-[300px]">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">SALIDA & LLEGADA</h3>
-                <button 
-                  onClick={() => setSelectedSeatIds([])}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Información de salida */}
-              <div className="mb-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mt-1"></div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-lg">{formatTime(busTrip.origin?.dateTime)}</div>
-                    <div className="font-medium">{busTrip.origin.stop?.countryCode}</div>
-                    <div className="text-sm text-gray-600">{busTrip.origin.stop?.stopName}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Información de llegada */}
-              <div className="mb-6">
-                <div className="flex items-start gap-3">
-                  <div className="w-3 h-3 bg-red-500 rounded-full mt-1"></div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-lg">{formatTime(busTrip.destination.dateTime)}</div>
-                    <div className="font-medium">{busTrip.destination.stop.countryCode}</div>
-                    <div className="text-sm text-gray-600">{busTrip.destination.stop.stopName}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Número de asiento */}
-              <div className="mb-4">
-                <div className="text-sm text-gray-600 mb-1">N° de asiento</div>
-                <div className="font-semibold">
-                  {selectedSeatIds.map((seatId, index) => (
-                    <span key={seatId}>
-                      {seatId}
-                      {index < selectedSeatIds.length - 1 && ', '}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-{/* Detalles del precio */}
-<div className="border-t pt-4 mb-6">
-  <h4 className="font-semibold mb-3">Detalles del precio</h4>
-
-  <div className="space-y-2">
-   <div className="mt-4 border rounded-lg overflow-hidden">
-  <table className="w-full text-sm">
-    <thead className="bg-gray-100 border-b">
-      <tr>
-        <th className="py-2 px-3 text-left">Tipo de asiento</th>
-        <th className="py-2 px-3 text-center">Cantidad</th>
-        <th className="py-2 px-3 text-right">Subtotal</th>
-      </tr>
-    </thead>
-    <tbody>
-      {seatSummary.map((item) => (
-        <tr key={item.class} className="border-b">
-          <td className="py-2 px-3 capitalize">{item.class}</td>
-          <td className="py-2 px-3 text-center">{item.count}</td>
-          <td className="py-2 px-3 text-right">
-            {formatPrice(item.subtotal, selectedPrice.currency)}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
-
-    <div className="flex justify-between text-sm font-semibold border-t pt-2">
-      <span>Monto total</span>
-      <span>
-  {formatPrice(totalPrice, selectedPrice.currency)}
-      </span>
-    </div>
-  </div>
-</div>
-
-
-              {/* Ver detalles link */}
-              <div className="text-center mb-4">
-                <button className="text-primary text-sm hover:underline">
-                  Ver Detalles
-                </button>
-              </div>
-
-              {/* Botón de reservar */}
-              <Button 
-              variant={"default"}
-                className="w-full text-white py-3 rounded-lg font-semibold"
-                onClick={() => {
-                  // Aquí iría la lógica de reserva
-                  console.log('Reservando asientos:', selectedSeatIds);
-                }}
-              >
-                RESERVAR
-              </Button>
-            </div>
-          )}
+      <div className='w-full flex-1 flex flex-col items-center justify-center gap-2'>
+        {/* Componente SeatMap reutilizable */}
+        <SeatMap
+          config={seatMapConfig}
+          seats={seats}
+          selectedSeats={selectedSeatIds}
+          onSeatSelect={handleSeatSelect}
+          onSeatDeselect={handleSeatDeselect}
+          maxSelections={6}
+          showLegend={true}
+          showClassInfo={false}
+          showSelectedSeats={false}
+        />
+        <div className="text-center text-sm text-gray-600 mb-4">
+          <p>{busTrip.availability.seatsAvailable} de {busTrip.availability.totalCapacity} sillas disponibles</p>
         </div>
       </div>
-    );
+
+      {/* Información de selección de asientos */}
+      {selectedSeatIds.length === 0 ? (
+        null
+      ) : (
+        /* Resumen de reserva cuando hay asientos seleccionados */
+        /* Agregamos w-full para que ocupe todo el ancho en móvil */
+        <div className="bg-white rounded-lg border shadow-md p-6 w-full md:min-w-[300px] md:w-auto h-fit">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">SALIDA & LLEGADA</h3>
+            <button 
+              onClick={() => setSelectedSeatIds([])}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Información de salida */}
+          <div className="mb-4">
+            <div className="flex items-start gap-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full mt-1"></div>
+              <div className="flex-1">
+                <div className="font-semibold text-lg">{formatTime(busTrip.origin?.dateTime)}</div>
+                <div className="font-medium">{busTrip.origin.stop?.countryCode}</div>
+                <div className="text-sm text-gray-600">{busTrip.origin.stop?.stopName}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Información de llegada */}
+          <div className="mb-6">
+            <div className="flex items-start gap-3">
+              <div className="w-3 h-3 bg-red-500 rounded-full mt-1"></div>
+              <div className="flex-1">
+                <div className="font-semibold text-lg">{formatTime(busTrip.destination.dateTime)}</div>
+                <div className="font-medium">{busTrip.destination.stop.countryCode}</div>
+                <div className="text-sm text-gray-600">{busTrip.destination.stop.stopName}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Número de asiento */}
+          <div className="mb-4">
+            <div className="text-sm text-gray-600 mb-1">N° de asiento</div>
+            <div className="font-semibold">
+              {selectedSeatIds.map((seatId, index) => (
+                <span key={seatId}>
+                  {seatId}
+                  {index < selectedSeatIds.length - 1 && ', '}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Detalles del precio */}
+          <div className="border-t pt-4 mb-6">
+            <h4 className="font-semibold mb-3">Detalles del precio</h4>
+
+            <div className="space-y-2">
+              <div className="mt-4 border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100 border-b">
+                    <tr>
+                      <th className="py-2 px-3 text-left">Tipo de asiento</th>
+                      <th className="py-2 px-3 text-center">Cantidad</th>
+                      <th className="py-2 px-3 text-right">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {seatSummary.map((item) => (
+                      <tr key={item.class} className="border-b">
+                        <td className="py-2 px-3 capitalize">{item.class}</td>
+                        <td className="py-2 px-3 text-center">{item.count}</td>
+                        <td className="py-2 px-3 text-right">
+                          {formatPrice(item.subtotal, selectedPrice.currency)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex justify-between text-sm font-semibold border-t pt-2">
+                <span>Monto total</span>
+                <span>
+                  {formatPrice(totalPrice, selectedPrice.currency)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Ver detalles link */}
+          <div className="text-center mb-4">
+            <button className="text-primary text-sm hover:underline">
+              Ver Detalles
+            </button>
+          </div>
+
+          {/* Botón de reservar */}
+          <Button 
+            variant={"default"}
+            className="w-full text-white py-3 rounded-lg font-semibold"
+            onClick={() => {
+              // Aquí iría la lógica de reserva
+              console.log('Reservando asientos:', selectedSeatIds);
+            }}
+          >
+            RESERVAR
+          </Button>
+        </div>
+      )}
+    </div>
+  </div>
+);
   };
 
   const renderTabContent = (tabId: TabType) => {

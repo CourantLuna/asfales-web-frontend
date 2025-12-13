@@ -1,4 +1,4 @@
-import { FlightData } from './flight-types';
+import { FlightData } from '../../components/transport/Fligths/lib/flight-types';
 
 // Datos de vuelos base (Santo Domingo → Medellín)
 export const baseFlights: FlightData[] = [

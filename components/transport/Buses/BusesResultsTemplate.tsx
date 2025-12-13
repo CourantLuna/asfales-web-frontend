@@ -376,7 +376,7 @@ useEffect(() => {
 
         // Derived fields
         const counterStops = translateStopsFilter(stopsArray.length);
-        const departureTime = translateTime(rowObj.originDepartureDateTime);
+        const departureTime = translateTime(rowObj.dateTime_origin);
         const durationTime = translateDuration(parseInt(rowObj.durationMinutes || "0"));
         const priceMin = pricesArray.length
           ? Math.min(...pricesArray.map((p: any) => p.price))
@@ -438,11 +438,9 @@ useEffect(() => {
 
           // Derived fields for filters
           counterStops,
-          departureTime,
           durationTime,
           priceMin,
-          departureDateTime: rowObj.originDepartureDateTime,
-          arrivalDateTime: rowObj.destinationArrivalDateTime,
+          departureTime,
 
           updatedAt: rowObj.updatedAt,
         };

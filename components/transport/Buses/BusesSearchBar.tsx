@@ -3,7 +3,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { ButtonGroup } from "@/components/ui/button-group"
 
-
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SearchFieldsWithSwap } from '@/components/shared/SearchFieldsWithSwap';
 import { StandardSearchDataSource } from '@/components/shared/standard-fields-component/StandardSearchField';
@@ -11,8 +10,7 @@ import { DateRangePickerCustom } from '@/components/ui/date-range-picker-custom'
 import { PassengerSelector, type PassengerGroup } from '@/components/shared/standard-fields-component/PassengerSelector';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Bus, X } from 'lucide-react';
-import { defaultPassengers } from '@/lib/data/mock-datavf';
-import { getBusesDataSources } from '../Data/BusesMockData';
+import { getBusesDataSources } from '../Data/StopsMockData';
 
 interface BusesSearchBarProps {
   /**
@@ -49,7 +47,12 @@ export default function BusesSearchBar(
   const [localOrigin, setLocalOrigin] = useState('');
   const [localDestination, setLocalDestination] = useState('');
   const [dates, setDates] = useState<{ from?: Date; to?: Date }>({});
-  const [passengers, setPassengers] = useState<PassengerGroup>(defaultPassengers);
+  const [passengers, setPassengers] = useState<PassengerGroup>({
+  adults: 1,
+  children: [],
+  infantsOnLap: [],
+  infantsInSeat: []
+});
 
   // Obtener fuentes de datos para buses
   // const BUS_DATA_SOURCES = searchDataSources || getBusesDataSources();
@@ -190,7 +193,12 @@ const handleReset = () => {
   handleOriginChange('');
   handleDestinationChange('');
   setDates({});
-  setPassengers(defaultPassengers);
+  setPassengers({
+  adults: 1,
+  children: [],
+  infantsOnLap: [],
+  infantsInSeat: []
+});
 
   // Limpiar URL (opcional)
   router.push(pathname);

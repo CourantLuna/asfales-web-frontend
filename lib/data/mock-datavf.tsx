@@ -257,13 +257,6 @@ export const defaultDateRange: DateRange = {
   to: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // +7 días
 };
 
-export const defaultPassengers: PassengerGroup = {
-  adults: 1,
-  children: [],
-  infantsOnLap: [],
-  infantsInSeat: []
-};
-
 // ========================================
 // SELECCIONES POR DEFECTO
 // ========================================
@@ -1259,7 +1252,6 @@ export const mockData = {
   transportTypes,
   defaultGuestRooms,
   defaultDateRange,
-  defaultPassengers,
   defaultSelectedLodgingTypes,
   defaultSelectedTransportTypes,
   defaultSelectedExperiences,

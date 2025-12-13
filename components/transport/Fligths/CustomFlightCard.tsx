@@ -3,31 +3,30 @@
 import React, { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CheckCircle, XCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { TransportTrip } from '../types/transport.types'; // Asegúrate de que la ruta es correcta
 
-interface FlightCardData {
-  id: string;
-  airline: string;
-  flightNumber?: string;
-  departureTime: string;
-  arrivalTime: string;
-  departureAirport: string;
-  arrivalAirport: string;
-  duration: string;
-  stops: string;
-  price: number;
-  currency: string;
-  priceLabel?: string;
-  logo?: string;
-  badge?: string;
-  savings?: string;
-}
+// --- Helpers de Formato para transformar la data cruda ---
+const formatTime = (isoString?: string) => {
+  if (!isoString) return '--:--';
+  return new Date(isoString).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+};
+
+const formatDate = (isoString?: string) => {
+  if (!isoString) return '';
+  return new Date(isoString).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }); // Ej: 20 may
+};
+
+const formatDuration = (minutes?: number) => {
+  if (!minutes) return '--';
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h ${m}m`;
+};
 
 interface CustomFlightCardProps {
-  flight: FlightCardData;
-  onDetailsClick?: (flight: FlightCardData) => void;
-  onClick?: (flight: FlightCardData) => void;
+  flight: TransportTrip; // <-- AHORA USA EL TIPO CORRECTO
+  onDetailsClick?: (flight: TransportTrip) => void;
+  onClick?: (flight: TransportTrip) => void;
   onCompareChecked?: (checked: boolean) => void;
   showCompareCheckbox?: boolean;
   isCompareChecked?: boolean;
@@ -43,6 +42,38 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
   isCompareChecked = false,
   className = "",
 }) => {
+
+  if(!flight) {
+    return <div className="h-20 bg-gray-100 animate-pulse rounded-lg" />;
+  }
+  
+  // --- EXTRACCIÓN Y MAPEO DE DATOS (TransportTrip -> Variables UI) ---
+  const basePrice = flight?.prices?.[0];
+  const price = basePrice?.price || 0;
+  const currency = basePrice?.currency || 'USD';
+  
+  const origin = flight?.origin?.stop;
+  const dest = flight?.destination?.stop;
+  
+  const departureTime = formatTime(flight?.origin?.dateTime);
+  const arrivalTime = formatTime(flight?.destination?.dateTime);
+  const departureDate = formatDate(flight?.origin?.dateTime);
+  const arrivalDate = formatDate(flight?.destination?.dateTime);
+  
+  const duration = formatDuration(flight.durationMinutes);
+  
+  const stopsLabel = flight.isDirect 
+    ? "Directo" 
+    : `${flight.stops?.length || 1} Escala${(flight.stops?.length || 0) > 1 ? 's' : ''}`;
+
+  const airlineName = flight?.operator?.name;
+  const airlineLogo = flight?.operator?.logoUrl;
+  
+  const badge = flight?.classesAvailable?.[0]; // Ej: "Económica"
+  const priceLabel = "Por pasajero"; 
+
+  // ------------------------------------------------------------------
+
   const handleDetailsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onDetailsClick?.(flight);
@@ -52,123 +83,133 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
     onClick?.(flight);
   };
 
-  
-
   return (
-    <Suspense
-                fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}
-              >
-    <div
- className={`bg-white border border-gray-200 rounded-lg p-4 transition-shadow 
-  shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group relative 
-  focus:outline-none focus:ring-0 focus:border-primary focus:border-2 
-  focus-within:outline-none focus-within:ring-0 focus-within:border-primary focus-within:border-2 ${className}`}
+    <Suspense fallback={<div className="h-20 bg-gray-100 animate-pulse rounded-lg" />}>
+      <div
+        className={`bg-white border border-gray-200 rounded-lg p-4 transition-shadow 
+        shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.015] cursor-pointer group relative 
+        focus:outline-none focus:ring-0 focus:border-primary focus:border-2 
+        focus-within:outline-none focus-within:ring-0 focus-within:border-primary focus-within:border-2 ${className}`}
         onClick={handleCardClick}
         tabIndex={0}
-    >
-      <div className="flex items-center justify-between mb-3">
-
-        {/* Badge de ahorro si existe */}
-      {flight.badge && (
-        <div className="bg-yellow-400 text-black text-xs font-medium px-3 py-1 rounded-full inline-block mb-3">
-          💰 {flight.badge}
-        </div>
-      )}
-
-
-        {/* Checkbox overlay para comparar */}
-      {showCompareCheckbox && (
-         <div 
-            className="backdrop-blur-sm shadow-sm transition-colors justify-end ml-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Checkbox
-            id={flight.id}
-              checked={isCompareChecked}
-              onCheckedChange={(checked) => {
-                onCompareChecked && onCompareChecked( Boolean(checked));
-              }}
-              className="w-4 h-4 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 "
-            />
-          </div>
-      )}
-
-      
-      </div>
-
-      <div className='flex flex-row justify-content-between'>
-      {/* Layout responsive: vertical en mobile, horizontal en desktop */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between space-y-3 md:space-y-0 w-2/3">
-        {/* Horarios y ruta */}
-        <div className="flex flex-col">
-          <div className="flex items-center space-x-2 text-sm md:text-lg font-bold text-gray-900">
-            {/* Logo de aerolínea */}
-            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-              {flight.logo ? (
-                <img
-                  src={flight.logo}
-                  alt={flight.airline}
-                  className="w-8 h-8 rounded-full"
-                />
-              ) : (
-                <span className="text-white text-xs font-bold">
-                  {flight.airline.substring(0, 2).toUpperCase()}
-                </span>
-              )}
+      >
+        <div className="flex items-center justify-between mb-3">
+          {/* Badge de clase/ahorro */}
+          {badge && (
+            <div className="bg-yellow-400 text-black text-xs font-medium px-3 py-1 rounded-full inline-block mb-3">
+              {badge}
             </div>
-            <span className='pl-2'>{flight.departureTime}</span>
-            <span className="text-gray-400">——</span>
-            <span>{flight.arrivalTime}</span>
-          </div>
-          <div className="text-xs md:text-sm text-gray-600 pl-12">
-            {flight.departureAirport} - {flight.arrivalAirport}
-          </div>
-          <div className="text-xs md:text-sm text-gray-500 pl-12">{flight.airline}</div>
+          )}
+
+          {/* Checkbox overlay para comparar */}
+          {showCompareCheckbox && (
+            <div 
+              className="backdrop-blur-sm shadow-sm transition-colors justify-end ml-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Checkbox
+                id={flight.id}
+                checked={isCompareChecked}
+                onCheckedChange={(checked) => {
+                  onCompareChecked && onCompareChecked(Boolean(checked));
+                }}
+                className="w-4 h-4 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 "
+              />
+            </div>
+          )}
         </div>
 
-        {/* Duración y tipo de vuelo */}
-        <div className="flex flex-row gap-3 md:flex-col items-center text-left md:text-center pl-12 md:pl-0 w- mr-auto lg:mr-0">
-          <div className="text-xs md:text-sm font-medium text-gray-700 md:mb-1">
-            {flight.duration}
-          </div>
-          <div
-            className={`text-xs md:text-sm px-2 py-1 rounded w-auto ${
-              flight.stops === "Vuelo sin escalas" || flight.stops === "Directo"
-                ? "text-green-700 bg-green-50"
-                : "text-orange-700 bg-orange-50"
-            }`}
-          >
-            {flight.stops}
-          </div>
-        </div>
+        <div className='flex flex-row justify-content-between'>
+          {/* Layout responsive: vertical en mobile, horizontal en desktop */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between space-y-3 md:space-y-0 w-2/3">
+            
+            {/* Horarios y ruta */}
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-2 text-sm md:text-lg font-bold text-gray-900">
+                
+                {/* Logo de aerolínea */}
+                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {airlineLogo ? (
+                    <img
+                      src={airlineLogo}
+                      alt={airlineName}
+                      className="w-8 h-8 object-contain"
+                    />
+                  ) : (
+                    <span className="text-gray-500 text-xs font-bold">
+                      {airlineName.substring(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                </div>
 
-        
-      </div>
+                {/* --- SECCIÓN DE HORAS Y FECHAS --- */}
+                <div className="flex items-center space-x-2 pl-2">
+                  {/* Salida */}
+                  <div className="flex flex-col items-center leading-tight">
+                    {departureDate && (
+                      <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wide">
+                        {departureDate}
+                      </span>
+                    )}
+                    <span>{departureTime}</span>
+                  </div>
 
+                  <span className="text-gray-300 font-light">——</span>
 
-      {/* Precio */}
-        <div className="flex flex-col items-end text-right justify-content-end flex-shrink-0 w-1/3">
-          <div className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
-            ${flight.price}
+                  {/* Llegada */}
+                  <div className="flex flex-col items-center leading-tight">
+                    {arrivalDate && (
+                      <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wide">
+                        {arrivalDate}
+                      </span>
+                    )}
+                    <span>{arrivalTime}</span>
+                  </div>
+                </div>
+                {/* ---------------------------------- */}
+
+              </div>
+              
+              <div className="text-xs md:text-sm text-gray-600 pl-12">
+                {origin?.stopCode} - {dest?.stopCode} ({origin?.city} a {dest?.city})
+              </div>
+              <div className="text-xs md:text-sm text-gray-500 pl-12">{airlineName}</div>
+            </div>
+
+            {/* Duración y tipo de vuelo */}
+            <div className="flex flex-row gap-3 md:flex-col items-center text-left md:text-center pl-12 md:pl-0 w- mr-auto lg:mr-0">
+              <div className="text-xs md:text-sm font-medium text-gray-700 md:mb-1">
+                {duration}
+              </div>
+              <div
+                className={`text-xs md:text-sm px-2 py-1 rounded w-auto ${
+                  flight.isDirect
+                    ? "text-green-700 bg-green-50"
+                    : "text-orange-700 bg-orange-50"
+                }`}
+              >
+                {stopsLabel}
+              </div>
+            </div>
           </div>
-          <div className="text-xs md:text-sm text-gray-500 mb-2">
-            {flight.priceLabel || "Redondeado por pasajero"}
-          </div>
-          
-        </div>
 
+          {/* Precio */}
+          <div className="flex flex-col items-end text-right justify-content-end flex-shrink-0 w-1/3">
+            <div className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+              ${price}
+            </div>
+            <div className="text-xs md:text-sm text-gray-500 mb-2">
+              {priceLabel} <span className="uppercase">{currency}</span>
+            </div>
+          </div>
         </div>
 
         <div className="mt-3 pt-3 border-t border-gray-100 flex flex-row items-center justify-between">
+          <div className='w-auto h-full'>
+             {/* Espacio para tags de ahorro si implementas lógica futura */}
+          </div>
 
-      <div className='w-auto h-full'>
-      {/* Información adicional si hay promoción */}
-      {flight.savings && (
-          <div className="text-xs md:text-sm text-gray-600">{flight.savings}</div>
-      )}
-      </div>
-
-      <Button
+          <Button
             variant="ghost"
             size="sm"
             onClick={handleDetailsClick}
@@ -176,8 +217,8 @@ const CustomFlightCard: React.FC<CustomFlightCardProps> = ({
           >
             Detalles del vuelo
           </Button>
+        </div>
       </div>
-    </div>
     </Suspense>
   );
 };

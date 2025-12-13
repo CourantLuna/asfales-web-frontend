@@ -10,6 +10,7 @@ import { Search, MapPin, Anchor, X } from 'lucide-react';
 import { getTransportDataSources } from '@/lib/data/mock-datavf';
 import { PassengerGroup } from '../../shared/standard-fields-component/PassengerSelector';
 import { ButtonGroup } from '@/components/ui/button-group';
+import { getCruisesDataSources } from '../Data/StopsMockData';
 
 interface CruisesSearchBarProps {
   /**
@@ -31,7 +32,19 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
   const [duration, setDuration] = useState<DurationRange>({ minNights: 3, maxNights: 9 });
 
   // Obtener fuentes de datos para cruceros
-  const CRUISE_DATA_SOURCES = getTransportDataSources('cruise');
+  // const CRUISE_DATA_SOURCES = getTransportDataSources('cruise');
+  
+  
+    const [dataSources, setDataSources] = useState<StandardSearchDataSource[]>([]);
+  
+    useEffect(() => {
+      async function loadData() {
+        const sources = await getCruisesDataSources();
+        setDataSources(sources);
+      }
+      loadData();
+    }, []);
+  
 
   // Efecto para cargar parámetros de la URL al inicializar el componente
   useEffect(() => {
@@ -142,7 +155,7 @@ export default function CruisesSearchBar({ showSearchButton = true }: CruisesSea
             placeholder="Caribe, Mediterráneo, Alaska..."
             value={destination}
             onValueChange={setDestination}
-            dataSources={CRUISE_DATA_SOURCES}
+            dataSources={dataSources}
             showClearButton={true}
             containerClassName="w-full md:w-auto"
           />

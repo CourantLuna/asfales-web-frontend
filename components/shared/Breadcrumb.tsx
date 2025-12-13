@@ -132,53 +132,73 @@ export default Breadcrumb;
 
 
 // Hook para generar steps según el tipo de vuelo
+// En Breadcrumb.tsx o al final de tu archivo
+
 export const useFlightBreadcrumbSteps = (
   flightType: 'roundtrip' | 'oneway' | 'multicity',
   currentStep: string,
-  destinations?: string[],
-  allowBackNavigation: boolean = true
+  // Cambiamos el tercer argumento para recibir la info de rutas
+  routeInfo: {
+    origin?: string;
+    destination?: string;
+    multicitySegments?: { from: string; to: string; date: string }[];
+  }
 ) => {
   const baseSteps = React.useMemo(() => {
+    // Valores por defecto para evitar textos undefined
+    const originLabel = routeInfo.origin || 'Origen';
+    const destinationLabel = routeInfo.destination || 'Destino';
+
     switch (flightType) {
       case 'oneway':
         return [
-          { id: 'choose-departure', label: 'Elige tu vuelo de salida' },
-          { id: 'review-details', label: 'Revisa los detalles del viaje' }
+          { 
+            id: 'choose-departure', 
+            label: `Vuelo a ${destinationLabel}` 
+          },
+          { id: 'review-details', label: 'Revisa los detalles' }
         ];
       
       case 'roundtrip':
         return [
-          { id: 'choose-departure', label: 'Elige tu vuelo a Medellín' },
-          { id: 'choose-return', label: 'Elige tu vuelo de vuelta a Santo Domingo' },
-          { id: 'review-details', label: 'Revisa los detalles del viaje' }
+          { 
+            id: 'choose-departure', 
+            label: `Vuelo a ${destinationLabel}` 
+          },
+          { 
+            id: 'choose-return', 
+            label: `Vuelta a ${originLabel}` 
+          },
+          { id: 'review-details', label: 'Revisa los detalles' }
         ];
       
       case 'multicity':
         const steps = [];
-        if (destinations && destinations.length > 0) {
-          destinations.forEach((destination, index) => {
-            if (index === 0) {
-              steps.push({ 
-                id: `choose-flight-${index}`, 
-                label: `Elige tu vuelo a ${destination}` 
-              });
-            } else {
-              steps.push({ 
-                id: `choose-flight-${index}`, 
-                label: `Elige tu vuelo a ${destination}` 
-              });
-            }
+        const segments = routeInfo.multicitySegments || [];
+        
+        if (segments.length > 0) {
+          segments.forEach((segment, index) => {
+             // Usamos el destino de cada segmento para el label
+             const segDest = segment.to || `Destino ${index + 1}`;
+             steps.push({ 
+               id: `choose-flight-${index}`, 
+               label: `Vuelo a ${segDest}` 
+             });
           });
+        } else {
+            // Fallback si no hay segmentos parseados
+             steps.push({ id: 'choose-flight-0', label: 'Elige tu primer vuelo' });
         }
-        steps.push({ id: 'review-details', label: 'Revisa los detalles del viaje' });
+
+        steps.push({ id: 'review-details', label: 'Revisa los detalles' });
         return steps;
       
       default:
         return [];
     }
-  }, [flightType, destinations]);
+  }, [flightType, routeInfo]);
 
-  // Determinar estados de cada step
+  // Determinar estados (Activo, Completado)
   const stepsWithStates = React.useMemo(() => {
     const currentIndex = baseSteps.findIndex(step => step.id === currentStep);
     
@@ -186,7 +206,6 @@ export const useFlightBreadcrumbSteps = (
       ...step,
       isActive: step.id === currentStep,
       isCompleted: index < currentIndex,
-      // No definir isClickable aquí - se manejará en el componente Breadcrumb
     }));
   }, [baseSteps, currentStep]);
 

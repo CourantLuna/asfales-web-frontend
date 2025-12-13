@@ -168,6 +168,7 @@ export interface TransportStop {
   latitude?: number;
   longitude?: number;
   isMajorHub?: boolean;
+  stopType: 'bus' | 'cruise' | 'flight';
 }
 
 export interface TransportRoute {
